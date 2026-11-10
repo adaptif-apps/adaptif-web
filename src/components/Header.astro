@@ -150,71 +150,56 @@ const serviceCategories: ServiceCategory[] = [
                   </ul>
                 </div>
 
-                <!-- Column 3: AI Services -->
+                <!-- Column 3: AI Services & Marketing Services -->
                 <div class="mega-column">
-                  <a href={serviceCategories[2].href} class="mega-column-title">
-                    <span class="column-title-text">{serviceCategories[2].title}</span>
-                    <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
-                      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                  <ul class="mega-item-list">
-                    {serviceCategories[2].items.map((item) => (
-                      <li>
-                        <a href={item.href} class="mega-item">
-                          <span class="mega-item-header">
-                            <span class="mega-item-title">{item.title}</span>
-                            <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                              <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                          </span>
-                          <span class="mega-item-desc">{item.desc}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <!-- Column 4: Marketing Services & Spotlight Feature -->
-                <div class="mega-column mega-column-marketing">
-                  <a href={serviceCategories[3].href} class="mega-column-title">
-                    <span class="column-title-text">{serviceCategories[3].title}</span>
-                    <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
-                      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                  <ul class="mega-item-list">
-                    {serviceCategories[3].items.map((item) => (
-                      <li>
-                        <a href={item.href} class="mega-item">
-                          <span class="mega-item-header">
-                            <span class="mega-item-title">{item.title}</span>
-                            <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                              <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                          </span>
-                          <span class="mega-item-desc">{item.desc}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <!-- Feature Spotlight Card -->
-                  <div class="mega-spotlight-card">
-                    <div class="spotlight-tag">
-                      <span class="tag-pulse"></span>
-                      <span>Subscription Model</span>
-                    </div>
-                    <div class="spotlight-title">Creative Pipeline On-Demand</div>
-                    <p class="spotlight-text">
-                      Plugs an AI-augmented creative team directly into your workflow: senior designers, developers & strategists.
-                    </p>
-                    <a href="#contact" class="spotlight-cta">
-                      <span>Book a Discovery Call</span>
-                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                        <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- AI Services -->
+                  <div class="mega-subgroup">
+                    <a href={serviceCategories[2].href} class="mega-column-title">
+                      <span class="column-title-text">{serviceCategories[2].title}</span>
+                      <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </a>
+                    <ul class="mega-item-list">
+                      {serviceCategories[2].items.map((item) => (
+                        <li>
+                          <a href={item.href} class="mega-item">
+                            <span class="mega-item-header">
+                              <span class="mega-item-title">{item.title}</span>
+                              <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                            </span>
+                            <span class="mega-item-desc">{item.desc}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <!-- Marketing Services -->
+                  <div class="mega-subgroup mega-subgroup-marketing">
+                    <a href={serviceCategories[3].href} class="mega-column-title">
+                      <span class="column-title-text">{serviceCategories[3].title}</span>
+                      <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                    <ul class="mega-item-list">
+                      {serviceCategories[3].items.map((item) => (
+                        <li>
+                          <a href={item.href} class="mega-item">
+                            <span class="mega-item-header">
+                              <span class="mega-item-title">{item.title}</span>
+                              <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                            </span>
+                            <span class="mega-item-desc">{item.desc}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -646,11 +631,15 @@ const serviceCategories: ServiceCategory[] = [
     border-radius: 10px;
   }
 
-  /* 4-Column Grid */
+  /* 3-Column Grid */
   .mega-menu-grid {
     display: grid;
-    grid-template-columns: 1.15fr 1.15fr 0.95fr 1.05fr;
-    gap: 20px;
+    grid-template-columns: 1.05fr 1.05fr 1fr;
+    gap: 24px;
+  }
+
+  .mega-subgroup-marketing {
+    margin-top: 18px;
   }
 
   .mega-column {
@@ -1437,7 +1426,7 @@ const serviceCategories: ServiceCategory[] = [
      ========================================================================== */
   @media (max-width: 1120px) {
     .mega-menu-grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
   }

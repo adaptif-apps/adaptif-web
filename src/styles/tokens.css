@@ -1,0 +1,141 @@
+/**
+ * Adaptif Design Tokens
+ * Strict Brand Specification: Luminous Obsidian Glass
+ * No-slop, deterministic, mathematically balanced.
+ */
+
+:root {
+  /* ==========================================================================
+     Color Palette: Deep Obsidian Void & Variations of Blue
+     ========================================================================== */
+  --color-void: #010307;
+  --color-obsidian-950: #02050e;
+  --color-obsidian-900: #04091a;
+  --color-obsidian-850: #08122c;
+  --color-obsidian-800: #0e1c42;
+
+  /* Blue Luminescence Spectrum */
+  --color-brand-cyan: #48C8FF;     /* Official Adaptif Brand Cyan Accent */
+  --color-blue-radiant: #48C8FF;   /* Brand Cyan Flare / Edge specular / Icons / Bullets */
+  --color-blue-electric: #48C8FF;  /* Primary Action Buttons */
+  --color-blue-azure: #2b7fff;     /* Midtone highlight */
+  --color-blue-cobalt: #163da8;    /* Volumetric diffuse light */
+  --color-blue-deep: #0a1738;      /* Structural tone */
+  --color-blue-glow: rgba(72, 200, 255, 0.45);
+  --color-cyan-glow: rgba(72, 200, 255, 0.65);
+
+  /* Neutrals & Text Contrast */
+  --color-text-white: #ffffff;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-text-ghost: #334155;
+
+  /* ==========================================================================
+     Glassmorphism & Specular Lighting
+     ========================================================================== */
+  --glass-bg-subtle: rgba(255, 255, 255, 0.03);
+  --glass-bg-surface: rgba(4, 9, 26, 0.55);
+  --glass-bg-card: rgba(8, 18, 44, 0.65);
+  --glass-bg-elevated: rgba(14, 28, 66, 0.75);
+
+  --glass-blur-sm: blur(12px);
+  --glass-blur-md: blur(24px) saturate(180%);
+  --glass-blur-lg: blur(40px) saturate(200%);
+
+  /* Hairline Bevels & Edge Lighting */
+  --border-hairline: 1px solid rgba(255, 255, 255, 0.08);
+  --border-subtle: 1px solid rgba(255, 255, 255, 0.12);
+  --border-light-top: inset 0 1px 0 0 rgba(255, 255, 255, 0.22);
+  --border-light-rim: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --border-glow-blue: 1px solid rgba(0, 140, 255, 0.35);
+  --border-glow-cyan: 1px solid rgba(0, 229, 255, 0.5);
+
+  /* Multi-layered Specular Shadows (As seen in Moodboard) */
+  --shadow-bevel-card: 
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 2px 0 rgba(0, 102, 255, 0.2),
+    0 12px 36px -8px rgba(0, 4, 15, 0.8);
+
+  --shadow-bevel-floating:
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 1px 0 rgba(0, 229, 255, 0.2),
+    0 20px 50px -10px rgba(0, 0, 0, 0.9),
+    0 0 35px -5px rgba(0, 102, 255, 0.25);
+
+  --shadow-button-primary:
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.6),
+    0 0 28px -2px rgba(72, 200, 255, 0.6),
+    0 8px 22px -4px rgba(0, 0, 0, 0.5);
+
+  --shadow-button-hover:
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.8),
+    0 0 38px 2px rgba(72, 200, 255, 0.85),
+    0 10px 26px -2px rgba(0, 0, 0, 0.6);
+
+  /* Volumetric Light Fields */
+  --beam-vertical: linear-gradient(
+    180deg,
+    rgba(0, 229, 255, 0.6) 0%,
+    rgba(0, 102, 255, 0.3) 30%,
+    rgba(0, 40, 160, 0.08) 65%,
+    transparent 100%
+  );
+
+  --flare-bottom-glow: radial-gradient(
+    ellipse 90% 60% at 50% 100%,
+    rgba(0, 140, 255, 0.55) 0%,
+    rgba(0, 70, 255, 0.25) 45%,
+    rgba(2, 5, 14, 0) 80%
+  );
+
+  --flare-horizon: radial-gradient(
+    ellipse 100% 40% at 50% 50%,
+    rgba(0, 229, 255, 0.35) 0%,
+    rgba(0, 102, 255, 0.15) 50%,
+    transparent 80%
+  );
+
+  /* ==========================================================================
+     Fluid Typography & Layout
+     ========================================================================== */
+  --font-family-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-family-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "SF Mono", "Fira Code", monospace;
+
+  --font-size-hero: clamp(2.6rem, 6.4vw + 0.5rem, 6rem);
+  --font-line-height-hero: 1.02;
+  --font-letter-spacing-display: -0.04em; /* -4% letter spacing for Instrument Serif */
+  --font-letter-spacing-hero: -0.04em;
+
+  --font-size-subhero: clamp(0.95rem, 1.1vw + 0.4rem, 1.2rem);
+  --font-line-height-subhero: 1.55;
+  --font-letter-spacing-subhero: -0.015em;
+
+  --font-size-badge: clamp(0.75rem, 0.8vw + 0.3rem, 0.85rem);
+  --font-size-nav: 0.9rem;
+  --font-size-btn: 0.95rem;
+
+  /* ==========================================================================
+     Dimensions & Spacing
+     ========================================================================== */
+  --container-max: 1240px;
+  --container-hero: 1100px;
+  --header-height: 72px;
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 30px;
+  --radius-xl: 40px;
+  --radius-pill: 9999px;
+
+  /* ==========================================================================
+     Micro-Interactions & Transitions
+     ========================================================================== */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --duration-fast: 160ms;
+  --duration-normal: 280ms;
+  --duration-smooth: 450ms;
+}

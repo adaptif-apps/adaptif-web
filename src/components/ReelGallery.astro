@@ -1,0 +1,602 @@
+---
+// ReelGallery.astro - React Bits Pro Reel Gallery Engine
+// Faithful WebGL implementation of the infinite drifting Reel Gallery.
+interface Props {
+  images?: string[];
+  rows?: number;
+  rowHeight?: number;
+  rowGap?: number;
+  itemGap?: number;
+  maxAspect?: number;
+  minAspect?: number;
+  tilt?: number;
+  arch?: number;
+  speed?: number;
+  speedVariance?: number;
+  alternate?: boolean;
+  autoScroll?: number;
+  inertia?: number;
+  damping?: number;
+  dragSensitivity?: number;
+  wheelSensitivity?: number;
+  radius?: number;
+  grayscale?: number;
+  focusRadius?: number;
+  focusStrength?: number;
+  brightness?: number;
+  fade?: number;
+  dim?: number;
+  taper?: number;
+  backgroundColor?: string;
+  interactive?: boolean;
+  paused?: boolean;
+  dpr?: number;
+  class?: string;
+}
+
+const DEFAULT_IMAGES = [
+  "/header_images/work-0.jpg",
+  "/header_images/work-1.jpg",
+  "/header_images/work-2.jpg",
+  "/header_images/work-3.jpg",
+  "/header_images/work-4.jpg",
+  "/header_images/work-5.jpg",
+  "/header_images/work-6.jpg",
+  "/header_images/work-7.jpg",
+  "/header_images/work-8.jpg",
+  "/header_images/work-9.jpg",
+  "/header_images/work-10.jpg",
+  "/header_images/work-11.jpg",
+  "/header_images/work-12.jpg"
+];
+
+const {
+  images = DEFAULT_IMAGES,
+  rows = 1,
+  rowHeight = 180,
+  rowGap = 20,
+  itemGap = 16,
+  maxAspect = 2,
+  minAspect = 0.4,
+  tilt = 0,
+  arch = 0,
+  speed = 1.55,
+  speedVariance = 0,
+  alternate = false,
+  autoScroll = 26,
+  inertia = 0.92,
+  damping = 0.1,
+  dragSensitivity = 1.6,
+  wheelSensitivity = 1,
+  radius = 12,
+  grayscale = 0.35,
+  focusRadius = 240,
+  focusStrength = 0.85,
+  brightness = 1.05,
+  fade = 0.12,
+  dim = 0.35,
+  taper = 0,
+  backgroundColor = "transparent",
+  interactive = true,
+  paused = false,
+  dpr = 1.5,
+  class: className = ""
+} = Astro.props;
+
+const config = {
+  images,
+  rows,
+  rowHeight,
+  rowGap,
+  itemGap,
+  maxAspect,
+  minAspect,
+  tilt,
+  arch,
+  speed,
+  speedVariance,
+  alternate,
+  autoScroll,
+  inertia,
+  damping,
+  dragSensitivity,
+  wheelSensitivity,
+  radius,
+  grayscale,
+  focusRadius,
+  focusStrength,
+  brightness,
+  fade,
+  dim,
+  taper,
+  backgroundColor,
+  interactive,
+  paused,
+  dpr
+};
+
+// Container height calculated dynamically based on rows and rowHeight
+const containerHeight = Math.max(rowHeight * rows + (rows - 1) * rowGap + 24, rowHeight + 20);
+---
+
+<div
+  class:list={["reel-gallery-container", className]}
+  data-reel-config={JSON.stringify(config)}
+  style={`height: ${containerHeight}px;`}
+>
+  <div class="reel-canvas-host" aria-hidden="true"></div>
+  <slot />
+</div>
+
+<style>
+  .reel-gallery-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+    cursor: grab;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 1) 10%,
+      rgba(0, 0, 0, 1) 90%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 1) 10%,
+      rgba(0, 0, 0, 1) 90%,
+      transparent 100%
+    );
+  }
+
+  .reel-gallery-container:active {
+    cursor: grabbing;
+  }
+
+  .reel-canvas-host {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  import * as THREE from 'three';
+
+  const VERTEX_SHADER = `
+    uniform vec2 uSize;
+    varying vec2 vPos;
+
+    void main() {
+      vPos = position.xy * uSize;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `;
+
+  const FRAGMENT_SHADER = `
+    precision highp float;
+
+    uniform sampler2D uAtlas;
+    uniform vec2 uSize;
+    uniform float uRows;
+    uniform float uPitch;
+    uniform float uRowHeight;
+    uniform float uArch;
+    uniform float uPlaneWidth;
+    uniform float uLean;
+    uniform float uReach;
+    uniform float uEdge;
+    uniform float uAt;
+    uniform float uSpeed;
+    uniform float uVariance;
+    uniform float uAlternate;
+    uniform float uDim;
+    uniform float uTaper;
+    uniform float uGray;
+    uniform float uBright;
+    uniform float uReveal;
+    uniform float uFade;
+    uniform vec2 uPointer;
+    uniform float uFocusRadius;
+    uniform float uFocusStrength;
+
+    varying vec2 vPos;
+
+    float scatter(float seed) {
+      float spun = sin(seed * 127.1 + 311.7) * 43758.5453;
+      return spun - floor(spun);
+    }
+
+    void main() {
+      float c = cos(uLean);
+      float s = sin(uLean);
+      vec2 q = vec2(vPos.x * c - vPos.y * s, vPos.x * s + vPos.y * c);
+
+      float f = q.x / uPlaneWidth;
+      float sy = q.y - (0.25 - f * f) * uArch;
+
+      float middle = (uRows - 1.0) * 0.5;
+      float row = floor(middle - sy / uPitch + 0.5);
+      if (row < 0.0 || row > uRows - 1.0) {
+        gl_FragColor = vec4(0.0);
+        return;
+      }
+
+      float reach = max(middle, 1.0);
+      float away = abs(row - middle) / reach;
+      float shrink = max(1.0 - uTaper * away, 0.05);
+      float band = uRowHeight * shrink;
+
+      float local = sy + (row - middle) * uPitch;
+      float lip = band * 0.5;
+      float rim = 1.0 - smoothstep(lip - 0.75, lip + 0.25, abs(local));
+      if (rim < 0.002) {
+        gl_FragColor = vec4(0.0);
+        return;
+      }
+
+      float swing = (scatter(row + 17.0) * 2.0 - 1.0) * uVariance;
+      float flip = (uAlternate > 0.5 && mod(row, 2.0) > 0.5) ? -1.0 : 1.0;
+      float pace = (1.0 + swing) * flip;
+
+      float ux = q.x / shrink;
+      float u = (ux + uAt * uSpeed * pace) / uReach + scatter(row + 3.0);
+      float v = clamp(local / band + 0.5, uEdge, 1.0 - uEdge);
+
+      vec4 texel = texture2D(uAtlas, vec2(u, v));
+      float mass = texel.a;
+      vec3 base = texel.rgb / max(mass, 0.0025);
+      float lum = dot(base, vec3(0.2126, 0.7152, 0.0722));
+
+      float glow = 0.0;
+      if (uFocusStrength > 0.001 && uFocusRadius > 0.001) {
+        float span = length(vPos - uPointer) / uFocusRadius;
+        glow = uFocusStrength * (1.0 - smoothstep(0.35, 1.0, span));
+      }
+
+      float drain = clamp(uGray * (1.0 - glow), 0.0, 1.0);
+      vec3 tone = mix(base, vec3(lum), drain) * uBright * (1.0 + glow * 0.28);
+
+      float wash = 1.0;
+      if (uFade > 0.001) {
+        float edge = abs(vPos.x) / max(uSize.x * 0.5, 1.0);
+        wash = 1.0 - smoothstep(1.0 - uFade * 2.0, 1.0, edge);
+      }
+
+      float veil = mass * rim * wash * uReveal * (1.0 - uDim * away);
+      gl_FragColor = vec4(tone * veil, veil);
+    }
+  `;
+
+  const clamp = (val: number, min: number, max: number) => Math.min(max, Math.max(min, val));
+
+  function drawRoundedCover(
+    ctx: CanvasRenderingContext2D,
+    img: HTMLImageElement,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    radius: number
+  ) {
+    ctx.save();
+    ctx.beginPath();
+    const r = Math.min(radius, 0.5 * w, 0.5 * h);
+    if ('roundRect' in ctx) {
+      (ctx as any).roundRect(x, y, w, h, r);
+    } else {
+      ctx.rect(x, y, w, h);
+    }
+    ctx.clip();
+
+    const imgAspect = img.naturalWidth / img.naturalHeight;
+    let dw = w;
+    let dh = w / imgAspect;
+    if (dh < h) {
+      dh = h;
+      dw = h * imgAspect;
+    }
+    ctx.drawImage(img, x + (w - dw) * 0.5, y + (h - dh) * 0.5, dw, dh);
+    ctx.restore();
+  }
+
+  function initReelGallery(container: HTMLElement) {
+    const host = container.querySelector('.reel-canvas-host') as HTMLElement;
+    if (!host) return;
+
+    const rawConfig = container.getAttribute('data-reel-config');
+    const config = rawConfig ? JSON.parse(rawConfig) : {};
+
+    const imageUrls: string[] = config.images && config.images.length > 0 ? config.images : [];
+    if (imageUrls.length === 0) return;
+
+    const loadedImages: HTMLImageElement[] = [];
+    let pendingCount = imageUrls.length;
+
+    imageUrls.forEach((src) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      const onDone = () => {
+        if (img.naturalWidth > 0) loadedImages.push(img);
+        pendingCount--;
+        if (pendingCount === 0 && loadedImages.length > 0) {
+          setupScene();
+        }
+      };
+      img.onload = onDone;
+      img.onerror = onDone;
+      img.src = src;
+    });
+
+    function setupScene() {
+      const canvas = document.createElement('canvas');
+      canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;';
+
+      let renderer: THREE.WebGLRenderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          canvas,
+          alpha: true,
+          antialias: false,
+          powerPreference: 'high-performance'
+        });
+      } catch (e) {
+        console.warn('WebGL failed for ReelGallery', e);
+        return;
+      }
+
+      host.appendChild(canvas);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 500);
+      camera.position.set(0, 0, 100);
+
+      let viewW = container.clientWidth || 800;
+      let viewH = container.clientHeight || 200;
+
+      const rowsCount = clamp(Math.round(config.rows || 1), 1, 24);
+      const rowHeight = Math.max(24, config.rowHeight || 180);
+      const maxAspect = Math.max(0.2, config.maxAspect || 2);
+      const minAspect = clamp(config.minAspect || 0.4, 0.1, maxAspect);
+      const maxCardWidth = rowHeight * maxAspect;
+      const leanRad = Math.abs(config.tilt || 0) * (Math.PI / 180);
+      const planeWidth = Math.max(320, Math.round(viewW / Math.max(Math.cos(leanRad), 0.25) + Math.tan(leanRad) * rowHeight * rowsCount + maxCardWidth));
+
+      const atlasHeight = Math.max(32, 32 * Math.ceil(rowHeight / 32));
+      const targetSpan = Math.max(512, 512 * Math.ceil((planeWidth * atlasHeight) / rowHeight / 512));
+      const scaleDpr = clamp(config.dpr || 1.25, 1, 1.6);
+
+      // Build Atlas
+      const atlasCards: { img: HTMLImageElement; width: number }[] = [];
+      let totalSpan = 0;
+      let cardIdx = 0;
+
+      while ((totalSpan < targetSpan || atlasCards.length < 3) && cardIdx < 64) {
+        const img = loadedImages[cardIdx % loadedImages.length];
+        const aspect = img.naturalWidth / img.naturalHeight;
+        const w = Math.round(atlasHeight * clamp(aspect, minAspect, maxAspect));
+        atlasCards.push({ img, width: w });
+        totalSpan += w + (config.itemGap || 16);
+        cardIdx++;
+      }
+
+      const atlasCanvas = document.createElement('canvas');
+      atlasCanvas.width = Math.max(2, Math.round(totalSpan * scaleDpr));
+      atlasCanvas.height = Math.max(2, Math.round(atlasHeight * scaleDpr));
+
+      const ctx2d = atlasCanvas.getContext('2d');
+      if (ctx2d) {
+        ctx2d.scale(scaleDpr, scaleDpr);
+        let currX = 0;
+        atlasCards.forEach((c) => {
+          drawRoundedCover(ctx2d, c.img, currX, 0, c.width, atlasHeight, config.radius || 12);
+          currX += c.width + (config.itemGap || 16);
+        });
+      }
+
+      const texture = new THREE.CanvasTexture(atlasCanvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.generateMipmaps = false;
+      texture.premultiplyAlpha = true;
+      texture.colorSpace = THREE.SRGBColorSpace;
+
+      const atlasScale = rowHeight / atlasHeight;
+
+      const uniforms = {
+        uAtlas: { value: texture },
+        uSize: { value: new THREE.Vector2(viewW, viewH) },
+        uRows: { value: rowsCount },
+        uPitch: { value: rowHeight + (config.rowGap || 20) },
+        uRowHeight: { value: rowHeight },
+        uArch: { value: config.arch || 0 },
+        uPlaneWidth: { value: planeWidth },
+        uLean: { value: (config.tilt || 0) * (Math.PI / 180) },
+        uReach: { value: Math.max(totalSpan * atlasScale, 1) },
+        uEdge: { value: 0.5 / atlasCanvas.height },
+        uAt: { value: 0 },
+        uSpeed: { value: config.speed || 1.55 },
+        uVariance: { value: config.speedVariance || 0 },
+        uAlternate: { value: config.alternate ? 1 : 0 },
+        uDim: { value: clamp(config.dim ?? 0.35, 0, 1) },
+        uTaper: { value: clamp(config.taper ?? 0, 0, 1) },
+        uGray: { value: clamp(config.grayscale ?? 0.35, 0, 1) },
+        uBright: { value: config.brightness || 1.05 },
+        uReveal: { value: 0 },
+        uFade: { value: clamp(config.fade ?? 0.12, 0, 0.5) },
+        uPointer: { value: new THREE.Vector2(1e5, 1e5) },
+        uFocusRadius: { value: config.focusRadius || 240 },
+        uFocusStrength: { value: clamp(config.focusStrength ?? 0.85, 0, 1) }
+      };
+
+      const material = new THREE.ShaderMaterial({
+        vertexShader: VERTEX_SHADER,
+        fragmentShader: FRAGMENT_SHADER,
+        uniforms,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false
+      });
+
+      const planeGeo = new THREE.PlaneGeometry(1, 1);
+      const mesh = new THREE.Mesh(planeGeo, material);
+      mesh.scale.set(viewW, viewH, 1);
+      scene.add(mesh);
+
+      // Animation & Interaction Physics
+      const motion = { at: 0, aim: 0, push: 0, held: false };
+      const pointerPos = { x: 1e5, y: 1e5, live: false };
+      const targetPointer = new THREE.Vector2(1e5, 1e5);
+      let reveal = 0;
+      let lastTime = 0;
+      let animId = 0;
+      let isVisible = true;
+
+      const resize = () => {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        if (w < 2 || h < 2) return;
+        viewW = w;
+        viewH = h;
+        const dprVal = Math.min(window.devicePixelRatio || 1, config.dpr || 1.5);
+        renderer.setPixelRatio(dprVal);
+        renderer.setSize(w, h, false);
+        camera.left = -w / 2;
+        camera.right = w / 2;
+        camera.top = h / 2;
+        camera.bottom = -h / 2;
+        camera.updateProjectionMatrix();
+        mesh.scale.set(w, h, 1);
+        uniforms.uSize.value.set(w, h);
+      };
+
+      const animate = (timestamp: number) => {
+        animId = 0;
+        if (!isVisible) return;
+
+        const dt = lastTime && timestamp - lastTime < 100
+          ? Math.min((timestamp - lastTime) / 1000, 0.05)
+          : 1 / 60;
+        lastTime = timestamp;
+
+        const fpsFactor = 60 * dt;
+
+        if (!motion.held) {
+          motion.aim += motion.push * fpsFactor;
+          motion.push *= Math.pow(clamp(config.inertia || 0.92, 0, 0.995), fpsFactor);
+          if (Math.abs(motion.push) < 0.4) motion.push = 0;
+        }
+
+        if (!config.paused) {
+          motion.aim += (config.autoScroll || 26) * dt;
+        }
+
+        const dampingVal = motion.held ? 0.3 : clamp(config.damping || 0.1, 0.01, 1);
+        motion.at += (motion.aim - motion.at) * (1 - Math.pow(1 - dampingVal, fpsFactor));
+
+        reveal += (1 - reveal) * Math.min(3.2 * dt, 1);
+
+        const targetX = pointerPos.live ? pointerPos.x : 1e5;
+        const targetY = pointerPos.live ? pointerPos.y : 1e5;
+        targetPointer.x += (targetX - targetPointer.x) * Math.min(9 * dt, 1);
+        targetPointer.y += (targetY - targetPointer.y) * Math.min(9 * dt, 1);
+
+        uniforms.uAt.value = motion.at;
+        uniforms.uReveal.value = reveal;
+        uniforms.uPointer.value.copy(targetPointer);
+
+        renderer.render(scene, camera);
+        animId = requestAnimationFrame(animate);
+      };
+
+      // Pointer & Drag Handlers
+      let activePointerId = -1;
+      let startX = 0;
+      let startY = 0;
+
+      container.addEventListener('pointerdown', (e) => {
+        if (!config.interactive) return;
+        activePointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        motion.held = true;
+        motion.push = 0;
+        container.setPointerCapture(e.pointerId);
+      });
+
+      container.addEventListener('pointermove', (e) => {
+        const rect = container.getBoundingClientRect();
+        pointerPos.x = e.clientX - rect.left - 0.5 * rect.width;
+        pointerPos.y = 0.5 * rect.height - (e.clientY - rect.top);
+        pointerPos.live = true;
+
+        if (e.pointerId !== activePointerId) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        const delta = (dy - dx) * (config.dragSensitivity || 1.6);
+        startX = e.clientX;
+        startY = e.clientY;
+        motion.aim += delta;
+        motion.push = 0.25 * delta;
+      });
+
+      const onPointerEnd = (e: PointerEvent) => {
+        if (e.pointerId === activePointerId) {
+          activePointerId = -1;
+          motion.held = false;
+          if (container.hasPointerCapture(e.pointerId)) {
+            container.releasePointerCapture(e.pointerId);
+          }
+        }
+      };
+
+      container.addEventListener('pointerup', onPointerEnd);
+      container.addEventListener('pointercancel', onPointerEnd);
+      container.addEventListener('pointerleave', () => {
+        pointerPos.live = false;
+      });
+
+      container.addEventListener('wheel', (e) => {
+        if (!config.interactive) return;
+        const delta = e.deltaY + e.deltaX;
+        if (delta !== 0) {
+          e.preventDefault();
+          const p = delta * (config.wheelSensitivity || 1);
+          motion.aim += p;
+          motion.push = 0.15 * p;
+        }
+      }, { passive: false });
+
+      const ro = new ResizeObserver(() => resize());
+      ro.observe(container);
+
+      const io = new IntersectionObserver(([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !animId) {
+          lastTime = 0;
+          animId = requestAnimationFrame(animate);
+        } else if (!isVisible && animId) {
+          cancelAnimationFrame(animId);
+          animId = 0;
+        }
+      }, { rootMargin: '100px' });
+      io.observe(container);
+
+      resize();
+      animId = requestAnimationFrame(animate);
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('.reel-gallery-container').forEach((el) => {
+    initReelGallery(el);
+  });
+</script>

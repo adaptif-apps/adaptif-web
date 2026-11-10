@@ -1,0 +1,742 @@
+---
+// GlimmerWrap.astro - React Bits Pro Glimmer Wrap Engine
+// Faithful WebGL implementation of the Glimmer Wrap background component.
+interface Props {
+  colors?: [string, string];
+  count?: number;
+  size?: number;
+  brightness?: number;
+  spread?: number;
+  hollow?: number;
+  perspective?: number;
+  centerX?: number;
+  centerY?: number;
+  speed?: number;
+  direction?: 'outward' | 'inward';
+  twist?: number;
+  turbulence?: number;
+  trail?: number;
+  glitter?: number;
+  twinkle?: number;
+  focus?: number;
+  aperture?: number;
+  backgroundColor?: string;
+  sizeVariance?: number;
+  glintSize?: number;
+  boost?: number;
+  parallax?: number;
+  waves?: boolean;
+  intro?: boolean;
+  paused?: boolean;
+  dpr?: number;
+  class?: string;
+}
+
+const {
+  colors = ["#FFFFFF", "#48c8ff"],
+  count = 1500,
+  size = 1.6,
+  brightness = 1,
+  spread = 1,
+  hollow = 0.06,
+  perspective = 0.7,
+  centerX = 0.5,
+  centerY = 0.5,
+  speed = 0.5,
+  direction = "outward",
+  twist = 0,
+  turbulence = 0,
+  trail = 0.08,
+  glitter = 0.01,
+  twinkle = 0.5,
+  focus = 0.62,
+  aperture = 0.45,
+  backgroundColor = "#000000",
+  sizeVariance = 0.6,
+  glintSize = 1,
+  boost = 7,
+  parallax = 0,
+  waves = true,
+  intro = true,
+  paused = false,
+  dpr = 2,
+  class: className = ""
+} = Astro.props;
+
+const config = {
+  colors,
+  count,
+  size,
+  brightness,
+  spread,
+  hollow,
+  perspective,
+  centerX,
+  centerY,
+  speed,
+  direction,
+  twist,
+  turbulence,
+  trail,
+  glitter,
+  twinkle,
+  focus,
+  aperture,
+  backgroundColor,
+  sizeVariance,
+  glintSize,
+  boost,
+  parallax,
+  waves,
+  intro,
+  paused,
+  dpr
+};
+---
+
+<div
+  class:list={["glimmer-wrap-root", className]}
+  data-glimmer-config={JSON.stringify(config)}
+  style={backgroundColor && backgroundColor !== "transparent" ? `background-color: ${backgroundColor};` : undefined}
+>
+  <div class="glimmer-canvas-host" aria-hidden="true"></div>
+  <slot />
+</div>
+
+<style>
+  .glimmer-wrap-root {
+    position: relative;
+    isolation: isolate;
+    height: 100%;
+    min-height: 320px;
+    width: 100%;
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .glimmer-canvas-host {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  import * as THREE from 'three';
+
+  const VERTEX_SHADER = `
+    attribute vec4 aSeed;
+    attribute vec4 aLook;
+    uniform vec2 uView;
+    uniform vec2 uCenter;
+    uniform float uFocal;
+    uniform float uTravel;
+    uniform float uExposure;
+    uniform float uTime;
+    uniform float uSpread;
+    uniform float uHollow;
+    uniform float uNear;
+    uniform float uTwist;
+    uniform float uTurbulence;
+    uniform vec2 uLook;
+    uniform float uSize;
+    uniform float uSizeVariance;
+    uniform float uBrightness;
+    uniform float uFocus;
+    uniform float uAperture;
+    uniform float uGlitter;
+    uniform float uGlintSize;
+    uniform float uTwinkle;
+    uniform float uFade;
+    uniform float uDpr;
+    uniform vec4 uWaves[4];
+    varying vec2 vLocal;
+    varying float vHalfLength;
+    varying float vSigma;
+    varying float vIntensity;
+    varying float vGlint;
+    varying float vSpike;
+    varying vec2 vSpikeAxis;
+    varying float vTone;
+
+    float hash(float n) {
+      return fract(sin(n * 12.9898 + 78.233) * 43758.5453);
+    }
+
+    vec3 place(float cycle, float depth) {
+      float radius = mix(uHollow, 1.0, sqrt(hash(aSeed.y * 91.7 + cycle * 1.371)));
+      float angle = hash(aSeed.z * 47.3 + cycle * 2.113) * 6.2831853;
+      angle += uTwist * (1.0 - depth) * 2.6;
+      vec2 offset = vec2(cos(angle), sin(angle)) * radius * uSpread;
+      float wobble = uTurbulence * 0.09;
+      offset += wobble * vec2(
+        sin(depth * 11.0 + aSeed.x * 31.0 + uTime * 0.7),
+        cos(depth * 9.0 + aSeed.w * 27.0 - uTime * 0.6)
+      );
+      float z = mix(uNear, 1.0, depth);
+      return vec3(offset, z);
+    }
+
+    vec3 project(vec3 p) {
+      float cy = cos(uLook.x);
+      float sy = sin(uLook.x);
+      float cp = cos(uLook.y);
+      float sp = sin(uLook.y);
+      vec3 q = vec3(p.x * cy - p.z * sy, p.y, p.x * sy + p.z * cy);
+      q = vec3(q.x, q.y * cp - q.z * sp, q.y * sp + q.z * cp);
+      float z = max(q.z, 0.02);
+      return vec3(uCenter + uFocal * q.xy / z, z);
+    }
+
+    void main() {
+      float cycle = aSeed.x + uTravel;
+      float k = floor(cycle);
+      float depth = 1.0 - fract(cycle);
+      vec3 star = place(k, depth);
+      float previousDepth = clamp(depth + uExposure, 0.0, 1.0);
+      vec3 before = place(k, previousDepth);
+      vec3 now = project(star);
+      vec3 then = project(before);
+
+      float sizeFactor = mix(1.0, 0.35 + 1.3 * aSeed.w, uSizeVariance);
+      float sizePx = uSize * sizeFactor * pow(1.0 / star.z, 0.5);
+      float focusZ = mix(uNear, 1.0, uFocus);
+      float coc = uAperture * 1.1 * abs(1.0 / star.z - 1.0 / focusZ);
+      float core = max(sizePx * 0.5, 0.5 / uDpr);
+      float sigma = sqrt(core * core + coc * coc);
+      float energy = max((core * core) / (sigma * sigma), 0.035);
+
+      vec2 segment = now.xy - then.xy;
+      float streak = length(segment);
+      vec2 axis = streak > 1e-3 ? segment / streak : vec2(1.0, 0.0);
+      energy *= (sigma * 2.5) / (sigma * 2.5 + streak);
+
+      float far = 1.0 - smoothstep(0.76, 1.0, depth);
+      float near = smoothstep(0.0, 0.09, depth);
+      float twinkle = 1.0 - uTwinkle * 0.55 * (0.5 + 0.5 * sin(uTime * (1.1 + 2.3 * aLook.y) + aLook.y * 40.0));
+
+      float glint = 0.0;
+      if (uGlitter > 0.0) {
+        float rate = (0.03 + 0.16 * aLook.w) * uGlitter;
+        float phase = fract(uTime * rate + aLook.z);
+        float width = 0.22 * rate;
+        glint = phase < width ? pow(sin(3.14159265 * phase / width), 2.0) : 0.0;
+      }
+      for (int i = 0; i < 4; i++) {
+        vec4 w = uWaves[i];
+        if (w.w <= 0.001) continue;
+        float d = abs(distance(now.xy, w.xy) - w.z);
+        float band = 34.0 + w.z * 0.08;
+        float catchLight = step(0.68, hash(aSeed.z * 13.1 + float(i) * 7.7));
+        glint = max(glint, 0.5 * w.w * catchLight * exp(-d * d / (band * band)));
+      }
+
+      float intensity = uBrightness * energy * far * near * twinkle * uFade * (1.0 + 5.0 * glint);
+      float spike = uGlintSize * glint * (10.0 + 14.0 * aSeed.w) * clamp(1.4 - coc / 6.0, 0.25, 1.0);
+      float reach = max(sigma * 3.0, spike) + 1.0 + glint * (sigma * 6.0 + 4.0);
+      float halfLength = streak * 0.5;
+      vec2 middle = (now.xy + then.xy) * 0.5;
+      vec2 normal = vec2(-axis.y, axis.x);
+      vec2 local = vec2(position.x * (halfLength + reach), position.y * reach);
+      vec2 screen = middle + axis * local.x + normal * local.y;
+
+      vec2 clip = vec2(screen.x / uView.x * 2.0 - 1.0, 1.0 - screen.y / uView.y * 2.0);
+      bool hidden = intensity < 0.002 || now.z <= 0.021;
+      gl_Position = hidden ? vec4(2.0, 2.0, 2.0, 1.0) : vec4(clip, 0.0, 1.0);
+
+      float spikeAngle = aSeed.w * 6.2831853 + 0.4;
+      float relative = spikeAngle - atan(axis.y, axis.x);
+      vLocal = local;
+      vHalfLength = halfLength;
+      vSigma = sigma;
+      vIntensity = intensity;
+      vGlint = glint;
+      vSpike = spike;
+      vSpikeAxis = vec2(cos(relative), sin(relative));
+      vTone = aLook.x;
+    }
+  `;
+
+  const FRAGMENT_SHADER = `
+    precision highp float;
+    uniform vec3 uLut[8];
+    uniform vec3 uGlintColor;
+    uniform float uInk;
+    varying vec2 vLocal;
+    varying float vHalfLength;
+    varying float vSigma;
+    varying float vIntensity;
+    varying float vGlint;
+    varying float vSpike;
+    varying vec2 vSpikeAxis;
+    varying float vTone;
+
+    vec3 tone(float t) {
+      float x = clamp(t, 0.0, 1.0) * 7.0;
+      int i = int(floor(x));
+      int j = min(i + 1, 7);
+      return mix(uLut[i], uLut[j], x - float(i));
+    }
+
+    void main() {
+      float along = max(abs(vLocal.x) - vHalfLength, 0.0);
+      float d2 = along * along + vLocal.y * vLocal.y;
+      float core = exp(-d2 / (2.0 * vSigma * vSigma));
+      float halo = exp(-sqrt(d2) / (vSigma * 3.0 + 1.5)) * 0.16 * vGlint;
+      float spikes = 0.0;
+      if (vSpike > 0.5) {
+        vec2 q = vec2(dot(vLocal, vSpikeAxis), dot(vLocal, vec2(-vSpikeAxis.y, vSpikeAxis.x)));
+        float width = 0.6;
+        float decay = vSpike * 0.3;
+        spikes = exp(-abs(q.x) / decay) * exp(-q.y * q.y / (2.0 * width * width))
+          + exp(-abs(q.y) / decay) * exp(-q.x * q.x / (2.0 * width * width));
+        spikes *= vGlint * 0.7;
+      }
+      float light = (core + halo + spikes) * vIntensity;
+      vec3 color = mix(tone(vTone), uGlintColor, clamp(vGlint * 0.7, 0.0, 1.0));
+      if (uInk > 0.5) {
+        float alpha = clamp(light, 0.0, 1.0);
+        if (alpha < 0.002) discard;
+        gl_FragColor = vec4(color * alpha, alpha);
+      } else {
+        if (light < 0.0015) discard;
+        gl_FragColor = vec4(color * light, 1.0);
+      }
+    }
+  `;
+
+  const clamp = (val: number, min: number, max: number) => Math.min(max, Math.max(min, val));
+  const srgbToLinear = (c: number) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  const linearToSrgb = (c: number) => (c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055);
+
+  const rgbToOklab = ([r, g, b]: [number, number, number]): [number, number, number] => {
+    const lr = srgbToLinear(r);
+    const lg = srgbToLinear(g);
+    const lb = srgbToLinear(b);
+    const l = Math.cbrt(0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb);
+    const m = Math.cbrt(0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb);
+    const s = Math.cbrt(0.0883024619 * lr + 0.2817188376 * lg + 0.6299787005 * lb);
+    return [
+      0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+      1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+      0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s
+    ];
+  };
+
+  const oklabToRgb = ([l, a, b]: [number, number, number]): [number, number, number] => {
+    const l_ = Math.pow(l + 0.3963377774 * a + 0.2158037573 * b, 3);
+    const m_ = Math.pow(l - 0.1055613458 * a - 0.0638541728 * b, 3);
+    const s_ = Math.pow(l - 0.0894841775 * a - 1.2914855480 * b, 3);
+    return [
+      clamp(linearToSrgb(4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_), 0, 1),
+      clamp(linearToSrgb(-1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_), 0, 1),
+      clamp(linearToSrgb(-0.0041960863 * l_ - 0.7034186147 * m_ + 1.7076147010 * s_), 0, 1)
+    ];
+  };
+
+  const parseColor = (str: string): [number, number, number] | null => {
+    const t = str.trim().toLowerCase();
+    if (!t || t === 'transparent' || t === 'none') return null;
+    const col = new THREE.Color();
+    try {
+      col.setStyle(t, THREE.SRGBColorSpace);
+      return [col.r, col.g, col.b];
+    } catch {
+      return null;
+    }
+  };
+
+  function initGlimmerWrap(container: HTMLElement) {
+    const host = container.querySelector('.glimmer-canvas-host') as HTMLElement;
+    if (!host) return;
+
+    const rawConfig = container.getAttribute('data-glimmer-config');
+    const config = rawConfig ? JSON.parse(rawConfig) : {};
+
+    const canvas = document.createElement('canvas');
+    canvas.setAttribute('aria-hidden', 'true');
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;';
+
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: false,
+        powerPreference: 'high-performance'
+      });
+    } catch (e) {
+      console.warn('WebGL not supported for GlimmerWrap', e);
+      return;
+    }
+
+    host.appendChild(canvas);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1, 1);
+    const planeGeo = new THREE.PlaneGeometry(2, 2);
+    const instGeo = new THREE.InstancedBufferGeometry();
+    instGeo.index = planeGeo.index;
+    instGeo.setAttribute('position', planeGeo.getAttribute('position'));
+    instGeo.instanceCount = 0;
+
+    const lutVectors = Array.from({ length: 8 }, () => new THREE.Vector3(1, 1, 1));
+    const waveVectors = Array.from({ length: 4 }, () => new THREE.Vector4(0, 0, 0, 0));
+
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uView: { value: new THREE.Vector2(1, 1) },
+        uCenter: { value: new THREE.Vector2(0, 0) },
+        uFocal: { value: 300 },
+        uTravel: { value: 0 },
+        uExposure: { value: 0 },
+        uTime: { value: 0 },
+        uSpread: { value: 1 },
+        uHollow: { value: 0.2 },
+        uNear: { value: 0.05 },
+        uTwist: { value: 0 },
+        uTurbulence: { value: 0 },
+        uLook: { value: new THREE.Vector2(0, 0) },
+        uSize: { value: 1.6 },
+        uSizeVariance: { value: 0.6 },
+        uBrightness: { value: 1 },
+        uFocus: { value: 0.6 },
+        uAperture: { value: 0.4 },
+        uGlitter: { value: 0.4 },
+        uGlintSize: { value: 1 },
+        uTwinkle: { value: 0.5 },
+        uFade: { value: 0 },
+        uDpr: { value: 1 },
+        uWaves: { value: waveVectors },
+        uLut: { value: lutVectors },
+        uGlintColor: { value: new THREE.Vector3(1, 1, 1) },
+        uInk: { value: 0 }
+      },
+      vertexShader: VERTEX_SHADER,
+      fragmentShader: FRAGMENT_SHADER,
+      transparent: true,
+      side: THREE.DoubleSide,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const mesh = new THREE.Mesh(instGeo, material);
+    mesh.frustumCulled = false;
+    scene.add(mesh);
+
+    let viewW = 0;
+    let viewH = 0;
+    let currentDpr = 1;
+    let isLayoutValid = false;
+    let currentCount = -1;
+    let travel = 0;
+    let elapsedSec = 0;
+    let startTime = -1;
+    let introFinished = !config.intro;
+    let animId = 0;
+    let lastTimestamp = 0;
+    let isVisible = true;
+    let isDestroyed = false;
+
+    // Pointer parallax spring dynamics
+    const pointer = { yaw: 0, pitch: 0, yawV: 0, pitchV: 0, tx: 0, ty: 0 };
+
+    // Tap boost dynamics
+    let isPressed = false;
+    let warpEndTime = 0;
+    let currentBoost = 1;
+    let boostAcc = 0;
+
+    // Waves ripple history
+    interface WaveItem { x: number; y: number; born: number; }
+    const activeWaves: WaveItem[] = [];
+
+    const updateColors = () => {
+      const colA = parseColor(config.colors?.[0] || '#FFFFFF') || [1, 1, 1];
+      const colB = parseColor(config.colors?.[1] || '#48c8ff') || [0.28, 0.78, 1.0];
+
+      const oklabA = rgbToOklab(colA);
+      const oklabB = rgbToOklab(colB);
+
+      for (let i = 0; i < 8; i++) {
+        const t = i / 7;
+        const curOklab: [number, number, number] = [
+          oklabA[0] + (oklabB[0] - oklabA[0]) * t,
+          oklabA[1] + (oklabB[1] - oklabA[1]) * t,
+          oklabA[2] + (oklabB[2] - oklabA[2]) * t
+        ];
+        const rgb = oklabToRgb(curOklab);
+        lutVectors[i].set(rgb[0], rgb[1], rgb[2]);
+      }
+
+      material.uniforms.uGlintColor.value.set(colA[0], colA[1], colA[2]);
+      material.uniforms.uInk.value = 0;
+      material.blending = THREE.AdditiveBlending;
+      material.needsUpdate = true;
+    };
+
+    const updateParticles = () => {
+      const count = clamp(Math.round(config.count || 1500), 0, 9000);
+      if (count === currentCount) return;
+      currentCount = count;
+
+      let lcg = Math.floor(Math.abs(9173)) % 0x7ffffffe + 1;
+      const nextRand = () => {
+        lcg = (16807 * lcg) % 0x7fffffff;
+        return (lcg - 1) / 0x7ffffffe;
+      };
+
+      const seedData = new Float32Array(4 * Math.max(count, 1));
+      const lookData = new Float32Array(4 * Math.max(count, 1));
+      for (let i = 0; i < count; i++) {
+        seedData[4 * i] = nextRand();
+        seedData[4 * i + 1] = 100 * nextRand();
+        seedData[4 * i + 2] = 100 * nextRand();
+        seedData[4 * i + 3] = nextRand();
+
+        lookData[4 * i] = Math.pow(nextRand(), 1.6);
+        lookData[4 * i + 1] = nextRand();
+        lookData[4 * i + 2] = nextRand();
+        lookData[4 * i + 3] = nextRand();
+      }
+
+      instGeo.setAttribute('aSeed', new THREE.InstancedBufferAttribute(seedData, 4));
+      instGeo.setAttribute('aLook', new THREE.InstancedBufferAttribute(lookData, 4));
+      instGeo.instanceCount = count;
+    };
+
+    const resize = () => {
+      const w = Math.round(container.clientWidth);
+      const h = Math.round(container.clientHeight);
+      if (w < 2 || h < 2) return false;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, Math.max(config.dpr || 2, 0.5));
+      if (!isLayoutValid || w !== viewW || h !== viewH || dpr !== currentDpr) {
+        isLayoutValid = true;
+        viewW = w;
+        viewH = h;
+        currentDpr = dpr;
+        renderer.setPixelRatio(dpr);
+        renderer.setSize(w, h, false);
+        return true;
+      }
+      return false;
+    };
+
+    const triggerWave = (nx?: number, ny?: number) => {
+      if (!config.waves || !isLayoutValid) return;
+      const x = nx === undefined ? viewW / 2 : clamp(nx, 0, 1) * viewW;
+      const y = ny === undefined ? viewH / 2 : clamp(ny, 0, 1) * viewH;
+      if (activeWaves.length >= 4) activeWaves.shift();
+      activeWaves.push({ x, y, born: performance.now() / 1000 });
+      requestFrame();
+    };
+
+    const requestFrame = () => {
+      if (isDestroyed || !isVisible || animId) return;
+      animId = requestAnimationFrame(animate);
+    };
+
+    const animate = (timestamp: number) => {
+      animId = 0;
+      if (isDestroyed || !isVisible) return;
+      if (!isLayoutValid && !resize()) return;
+
+      const dt = lastTimestamp && timestamp - lastTimestamp < 100
+        ? Math.min(Math.max((timestamp - lastTimestamp) / 1000, 0), 0.05)
+        : 1 / 60;
+      lastTimestamp = timestamp;
+
+      const nowSec = performance.now() / 1000;
+      resize();
+
+      if (startTime < 0) {
+        startTime = nowSec;
+        introFinished = !config.intro;
+      }
+
+      // Intro animation
+      let fade = 1;
+      let introSpeed = 1;
+      if (!introFinished) {
+        const elapsed = nowSec - startTime;
+        fade = 1 - Math.pow(1 - clamp(elapsed / 1.1, 0, 1), 3);
+        introSpeed = 1 + 7 * Math.exp(-elapsed / 0.45);
+        if (elapsed > 2.6) introFinished = true;
+      }
+
+      // Tap / hover warp boost
+      const isBoosted = !config.paused && (isPressed || nowSec < warpEndTime);
+      const targetBoost = isBoosted ? Math.max(config.boost || 7, 1) : 1;
+      const springV = (2 * Math.PI) / (isBoosted ? 0.9 : 1.3);
+      const subSteps = Math.max(1, Math.ceil(240 * dt));
+      const subDt = dt / subSteps;
+
+      for (let i = 0; i < subSteps; i++) {
+        boostAcc += (springV * springV * (targetBoost - currentBoost) - 2 * springV * boostAcc) * subDt;
+        currentBoost += boostAcc * subDt;
+      }
+
+      const dirSign = config.direction === 'inward' ? -1 : 1;
+      const baseSpeed = 0.1 * clamp(config.speed ?? 0.5, 0, 5);
+      const stepSpeed = !config.paused ? baseSpeed * currentBoost * introSpeed : 0;
+      travel += stepSpeed * dt * dirSign;
+      if (travel > 10000 || travel < -10000) {
+        travel -= Math.round(travel);
+      }
+      if (!config.paused) elapsedSec += dt;
+
+      // Pointer parallax spring interpolation
+      const parallaxFactor = clamp(config.parallax ?? 0, 0, 1);
+      if (parallaxFactor > 0) {
+        const springM = (2 * Math.PI) / 1.1;
+        for (let i = 0; i < subSteps; i++) {
+          pointer.yawV += (springM * springM * (pointer.tx * parallaxFactor * 0.16 - pointer.yaw) - 2 * springM * pointer.yawV) * subDt;
+          pointer.pitchV += (springM * springM * (pointer.ty * parallaxFactor * 0.11 - pointer.pitch) - 2 * springM * pointer.pitchV) * subDt;
+          pointer.yaw += pointer.yawV * subDt;
+          pointer.pitch += pointer.pitchV * subDt;
+        }
+      } else {
+        pointer.yaw = 0;
+        pointer.pitch = 0;
+        pointer.yawV = 0;
+        pointer.pitchV = 0;
+      }
+
+      // Active wave update
+      const diagonal = Math.hypot(viewW, viewH);
+      for (let i = activeWaves.length - 1; i >= 0; i--) {
+        if (nowSec - activeWaves[i].born > 2.4) activeWaves.splice(i, 1);
+      }
+      for (let i = 0; i < 4; i++) {
+        const wave = activeWaves[i];
+        if (!wave) {
+          waveVectors[i].set(0, 0, 0, 0);
+          continue;
+        }
+        const age = nowSec - wave.born;
+        const radius = age * diagonal * 0.42;
+        const waveIntensity = Math.exp(-age / 0.9) * Math.min(age / 0.06, 1);
+        waveVectors[i].set(wave.x, wave.y, radius, waveIntensity);
+      }
+
+      // Update Shader Uniforms
+      const minDim = Math.min(viewW, viewH);
+      const u = material.uniforms;
+      u.uView.value.set(viewW, viewH);
+      u.uCenter.value.set(clamp(config.centerX ?? 0.5, -1, 2) * viewW, clamp(config.centerY ?? 0.5, -1, 2) * viewH);
+      u.uFocal.value = 0.42 * minDim;
+      u.uTravel.value = travel;
+      u.uExposure.value = Math.min(stepSpeed * clamp(config.trail ?? 0.08, 0, 1) * 0.6, 0.6);
+      u.uTime.value = elapsedSec;
+      u.uSpread.value = clamp(config.spread ?? 1, 0.1, 4);
+      u.uHollow.value = clamp(config.hollow ?? 0.06, 0, 0.95);
+      u.uNear.value = 0.26 - 0.235 * clamp(config.perspective ?? 0.7, 0, 1);
+      u.uTwist.value = clamp(config.twist ?? 0, -2, 2);
+      u.uTurbulence.value = clamp(config.turbulence ?? 0, 0, 2);
+      u.uLook.value.set(pointer.yaw, pointer.pitch);
+      u.uSize.value = clamp(config.size ?? 1.6, 0.2, 8);
+      u.uSizeVariance.value = clamp(config.sizeVariance ?? 0.6, 0, 1);
+      u.uBrightness.value = clamp(config.brightness ?? 1, 0, 3);
+      u.uFocus.value = clamp(config.focus ?? 0.62, 0, 1);
+      u.uAperture.value = 1.6 * clamp(config.aperture ?? 0.45, 0, 1);
+      u.uGlitter.value = clamp(config.glitter ?? 0.01, 0, 2);
+      u.uGlintSize.value = clamp(config.glintSize ?? 1, 0, 3);
+      u.uTwinkle.value = clamp(config.twinkle ?? 0.5, 0, 1);
+      u.uFade.value = fade;
+      u.uDpr.value = currentDpr;
+
+      renderer.render(scene, camera);
+
+      if (!config.paused || !introFinished || activeWaves.length > 0 || Math.abs(currentBoost - 1) > 0.001 || Math.abs(pointer.yawV) + Math.abs(pointer.pitchV) > 1e-5) {
+        requestFrame();
+      }
+    };
+
+    // Pointer Event Listeners
+    const getCoords = (e: PointerEvent) => {
+      const rect = container.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    };
+
+    const isInteractiveTarget = (el: EventTarget | null) => {
+      return el instanceof Element && !!el.closest('a, button, input, textarea, select, label, summary, [role="button"]');
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch' || !config.parallax) return;
+      const pt = getCoords(e);
+      pointer.tx = clamp((pt.x / Math.max(viewW, 1)) * 2 - 1, -1, 1);
+      pointer.ty = clamp((pt.y / Math.max(viewH, 1)) * 2 - 1, -1, 1);
+      requestFrame();
+    };
+
+    const onPointerLeave = (e: PointerEvent) => {
+      if (e.pointerType !== 'touch') {
+        pointer.tx = 0;
+        pointer.ty = 0;
+        requestFrame();
+      }
+    };
+
+    let pressTimeout = 0;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!e.isPrimary || e.button > 0 || isInteractiveTarget(e.target)) return;
+      window.clearTimeout(pressTimeout);
+      pressTimeout = window.setTimeout(() => {
+        isPressed = true;
+        requestFrame();
+      }, 180);
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      window.clearTimeout(pressTimeout);
+      const wasPressed = isPressed;
+      isPressed = false;
+      requestFrame();
+      if (!wasPressed && !isInteractiveTarget(e.target)) {
+        const pt = getCoords(e);
+        triggerWave(pt.x / Math.max(viewW, 1), pt.y / Math.max(viewH, 1));
+      }
+    };
+
+    container.addEventListener('pointermove', onPointerMove, { passive: true });
+    container.addEventListener('pointerleave', onPointerLeave, { passive: true });
+    container.addEventListener('pointerdown', onPointerDown, { passive: true });
+    container.addEventListener('pointerup', onPointerUp, { passive: true });
+    container.addEventListener('pointercancel', onPointerUp, { passive: true });
+
+    // Resize Observer
+    const ro = new ResizeObserver(() => {
+      if (resize()) requestFrame();
+    });
+    ro.observe(container);
+
+    // Intersection Observer (Performance Optimization)
+    const io = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible) {
+        lastTimestamp = 0;
+        requestFrame();
+      } else if (animId) {
+        cancelAnimationFrame(animId);
+        animId = 0;
+      }
+    }, { rootMargin: '80px' });
+    io.observe(container);
+
+    // Initial setup & compile
+    resize();
+    updateColors();
+    updateParticles();
+    renderer.compile(scene, camera);
+    requestFrame();
+  }
+
+  // Initialize all GlimmerWrap components on page
+  document.querySelectorAll<HTMLElement>('.glimmer-wrap-root').forEach((el) => {
+    initGlimmerWrap(el);
+  });
+</script>

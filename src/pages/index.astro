@@ -1,0 +1,23 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+---
+
+<Layout 
+  title="Adaptif — The fuel behind your creative engine"
+  description="A subscription that plugs an AI-driven creative department into your team: design, dev and marketing, unlimited requests and revisions, rapid turnarounds and a single, predictable monthly cost."
+>
+  <Header />
+  <main>
+    <Hero />
+  </main>
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+</style>

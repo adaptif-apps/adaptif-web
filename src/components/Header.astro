@@ -1,0 +1,1262 @@
+---
+// Header.astro - Floating Luminous Glass Capsule with Services Mega Menu
+
+interface ServiceItem {
+  title: string;
+  desc: string;
+  href: string;
+}
+
+interface ServiceCategory {
+  title: string;
+  href: string;
+  items: ServiceItem[];
+}
+
+const serviceCategories: ServiceCategory[] = [
+  {
+    title: "Creative Design Services",
+    href: "#creative-design",
+    items: [
+      { title: "Ad creative", desc: "Eye-catching designs that perform", href: "#service-ad-creative" },
+      { title: "Social media creative", desc: "Engaging assets for all platforms", href: "#service-social-media" },
+      { title: "Presentation design", desc: "Captivating slides that tell your story", href: "#service-presentation-design" },
+      { title: "Illustration design", desc: "Visual storytelling for your brand", href: "#service-illustration-design" },
+      { title: "Branding services", desc: "Expertise & custom design services", href: "#service-branding-services" },
+      { title: "eBook & report design", desc: "Your digital content supercharged", href: "#service-ebook-report" },
+      { title: "Concept creation", desc: "Big ideas crafted for maximum impact", href: "#service-concept-creation" },
+      { title: "Print design", desc: "Tangible designs that leave a lasting impression", href: "#service-print-design" },
+      { title: "Packaging & merchandise design", desc: "Bring your brand to life", href: "#service-packaging-merchandise" }
+    ]
+  },
+  {
+    title: "Production Services",
+    href: "#production-services",
+    items: [
+      { title: "Video production", desc: "Effortless video production at scale", href: "#service-video-production" },
+      { title: "Motion design", desc: "For websites, ads, and presentations", href: "#service-motion-design" },
+      { title: "Email creation", desc: "Click-worthy emails that drive engagement", href: "#service-email-creation" },
+      { title: "Web design", desc: "High-converting websites and landing pages", href: "#service-web-design" },
+      { title: "Design Systems", desc: "Robust design systems that drive visual consistency", href: "#service-design-systems" },
+      { title: "Product Design", desc: "Engaging & intuitive experiences", href: "#service-product-design" },
+      { title: "Copywriting", desc: "Persuasive words for clarity and action", href: "#service-copywriting" }
+    ]
+  },
+  {
+    title: "AI Services",
+    href: "#ai-services",
+    items: [
+      { title: "AI-powered creative", desc: "Human brilliance powered by AI", href: "#service-ai-powered-creative" },
+      { title: "AI consulting", desc: "Transform your team with AI", href: "#service-ai-consulting" },
+      { title: "Automation", desc: "Move fast without compromising craft", href: "#service-automation" },
+      { title: "Data services", desc: "Train your AI with creative data", href: "#service-data-services" }
+    ]
+  },
+  {
+    title: "Marketing services",
+    href: "#marketing-services",
+    items: [
+      { title: "Campaign strategy", desc: "Strategy, messaging, and concept for multi-market campaigns", href: "#service-campaign-strategy" }
+    ]
+  }
+];
+---
+
+<header class="header-container" id="site-header">
+  <div class="header-capsule">
+    <!-- Brand Logo -->
+    <a href="/" class="brand-link" aria-label="Adaptif Home">
+      <img 
+        src="/logo.svg" 
+        alt="Adaptif" 
+        class="brand-logo" 
+        width="116" 
+        height="56" 
+        loading="eager" 
+        decoding="async" 
+      />
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="nav-desktop" aria-label="Main Navigation">
+      <ul class="nav-list">
+        <!-- Services Mega Menu Item -->
+        <li class="nav-item nav-item-services">
+          <button 
+            type="button" 
+            class="nav-link nav-link-services" 
+            id="services-trigger" 
+            aria-expanded="false" 
+            aria-haspopup="true"
+            aria-controls="services-mega-menu"
+          >
+            <span>Services</span>
+            <svg class="chevron-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- Mega Menu Dropdown Container -->
+          <div class="mega-menu-wrapper" id="services-mega-menu" role="region" aria-label="Services Mega Menu">
+            <div class="mega-menu-panel">
+              <div class="mega-menu-grid">
+                <!-- Column 1: Creative Design Services -->
+                <div class="mega-column">
+                  <a href={serviceCategories[0].href} class="mega-column-title">
+                    <span class="column-title-text">{serviceCategories[0].title}</span>
+                    <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                  <ul class="mega-item-list">
+                    {serviceCategories[0].items.map((item) => (
+                      <li>
+                        <a href={item.href} class="mega-item">
+                          <span class="mega-item-header">
+                            <span class="mega-item-title">{item.title}</span>
+                            <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          </span>
+                          <span class="mega-item-desc">{item.desc}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <!-- Column 2: Production Services -->
+                <div class="mega-column">
+                  <a href={serviceCategories[1].href} class="mega-column-title">
+                    <span class="column-title-text">{serviceCategories[1].title}</span>
+                    <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                  <ul class="mega-item-list">
+                    {serviceCategories[1].items.map((item) => (
+                      <li>
+                        <a href={item.href} class="mega-item">
+                          <span class="mega-item-header">
+                            <span class="mega-item-title">{item.title}</span>
+                            <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          </span>
+                          <span class="mega-item-desc">{item.desc}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <!-- Column 3: AI Services -->
+                <div class="mega-column">
+                  <a href={serviceCategories[2].href} class="mega-column-title">
+                    <span class="column-title-text">{serviceCategories[2].title}</span>
+                    <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                  <ul class="mega-item-list">
+                    {serviceCategories[2].items.map((item) => (
+                      <li>
+                        <a href={item.href} class="mega-item">
+                          <span class="mega-item-header">
+                            <span class="mega-item-title">{item.title}</span>
+                            <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          </span>
+                          <span class="mega-item-desc">{item.desc}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <!-- Column 4: Marketing Services & Spotlight Feature -->
+                <div class="mega-column mega-column-marketing">
+                  <a href={serviceCategories[3].href} class="mega-column-title">
+                    <span class="column-title-text">{serviceCategories[3].title}</span>
+                    <svg class="title-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                      <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                  <ul class="mega-item-list">
+                    {serviceCategories[3].items.map((item) => (
+                      <li>
+                        <a href={item.href} class="mega-item">
+                          <span class="mega-item-header">
+                            <span class="mega-item-title">{item.title}</span>
+                            <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                              <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          </span>
+                          <span class="mega-item-desc">{item.desc}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <!-- Feature Spotlight Card -->
+                  <div class="mega-spotlight-card">
+                    <div class="spotlight-tag">
+                      <span class="tag-pulse"></span>
+                      <span>Subscription Model</span>
+                    </div>
+                    <div class="spotlight-title">Creative Pipeline On-Demand</div>
+                    <p class="spotlight-text">
+                      Plugs an AI-augmented creative team directly into your workflow: senior designers, developers & strategists.
+                    </p>
+                    <a href="#contact" class="spotlight-cta">
+                      <span>Book a Discovery Call</span>
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                        <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mega Menu Bottom Bar -->
+              <div class="mega-footer-bar">
+                <div class="mega-footer-info">
+                  <span class="mega-footer-dot" aria-hidden="true"></span>
+                  <span>All 21+ services included in your subscription. Unlimited requests & revisions.</span>
+                </div>
+                <a href="#pricing" class="mega-footer-link">
+                  <span>View Pricing Plans</span>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
+
+        <li><a href="#our-work" class="nav-link">Our Work</a></li>
+        <li><a href="#why-us" class="nav-link">Why Us</a></li>
+        <li><a href="#resources" class="nav-link">Resources</a></li>
+        <li><a href="#pricing" class="nav-link">Pricing</a></li>
+        <li><a href="#dedicated-team" class="nav-link">Dedicated Team</a></li>
+      </ul>
+    </nav>
+
+    <!-- Header Actions -->
+    <div class="header-actions">
+      <a href="#contact" class="btn-cta-header">
+        <span class="btn-glow-pulse" aria-hidden="true"></span>
+        <span class="btn-text">Book a Call</span>
+        <svg class="btn-arrow" width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3.33334 8H12.6667M12.6667 8L8.00001 3.33334M12.6667 8L8.00001 12.6667" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <!-- Mobile Hamburger Toggle -->
+      <button 
+        class="mobile-toggle" 
+        id="mobile-toggle-btn" 
+        aria-label="Open menu" 
+        aria-expanded="false" 
+        aria-controls="mobile-nav"
+      >
+        <span class="bar bar-top"></span>
+        <span class="bar bar-bottom"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer Overlay -->
+  <div class="mobile-drawer" id="mobile-nav" aria-hidden="true">
+    <div class="mobile-drawer-content">
+      <ul class="mobile-nav-list">
+        <!-- Mobile Services Accordion Item -->
+        <li class="mobile-nav-item">
+          <button 
+            type="button" 
+            class="mobile-nav-accordion-btn" 
+            id="mobile-services-accordion" 
+            aria-expanded="false"
+            aria-controls="mobile-services-panel"
+          >
+            <span>Services</span>
+            <svg class="mobile-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          
+          <div class="mobile-services-panel" id="mobile-services-panel">
+            {serviceCategories.map((category) => (
+              <div class="mobile-category-block">
+                <a href={category.href} class="mobile-category-title">
+                  <span>{category.title}</span>
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                    <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+                <ul class="mobile-category-items">
+                  {category.items.map((item) => (
+                    <li>
+                      <a href={item.href} class="mobile-service-subitem">
+                        <span class="mobile-service-title">{item.title}</span>
+                        <span class="mobile-service-desc">{item.desc}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </li>
+
+        <li><a href="#our-work" class="mobile-nav-link">Our Work</a></li>
+        <li><a href="#why-us" class="mobile-nav-link">Why Us</a></li>
+        <li><a href="#resources" class="mobile-nav-link">Resources</a></li>
+        <li><a href="#pricing" class="mobile-nav-link">Pricing</a></li>
+        <li><a href="#dedicated-team" class="mobile-nav-link">Dedicated Team</a></li>
+      </ul>
+
+      <div class="mobile-drawer-footer">
+        <a href="#contact" class="btn-cta-mobile">
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.33334 8H12.6667M12.6667 8L8.00001 3.33334M12.6667 8L8.00001 12.6667" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-top: clamp(14px, 2.5vh, 24px);
+    padding-inline: clamp(1rem, 3.5vw, 2.5rem);
+    z-index: 100;
+    pointer-events: none;
+    transition: 
+      padding-top 0.4s var(--ease-spring),
+      top 0.4s var(--ease-spring);
+  }
+
+  /* When Scrolled: Detaches into floating frosted capsule */
+  .header-container.is-scrolled {
+    top: 14px;
+    padding-top: 0;
+  }
+
+  .header-capsule {
+    position: relative;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 10px 18px;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    box-shadow: none;
+    transition: 
+      background 0.45s var(--ease-spring),
+      border-color 0.45s var(--ease-spring),
+      box-shadow 0.45s var(--ease-spring),
+      backdrop-filter 0.45s var(--ease-spring),
+      padding 0.45s var(--ease-spring);
+  }
+
+  /* Scrolled floating glass state */
+  .header-container.is-scrolled .header-capsule {
+    padding: 8px 14px 8px 18px;
+    background: var(--glass-bg-surface);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border: var(--border-hairline);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.2),
+      0 14px 36px -6px rgba(1, 3, 10, 0.85),
+      0 0 28px -5px rgba(72, 200, 255, 0.25);
+  }
+
+  .header-container.is-scrolled .header-capsule:hover {
+    border-color: rgba(72, 200, 255, 0.4);
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.3),
+      0 18px 44px -4px rgba(0, 2, 8, 0.9),
+      0 0 38px -2px rgba(72, 200, 255, 0.35);
+  }
+
+  /* Brand Logo */
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    outline-offset: 4px;
+    padding: 4px 6px;
+  }
+
+  .brand-logo {
+    height: 34px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0, 102, 255, 0.25));
+    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .brand-link:hover .brand-logo {
+    transform: scale(1.03);
+  }
+
+  /* Desktop Navigation */
+  .nav-desktop {
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 4px;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  /* Specifically for Services mega-menu anchoring to capsule */
+  .nav-item-services {
+    position: static;
+  }
+
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    font-size: var(--font-size-nav);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color var(--duration-fast) var(--ease-spring);
+  }
+
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.05);
+    opacity: 0;
+    transform: scale(0.92);
+    transition: 
+      opacity var(--duration-fast) var(--ease-spring),
+      transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .nav-link:hover,
+  .nav-item-services:hover .nav-link-services,
+  .nav-item-services.is-open .nav-link-services {
+    color: var(--color-text-white);
+  }
+
+  .nav-link:hover::before,
+  .nav-item-services:hover .nav-link-services::before,
+  .nav-item-services.is-open .nav-link-services::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .chevron-arrow {
+    color: var(--color-text-secondary);
+    transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), color var(--duration-fast);
+  }
+
+  .nav-item-services:hover .chevron-arrow,
+  .nav-item-services.is-open .chevron-arrow {
+    transform: rotate(180deg);
+    color: #48C8FF;
+  }
+
+  /* ==========================================================================
+     MEGA MENU CONTAINER & DROPDOWN PANEL
+     ========================================================================== */
+  .mega-menu-wrapper {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px) scale(0.975);
+    width: min(1160px, calc(100vw - 36px));
+    padding-top: 14px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 150;
+    will-change: transform, opacity;
+    transform-origin: top center;
+    transition: 
+      transform 0.22s cubic-bezier(0.25, 0.1, 0.25, 1),
+      opacity 0.2s cubic-bezier(0.25, 0.1, 0.25, 1),
+      visibility 0s 0.22s;
+  }
+
+  /* Extended invisible hover bridge to span the gap seamlessly */
+  .mega-menu-wrapper::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    height: 36px;
+    background: transparent;
+    pointer-events: auto;
+  }
+
+  /* Hover & Open States */
+  .nav-item-services:hover .mega-menu-wrapper,
+  .nav-item-services:focus-within .mega-menu-wrapper,
+  .nav-item-services.is-open .mega-menu-wrapper {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+    transition: 
+      transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s 0s;
+  }
+
+  .mega-menu-panel {
+    position: relative;
+    background-color: #030716;
+    background-image: 
+      radial-gradient(ellipse 65% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 35% at 85% 60%, rgba(0, 102, 255, 0.08) 0%, transparent 60%);
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    border-radius: 22px;
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 1px 0 rgba(0, 229, 255, 0.15),
+      0 28px 70px -12px rgba(0, 2, 8, 0.96),
+      0 0 45px -5px rgba(72, 200, 255, 0.25);
+    padding: 24px 28px 16px 28px;
+    max-height: calc(85vh - 70px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(72, 200, 255, 0.3) transparent;
+  }
+
+  .mega-menu-panel::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .mega-menu-panel::-webkit-scrollbar-thumb {
+    background: rgba(72, 200, 255, 0.3);
+    border-radius: 10px;
+  }
+
+  /* 4-Column Grid */
+  .mega-menu-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1.15fr 0.95fr 1.05fr;
+    gap: 20px;
+  }
+
+  .mega-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Column Category Title [Link/Título] */
+  .mega-column-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px 10px 10px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.18);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #48C8FF;
+    transition: color var(--duration-fast), border-color var(--duration-fast);
+  }
+
+  .title-arrow {
+    opacity: 0.6;
+    color: #48C8FF;
+    transition: opacity var(--duration-fast), transform var(--duration-fast);
+  }
+
+  .mega-column-title:hover {
+    color: #ffffff;
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .mega-column-title:hover .title-arrow {
+    opacity: 1;
+    color: #ffffff;
+    transform: translate(2px, -2px);
+  }
+
+  /* Item List */
+  .mega-item-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .mega-item {
+    display: flex;
+    flex-direction: column;
+    padding: 7px 10px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: 
+      background var(--duration-fast) ease,
+      border-color var(--duration-fast) ease,
+      transform var(--duration-fast) ease;
+  }
+
+  .mega-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .mega-item-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    letter-spacing: -0.01em;
+    transition: color var(--duration-fast);
+  }
+
+  .item-arrow {
+    color: #48C8FF;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
+  }
+
+  .mega-item-desc {
+    font-size: 0.74rem;
+    color: var(--color-text-secondary);
+    line-height: 1.35;
+    margin-top: 2px;
+    transition: color var(--duration-fast);
+  }
+
+  .mega-item:hover {
+    background: rgba(72, 200, 255, 0.07);
+    border-color: rgba(72, 200, 255, 0.2);
+    transform: translateX(3px);
+  }
+
+  .mega-item:hover .mega-item-title {
+    color: #48C8FF;
+  }
+
+  .mega-item:hover .mega-item-desc {
+    color: #cbd5e1;
+  }
+
+  .mega-item:hover .item-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Spotlight Feature Card in Column 4 */
+  .mega-spotlight-card {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(8, 18, 44, 0.8) 0%, rgba(14, 28, 66, 0.5) 100%);
+    border: 1px solid rgba(72, 200, 255, 0.25);
+    border-radius: 14px;
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 8px 20px -4px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .spotlight-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #48C8FF;
+  }
+
+  .tag-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #48C8FF;
+    box-shadow: 0 0 8px #48C8FF;
+    animation: spotPulse 2s infinite;
+  }
+
+  @keyframes spotPulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .spotlight-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.25;
+  }
+
+  .spotlight-text {
+    font-size: 0.74rem;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .spotlight-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #48C8FF;
+    margin-top: 4px;
+    transition: color var(--duration-fast), transform var(--duration-fast);
+  }
+
+  .spotlight-cta:hover {
+    color: #ffffff;
+    transform: translateX(3px);
+  }
+
+  /* Mega Menu Bottom Bar */
+  .mega-footer-bar {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .mega-footer-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+  }
+
+  .mega-footer-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #48C8FF;
+    box-shadow: 0 0 8px rgba(72, 200, 255, 0.8);
+  }
+
+  .mega-footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #48C8FF;
+    white-space: nowrap;
+    transition: color var(--duration-fast), transform var(--duration-fast);
+  }
+
+  .mega-footer-link:hover {
+    color: #ffffff;
+    transform: translateX(2px);
+  }
+
+  /* ==========================================================================
+     ACTIONS & BUTTONS
+     ========================================================================== */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-cta-header {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    font-size: var(--font-size-btn);
+    font-weight: 700;
+    color: #020716;
+    background: linear-gradient(135deg, #48C8FF 0%, #29beff 100%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-button-primary);
+    overflow: hidden;
+    cursor: pointer;
+    transition: 
+      transform var(--duration-fast) var(--ease-spring),
+      box-shadow var(--duration-fast) var(--ease-spring),
+      border-color var(--duration-fast) var(--ease-spring);
+  }
+
+  .btn-glow-pulse {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.5),
+      transparent
+    );
+    transform: skewX(-20deg);
+    transition: left 0.75s ease;
+  }
+
+  .btn-cta-header:hover {
+    transform: translateY(-1px);
+    border-color: #ffffff;
+    box-shadow: var(--shadow-button-hover);
+  }
+
+  .btn-cta-header:hover .btn-glow-pulse {
+    left: 180%;
+  }
+
+  .btn-arrow {
+    color: #020716;
+    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .btn-cta-header:hover .btn-arrow {
+    transform: translateX(2px);
+  }
+
+  /* Mobile Toggle Button */
+  .mobile-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-white);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-spring);
+  }
+
+  .mobile-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .bar {
+    width: 18px;
+    height: 1.75px;
+    background-color: var(--color-text-white);
+    border-radius: var(--radius-pill);
+    transition: transform 0.3s var(--ease-spring), opacity 0.2s ease;
+  }
+
+  /* ==========================================================================
+     MOBILE DRAWER & ACCORDION
+     ========================================================================== */
+  .mobile-drawer {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);
+    left: clamp(1rem, 3.5vw, 2.5rem);
+    right: clamp(1rem, 3.5vw, 2.5rem);
+    pointer-events: auto;
+    background: rgba(4, 9, 26, 0.95);
+    backdrop-filter: var(--glass-blur-lg);
+    -webkit-backdrop-filter: var(--glass-blur-lg);
+    border: var(--border-hairline);
+    border-radius: var(--radius-lg);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.18),
+      0 24px 60px -10px rgba(0, 0, 0, 0.9),
+      0 0 35px -5px rgba(0, 102, 255, 0.3);
+    padding: 20px;
+    max-height: calc(88vh - 80px);
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+    transition: 
+      opacity 0.25s var(--ease-spring),
+      transform 0.25s var(--ease-spring);
+  }
+
+  .mobile-drawer.is-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-nav-link {
+    display: block;
+    padding: 10px 14px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-sm);
+    transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+  }
+
+  .mobile-nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Mobile Accordion */
+  .mobile-nav-accordion-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+  }
+
+  .mobile-nav-accordion-btn:hover,
+  .mobile-nav-accordion-btn[aria-expanded="true"] {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .mobile-chevron {
+    transition: transform 0.25s var(--ease-spring);
+  }
+
+  .mobile-nav-accordion-btn[aria-expanded="true"] .mobile-chevron {
+    transform: rotate(180deg);
+    color: #48C8FF;
+  }
+
+  .mobile-services-panel {
+    display: none;
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px 14px 16px 14px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(72, 200, 255, 0.15);
+    border-radius: 12px;
+  }
+
+  .mobile-services-panel.is-open {
+    display: flex;
+  }
+
+  .mobile-category-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .mobile-category-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #48C8FF;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.2);
+  }
+
+  .mobile-category-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .mobile-service-subitem {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 8px;
+    border-radius: 6px;
+  }
+
+  .mobile-service-subitem:hover {
+    background: rgba(72, 200, 255, 0.08);
+  }
+
+  .mobile-service-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .mobile-service-desc {
+    font-size: 0.72rem;
+    color: var(--color-text-secondary);
+  }
+
+  .mobile-drawer-footer {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .btn-cta-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #020716;
+    background: linear-gradient(135deg, #48C8FF 0%, #29beff 100%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-button-primary);
+  }
+
+  .btn-cta-mobile svg {
+    color: #020716;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE BREAKPOINTS
+     ========================================================================== */
+  @media (max-width: 1120px) {
+    .mega-menu-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .nav-desktop {
+      display: none;
+    }
+
+    .btn-cta-header {
+      display: none;
+    }
+
+    .mobile-toggle {
+      display: flex;
+    }
+
+    .mobile-drawer {
+      display: block;
+      pointer-events: none;
+    }
+
+    .mobile-drawer.is-open {
+      pointer-events: auto;
+    }
+
+    /* Animate Hamburger to 'X' */
+    .mobile-toggle[aria-expanded="true"] .bar-top {
+      transform: translateY(3.5px) rotate(45deg);
+    }
+
+    .mobile-toggle[aria-expanded="true"] .bar-bottom {
+      transform: translateY(-3.5px) rotate(-45deg);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header-container {
+      top: 12px;
+      padding-inline: 12px;
+    }
+
+    .header-capsule {
+      padding: 6px 12px 6px 14px;
+    }
+
+    .brand-logo {
+      height: 28px;
+    }
+  }
+</style>
+
+<script>
+  // Header detachment on scroll, Mega Menu interactions & Mobile drawer
+  const headerContainer = document.getElementById('site-header');
+  const toggleBtn = document.getElementById('mobile-toggle-btn');
+  const mobileNav = document.getElementById('mobile-nav');
+
+  // Services Mega Menu Elements
+  const servicesItem = document.querySelector('.nav-item-services');
+  const servicesTrigger = document.getElementById('services-trigger');
+  const megaMenu = document.getElementById('services-mega-menu');
+
+  // Mobile Accordion Elements
+  const mobileServicesBtn = document.getElementById('mobile-services-accordion');
+  const mobileServicesPanel = document.getElementById('mobile-services-panel');
+
+  function handleScroll() {
+    if (!headerContainer) return;
+    const isScrolled = window.scrollY > 20;
+    headerContainer.classList.toggle('is-scrolled', isScrolled);
+  }
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  handleScroll();
+
+  // Desktop Services Mega Menu Interactions (Immediate Close on Exit, Noticeable Fluid Animation)
+  if (servicesTrigger && servicesItem && megaMenu) {
+    const openMenu = () => {
+      servicesItem.classList.add('is-open');
+      servicesTrigger.setAttribute('aria-expanded', 'true');
+    };
+
+    const closeMenu = () => {
+      servicesItem.classList.remove('is-open');
+      servicesTrigger.setAttribute('aria-expanded', 'false');
+    };
+
+    // Open immediately on mouseenter
+    servicesItem.addEventListener('mouseenter', openMenu);
+    megaMenu.addEventListener('mouseenter', openMenu);
+
+    // Close immediately when pointer leaves without delay
+    servicesItem.addEventListener('mouseleave', (e) => {
+      if (!megaMenu.contains(e.relatedTarget as Node)) {
+        closeMenu();
+      }
+    });
+
+    megaMenu.addEventListener('mouseleave', (e) => {
+      if (!servicesItem.contains(e.relatedTarget as Node)) {
+        closeMenu();
+      }
+    });
+
+    // Click toggle
+    servicesTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = servicesItem.classList.contains('is-open');
+      if (isOpen) {
+        servicesItem.classList.remove('is-open');
+        servicesTrigger.setAttribute('aria-expanded', 'false');
+      } else {
+        openMenu();
+      }
+    });
+
+    // Close when pressing Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && servicesItem.classList.contains('is-open')) {
+        servicesItem.classList.remove('is-open');
+        servicesTrigger.setAttribute('aria-expanded', 'false');
+        servicesTrigger.focus();
+      }
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!servicesItem.contains(e.target as Node) && !megaMenu.contains(e.target as Node)) {
+        servicesItem.classList.remove('is-open');
+        servicesTrigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close mega menu when a link inside is clicked
+    megaMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        servicesItem.classList.remove('is-open');
+        servicesTrigger.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // Mobile Drawer Toggle
+  if (toggleBtn && mobileNav) {
+    toggleBtn.addEventListener('click', () => {
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+      mobileNav.setAttribute('aria-hidden', String(isExpanded));
+      mobileNav.classList.toggle('is-open', !isExpanded);
+    });
+
+    // Close drawer when any normal navigation link is clicked
+    mobileNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        mobileNav.setAttribute('aria-hidden', 'true');
+        mobileNav.classList.remove('is-open');
+      });
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!toggleBtn.contains(e.target as Node) && !mobileNav.contains(e.target as Node)) {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        mobileNav.setAttribute('aria-hidden', 'true');
+        mobileNav.classList.remove('is-open');
+      }
+    });
+  }
+
+  // Mobile Services Accordion
+  if (mobileServicesBtn && mobileServicesPanel) {
+    mobileServicesBtn.addEventListener('click', () => {
+      const isExpanded = mobileServicesBtn.getAttribute('aria-expanded') === 'true';
+      mobileServicesBtn.setAttribute('aria-expanded', String(!isExpanded));
+      mobileServicesPanel.classList.toggle('is-open', !isExpanded);
+    });
+  }
+</script>

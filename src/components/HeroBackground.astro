@@ -1,0 +1,151 @@
+---
+// HeroBackground.astro - Glimmer Wrap Engine with Exact React Bits Configuration
+import GlimmerWrap from "./GlimmerWrap.astro";
+---
+
+<div class="glimmer-wrap-hero-layer" aria-hidden="true">
+  <!-- Exact React Bits Glimmer Wrap Component with user-specified configuration -->
+  <div class="glimmer-engine-container">
+    <GlimmerWrap
+      colors={["#FFFFFF", "#48c8ff"]}
+      count={1500}
+      size={1.6}
+      brightness={1}
+      spread={1}
+      hollow={0.06}
+      perspective={0.7}
+      centerX={0.5}
+      centerY={0.5}
+      speed={0.5}
+      direction="outward"
+      twist={0}
+      turbulence={0}
+      trail={0.08}
+      glitter={0.01}
+      twinkle={0.5}
+      focus={0.62}
+      aperture={0.45}
+      backgroundColor="#000000"
+      sizeVariance={0.6}
+      glintSize={1}
+      boost={7}
+      parallax={0}
+      waves={true}
+      intro={true}
+      paused={false}
+    />
+  </div>
+
+  <!-- Ambient Light Wrap (Volumetric glow that wraps the starfield with blue caustics) -->
+  <div class="glimmer-ambient-wrap"></div>
+
+  <!-- Overhead Volumetric Beam (Connecting to the central light shaft) -->
+  <div class="glimmer-volumetric-beam"></div>
+
+  <!-- Subtle Perspective Depth Grid -->
+  <div class="glimmer-depth-grid"></div>
+
+  <!-- Contrast Vignette Mask -->
+  <div class="glimmer-vignette"></div>
+</div>
+
+<style>
+  .glimmer-wrap-hero-layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glimmer-engine-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto; /* Enables mouse parallax and click waves */
+  }
+
+  /* Ambient Light Wrap (Wraps the hero with reactive cobalt/cyan bloom) */
+  .glimmer-ambient-wrap {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: clamp(500px, 70vw, 1200px);
+    height: clamp(380px, 50vh, 700px);
+    background: radial-gradient(
+      ellipse 65% 55% at 50% 50%,
+      rgba(72, 200, 255, 0.14) 0%,
+      rgba(0, 102, 255, 0.08) 40%,
+      rgba(0, 0, 0, 0) 75%
+    );
+    filter: blur(55px);
+    pointer-events: none;
+  }
+
+  /* Overhead Volumetric Beam */
+  .glimmer-volumetric-beam {
+    position: absolute;
+    top: -150px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: clamp(200px, 32vw, 460px);
+    height: clamp(380px, 55vh, 650px);
+    background: linear-gradient(
+      180deg,
+      rgba(72, 200, 255, 0.35) 0%,
+      rgba(0, 102, 255, 0.15) 45%,
+      transparent 100%
+    );
+    filter: blur(48px);
+    opacity: 0.75;
+    animation: beamBreathe 8s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  /* Subtle Depth Grid */
+  .glimmer-depth-grid {
+    position: absolute;
+    bottom: -60px;
+    left: -15%;
+    width: 130%;
+    height: 55%;
+    background-size: 55px 55px;
+    background-image: 
+      linear-gradient(to right, rgba(72, 200, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(72, 200, 255, 0.035) 1px, transparent 1px);
+    transform: perspective(600px) rotateX(68deg);
+    transform-origin: center bottom;
+    mask-image: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 85%);
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 85%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* Contrast Vignette */
+  .glimmer-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 95% 75% at 50% 40%,
+      transparent 25%,
+      rgba(0, 0, 0, 0.45) 70%,
+      #000000 100%
+    );
+    pointer-events: none;
+  }
+
+  @keyframes beamBreathe {
+    0% { opacity: 0.6; transform: translateX(-50%) scaleX(0.96); }
+    100% { opacity: 0.9; transform: translateX(-50%) scaleX(1.04); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glimmer-volumetric-beam {
+      animation: none !important;
+    }
+  }
+</style>

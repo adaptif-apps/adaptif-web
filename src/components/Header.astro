@@ -1020,26 +1020,15 @@ const serviceCategories: ServiceCategory[] = [
     padding-top: calc(76px + env(safe-area-inset-top, 0px));
     padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
     padding-inline: clamp(16px, 4.5vw, 24px);
-    scrollbar-width: thin;
-    scrollbar-color: rgba(72, 200, 255, 0.35) transparent;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     box-sizing: border-box;
   }
 
   .mobile-drawer-scroll::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .mobile-drawer-scroll::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .mobile-drawer-scroll::-webkit-scrollbar-thumb {
-    background: rgba(72, 200, 255, 0.35);
-    border-radius: 10px;
-  }
-
-  .mobile-drawer-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(72, 200, 255, 0.6);
+    display: none;
+    width: 0;
+    height: 0;
   }
 
   .mobile-drawer-content {

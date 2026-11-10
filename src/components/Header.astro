@@ -273,110 +273,106 @@ const serviceCategories: ServiceCategory[] = [
 
   <!-- Mobile Drawer Overlay -->
   <div class="mobile-drawer" id="mobile-nav" aria-hidden="true">
-    <div class="mobile-drawer-content">
-      <ul class="mobile-nav-list">
-        <!-- Mobile Services Accordion Item -->
-        <li class="mobile-nav-item">
-          <button 
-            type="button" 
-            class="mobile-nav-accordion-btn" 
-            id="mobile-services-accordion" 
-            aria-expanded="false"
-            aria-controls="mobile-services-panel"
-          >
-            <div class="mobile-services-btn-left">
+    <div class="mobile-drawer-scroll">
+      <div class="mobile-drawer-content">
+        <ul class="mobile-nav-list">
+          <!-- Mobile Services Accordion Item -->
+          <li class="mobile-nav-item">
+            <button 
+              type="button" 
+              class="mobile-nav-accordion-btn" 
+              id="mobile-services-accordion" 
+              aria-expanded="false"
+              aria-controls="mobile-services-panel"
+            >
               <span>Services</span>
-              <span class="mobile-services-badge">21</span>
-            </div>
-            <svg class="mobile-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
-          <div class="mobile-services-panel" id="mobile-services-panel">
-            <div class="mobile-services-inner">
-              {serviceCategories.map((category, catIndex) => (
-                <div class={`mobile-category-group ${catIndex === 0 ? 'is-open' : ''}`} data-category-group>
-                  <button 
-                    type="button" 
-                    class="mobile-category-accordion-btn" 
-                    aria-expanded={catIndex === 0 ? "true" : "false"}
-                  >
-                    <div class="mobile-cat-btn-left">
-                      <span class="mobile-cat-dot"></span>
-                      <span class="mobile-cat-btn-title">{category.title}</span>
-                    </div>
-                    <div class="mobile-cat-btn-right">
-                      <span class="mobile-cat-count">{category.items.length}</span>
+              <svg class="mobile-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <div class="mobile-services-panel" id="mobile-services-panel">
+              <div class="mobile-services-inner">
+                {serviceCategories.map((category, catIndex) => (
+                  <div class={`mobile-category-group ${catIndex === 0 ? 'is-open' : ''}`} data-category-group>
+                    <button 
+                      type="button" 
+                      class="mobile-category-accordion-btn" 
+                      aria-expanded={catIndex === 0 ? "true" : "false"}
+                    >
+                      <div class="mobile-cat-btn-left">
+                        <span class="mobile-cat-dot"></span>
+                        <span class="mobile-cat-btn-title">{category.title}</span>
+                      </div>
                       <svg class="mobile-cat-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
                         <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
-                    </div>
-                  </button>
+                    </button>
 
-                  <div class="mobile-category-collapsible">
-                    <div class="mobile-category-collapsible-inner">
-                      <ul class="mobile-category-items">
-                        {category.items.map((item) => (
-                          <li>
-                            <a href={item.href} class="mobile-service-subitem">
-                              <div class="mobile-subitem-top">
-                                <span class="mobile-service-title">{item.title}</span>
-                                <svg class="mobile-subitem-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
-                                  <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                              </div>
-                              <span class="mobile-service-desc">{item.desc}</span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
+                    <div class="mobile-category-collapsible">
+                      <div class="mobile-category-collapsible-inner">
+                        <ul class="mobile-category-items">
+                          {category.items.map((item) => (
+                            <li>
+                              <a href={item.href} class="mobile-service-subitem">
+                                <div class="mobile-subitem-top">
+                                  <span class="mobile-service-title">{item.title}</span>
+                                  <svg class="mobile-subitem-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                    <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                  </svg>
+                                </div>
+                                <span class="mobile-service-desc">{item.desc}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
 
-              <!-- Mobile Spotlight Card -->
-              <div class="mobile-spotlight-card">
-                <div class="spotlight-tag">
-                  <span class="tag-pulse"></span>
-                  <span>Subscription Model</span>
+                <!-- Mobile Spotlight Card -->
+                <div class="mobile-spotlight-card">
+                  <div class="spotlight-tag">
+                    <span class="tag-pulse"></span>
+                    <span>Subscription Model</span>
+                  </div>
+                  <div class="spotlight-title">Creative Pipeline On-Demand</div>
+                  <p class="spotlight-text">
+                    Plugs an AI-augmented creative team directly into your workflow: senior designers, developers & strategists.
+                  </p>
+                  <a href="#contact" class="spotlight-cta">
+                    <span>Book a Discovery Call</span>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                      <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
                 </div>
-                <div class="spotlight-title">Creative Pipeline On-Demand</div>
-                <p class="spotlight-text">
-                  Plugs an AI-augmented creative team directly into your workflow: senior designers, developers & strategists.
-                </p>
-                <a href="#contact" class="spotlight-cta">
-                  <span>Book a Discovery Call</span>
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </a>
-              </div>
 
-              <!-- Mobile Services Footer Note -->
-              <div class="mobile-services-footer-note">
-                <span class="mega-footer-dot"></span>
-                <span>All 21+ services included in your subscription. Unlimited requests & revisions.</span>
+                <!-- Mobile Services Footer Note -->
+                <div class="mobile-services-footer-note">
+                  <span class="mega-footer-dot"></span>
+                  <span>All 21+ services included in your subscription. Unlimited requests & revisions.</span>
+                </div>
               </div>
             </div>
-          </div>
-        </li>
+          </li>
 
-        <li><a href="#our-work" class="mobile-nav-link">Our Work</a></li>
-        <li><a href="#why-us" class="mobile-nav-link">Why Us</a></li>
-        <li><a href="#resources" class="mobile-nav-link">Resources</a></li>
-        <li><a href="#pricing" class="mobile-nav-link">Pricing</a></li>
-        <li><a href="#dedicated-team" class="mobile-nav-link">Dedicated Team</a></li>
-      </ul>
+          <li><a href="#our-work" class="mobile-nav-link">Our Work</a></li>
+          <li><a href="#why-us" class="mobile-nav-link">Why Us</a></li>
+          <li><a href="#resources" class="mobile-nav-link">Resources</a></li>
+          <li><a href="#pricing" class="mobile-nav-link">Pricing</a></li>
+          <li><a href="#dedicated-team" class="mobile-nav-link">Dedicated Team</a></li>
+        </ul>
 
-      <div class="mobile-drawer-footer">
-        <a href="#contact" class="btn-cta-mobile">
-          <span>Book a Call</span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3.33334 8H12.6667M12.6667 8L8.00001 3.33334M12.6667 8L8.00001 12.6667" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
+        <div class="mobile-drawer-footer">
+          <a href="#contact" class="btn-cta-mobile">
+            <span>Book a Call</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3.33334 8H12.6667M12.6667 8L8.00001 3.33334M12.6667 8L8.00001 12.6667" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -969,10 +965,9 @@ const serviceCategories: ServiceCategory[] = [
       inset 0 1px 1px 0 rgba(255, 255, 255, 0.18),
       0 24px 60px -10px rgba(0, 0, 0, 0.95),
       0 0 35px -5px rgba(72, 200, 255, 0.25);
-    padding: 16px;
+    padding: 0;
     max-height: calc(88vh - 60px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    overflow: hidden;
     opacity: 0;
     transform: translateY(-8px) scale(0.98);
     transition: 
@@ -984,6 +979,33 @@ const serviceCategories: ServiceCategory[] = [
   .mobile-drawer.is-open {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+
+  .mobile-drawer-scroll {
+    max-height: calc(88vh - 60px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 16px 14px 16px 16px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(72, 200, 255, 0.35) transparent;
+  }
+
+  .mobile-drawer-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .mobile-drawer-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    margin-block: 20px;
+  }
+
+  .mobile-drawer-scroll::-webkit-scrollbar-thumb {
+    background: rgba(72, 200, 255, 0.35);
+    border-radius: 10px;
+  }
+
+  .mobile-drawer-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(72, 200, 255, 0.6);
   }
 
   .mobile-nav-list {
@@ -1312,13 +1334,27 @@ const serviceCategories: ServiceCategory[] = [
 
   .mobile-services-footer-note {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 8px;
     padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     font-size: 0.74rem;
     color: var(--color-text-secondary);
     line-height: 1.35;
+  }
+
+  .mobile-services-footer-note .mega-footer-dot {
+    width: 6px;
+    height: 6px;
+    min-width: 6px;
+    min-height: 6px;
+    max-width: 6px;
+    max-height: 6px;
+    flex-shrink: 0;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #48C8FF;
+    box-shadow: 0 0 8px rgba(72, 200, 255, 0.8);
   }
 
   .mobile-drawer-footer {
@@ -1365,6 +1401,21 @@ const serviceCategories: ServiceCategory[] = [
   }
 
   @media (max-width: 960px) {
+    .header-container {
+      top: 12px;
+      padding-top: 0;
+      padding-inline: 14px;
+    }
+
+    .header-capsule {
+      padding: 8px 8px 8px 16px;
+    }
+
+    .header-container.is-scrolled .header-capsule,
+    .header-container.mobile-open .header-capsule {
+      padding: 8px 8px 8px 16px;
+    }
+
     .nav-desktop {
       display: none;
     }
@@ -1421,13 +1472,22 @@ const serviceCategories: ServiceCategory[] = [
     }
 
     .header-capsule {
-      padding: 6px 12px 6px 14px;
+      padding: 8px 8px 8px 14px;
+    }
+
+    .header-container.is-scrolled .header-capsule,
+    .header-container.mobile-open .header-capsule {
+      padding: 8px 8px 8px 14px;
     }
 
     .mobile-drawer {
       left: 12px;
       right: 12px;
-      padding: 12px;
+      padding: 0;
+    }
+
+    .mobile-drawer-scroll {
+      padding: 14px 12px 14px 14px;
     }
 
     .brand-logo {

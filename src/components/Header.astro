@@ -268,6 +268,9 @@ const serviceCategories: ServiceCategory[] = [
     </div>
   </div>
 
+  <!-- Mobile Backdrop Blur & Dark Dimmer -->
+  <div class="mobile-backdrop" id="mobile-backdrop" aria-hidden="true"></div>
+
   <!-- Mobile Drawer Overlay -->
   <div class="mobile-drawer" id="mobile-nav" aria-hidden="true">
     <div class="mobile-drawer-content">
@@ -281,33 +284,82 @@ const serviceCategories: ServiceCategory[] = [
             aria-expanded="false"
             aria-controls="mobile-services-panel"
           >
-            <span>Services</span>
+            <div class="mobile-services-btn-left">
+              <span>Services</span>
+              <span class="mobile-services-badge">21</span>
+            </div>
             <svg class="mobile-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           
           <div class="mobile-services-panel" id="mobile-services-panel">
-            {serviceCategories.map((category) => (
-              <div class="mobile-category-block">
-                <a href={category.href} class="mobile-category-title">
-                  <span>{category.title}</span>
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                    <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <div class="mobile-services-inner">
+              {serviceCategories.map((category, catIndex) => (
+                <div class={`mobile-category-group ${catIndex === 0 ? 'is-open' : ''}`} data-category-group>
+                  <button 
+                    type="button" 
+                    class="mobile-category-accordion-btn" 
+                    aria-expanded={catIndex === 0 ? "true" : "false"}
+                  >
+                    <div class="mobile-cat-btn-left">
+                      <span class="mobile-cat-dot"></span>
+                      <span class="mobile-cat-btn-title">{category.title}</span>
+                    </div>
+                    <div class="mobile-cat-btn-right">
+                      <span class="mobile-cat-count">{category.items.length}</span>
+                      <svg class="mobile-cat-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                        <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </button>
+
+                  <div class="mobile-category-collapsible">
+                    <div class="mobile-category-collapsible-inner">
+                      <ul class="mobile-category-items">
+                        {category.items.map((item) => (
+                          <li>
+                            <a href={item.href} class="mobile-service-subitem">
+                              <div class="mobile-subitem-top">
+                                <span class="mobile-service-title">{item.title}</span>
+                                <svg class="mobile-subitem-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                  <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                              </div>
+                              <span class="mobile-service-desc">{item.desc}</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <!-- Mobile Spotlight Card -->
+              <div class="mobile-spotlight-card">
+                <div class="spotlight-tag">
+                  <span class="tag-pulse"></span>
+                  <span>Subscription Model</span>
+                </div>
+                <div class="spotlight-title">Creative Pipeline On-Demand</div>
+                <p class="spotlight-text">
+                  Plugs an AI-augmented creative team directly into your workflow: senior designers, developers & strategists.
+                </p>
+                <a href="#contact" class="spotlight-cta">
+                  <span>Book a Discovery Call</span>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </a>
-                <ul class="mobile-category-items">
-                  {category.items.map((item) => (
-                    <li>
-                      <a href={item.href} class="mobile-service-subitem">
-                        <span class="mobile-service-title">{item.title}</span>
-                        <span class="mobile-service-desc">{item.desc}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
               </div>
-            ))}
+
+              <!-- Mobile Services Footer Note -->
+              <div class="mobile-services-footer-note">
+                <span class="mega-footer-dot"></span>
+                <span>All 21+ services included in your subscription. Unlimited requests & revisions.</span>
+              </div>
+            </div>
           </div>
         </li>
 
@@ -356,6 +408,7 @@ const serviceCategories: ServiceCategory[] = [
 
   .header-capsule {
     position: relative;
+    z-index: 101;
     pointer-events: auto;
     display: flex;
     align-items: center;
@@ -376,7 +429,8 @@ const serviceCategories: ServiceCategory[] = [
   }
 
   /* Scrolled floating glass state */
-  .header-container.is-scrolled .header-capsule {
+  .header-container.is-scrolled .header-capsule,
+  .header-container.mobile-open .header-capsule {
     padding: 8px 14px 8px 18px;
     background: var(--glass-bg-surface);
     backdrop-filter: var(--glass-blur-md);
@@ -897,30 +951,34 @@ const serviceCategories: ServiceCategory[] = [
   /* ==========================================================================
      MOBILE DRAWER & ACCORDION
      ========================================================================== */
+  .mobile-backdrop {
+    display: none;
+  }
+
   .mobile-drawer {
     display: none;
     position: absolute;
-    top: calc(100% + 12px);
+    top: calc(100% + 10px);
     left: clamp(1rem, 3.5vw, 2.5rem);
     right: clamp(1rem, 3.5vw, 2.5rem);
     pointer-events: auto;
-    background: rgba(4, 9, 26, 0.95);
-    backdrop-filter: var(--glass-blur-lg);
-    -webkit-backdrop-filter: var(--glass-blur-lg);
-    border: var(--border-hairline);
-    border-radius: var(--radius-lg);
+    background: #030716;
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    border-radius: 20px;
     box-shadow: 
       inset 0 1px 1px 0 rgba(255, 255, 255, 0.18),
-      0 24px 60px -10px rgba(0, 0, 0, 0.9),
-      0 0 35px -5px rgba(0, 102, 255, 0.3);
-    padding: 20px;
-    max-height: calc(88vh - 80px);
+      0 24px 60px -10px rgba(0, 0, 0, 0.95),
+      0 0 35px -5px rgba(72, 200, 255, 0.25);
+    padding: 16px;
+    max-height: calc(88vh - 60px);
     overflow-y: auto;
+    overscroll-behavior: contain;
     opacity: 0;
     transform: translateY(-8px) scale(0.98);
     transition: 
-      opacity 0.25s var(--ease-spring),
-      transform 0.25s var(--ease-spring);
+      opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100;
   }
 
   .mobile-drawer.is-open {
@@ -933,50 +991,86 @@ const serviceCategories: ServiceCategory[] = [
     display: flex;
     flex-direction: column;
     gap: 4px;
+    margin: 0;
+    padding: 0;
   }
 
   .mobile-nav-link {
-    display: block;
-    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
     font-size: 1.05rem;
     font-weight: 500;
     color: var(--color-text-secondary);
-    border-radius: var(--radius-sm);
-    transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: 
+      color var(--duration-fast) ease, 
+      background var(--duration-fast) ease,
+      border-color var(--duration-fast) ease;
   }
 
   .mobile-nav-link:hover {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
-  /* Mobile Accordion */
+  /* Mobile Services Master Accordion Button */
   .mobile-nav-accordion-btn {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 14px;
+    padding: 11px 14px;
     font-size: 1.05rem;
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-text-secondary);
     background: transparent;
-    border: none;
-    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    border-radius: 12px;
     font-family: inherit;
     cursor: pointer;
     text-align: left;
-    transition: color var(--duration-fast) ease, background var(--duration-fast) ease;
+    transition: 
+      color var(--duration-fast) ease, 
+      background var(--duration-fast) ease,
+      border-color var(--duration-fast) ease;
   }
 
-  .mobile-nav-accordion-btn:hover,
+  .mobile-nav-accordion-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
   .mobile-nav-accordion-btn[aria-expanded="true"] {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(72, 200, 255, 0.08);
+    border-color: rgba(72, 200, 255, 0.25);
+  }
+
+  .mobile-services-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-services-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #48C8FF;
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    border-radius: 100px;
   }
 
   .mobile-chevron {
-    transition: transform 0.25s var(--ease-spring);
+    color: var(--color-text-secondary);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
   }
 
   .mobile-nav-accordion-btn[aria-expanded="true"] .mobile-chevron {
@@ -984,68 +1078,247 @@ const serviceCategories: ServiceCategory[] = [
     color: #48C8FF;
   }
 
+  /* Fluid Accordion Container using CSS Grid */
   .mobile-services-panel {
-    display: none;
-    flex-direction: column;
-    gap: 16px;
-    padding: 12px 14px 16px 14px;
-    margin-top: 4px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(72, 200, 255, 0.15);
-    border-radius: 12px;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    margin-top: 0;
+    margin-bottom: 0;
+    transition: 
+      grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.25s ease,
+      margin 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s 0.32s;
   }
 
   .mobile-services-panel.is-open {
-    display: flex;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    transition: 
+      grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.28s ease,
+      margin 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s 0s;
   }
 
-  .mobile-category-block {
+  .mobile-services-inner {
+    min-height: 0;
+    overflow: hidden;
+    padding: 12px;
+    background: rgba(4, 9, 26, 0.95);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    border-radius: 14px;
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.08),
+      0 10px 30px -5px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
   }
 
-  .mobile-category-title {
+  /* Category Accordion Cards */
+  .mobile-category-group {
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 4px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .mobile-category-group.is-open {
+    border-color: rgba(72, 200, 255, 0.25);
+    background: rgba(72, 200, 255, 0.03);
+  }
+
+  .mobile-category-accordion-btn {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 8px 10px;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+  }
+
+  .mobile-category-accordion-btn:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .mobile-cat-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-cat-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #48C8FF;
+    box-shadow: 0 0 8px #48C8FF;
+    flex-shrink: 0;
+  }
+
+  .mobile-cat-btn-title {
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #48C8FF;
-    padding-bottom: 4px;
-    border-bottom: 1px solid rgba(72, 200, 255, 0.2);
   }
 
+  .mobile-cat-btn-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .mobile-cat-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #48C8FF;
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.25);
+    border-radius: 100px;
+  }
+
+  .mobile-cat-chevron {
+    color: var(--color-text-secondary);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  }
+
+  .mobile-category-group.is-open .mobile-cat-chevron {
+    transform: rotate(180deg);
+    color: #48C8FF;
+  }
+
+  .mobile-category-collapsible {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition: 
+      grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.22s ease,
+      visibility 0s 0.3s;
+  }
+
+  .mobile-category-group.is-open .mobile-category-collapsible {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition: 
+      grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.25s ease,
+      visibility 0s 0s;
+  }
+
+  .mobile-category-collapsible-inner {
+    min-height: 0;
+    overflow: hidden;
+    padding-top: 6px;
+    padding-bottom: 4px;
+  }
+
+  /* Spacious, Breathable Service Item Cards */
   .mobile-category-items {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 7px;
+    padding: 0;
+    margin: 0;
   }
 
   .mobile-service-subitem {
     display: flex;
     flex-direction: column;
-    padding: 6px 8px;
-    border-radius: 6px;
+    gap: 4px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    transition: 
+      background 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s var(--ease-spring);
   }
 
-  .mobile-service-subitem:hover {
+  .mobile-service-subitem:hover,
+  .mobile-service-subitem:active {
     background: rgba(72, 200, 255, 0.08);
+    border-color: rgba(72, 200, 255, 0.3);
+    transform: translateX(2px);
+  }
+
+  .mobile-subitem-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .mobile-service-title {
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #ffffff;
+    line-height: 1.25;
+  }
+
+  .mobile-subitem-arrow {
+    color: #48C8FF;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobile-service-subitem:hover .mobile-subitem-arrow,
+  .mobile-service-subitem:active .mobile-subitem-arrow {
+    opacity: 1;
+    transform: translateX(2px);
   }
 
   .mobile-service-desc {
-    font-size: 0.72rem;
+    font-size: 0.74rem;
+    color: #8FA0BA;
+    line-height: 1.35;
+  }
+
+  /* Mobile Spotlight Card */
+  .mobile-spotlight-card {
+    background: linear-gradient(135deg, rgba(8, 18, 44, 0.7) 0%, rgba(4, 9, 26, 0.9) 100%);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .mobile-services-footer-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.74rem;
     color: var(--color-text-secondary);
+    line-height: 1.35;
   }
 
   .mobile-drawer-footer {
@@ -1060,14 +1333,21 @@ const serviceCategories: ServiceCategory[] = [
     justify-content: center;
     gap: 8px;
     width: 100%;
-    padding: 14px;
+    padding: 13px;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.98rem;
     color: #020716;
     background: linear-gradient(135deg, #48C8FF 0%, #29beff 100%);
     border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: var(--radius-pill);
     box-shadow: var(--shadow-button-primary);
+    transition: transform var(--duration-fast) var(--ease-spring), box-shadow var(--duration-fast) var(--ease-spring);
+  }
+
+  .btn-cta-mobile:hover,
+  .btn-cta-mobile:active {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-button-hover);
   }
 
   .btn-cta-mobile svg {
@@ -1097,6 +1377,24 @@ const serviceCategories: ServiceCategory[] = [
       display: flex;
     }
 
+    .mobile-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      background: rgba(1, 3, 10, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 95;
+    }
+
+    .mobile-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .mobile-drawer {
       display: block;
       pointer-events: none;
@@ -1124,6 +1422,12 @@ const serviceCategories: ServiceCategory[] = [
 
     .header-capsule {
       padding: 6px 12px 6px 14px;
+    }
+
+    .mobile-drawer {
+      left: 12px;
+      right: 12px;
+      padding: 12px;
     }
 
     .brand-logo {
@@ -1223,35 +1527,55 @@ const serviceCategories: ServiceCategory[] = [
     });
   }
 
-  // Mobile Drawer Toggle
+  // Mobile Drawer Toggle with Backdrop and Scroll Lock
+  const backdrop = document.getElementById('mobile-backdrop');
+
+  const openMobileMenu = () => {
+    toggleBtn?.setAttribute('aria-expanded', 'true');
+    mobileNav?.setAttribute('aria-hidden', 'false');
+    mobileNav?.classList.add('is-open');
+    backdrop?.classList.add('is-open');
+    headerContainer?.classList.add('mobile-open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeMobileMenu = () => {
+    toggleBtn?.setAttribute('aria-expanded', 'false');
+    mobileNav?.setAttribute('aria-hidden', 'true');
+    mobileNav?.classList.remove('is-open');
+    backdrop?.classList.remove('is-open');
+    headerContainer?.classList.remove('mobile-open');
+    document.body.style.overflow = '';
+  };
+
   if (toggleBtn && mobileNav) {
     toggleBtn.addEventListener('click', () => {
       const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-      toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
-      mobileNav.setAttribute('aria-hidden', String(isExpanded));
-      mobileNav.classList.toggle('is-open', !isExpanded);
+      if (isExpanded) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
     });
+
+    backdrop?.addEventListener('click', closeMobileMenu);
 
     // Close drawer when any normal navigation link is clicked
     mobileNav.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        mobileNav.setAttribute('aria-hidden', 'true');
-        mobileNav.classList.remove('is-open');
+        closeMobileMenu();
       });
     });
 
     // Close on outside click
     document.addEventListener('click', (e) => {
-      if (!toggleBtn.contains(e.target as Node) && !mobileNav.contains(e.target as Node)) {
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        mobileNav.setAttribute('aria-hidden', 'true');
-        mobileNav.classList.remove('is-open');
+      if (!toggleBtn.contains(e.target as Node) && !mobileNav.contains(e.target as Node) && !backdrop?.contains(e.target as Node)) {
+        closeMobileMenu();
       }
     });
   }
 
-  // Mobile Services Accordion
+  // Mobile Services Master Accordion
   if (mobileServicesBtn && mobileServicesPanel) {
     mobileServicesBtn.addEventListener('click', () => {
       const isExpanded = mobileServicesBtn.getAttribute('aria-expanded') === 'true';
@@ -1259,4 +1583,19 @@ const serviceCategories: ServiceCategory[] = [
       mobileServicesPanel.classList.toggle('is-open', !isExpanded);
     });
   }
+
+  // Mobile Category Sub-Accordions
+  const categoryGroups = document.querySelectorAll('[data-category-group]');
+  categoryGroups.forEach(group => {
+    const btn = group.querySelector('.mobile-category-accordion-btn');
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isOpen = group.classList.contains('is-open');
+        btn.setAttribute('aria-expanded', String(!isOpen));
+        group.classList.toggle('is-open', !isOpen);
+      });
+    }
+  });
 </script>

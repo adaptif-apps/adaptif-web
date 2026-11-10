@@ -293,41 +293,28 @@ const serviceCategories: ServiceCategory[] = [
             
             <div class="mobile-services-panel" id="mobile-services-panel">
               <div class="mobile-services-inner">
-                {serviceCategories.map((category, catIndex) => (
-                  <div class={`mobile-category-group ${catIndex === 0 ? 'is-open' : ''}`} data-category-group>
-                    <button 
-                      type="button" 
-                      class="mobile-category-accordion-btn" 
-                      aria-expanded={catIndex === 0 ? "true" : "false"}
-                    >
-                      <div class="mobile-cat-btn-left">
-                        <span class="mobile-cat-dot"></span>
-                        <span class="mobile-cat-btn-title">{category.title}</span>
-                      </div>
-                      <svg class="mobile-cat-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none">
-                        <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </button>
-
-                    <div class="mobile-category-collapsible">
-                      <div class="mobile-category-collapsible-inner">
-                        <ul class="mobile-category-items">
-                          {category.items.map((item) => (
-                            <li>
-                              <a href={item.href} class="mobile-service-subitem">
-                                <div class="mobile-subitem-top">
-                                  <span class="mobile-service-title">{item.title}</span>
-                                  <svg class="mobile-subitem-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
-                                    <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                                  </svg>
-                                </div>
-                                <span class="mobile-service-desc">{item.desc}</span>
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                {serviceCategories.map((category) => (
+                  <div class="mobile-category-block">
+                    <div class="mobile-category-header">
+                      <span class="mobile-cat-dot"></span>
+                      <span class="mobile-cat-title">{category.title}</span>
                     </div>
+
+                    <ul class="mobile-category-items">
+                      {category.items.map((item) => (
+                        <li>
+                          <a href={item.href} class="mobile-service-subitem">
+                            <div class="mobile-subitem-top">
+                              <span class="mobile-service-title">{item.title}</span>
+                              <svg class="mobile-subitem-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                            </div>
+                            <span class="mobile-service-desc">{item.desc}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 ))}
 
@@ -1143,55 +1130,39 @@ const serviceCategories: ServiceCategory[] = [
     gap: 8px;
   }
 
-  /* Category Accordion Cards */
-  .mobile-category-group {
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.02);
-    padding: 4px;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-
-  .mobile-category-group.is-open {
-    border-color: rgba(72, 200, 255, 0.25);
-    background: rgba(72, 200, 255, 0.03);
-  }
-
-  .mobile-category-accordion-btn {
-    width: 100%;
+  /* Clean Category Sections without Nested Cards */
+  .mobile-category-block {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    background: transparent;
-    border: none;
-    font-family: inherit;
-    cursor: pointer;
-    text-align: left;
-    border-radius: 8px;
-    transition: background 0.2s ease;
+    flex-direction: column;
+    gap: 4px;
   }
 
-  .mobile-category-accordion-btn:hover {
-    background: rgba(255, 255, 255, 0.04);
+  .mobile-category-block:not(:first-child) {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .mobile-cat-btn-left {
+  .mobile-category-header {
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 4px 6px 6px 6px;
+    margin-bottom: 2px;
   }
 
   .mobile-cat-dot {
     width: 6px;
     height: 6px;
+    min-width: 6px;
+    min-height: 6px;
     border-radius: 50%;
     background: #48C8FF;
     box-shadow: 0 0 8px #48C8FF;
     flex-shrink: 0;
   }
 
-  .mobile-cat-btn-title {
+  .mobile-cat-title {
     font-size: 0.8rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -1199,71 +1170,12 @@ const serviceCategories: ServiceCategory[] = [
     color: #48C8FF;
   }
 
-  .mobile-cat-btn-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .mobile-cat-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    color: #48C8FF;
-    background: rgba(72, 200, 255, 0.12);
-    border: 1px solid rgba(72, 200, 255, 0.25);
-    border-radius: 100px;
-  }
-
-  .mobile-cat-chevron {
-    color: var(--color-text-secondary);
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
-  }
-
-  .mobile-category-group.is-open .mobile-cat-chevron {
-    transform: rotate(180deg);
-    color: #48C8FF;
-  }
-
-  .mobile-category-collapsible {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    visibility: hidden;
-    transition: 
-      grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.22s ease,
-      visibility 0s 0.3s;
-  }
-
-  .mobile-category-group.is-open .mobile-category-collapsible {
-    grid-template-rows: 1fr;
-    opacity: 1;
-    visibility: visible;
-    transition: 
-      grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.25s ease,
-      visibility 0s 0s;
-  }
-
-  .mobile-category-collapsible-inner {
-    min-height: 0;
-    overflow: hidden;
-    padding-top: 6px;
-    padding-bottom: 4px;
-  }
-
-  /* Spacious, Breathable Service Item Cards */
+  /* Spacious, Clean Service Items without Nested Card Borders */
   .mobile-category-items {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 3px;
     padding: 0;
     margin: 0;
   }
@@ -1271,22 +1183,22 @@ const serviceCategories: ServiceCategory[] = [
   .mobile-service-subitem {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 10px 12px;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
+    gap: 3px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid transparent;
     transition: 
-      background 0.2s ease,
-      border-color 0.2s ease,
-      transform 0.2s var(--ease-spring);
+      background 0.15s ease,
+      border-color 0.15s ease,
+      transform 0.15s var(--ease-spring);
   }
 
   .mobile-service-subitem:hover,
   .mobile-service-subitem:active {
-    background: rgba(72, 200, 255, 0.08);
-    border-color: rgba(72, 200, 255, 0.3);
-    transform: translateX(2px);
+    background: rgba(72, 200, 255, 0.07);
+    border-color: rgba(72, 200, 255, 0.15);
+    transform: translateX(3px);
   }
 
   .mobile-subitem-top {
@@ -1305,7 +1217,7 @@ const serviceCategories: ServiceCategory[] = [
   .mobile-subitem-arrow {
     color: #48C8FF;
     opacity: 0.5;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.15s ease, transform 0.15s ease;
   }
 
   .mobile-service-subitem:hover .mobile-subitem-arrow,
@@ -1643,19 +1555,4 @@ const serviceCategories: ServiceCategory[] = [
       mobileServicesPanel.classList.toggle('is-open', !isExpanded);
     });
   }
-
-  // Mobile Category Sub-Accordions
-  const categoryGroups = document.querySelectorAll('[data-category-group]');
-  categoryGroups.forEach(group => {
-    const btn = group.querySelector('.mobile-category-accordion-btn');
-    if (btn) {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const isOpen = group.classList.contains('is-open');
-        btn.setAttribute('aria-expanded', String(!isOpen));
-        group.classList.toggle('is-open', !isOpen);
-      });
-    }
-  });
 </script>

@@ -447,15 +447,28 @@ const serviceCategories: ServiceCategory[] = [
       0 0 38px -2px rgba(72, 200, 255, 0.35);
   }
 
-  /* When mobile menu is open: completely borderless and glowless */
+  /* When mobile menu is open: completely borderless, glowless, and completely static (no shrinking or hover shifts) */
   .header-container.mobile-open .header-capsule,
   .header-container.mobile-open .header-capsule:hover {
-    padding: 8px 14px 8px 18px;
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border: 1px solid transparent;
-    box-shadow: none;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid transparent !important;
+    box-shadow: none !important;
+    transition: none !important;
+  }
+
+  .header-container.mobile-open .brand-link,
+  .header-container.mobile-open .brand-link:hover,
+  .header-container.mobile-open .brand-link:hover .brand-logo,
+  .header-container.mobile-open .brand-logo {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .header-container.mobile-open .mobile-toggle,
+  .header-container.mobile-open .mobile-toggle:hover {
+    transform: none !important;
   }
 
   /* Brand Logo */
@@ -1452,7 +1465,8 @@ const serviceCategories: ServiceCategory[] = [
     }
 
     .header-container.is-scrolled .header-capsule,
-    .header-container.mobile-open .header-capsule {
+    .header-container.mobile-open .header-capsule,
+    .header-container.mobile-open .header-capsule:hover {
       padding: 8px 8px 8px 16px;
     }
 
@@ -1528,7 +1542,8 @@ const serviceCategories: ServiceCategory[] = [
     }
 
     .header-container.is-scrolled .header-capsule,
-    .header-container.mobile-open .header-capsule {
+    .header-container.mobile-open .header-capsule,
+    .header-container.mobile-open .header-capsule:hover {
       padding: 8px 8px 8px 14px;
     }
 

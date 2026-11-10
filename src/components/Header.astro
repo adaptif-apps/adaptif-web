@@ -277,7 +277,7 @@ const serviceCategories: ServiceCategory[] = [
       <div class="mobile-drawer-content">
         <ul class="mobile-nav-list">
           <!-- Mobile Services Accordion Item -->
-          <li class="mobile-nav-item">
+          <li class="mobile-nav-item mobile-services-item" id="mobile-services-item">
             <button 
               type="button" 
               class="mobile-nav-accordion-btn" 
@@ -983,9 +983,10 @@ const serviceCategories: ServiceCategory[] = [
 
   .mobile-drawer-scroll {
     max-height: calc(88vh - 60px);
-    overflow-y: auto;
+    overflow-y: scroll;
     overscroll-behavior: contain;
-    padding: 16px 14px 16px 16px;
+    scrollbar-gutter: stable;
+    padding: 16px;
     scrollbar-width: thin;
     scrollbar-color: rgba(72, 200, 255, 0.35) transparent;
   }
@@ -1039,6 +1040,29 @@ const serviceCategories: ServiceCategory[] = [
     border-color: rgba(255, 255, 255, 0.08);
   }
 
+  /* Mobile Services Master Accordion Item & Unified Card */
+  .mobile-services-item {
+    border-radius: 14px;
+    border: 1px solid transparent;
+    transition: 
+      background 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      margin 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mobile-services-item.is-open,
+  .mobile-services-item:has(> .mobile-services-panel.is-open) {
+    background: rgba(4, 9, 26, 0.95);
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    border-radius: 14px;
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.08),
+      0 10px 30px -5px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
   /* Mobile Services Master Accordion Button */
   .mobile-nav-accordion-btn {
     width: 100%;
@@ -1047,7 +1071,7 @@ const serviceCategories: ServiceCategory[] = [
     justify-content: space-between;
     padding: 11px 14px;
     font-size: 1.05rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--color-text-secondary);
     background: transparent;
     border: 1px solid transparent;
@@ -1064,12 +1088,19 @@ const serviceCategories: ServiceCategory[] = [
   .mobile-nav-accordion-btn:hover {
     color: #ffffff;
     background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
   }
 
+  .mobile-services-item.is-open .mobile-nav-accordion-btn,
+  .mobile-services-item:has(> .mobile-services-panel.is-open) .mobile-nav-accordion-btn,
   .mobile-nav-accordion-btn[aria-expanded="true"] {
     color: #ffffff;
-    background: rgba(72, 200, 255, 0.08);
-    border-color: rgba(72, 200, 255, 0.25);
+    font-weight: 600;
+    background: rgba(72, 200, 255, 0.06);
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.16);
+    padding: 12px 14px;
   }
 
   .mobile-services-btn-left {
@@ -1095,6 +1126,8 @@ const serviceCategories: ServiceCategory[] = [
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
   }
 
+  .mobile-services-item.is-open .mobile-chevron,
+  .mobile-services-item:has(> .mobile-services-panel.is-open) .mobile-chevron,
   .mobile-nav-accordion-btn[aria-expanded="true"] .mobile-chevron {
     transform: rotate(180deg);
     color: #48C8FF;
@@ -1111,7 +1144,6 @@ const serviceCategories: ServiceCategory[] = [
     transition: 
       grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
       opacity 0.25s ease,
-      margin 0.32s cubic-bezier(0.16, 1, 0.3, 1),
       visibility 0s 0.32s;
   }
 
@@ -1119,25 +1151,22 @@ const serviceCategories: ServiceCategory[] = [
     grid-template-rows: 1fr;
     opacity: 1;
     visibility: visible;
-    margin-top: 8px;
-    margin-bottom: 12px;
+    margin-top: 0;
+    margin-bottom: 0;
     transition: 
       grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
       opacity 0.28s ease,
-      margin 0.32s cubic-bezier(0.16, 1, 0.3, 1),
       visibility 0s 0s;
   }
 
   .mobile-services-inner {
     min-height: 0;
     overflow: hidden;
-    padding: 12px;
-    background: rgba(4, 9, 26, 0.95);
-    border: 1px solid rgba(72, 200, 255, 0.16);
-    border-radius: 14px;
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 255, 255, 0.08),
-      0 10px 30px -5px rgba(0, 0, 0, 0.6);
+    padding: 12px 14px 14px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -1468,7 +1497,7 @@ const serviceCategories: ServiceCategory[] = [
     }
 
     .mobile-drawer-scroll {
-      padding: 14px 12px 14px 14px;
+      padding: 14px;
     }
 
     .brand-logo {
@@ -1618,10 +1647,13 @@ const serviceCategories: ServiceCategory[] = [
 
   // Mobile Services Master Accordion
   if (mobileServicesBtn && mobileServicesPanel) {
+    const servicesItem = mobileServicesBtn.closest('.mobile-services-item');
     mobileServicesBtn.addEventListener('click', () => {
       const isExpanded = mobileServicesBtn.getAttribute('aria-expanded') === 'true';
-      mobileServicesBtn.setAttribute('aria-expanded', String(!isExpanded));
-      mobileServicesPanel.classList.toggle('is-open', !isExpanded);
+      const willBeOpen = !isExpanded;
+      mobileServicesBtn.setAttribute('aria-expanded', String(willBeOpen));
+      mobileServicesPanel.classList.toggle('is-open', willBeOpen);
+      servicesItem?.classList.toggle('is-open', willBeOpen);
     });
   }
 

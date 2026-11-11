@@ -18,7 +18,6 @@ interface WhyUsItem {
   desc: string;
   href: string;
   image: string;
-  badge?: string;
 }
 
 const serviceCategories: ServiceCategory[] = [
@@ -74,22 +73,19 @@ const whyUsItems: WhyUsItem[] = [
     title: "Our creative talent",
     desc: "Meet your dedicated team",
     href: "#creative-talent",
-    image: "/images/why-us/creative-talent.jpg",
-    badge: "Creative Department"
+    image: "/images/why-us/creative-talent.jpg"
   },
   {
     title: "AI excellence",
     desc: "Your shortcut to AI’s creative advantage",
     href: "#ai-excellence",
-    image: "/images/why-us/ai-excellence.jpg",
-    badge: "Next-Gen AI"
+    image: "/images/why-us/ai-excellence.jpg"
   },
   {
     title: "Our technology",
     desc: "The tech powering your creative edge",
     href: "#our-technology",
-    image: "/images/why-us/our-technology.jpg",
-    badge: "Proprietary Tech"
+    image: "/images/why-us/our-technology.jpg"
   }
 ];
 ---
@@ -287,7 +283,6 @@ const whyUsItems: WhyUsItem[] = [
                         loading="eager"
                       />
                       <div class="why-us-media-glow"></div>
-                      {item.badge && <span class="why-us-badge">{item.badge}</span>}
                     </div>
                     <div class="why-us-info">
                       <div class="why-us-title-row">
@@ -1095,26 +1090,6 @@ const whyUsItems: WhyUsItem[] = [
 
   .why-us-card:hover .why-us-media-glow {
     opacity: 1;
-  }
-
-  .why-us-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 9px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #48C8FF;
-    background: rgba(3, 7, 22, 0.78);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(72, 200, 255, 0.32);
-    border-radius: 100px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   }
 
   .why-us-info {

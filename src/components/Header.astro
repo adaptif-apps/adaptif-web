@@ -13,6 +13,14 @@ interface ServiceCategory {
   items: ServiceItem[];
 }
 
+interface WhyUsItem {
+  title: string;
+  desc: string;
+  href: string;
+  image: string;
+  badge?: string;
+}
+
 const serviceCategories: ServiceCategory[] = [
   {
     title: "Creative Design Services",
@@ -58,6 +66,30 @@ const serviceCategories: ServiceCategory[] = [
     items: [
       { title: "Campaign strategy", desc: "Strategy, messaging, and concept for multi-market campaigns", href: "#service-campaign-strategy" }
     ]
+  }
+];
+
+const whyUsItems: WhyUsItem[] = [
+  {
+    title: "Our creative talent",
+    desc: "Meet your dedicated team",
+    href: "#creative-talent",
+    image: "/images/why-us/creative-talent.jpg",
+    badge: "Creative Department"
+  },
+  {
+    title: "AI excellence",
+    desc: "Your shortcut to AI’s creative advantage",
+    href: "#ai-excellence",
+    image: "/images/why-us/ai-excellence.jpg",
+    badge: "Next-Gen AI"
+  },
+  {
+    title: "Our technology",
+    desc: "The tech powering your creative edge",
+    href: "#our-technology",
+    image: "/images/why-us/our-technology.jpg",
+    badge: "Proprietary Tech"
   }
 ];
 ---
@@ -222,7 +254,72 @@ const serviceCategories: ServiceCategory[] = [
         </li>
 
         <li><a href="#our-work" class="nav-link">Our Work</a></li>
-        <li><a href="#why-us" class="nav-link">Why Us</a></li>
+        
+        <!-- Why Us Mega Menu Item -->
+        <li class="nav-item nav-item-why-us">
+          <button 
+            type="button" 
+            class="nav-link nav-link-why-us" 
+            id="why-us-trigger" 
+            aria-expanded="false" 
+            aria-haspopup="true"
+            aria-controls="why-us-mega-menu"
+          >
+            <span>Why Us</span>
+            <svg class="chevron-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- Why Us Mega Menu Dropdown Container -->
+          <div class="mega-menu-wrapper why-us-wrapper" id="why-us-mega-menu" role="region" aria-label="Why Us Mega Menu">
+            <div class="mega-menu-panel why-us-panel">
+              <div class="why-us-grid">
+                {whyUsItems.map((item) => (
+                  <a href={item.href} class="why-us-card">
+                    <div class="why-us-media">
+                      <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        class="why-us-img"
+                        width="960"
+                        height="600"
+                        loading="eager"
+                      />
+                      <div class="why-us-media-glow"></div>
+                      {item.badge && <span class="why-us-badge">{item.badge}</span>}
+                    </div>
+                    <div class="why-us-info">
+                      <div class="why-us-title-row">
+                        <span class="why-us-title">{item.title}</span>
+                        <div class="why-us-arrow-wrap" aria-hidden="true">
+                          <svg class="why-us-arrow" width="13" height="13" viewBox="0 0 16 16" fill="none">
+                            <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                      <span class="why-us-desc">{item.desc}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+
+              <!-- Why Us Bottom Bar -->
+              <div class="mega-footer-bar">
+                <div class="mega-footer-info">
+                  <span class="mega-footer-dot" aria-hidden="true"></span>
+                  <span>A unified creative engine combining world-class designers, AI velocity, and proprietary tech.</span>
+                </div>
+                <a href="#dedicated-team" class="mega-footer-link">
+                  <span>Meet your dedicated team</span>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
         <li><a href="#resources" class="nav-link">Resources</a></li>
         <li><a href="#pricing" class="nav-link">Pricing</a></li>
         <li><a href="#dedicated-team" class="nav-link">Dedicated Team</a></li>
@@ -329,7 +426,58 @@ const serviceCategories: ServiceCategory[] = [
           </li>
 
           <li><a href="#our-work" class="mobile-nav-link">Our Work</a></li>
-          <li><a href="#why-us" class="mobile-nav-link">Why Us</a></li>
+
+          <!-- Mobile Why Us Accordion Item -->
+          <li class="mobile-nav-item mobile-why-us-item" id="mobile-why-us-item">
+            <button 
+              type="button" 
+              class="mobile-nav-accordion-btn" 
+              id="mobile-why-us-accordion" 
+              aria-expanded="false"
+              aria-controls="mobile-why-us-panel"
+            >
+              <span>Why Us</span>
+              <svg class="mobile-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <div class="mobile-why-us-panel" id="mobile-why-us-panel">
+              <div class="mobile-why-us-inner">
+                <div class="mobile-why-us-body">
+                  {whyUsItems.map((item) => (
+                    <a href={item.href} class="mobile-why-us-card">
+                      <div class="mobile-why-us-thumb-box">
+                        <img 
+                          src={item.image} 
+                          alt={item.title} 
+                          class="mobile-why-us-thumb" 
+                          width="96" 
+                          height="60"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div class="mobile-why-us-content">
+                        <div class="mobile-why-us-header">
+                          <span class="mobile-why-us-title">{item.title}</span>
+                          <svg class="mobile-subitem-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                            <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </div>
+                        <span class="mobile-why-us-desc">{item.desc}</span>
+                      </div>
+                    </a>
+                  ))}
+
+                  <!-- Mobile Why Us Footer Note -->
+                  <div class="mobile-services-footer-note">
+                    <span class="mega-footer-dot"></span>
+                    <span>Dedicated talent, AI workflows, and proprietary creative tech.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
           <li><a href="#resources" class="mobile-nav-link">Resources</a></li>
           <li><a href="#pricing" class="mobile-nav-link">Pricing</a></li>
           <li><a href="#dedicated-team" class="mobile-nav-link">Dedicated Team</a></li>
@@ -478,8 +626,9 @@ const serviceCategories: ServiceCategory[] = [
     position: relative;
   }
 
-  /* Specifically for Services mega-menu anchoring to capsule */
-  .nav-item-services {
+  /* Specifically for Services and Why Us mega-menus anchoring to capsule */
+  .nav-item-services,
+  .nav-item-why-us {
     position: static;
   }
 
@@ -515,13 +664,17 @@ const serviceCategories: ServiceCategory[] = [
 
   .nav-link:hover,
   .nav-item-services:hover .nav-link-services,
-  .nav-item-services.is-open .nav-link-services {
+  .nav-item-services.is-open .nav-link-services,
+  .nav-item-why-us:hover .nav-link-why-us,
+  .nav-item-why-us.is-open .nav-link-why-us {
     color: var(--color-text-white);
   }
 
   .nav-link:hover::before,
   .nav-item-services:hover .nav-link-services::before,
-  .nav-item-services.is-open .nav-link-services::before {
+  .nav-item-services.is-open .nav-link-services::before,
+  .nav-item-why-us:hover .nav-link-why-us::before,
+  .nav-item-why-us.is-open .nav-link-why-us::before {
     opacity: 1;
     transform: scale(1);
   }
@@ -532,7 +685,9 @@ const serviceCategories: ServiceCategory[] = [
   }
 
   .nav-item-services:hover .chevron-arrow,
-  .nav-item-services.is-open .chevron-arrow {
+  .nav-item-services.is-open .chevron-arrow,
+  .nav-item-why-us:hover .chevron-arrow,
+  .nav-item-why-us.is-open .chevron-arrow {
     transform: rotate(180deg);
     color: #48C8FF;
   }
@@ -572,9 +727,12 @@ const serviceCategories: ServiceCategory[] = [
   }
 
   /* Hover & Open States */
-  .nav-item-services:hover .mega-menu-wrapper,
-  .nav-item-services:focus-within .mega-menu-wrapper,
-  .nav-item-services.is-open .mega-menu-wrapper {
+  .nav-item-services:hover #services-mega-menu,
+  .nav-item-services:focus-within #services-mega-menu,
+  .nav-item-services.is-open #services-mega-menu,
+  .nav-item-why-us:hover #why-us-mega-menu,
+  .nav-item-why-us:focus-within #why-us-mega-menu,
+  .nav-item-why-us.is-open #why-us-mega-menu {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -844,6 +1002,184 @@ const serviceCategories: ServiceCategory[] = [
   .mega-footer-link:hover {
     color: #ffffff;
     transform: translateX(2px);
+  }
+
+  /* ==========================================================================
+     WHY US MEGA MENU (3-Column Rich Visual Cards)
+     ========================================================================== */
+  .why-us-wrapper {
+    width: min(940px, calc(100vw - 36px));
+  }
+
+  .why-us-panel {
+    padding: 22px 24px 16px 24px;
+    background-color: #030716;
+    background-image: 
+      radial-gradient(ellipse 65% 50% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 85% 80%, rgba(0, 102, 255, 0.08) 0%, transparent 60%);
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    border-radius: 22px;
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 1px 0 rgba(0, 229, 255, 0.15),
+      0 28px 70px -12px rgba(0, 2, 8, 0.96),
+      0 0 45px -5px rgba(72, 200, 255, 0.25);
+  }
+
+  .why-us-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .why-us-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    background: rgba(4, 9, 26, 0.7);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.1),
+      0 12px 28px -6px rgba(0, 0, 0, 0.7);
+    transition: 
+      transform 0.28s var(--ease-spring),
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .why-us-card:hover {
+    transform: translateY(-4px);
+    background: rgba(8, 18, 44, 0.85);
+    border-color: rgba(72, 200, 255, 0.45);
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.22),
+      0 20px 45px -8px rgba(0, 0, 0, 0.9),
+      0 0 32px -4px rgba(72, 200, 255, 0.3);
+  }
+
+  .why-us-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #02050e;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.14);
+  }
+
+  .why-us-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.96) saturate(1.05);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
+  }
+
+  .why-us-card:hover .why-us-img {
+    transform: scale(1.06);
+    filter: brightness(1.08) saturate(1.15);
+  }
+
+  .why-us-media-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(72, 200, 255, 0.15) 0%, transparent 70%);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+
+  .why-us-card:hover .why-us-media-glow {
+    opacity: 1;
+  }
+
+  .why-us-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #48C8FF;
+    background: rgba(3, 7, 22, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(72, 200, 255, 0.32);
+    border-radius: 100px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .why-us-info {
+    padding: 14px 16px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .why-us-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .why-us-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    transition: color 0.2s ease;
+  }
+
+  .why-us-card:hover .why-us-title {
+    color: #48C8FF;
+  }
+
+  .why-us-arrow-wrap {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border-radius: 50%;
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #48C8FF;
+    transition: 
+      transform 0.22s var(--ease-spring),
+      background 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .why-us-card:hover .why-us-arrow-wrap {
+    transform: translateX(3px);
+    background: #48C8FF;
+    border-color: #48C8FF;
+    color: #020716;
+  }
+
+  .why-us-desc {
+    font-size: 0.78rem;
+    color: #8FA0BA;
+    line-height: 1.4;
+    margin: 0;
+    transition: color 0.2s ease;
+  }
+
+  .why-us-card:hover .why-us-desc {
+    color: #cbd5e1;
   }
 
   /* ==========================================================================
@@ -1360,6 +1696,152 @@ const serviceCategories: ServiceCategory[] = [
     box-shadow: 0 0 8px rgba(72, 200, 255, 0.8);
   }
 
+  /* Mobile Why Us Accordion Item & Panel */
+  .mobile-why-us-item {
+    border-radius: 14px;
+    border: none;
+    margin: 0;
+    transition: 
+      background 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      margin 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mobile-why-us-item.is-open {
+    background: rgba(4, 9, 26, 0.95);
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    border-radius: 14px;
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.08),
+      0 10px 30px -5px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .mobile-why-us-item.is-open .mobile-nav-accordion-btn {
+    color: #ffffff;
+    font-weight: 600;
+    background: rgba(72, 200, 255, 0.06);
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.16);
+    padding: 12px 14px;
+  }
+
+  .mobile-why-us-item.is-open .mobile-chevron {
+    transform: rotate(180deg);
+    color: #48C8FF;
+  }
+
+  .mobile-why-us-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    margin: 0;
+    transition: 
+      grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.25s ease,
+      visibility 0s 0.32s;
+  }
+
+  .mobile-why-us-panel.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    margin: 0;
+    transition: 
+      grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.28s ease,
+      visibility 0s 0s;
+  }
+
+  .mobile-why-us-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .mobile-why-us-body {
+    padding: 12px 14px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-why-us-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+    transition: 
+      background 0.18s ease,
+      border-color 0.18s ease,
+      transform 0.18s var(--ease-spring);
+  }
+
+  .mobile-why-us-card:hover,
+  .mobile-why-us-card:active {
+    background: rgba(72, 200, 255, 0.08);
+    border-color: rgba(72, 200, 255, 0.25);
+    transform: translateX(3px);
+  }
+
+  .mobile-why-us-thumb-box {
+    width: 72px;
+    height: 48px;
+    min-width: 72px;
+    border-radius: 7px;
+    overflow: hidden;
+    background: #02050e;
+    border: 1px solid rgba(72, 200, 255, 0.18);
+    flex-shrink: 0;
+  }
+
+  .mobile-why-us-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .mobile-why-us-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mobile-why-us-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .mobile-why-us-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.25;
+  }
+
+  .mobile-why-us-card:hover .mobile-why-us-title {
+    color: #48C8FF;
+  }
+
+  .mobile-why-us-desc {
+    font-size: 0.74rem;
+    color: #8FA0BA;
+    line-height: 1.35;
+  }
+
   .mobile-drawer-footer {
     margin-top: 16px;
     padding-top: 14px;
@@ -1518,11 +2000,18 @@ const serviceCategories: ServiceCategory[] = [
   // Services Mega Menu Elements
   const servicesItem = document.querySelector('.nav-item-services');
   const servicesTrigger = document.getElementById('services-trigger');
-  const megaMenu = document.getElementById('services-mega-menu');
+  const servicesMegaMenu = document.getElementById('services-mega-menu');
+
+  // Why Us Mega Menu Elements
+  const whyUsItem = document.querySelector('.nav-item-why-us');
+  const whyUsTrigger = document.getElementById('why-us-trigger');
+  const whyUsMegaMenu = document.getElementById('why-us-mega-menu');
 
   // Mobile Accordion Elements
   const mobileServicesBtn = document.getElementById('mobile-services-accordion');
   const mobileServicesPanel = document.getElementById('mobile-services-panel');
+  const mobileWhyUsBtn = document.getElementById('mobile-why-us-accordion');
+  const mobileWhyUsPanel = document.getElementById('mobile-why-us-panel');
 
   function handleScroll() {
     if (!headerContainer) return;
@@ -1533,72 +2022,114 @@ const serviceCategories: ServiceCategory[] = [
   window.addEventListener('scroll', handleScroll, { passive: true });
   handleScroll();
 
-  // Desktop Services Mega Menu Interactions (Immediate Close on Exit, Noticeable Fluid Animation)
-  if (servicesTrigger && servicesItem && megaMenu) {
+  // Desktop Mega Menus: Helper to wire hover, click, and accessibility
+  const setupDesktopMenu = (
+    item: HTMLElement | null,
+    trigger: HTMLElement | null,
+    menu: HTMLElement | null,
+    onOpenOther?: () => void
+  ) => {
+    if (!item || !trigger || !menu) return { open: () => {}, close: () => {} };
+
     const openMenu = () => {
-      servicesItem.classList.add('is-open');
-      servicesTrigger.setAttribute('aria-expanded', 'true');
+      onOpenOther?.();
+      item.classList.add('is-open');
+      trigger.setAttribute('aria-expanded', 'true');
     };
 
     const closeMenu = () => {
-      servicesItem.classList.remove('is-open');
-      servicesTrigger.setAttribute('aria-expanded', 'false');
+      item.classList.remove('is-open');
+      trigger.setAttribute('aria-expanded', 'false');
     };
 
     // Open immediately on mouseenter
-    servicesItem.addEventListener('mouseenter', openMenu);
-    megaMenu.addEventListener('mouseenter', openMenu);
+    item.addEventListener('mouseenter', openMenu);
+    menu.addEventListener('mouseenter', openMenu);
 
     // Close immediately when pointer leaves without delay
-    servicesItem.addEventListener('mouseleave', (e) => {
-      if (!megaMenu.contains(e.relatedTarget as Node)) {
+    item.addEventListener('mouseleave', (e) => {
+      if (!menu.contains(e.relatedTarget as Node)) {
         closeMenu();
       }
     });
 
-    megaMenu.addEventListener('mouseleave', (e) => {
-      if (!servicesItem.contains(e.relatedTarget as Node)) {
+    menu.addEventListener('mouseleave', (e) => {
+      if (!item.contains(e.relatedTarget as Node)) {
         closeMenu();
       }
     });
 
     // Click toggle
-    servicesTrigger.addEventListener('click', (e) => {
+    trigger.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isOpen = servicesItem.classList.contains('is-open');
+      const isOpen = item.classList.contains('is-open');
       if (isOpen) {
-        servicesItem.classList.remove('is-open');
-        servicesTrigger.setAttribute('aria-expanded', 'false');
+        closeMenu();
       } else {
         openMenu();
       }
     });
 
-    // Close when pressing Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && servicesItem.classList.contains('is-open')) {
-        servicesItem.classList.remove('is-open');
-        servicesTrigger.setAttribute('aria-expanded', 'false');
-        servicesTrigger.focus();
-      }
-    });
-
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-      if (!servicesItem.contains(e.target as Node) && !megaMenu.contains(e.target as Node)) {
-        servicesItem.classList.remove('is-open');
-        servicesTrigger.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    // Close mega menu when a link inside is clicked
-    megaMenu.querySelectorAll('a').forEach((link) => {
+    // Close menu when a link inside is clicked
+    menu.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
-        servicesItem.classList.remove('is-open');
-        servicesTrigger.setAttribute('aria-expanded', 'false');
+        closeMenu();
       });
     });
+
+    return { open: openMenu, close: closeMenu };
+  };
+
+  let closeServices: () => void = () => {};
+  let closeWhyUs: () => void = () => {};
+
+  if (servicesItem && servicesTrigger && servicesMegaMenu) {
+    const sMenu = setupDesktopMenu(
+      servicesItem as HTMLElement,
+      servicesTrigger as HTMLElement,
+      servicesMegaMenu as HTMLElement,
+      () => closeWhyUs()
+    );
+    closeServices = sMenu.close;
   }
+
+  if (whyUsItem && whyUsTrigger && whyUsMegaMenu) {
+    const wMenu = setupDesktopMenu(
+      whyUsItem as HTMLElement,
+      whyUsTrigger as HTMLElement,
+      whyUsMegaMenu as HTMLElement,
+      () => closeServices()
+    );
+    closeWhyUs = wMenu.close;
+  }
+
+  // Close menus when pressing Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (servicesItem?.classList.contains('is-open')) {
+        closeServices();
+        servicesTrigger?.focus();
+      }
+      if (whyUsItem?.classList.contains('is-open')) {
+        closeWhyUs();
+        whyUsTrigger?.focus();
+      }
+    }
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    const target = e.target as Node;
+    if (
+      !servicesItem?.contains(target) && 
+      !servicesMegaMenu?.contains(target) &&
+      !whyUsItem?.contains(target) &&
+      !whyUsMegaMenu?.contains(target)
+    ) {
+      closeServices();
+      closeWhyUs();
+    }
+  });
 
   // Mobile Drawer Toggle with Backdrop and Scroll Lock
   const backdrop = document.getElementById('mobile-backdrop');
@@ -1657,6 +2188,18 @@ const serviceCategories: ServiceCategory[] = [
       mobileServicesBtn.setAttribute('aria-expanded', String(willBeOpen));
       mobileServicesPanel.classList.toggle('is-open', willBeOpen);
       servicesItem?.classList.toggle('is-open', willBeOpen);
+    });
+  }
+
+  // Mobile Why Us Accordion
+  if (mobileWhyUsBtn && mobileWhyUsPanel) {
+    const whyUsMobileItem = mobileWhyUsBtn.closest('.mobile-why-us-item');
+    mobileWhyUsBtn.addEventListener('click', () => {
+      const isExpanded = mobileWhyUsBtn.getAttribute('aria-expanded') === 'true';
+      const willBeOpen = !isExpanded;
+      mobileWhyUsBtn.setAttribute('aria-expanded', String(willBeOpen));
+      mobileWhyUsPanel.classList.toggle('is-open', willBeOpen);
+      whyUsMobileItem?.classList.toggle('is-open', willBeOpen);
     });
   }
 

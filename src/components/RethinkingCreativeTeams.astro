@@ -1,0 +1,459 @@
+---
+// RethinkingCreativeTeams.astro - Feature Section: Rethinking Creative Teams
+---
+
+<section class="rethinking-section" id="why-us">
+  <!-- Volumetric Ambient Light Glows -->
+  <div class="ambient-glow-left" aria-hidden="true"></div>
+  <div class="ambient-glow-right" aria-hidden="true"></div>
+
+  <div class="rethinking-container">
+    <div class="rethinking-grid">
+      <!-- Left Column: Copy & Actions -->
+      <div class="rethinking-copy">
+        <!-- Eyebrow Pill -->
+        <div class="eyebrow-wrapper">
+          <div class="eyebrow-pill">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span class="eyebrow-text">RETHINKING CREATIVE TEAMS</span>
+          </div>
+        </div>
+
+        <!-- Main Title -->
+        <h2 class="rethinking-title">
+          The backup your <br class="br-desktop" />
+          creative team has <br class="br-desktop" />
+          been waiting for
+        </h2>
+
+        <!-- Description Paragraph -->
+        <p class="rethinking-paragraph">
+          Adaptif plugs into your day‑to‑day workflow, increasing your production capacity so you can launch more brands, campaigns and high‑impact landing pages with consistent quality.
+        </p>
+
+        <!-- CTA and Highlights -->
+        <div class="rethinking-action-row">
+          <a href="#contact" class="btn-primary-cta">
+            <span class="btn-glow-pulse" aria-hidden="true"></span>
+            <span class="btn-content">
+              <span>Book a Call</span>
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </a>
+
+          <div class="action-caption">
+            <span class="caption-dot"></span>
+            <span>No hiring overhead • Ready in 24 hours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Luminous Glass Visual -->
+      <div class="rethinking-visual-wrapper">
+        <div class="rethinking-glass-card">
+          <!-- Specular Light Rim Effect -->
+          <div class="glass-specular-edge" aria-hidden="true"></div>
+
+          <!-- Feature Image -->
+          <div class="image-viewport">
+            <img 
+              src="/images/rethinking-creative-teams.jpg" 
+              alt="Adaptif creative team collaborating with luminous connected workstations" 
+              class="rethinking-img"
+              width="1200"
+              height="806"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="image-gradient-overlay" aria-hidden="true"></div>
+          </div>
+
+          <!-- Glass Pill Status Chip -->
+          <div class="floating-glass-chip">
+            <span class="chip-pulse"></span>
+            <span class="chip-text">Workflow Integration Active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rethinking-section {
+    position: relative;
+    width: 100%;
+    padding-top: clamp(60px, 9vh, 100px);
+    padding-bottom: clamp(70px, 11vh, 130px);
+    overflow: hidden;
+  }
+
+  /* Ambient Diffuse Illumination Fields */
+  .ambient-glow-left {
+    position: absolute;
+    top: 20%;
+    left: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.12) 0%, transparent 65%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .ambient-glow-right {
+    position: absolute;
+    top: 30%;
+    right: -8%;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.14) 0%, rgba(0, 70, 220, 0.05) 50%, transparent 70%);
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .rethinking-container {
+    position: relative;
+    z-index: 1;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  .rethinking-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    align-items: center;
+    gap: clamp(36px, 5vw, 68px);
+  }
+
+  /* ==========================================================================
+     Left Column: Typography & CTAs
+     ========================================================================== */
+  .rethinking-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .eyebrow-wrapper {
+    margin-bottom: clamp(16px, 2.5vh, 22px);
+  }
+
+  .eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.15),
+      0 0 16px -2px rgba(72, 200, 255, 0.2);
+  }
+
+  .eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #48C8FF;
+    box-shadow: 0 0 8px #48C8FF;
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { opacity: 0.7; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .eyebrow-text {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #48C8FF;
+  }
+
+  .rethinking-title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: var(--color-text-white);
+    margin: 0;
+    margin-bottom: clamp(18px, 2.5vh, 24px);
+    text-wrap: balance;
+  }
+
+  .rethinking-paragraph {
+    font-size: clamp(1.02rem, 1.15vw, 1.18rem);
+    line-height: 1.65;
+    letter-spacing: -0.012em;
+    color: var(--color-text-secondary);
+    margin: 0;
+    margin-bottom: clamp(28px, 4vh, 38px);
+    max-width: 520px;
+    text-wrap: pretty;
+  }
+
+  .rethinking-action-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .btn-primary-cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 28px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #020716;
+    background: linear-gradient(135deg, #48C8FF 0%, #29beff 100%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-button-primary);
+    overflow: hidden;
+    cursor: pointer;
+    transition: 
+      transform var(--duration-fast) var(--ease-spring),
+      box-shadow var(--duration-fast) var(--ease-spring),
+      border-color var(--duration-fast);
+  }
+
+  .btn-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-content svg {
+    color: #020716;
+    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .btn-glow-pulse {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.5),
+      transparent
+    );
+    transform: skewX(-20deg);
+    transition: left 0.75s ease;
+  }
+
+  .btn-primary-cta:hover {
+    transform: translateY(-2px);
+    border-color: #ffffff;
+    box-shadow: var(--shadow-button-hover);
+  }
+
+  .btn-primary-cta:hover .btn-glow-pulse {
+    left: 180%;
+  }
+
+  .btn-primary-cta:hover .btn-content svg {
+    transform: translateX(3px);
+  }
+
+  .action-caption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+
+  .caption-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #48C8FF;
+    opacity: 0.8;
+  }
+
+  /* ==========================================================================
+     Right Column: Luminous Obsidian Glass Visual
+     ========================================================================== */
+  .rethinking-visual-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .rethinking-glass-card {
+    position: relative;
+    border-radius: 24px;
+    background-color: #030716;
+    background-image: 
+      radial-gradient(ellipse 65% 50% at 50% 0%, rgba(72, 200, 255, 0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 90% 90%, rgba(0, 102, 255, 0.1) 0%, transparent 60%);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.3),
+      inset 0 -1px 1px 0 rgba(0, 229, 255, 0.15),
+      0 28px 70px -14px rgba(0, 2, 8, 0.96),
+      0 0 50px -6px rgba(72, 200, 255, 0.28);
+    padding: 12px;
+    overflow: hidden;
+    transition: 
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  .rethinking-glass-card:hover {
+    transform: translateY(-4px) scale(1.008);
+    border-color: rgba(72, 200, 255, 0.5);
+    box-shadow: 
+      inset 0 1px 2px 0 rgba(255, 255, 255, 0.45),
+      0 34px 85px -12px rgba(0, 2, 8, 0.98),
+      0 0 65px -4px rgba(72, 200, 255, 0.42);
+  }
+
+  .image-viewport {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10.75;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #02050e;
+    border: 1px solid rgba(72, 200, 255, 0.15);
+  }
+
+  .rethinking-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.98) saturate(1.05);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  }
+
+  .rethinking-glass-card:hover .rethinking-img {
+    transform: scale(1.035);
+    filter: brightness(1.05) saturate(1.12);
+  }
+
+  .image-gradient-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(3, 7, 22, 0.1) 0%,
+      transparent 30%,
+      rgba(2, 5, 14, 0.3) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Floating Glass Status Chip */
+  .floating-glass-chip {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    background: rgba(3, 7, 22, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    box-shadow: 
+      inset 0 1px 1px rgba(255, 255, 255, 0.2),
+      0 8px 24px -4px rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+  }
+
+  .chip-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #48C8FF;
+    box-shadow: 0 0 10px #48C8FF;
+    animation: chipPulse 1.8s infinite;
+  }
+
+  @keyframes chipPulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+
+  .chip-text {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    letter-spacing: -0.01em;
+  }
+
+  /* ==========================================================================
+     Responsive Breakpoints
+     ========================================================================== */
+  @media (max-width: 980px) {
+    .rethinking-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .br-desktop {
+      display: none;
+    }
+
+    .rethinking-title {
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+    }
+
+    .rethinking-paragraph {
+      max-width: 100%;
+    }
+
+    .rethinking-visual-wrapper {
+      max-width: 680px;
+      margin-inline: auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .rethinking-section {
+      padding-top: 48px;
+      padding-bottom: 60px;
+    }
+
+    .rethinking-glass-card {
+      padding: 8px;
+      border-radius: 18px;
+    }
+
+    .image-viewport {
+      border-radius: 12px;
+    }
+
+    .floating-glass-chip {
+      bottom: 16px;
+      left: 16px;
+      padding: 5px 11px;
+    }
+
+    .chip-text {
+      font-size: 0.72rem;
+    }
+  }
+</style>

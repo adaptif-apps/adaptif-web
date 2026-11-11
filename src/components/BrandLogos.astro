@@ -77,28 +77,9 @@ const brands = [
   .brand-logos-section {
     position: relative;
     width: 100%;
-    padding-top: clamp(28px, 5vh, 48px);
+    padding-top: clamp(20px, 4vh, 36px);
     padding-bottom: clamp(36px, 6vh, 60px);
     overflow: hidden;
-  }
-
-  /* Subtle Top Divider with radiant cyan specular glow in center */
-  .brand-logos-section::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(1080px, calc(100% - 32px));
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(72, 200, 255, 0.1) 20%,
-      rgba(72, 200, 255, 0.35) 50%,
-      rgba(72, 200, 255, 0.1) 80%,
-      transparent 100%
-    );
   }
 
   .brand-logos-container {

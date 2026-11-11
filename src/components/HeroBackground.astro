@@ -58,6 +58,22 @@ import GlimmerWrap from "./GlimmerWrap.astro";
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
+    mask-image: linear-gradient(
+      to bottom,
+      #000000 0%,
+      #000000 50%,
+      rgba(0, 0, 0, 0.7) 70%,
+      rgba(0, 0, 0, 0.25) 86%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000000 0%,
+      #000000 50%,
+      rgba(0, 0, 0, 0.7) 70%,
+      rgba(0, 0, 0, 0.25) 86%,
+      transparent 100%
+    );
   }
 
   .glimmer-engine-container {

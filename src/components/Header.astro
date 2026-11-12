@@ -617,16 +617,16 @@ const whyUsItems: WhyUsItem[] = [
     color: #0284c7;
   }
 
-  .header-container.theme-light .mobile-toggle {
+  .header-container.theme-light:not(.mobile-open) .mobile-toggle {
     background: rgba(15, 23, 42, 0.05);
     border-color: rgba(15, 23, 42, 0.12);
   }
 
-  .header-container.theme-light .mobile-toggle:hover {
+  .header-container.theme-light:not(.mobile-open) .mobile-toggle:hover {
     background: rgba(15, 23, 42, 0.1);
   }
 
-  .header-container.theme-light .mobile-toggle .bar {
+  .header-container.theme-light:not(.mobile-open) .mobile-toggle .bar {
     background-color: #0f172a;
   }
 
@@ -706,13 +706,13 @@ const whyUsItems: WhyUsItem[] = [
     transform: scale(1.03);
   }
 
-  /* When over light background: crossfade logo */
-  .header-container.theme-light .brand-logo-default {
+  /* When over light background (and mobile drawer is closed): crossfade logo */
+  .header-container.theme-light:not(.mobile-open) .brand-logo-default {
     opacity: 0;
     pointer-events: none;
   }
 
-  .header-container.theme-light .brand-logo-dark {
+  .header-container.theme-light:not(.mobile-open) .brand-logo-dark {
     opacity: 1;
     pointer-events: auto;
   }

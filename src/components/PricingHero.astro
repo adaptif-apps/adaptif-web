@@ -5,7 +5,8 @@ import UnderwaterLightRays from "./UnderwaterLightRays.astro";
 interface PlanFeature {
   id: string;
   label: string;
-  detail: string;
+  detail?: string;
+  items?: string[];
   icon:
     | "ticket"
     | "chat"
@@ -25,42 +26,62 @@ const creativeFeatures: PlanFeature[] = [
     id: "creative-ticket",
     label: "1 Ticket at a Time",
     detail:
-      "Queue unlimited requests; we execute one active deliverable at a time with 1–2 day turnarounds.",
+      "Work on one active request at a time. As soon as it's done, your next task moves up in the queue, unlimited requests. 15–25 design tasks/month depending on scope.",
     icon: "ticket",
   },
   {
     id: "creative-chat",
     label: "Real-Time Chat",
-    detail:
-      "Direct Slack or workspace channel with your creative lead for rapid feedback and daily momentum.",
+    detail: "Chat with us anytime.",
     icon: "chat",
   },
   {
     id: "creative-branding",
     label: "Branding",
-    detail:
-      "Visual identities, logos, typography systems, brand guidelines, and cohesive art direction.",
+    items: [
+      "Brand Identity",
+      "Style Guideline",
+      "Rebranding",
+      "Logo Design",
+      "Animated Assets",
+      "Presentations",
+    ],
     icon: "branding",
   },
   {
     id: "creative-digital",
     label: "Digital Media",
-    detail:
-      "Social content, paid ad creatives, pitch decks, motion graphics, and campaign assets.",
+    items: [
+      "Animations",
+      "Feed Concepts",
+      "Social Media Creatives",
+      "Ads Creatives",
+      "Email Design",
+    ],
     icon: "digital",
   },
   {
     id: "creative-uiux",
     label: "UIUX",
-    detail:
-      "High-converting landing pages, web apps, mobile interfaces, wireframes, and Figma systems.",
+    items: [
+      "Web Design",
+      "Landing Pages",
+      "App Design",
+      "App Prototype",
+    ],
     icon: "uiux",
   },
   {
     id: "creative-print",
     label: "Print Media",
-    detail:
-      "Packaging, merchandise, editorial layouts, brochures, and print-ready production files.",
+    items: [
+      "Flyers",
+      "Brochures",
+      "Billboards",
+      "Book Covers",
+      "Packaging",
+      "Wraps",
+    ],
     icon: "print",
   },
 ];
@@ -286,7 +307,14 @@ const fullStackFeatures: PlanFeature[] = [
                   </button>
                   <div class="feature-row-detail" id={feat.id} aria-hidden="true">
                     <div class="feature-row-detail-inner">
-                      <p>{feat.detail}</p>
+                      {feat.detail && <p>{feat.detail}</p>}
+                      {feat.items && (
+                        <ul class="feature-sublist" role="list">
+                          {feat.items.map((sub) => (
+                            <li>{sub}</li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </div>
                 </li>
@@ -399,7 +427,14 @@ const fullStackFeatures: PlanFeature[] = [
                   </button>
                   <div class="feature-row-detail" id={feat.id} aria-hidden="true">
                     <div class="feature-row-detail-inner">
-                      <p>{feat.detail}</p>
+                      {feat.detail && <p>{feat.detail}</p>}
+                      {feat.items && (
+                        <ul class="feature-sublist" role="list">
+                          {feat.items.map((sub) => (
+                            <li>{sub}</li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </div>
                 </li>
@@ -1112,6 +1147,34 @@ const fullStackFeatures: PlanFeature[] = [
     font-size: 0.77rem;
     line-height: 1.5;
     color: var(--color-text-secondary);
+  }
+
+  .feature-sublist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 0 10px 12px 33px;
+  }
+
+  .feature-sublist li {
+    position: relative;
+    padding-left: 13px;
+    font-size: 0.77rem;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+  }
+
+  .feature-sublist li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.52em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-brand-cyan);
+    opacity: 0.85;
   }
 
   .plan-feature-item.is-open .feature-row-detail {

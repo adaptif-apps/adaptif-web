@@ -38,15 +38,20 @@ const allAssets: TileItem[] = [
   { id: "ast-26", image: "/images/designed-to-keep-up/card-3-plan.jpg", title: "Blueprint Architecture", category: "Tech" },
 ];
 
-// Generate 15 distinct columns with balanced alternating drift
+// Generate 15 distinct columns with 12 items per column (24 items total per track)
+// to guarantee zero empty gaps or missing cards at any point during continuous loop
 const totalColumns = 15;
-const tilesPerCol = 6;
-const speedPresets = ["34s", "29s", "38s", "31s", "36s", "28s", "35s", "30s", "37s", "27s", "33s", "39s", "32s", "30s", "35s"];
+const tilesPerCol = 12;
+const speedPresets = [
+  "42s", "36s", "46s", "38s", "44s", 
+  "34s", "42s", "37s", "45s", "35s", 
+  "41s", "48s", "39s", "36s", "43s"
+];
 
 const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
   const colItems: TileItem[] = [];
   for (let i = 0; i < tilesPerCol; i++) {
-    const assetIdx = (colIdx * 3 + i * 5) % allAssets.length;
+    const assetIdx = (colIdx * 3 + i * 7) % allAssets.length;
     colItems.push(allAssets[assetIdx]);
   }
   return {
@@ -87,33 +92,32 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
           class={`tile-column ${col.reverse ? "scroll-reverse" : "scroll-forward"}`}
           style={`--col-duration: ${col.duration};`}
         >
-          <!-- Set A: Rendered Items -->
+          <!-- Single unified track with Set A and Set B for true mathematically seamless infinite marquee -->
           <div class="tile-column-track">
+            <!-- Set A -->
             {col.items.map((tile) => (
               <figure class="tile-card" data-category={tile.category}>
                 <div class="tile-image-wrap">
                   <img 
                     src={tile.image} 
                     alt={tile.title} 
-                    loading="lazy" 
-                    decoding="async" 
+                    loading="eager" 
+                    decoding="sync" 
                     class="tile-img" 
                   />
                 </div>
               </figure>
             ))}
-          </div>
 
-          <!-- Set B: Duplicate Track for Seamless Infinite Loop -->
-          <div class="tile-column-track" aria-hidden="true">
+            <!-- Set B (exact clone of Set A for seamless -50% loop) -->
             {col.items.map((tile) => (
-              <figure class="tile-card" data-category={tile.category}>
+              <figure class="tile-card" data-category={tile.category} aria-hidden="true">
                 <div class="tile-image-wrap">
                   <img 
                     src={tile.image} 
                     alt="" 
-                    loading="lazy" 
-                    decoding="async" 
+                    loading="eager" 
+                    decoding="sync" 
                     class="tile-img" 
                   />
                 </div>
@@ -313,10 +317,10 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     top: 50%;
     left: 50%;
     width: 210%;
-    height: 320%;
+    height: 360%;
     display: grid;
     grid-template-columns: repeat(15, 1fr);
-    gap: clamp(8px, 0.9vw, 14px);
+    column-gap: clamp(8px, 0.9vw, 14px);
     pointer-events: none;
     transform-style: preserve-3d;
     transform: 
@@ -338,7 +342,6 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
   .tile-column-track {
     display: flex;
     flex-direction: column;
-    gap: clamp(8px, 0.9vw, 14px);
     flex-shrink: 0;
     will-change: transform;
     pointer-events: none;
@@ -346,26 +349,27 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
 
   /* Forward scroll (upwards) */
   .scroll-forward .tile-column-track {
-    animation: scrollUp var(--col-duration, 32s) linear infinite;
+    animation: scrollUpTrack var(--col-duration, 38s) linear infinite;
   }
 
   /* Reverse scroll (downwards) */
   .scroll-reverse .tile-column-track {
-    animation: scrollDown var(--col-duration, 32s) linear infinite;
+    animation: scrollDownTrack var(--col-duration, 38s) linear infinite;
   }
 
-  @keyframes scrollUp {
+  /* Single unified track loops 50% seamlessly with zero gaps */
+  @keyframes scrollUpTrack {
     0% {
       transform: translateY(0);
     }
     100% {
-      transform: translateY(calc(-100% - clamp(8px, 0.9vw, 14px)));
+      transform: translateY(-50%);
     }
   }
 
-  @keyframes scrollDown {
+  @keyframes scrollDownTrack {
     0% {
-      transform: translateY(calc(-100% - clamp(8px, 0.9vw, 14px)));
+      transform: translateY(-50%);
     }
     100% {
       transform: translateY(0);
@@ -378,6 +382,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
   .tile-card {
     position: relative;
     margin: 0;
+    margin-bottom: clamp(8px, 0.9vw, 14px);
     border-radius: clamp(10px, 1.2vw, 16px);
     overflow: hidden;
     background: #f1f5f9;
@@ -386,6 +391,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
       0 2px 6px -1px rgba(15, 23, 42, 0.05),
       0 0 0 1px rgba(15, 23, 42, 0.06);
     pointer-events: none;
+    flex-shrink: 0;
   }
 
   .tile-image-wrap {
@@ -394,6 +400,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     aspect-ratio: 4 / 5;
     overflow: hidden;
     pointer-events: none;
+    background: #e2e8f0;
   }
 
   .tile-img {
@@ -436,7 +443,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     .tilted-plane {
       width: 250%;
       grid-template-columns: repeat(9, 1fr);
-      gap: 8px;
+      column-gap: 8px;
     }
 
     .tile-column:nth-child(n+10) {
@@ -445,6 +452,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
 
     .tile-card {
       border-radius: 8px;
+      margin-bottom: 8px;
     }
   }
 

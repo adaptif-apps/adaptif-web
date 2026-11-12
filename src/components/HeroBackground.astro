@@ -25,7 +25,7 @@ import GlimmerWrap from "./GlimmerWrap.astro";
       twinkle={0.5}
       focus={0.62}
       aperture={0.45}
-      backgroundColor="transparent"
+      backgroundColor="#010307"
       sizeVariance={0.6}
       glintSize={1}
       boost={7}
@@ -52,23 +52,6 @@ import GlimmerWrap from "./GlimmerWrap.astro";
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
-    /* Seamless starfield dissolution into the continuous obsidian void */
-    mask-image: linear-gradient(
-      to bottom,
-      #000000 0%,
-      #000000 45%,
-      rgba(0, 0, 0, 0.75) 65%,
-      rgba(0, 0, 0, 0.3) 80%,
-      transparent 92%
-    );
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      #000000 0%,
-      #000000 45%,
-      rgba(0, 0, 0, 0.75) 65%,
-      rgba(0, 0, 0, 0.3) 80%,
-      transparent 92%
-    );
   }
 
   .glimmer-engine-container {

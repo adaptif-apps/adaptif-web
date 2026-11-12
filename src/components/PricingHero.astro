@@ -210,11 +210,14 @@ const fullStackFeatures: PlanFeature[] = [
             </header>
 
             <div class="plan-pricing">
-              <span
-                class="plan-amount"
-                data-annual="$1.750"
-                data-monthly="$2.190"
-              >$1.750</span>
+              <div class="plan-amount-box">
+                <span class="plan-amount-sizer" aria-hidden="true">$2.190</span>
+                <span
+                  class="plan-amount"
+                  data-annual="$1.750"
+                  data-monthly="$2.190"
+                >$1.750</span>
+              </div>
               <div class="plan-pricing-meta">
                 <div class="plan-unit-line">
                   <span class="plan-unit">USD/Month</span>
@@ -319,11 +322,14 @@ const fullStackFeatures: PlanFeature[] = [
             </header>
 
             <div class="plan-pricing">
-              <span
-                class="plan-amount"
-                data-annual="$3.750"
-                data-monthly="$4.690"
-              >$3.750</span>
+              <div class="plan-amount-box">
+                <span class="plan-amount-sizer" aria-hidden="true">$4.690</span>
+                <span
+                  class="plan-amount"
+                  data-annual="$3.750"
+                  data-monthly="$4.690"
+                >$3.750</span>
+              </div>
               <div class="plan-pricing-meta">
                 <div class="plan-unit-line">
                   <span class="plan-unit">USD/Month</span>
@@ -909,12 +915,31 @@ const fullStackFeatures: PlanFeature[] = [
     margin-bottom: 20px;
   }
 
+  .plan-amount-box {
+    display: inline-grid;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .plan-amount-sizer,
   .plan-amount {
+    grid-area: 1 / 1;
     font-family: var(--font-family-display);
     font-size: clamp(2.65rem, 3.2vw, 3.15rem);
     font-weight: 400;
     line-height: 0.95;
     letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .plan-amount-sizer {
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .plan-amount {
     color: #9ce2ff;
   }
 

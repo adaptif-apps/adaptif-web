@@ -1,10 +1,11 @@
 ---
-// DesignedToKeepUp.astro - Feature Cards: Designed to Keep Up
+// DesignedToKeepUp.astro - Feature Cards: Designed to Keep Up (Full Bleed Image Cards)
 interface Card {
   image: string;
   alt: string;
   title: string;
   description: string;
+  accentGlow?: string;
 }
 
 const cards: Card[] = [
@@ -12,25 +13,28 @@ const cards: Card[] = [
     image: "/images/designed-to-keep-up/card-1-deadlines.jpg",
     alt: "Smartphone traversing through cosmic speed rays",
     title: "Deadlines measured in hours",
-    description: "Clear ownership, async collaboration and smart use of AI let us ship selected projects in 12 hours, keeping feedback loops tight and quality high."
+    description: "Clear ownership, async collaboration and smart use of AI let us ship selected projects in 12 hours, keeping feedback loops tight and quality high.",
+    accentGlow: "rgba(72, 200, 255, 0.22)"
   },
   {
     image: "/images/designed-to-keep-up/card-2-talent.jpg",
     alt: "Athletic sneaker in motion breaking limits on city pavement",
     title: "We’re limits off, talent on",
-    description: "Global creatives and smart AI tools working as one team, giving your brand richer ideas, faster delivery and reliably strong creative output."
+    description: "Global creatives and smart AI tools working as one team, giving your brand richer ideas, faster delivery and reliably strong creative output.",
+    accentGlow: "rgba(255, 140, 60, 0.2)"
   },
   {
     image: "/images/designed-to-keep-up/card-3-plan.jpg",
     alt: "Designer hands typing on laptop in vibrant botanical workspace",
     title: "One plan for whatever’s next",
-    description: "Tap into a wide range of services and pivot whenever you need, while AI‑assisted workflows keep your creative efficient, on‑brief and worth it."
+    description: "Tap into a wide range of services and pivot whenever you need, while AI‑assisted workflows keep your creative efficient, on‑brief and worth it.",
+    accentGlow: "rgba(50, 200, 150, 0.2)"
   }
 ];
 ---
 
 <section class="keep-up-section" id="designed-to-keep-up">
-  <!-- Subtle Ambient Glows -->
+  <!-- Subtle Ambient Background Illumination -->
   <div class="ambient-glow-top" aria-hidden="true"></div>
   <div class="ambient-glow-bottom" aria-hidden="true"></div>
 
@@ -47,29 +51,31 @@ const cards: Card[] = [
       </h2>
     </div>
 
-    <!-- 3-Cards Grid -->
+    <!-- 3 Full-Bleed Image Cards Grid -->
     <div class="cards-grid">
       {cards.map((card, index) => (
-        <article class="card-item" style={`--card-index: ${index};`}>
-          <!-- Card Glass Border & Specular Glow -->
-          <div class="card-glass-glow" aria-hidden="true"></div>
-
-          <!-- Card Image Viewport -->
-          <div class="card-image-box">
+        <article class="fullbleed-card" style={`--accent-glow: ${card.accentGlow || 'rgba(72, 200, 255, 0.25)'}; --card-idx: ${index};`}>
+          <!-- Full Bleed Image Background -->
+          <div class="card-bg-wrap">
             <img 
               src={card.image} 
               alt={card.alt} 
-              class="card-img"
+              class="card-bg-img"
               width="409"
               height="648"
               loading="lazy"
               decoding="async"
             />
-            <div class="card-image-overlay" aria-hidden="true"></div>
           </div>
 
-          <!-- Card Content -->
-          <div class="card-content">
+          <!-- Deep Scrim Gradient Overlay for Text Legibility -->
+          <div class="card-scrim-overlay" aria-hidden="true"></div>
+
+          <!-- Top Subtle Specular Rim -->
+          <div class="card-specular-edge" aria-hidden="true"></div>
+
+          <!-- Bottom Content Layer -->
+          <div class="card-content-overlay">
             <h3 class="card-title">{card.title}</h3>
             <p class="card-description">{card.description}</p>
           </div>
@@ -89,7 +95,7 @@ const cards: Card[] = [
     overflow: hidden;
   }
 
-  /* Ambient Atmospheric Glows */
+  /* Ambient Glows */
   .ambient-glow-top {
     position: absolute;
     top: 5%;
@@ -168,7 +174,7 @@ const cards: Card[] = [
     display: inline;
   }
 
-  /* 3-Cards Grid */
+  /* 3 Full-Bleed Cards Grid */
   .cards-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -176,95 +182,127 @@ const cards: Card[] = [
     width: 100%;
   }
 
-  /* Individual Card */
-  .card-item {
+  /* Full-Bleed Card Item (Image covers 100% of card) */
+  .fullbleed-card {
     position: relative;
     display: flex;
     flex-direction: column;
-    border-radius: 20px;
-    background: rgba(4, 9, 26, 0.55);
-    border: 1px solid rgba(72, 200, 255, 0.16);
-    padding: 14px;
+    justify-content: flex-end;
+    aspect-ratio: 9 / 13.5;
+    min-height: clamp(440px, 56vh, 540px);
+    border-radius: 26px;
     overflow: hidden;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background-color: #02050e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     box-shadow: 
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.08),
-      0 18px 45px -12px rgba(0, 0, 0, 0.85);
+      0 20px 45px -12px rgba(0, 0, 0, 0.85),
+      0 0 35px -8px var(--accent-glow);
+    cursor: default;
     transition: 
-      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.35s ease,
-      box-shadow 0.35s ease;
+      box-shadow 0.45s ease;
   }
 
-  .card-item:hover {
-    transform: translateY(-4px);
-    border-color: rgba(72, 200, 255, 0.4);
+  .fullbleed-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(72, 200, 255, 0.45);
     box-shadow: 
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
-      0 24px 60px -10px rgba(0, 0, 0, 0.9),
-      0 0 35px -5px rgba(72, 200, 255, 0.2);
+      0 30px 65px -14px rgba(0, 0, 0, 0.95),
+      0 0 50px -4px var(--accent-glow);
   }
 
-  /* Card Image Viewport */
-  .card-image-box {
-    position: relative;
+  /* Full Bleed Background Container */
+  .card-bg-wrap {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    aspect-ratio: 16 / 13;
-    border-radius: 14px;
+    height: 100%;
     overflow: hidden;
-    background: #02050e;
+    z-index: 0;
   }
 
-  .card-img {
+  .card-bg-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 35%;
+    object-position: center center;
     display: block;
-    filter: brightness(0.96) saturate(1.05);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+    filter: brightness(0.92) saturate(1.05);
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
   }
 
-  .card-item:hover .card-img {
-    transform: scale(1.04);
-    filter: brightness(1.04) saturate(1.12);
+  .fullbleed-card:hover .card-bg-img {
+    transform: scale(1.045);
+    filter: brightness(1.0) saturate(1.12);
   }
 
-  .card-image-overlay {
+  /* Deep Scrim Gradient Overlay for 100% Text Legibility */
+  .card-scrim-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
       180deg,
-      rgba(2, 5, 14, 0.02) 0%,
-      rgba(2, 5, 14, 0.35) 100%
+      rgba(1, 3, 7, 0) 0%,
+      rgba(1, 3, 7, 0.1) 35%,
+      rgba(1, 3, 7, 0.7) 65%,
+      rgba(1, 3, 7, 0.92) 85%,
+      rgba(1, 3, 7, 0.98) 100%
     );
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  .fullbleed-card:hover .card-scrim-overlay {
+    opacity: 0.94;
+  }
+
+  /* Subtle Top Specular Edge Rim */
+  .card-specular-edge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.35) 40%,
+      rgba(72, 200, 255, 0.45) 60%,
+      transparent 100%
+    );
+    z-index: 2;
     pointer-events: none;
   }
 
-  /* Card Typography Content */
-  .card-content {
+  /* Card Content Layer placed at bottom */
+  .card-content-overlay {
+    position: relative;
+    z-index: 2;
+    padding: clamp(22px, 3vw, 30px);
     display: flex;
     flex-direction: column;
-    padding: 20px 10px 14px 10px;
-    flex-grow: 1;
+    justify-content: flex-end;
   }
 
   .card-title {
-    font-size: clamp(1.15rem, 1.35vw, 1.3rem);
-    font-weight: 600;
+    font-size: clamp(1.22rem, 1.45vw, 1.4rem);
+    font-weight: 700;
     letter-spacing: -0.02em;
-    color: var(--color-text-white);
+    color: #ffffff;
     margin: 0 0 10px 0;
     line-height: 1.25;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
   }
 
   .card-description {
     font-size: clamp(0.88rem, 0.95vw, 0.96rem);
-    line-height: 1.6;
+    line-height: 1.58;
     letter-spacing: -0.01em;
-    color: var(--color-text-secondary);
+    color: #cbd5e1;
     margin: 0;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
     text-wrap: pretty;
   }
 
@@ -272,22 +310,23 @@ const cards: Card[] = [
   @media (max-width: 980px) {
     .cards-grid {
       grid-template-columns: 1fr;
-      max-width: 540px;
+      max-width: 440px;
       margin-inline: auto;
+    }
+
+    .fullbleed-card {
+      aspect-ratio: 9 / 12;
+      min-height: 460px;
     }
 
     .br-desktop {
       display: none;
     }
-
-    .card-image-box {
-      aspect-ratio: 16 / 11;
-    }
   }
 
   @media (min-width: 641px) and (max-width: 980px) {
     .cards-grid {
-      max-width: 600px;
+      max-width: 500px;
     }
   }
 
@@ -301,12 +340,8 @@ const cards: Card[] = [
       margin-bottom: 10px;
     }
 
-    .card-item {
-      padding: 12px;
-    }
-
-    .card-content {
-      padding: 16px 6px 10px 6px;
+    .card-content-overlay {
+      padding: 20px 18px;
     }
   }
 </style>

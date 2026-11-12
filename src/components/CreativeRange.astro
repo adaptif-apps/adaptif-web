@@ -1,0 +1,572 @@
+---
+// CreativeRange.astro - Light Mode Section with Tilted Tiles Gallery
+interface TileItem {
+  id: string;
+  image: string;
+  title: string;
+  category: "Tech" | "Fashion" | "Wellness" | "Brand" | "3D";
+  aspect?: string;
+}
+
+// Curated collection representing: Tech, Fashion, Wellness, and everywhere in between
+const column1: TileItem[] = [
+  { id: "col1-1", image: "/header_images/work-0.jpg", title: "Apex FinTech Core", category: "Tech" },
+  { id: "col1-2", image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg", title: "Aura Botanical Skin", category: "Wellness" },
+  { id: "col1-3", image: "/header_images/work-3.jpg", title: "Vogue Maison Capsule", category: "Fashion" },
+  { id: "col1-4", image: "/work/9e80968f8b616f415454cfd43eb454c8.jpg", title: "Solstice AI Assistant", category: "Tech" },
+  { id: "col1-5", image: "/header_images/work-7.jpg", title: "Luminary High Jewelry", category: "Fashion" },
+];
+
+const column2: TileItem[] = [
+  { id: "col2-1", image: "/work/0cb17cbee8ef36202bfb1b0e17338257.jpg", title: "Kinetics Form & Motion", category: "3D" },
+  { id: "col2-2", image: "/header_images/work-1.jpg", title: "Hyperion Cloud OS", category: "Tech" },
+  { id: "col2-3", image: "/work/664bbf117716eb69519b17e2f37bee2a.jpg", title: "Zenith Herbal Essence", category: "Wellness" },
+  { id: "col2-4", image: "/header_images/work-4.jpg", title: "Studio Noir Editorial", category: "Fashion" },
+  { id: "col2-5", image: "/header_images/work-8.jpg", title: "Chrono Kinetic Engine", category: "Tech" },
+];
+
+const column3: TileItem[] = [
+  { id: "col3-1", image: "/header_images/work-2.jpg", title: "Equinox Organic Ritual", category: "Wellness" },
+  { id: "col3-2", image: "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg", title: "Synthetix Neural UI", category: "Tech" },
+  { id: "col3-3", image: "/header_images/work-5.jpg", title: "Moderne Atelier Runway", category: "Fashion" },
+  { id: "col3-4", image: "/work/ade59a73aba7c39e38d6aa91565627bc.jpg", title: "Prism Spatial Sound", category: "3D" },
+  { id: "col3-5", image: "/header_images/work-9.jpg", title: "Nirvana Flow Tonic", category: "Wellness" },
+];
+
+const column4: TileItem[] = [
+  { id: "col4-1", image: "/header_images/work-6.jpg", title: "Velvet Couture SS26", category: "Fashion" },
+  { id: "col4-2", image: "/header_images/work-10.jpg", title: "Quantico Crypto Vault", category: "Tech" },
+  { id: "col4-3", image: "/header_images/work-11.jpg", title: "Seraph Mindful Routine", category: "Wellness" },
+  { id: "col4-4", image: "/header_images/work-12.jpg", title: "Vector 3D Topology", category: "3D" },
+  { id: "col4-5", image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg", title: "Aura Botanical Skin", category: "Wellness" },
+];
+
+const column5: TileItem[] = [
+  { id: "col5-1", image: "/work/9e80968f8b616f415454cfd43eb454c8.jpg", title: "Solstice AI Assistant", category: "Tech" },
+  { id: "col5-2", image: "/header_images/work-3.jpg", title: "Vogue Maison Capsule", category: "Fashion" },
+  { id: "col5-3", image: "/header_images/work-0.jpg", title: "Apex FinTech Core", category: "Tech" },
+  { id: "col5-4", image: "/header_images/work-7.jpg", title: "Luminary High Jewelry", category: "Fashion" },
+  { id: "col5-5", image: "/work/0cb17cbee8ef36202bfb1b0e17338257.jpg", title: "Kinetics Form & Motion", category: "3D" },
+];
+
+const columns = [
+  { items: column1, reverse: false, duration: "32s" },
+  { items: column2, reverse: true,  duration: "27s" },
+  { items: column3, reverse: false, duration: "36s" },
+  { items: column4, reverse: true,  duration: "29s" },
+  { items: column5, reverse: false, duration: "34s" },
+];
+---
+
+<section class="creative-range-section" id="creative-range">
+  <!-- Subtle Light Ambient Tone -->
+  <div class="creative-ambient-light" aria-hidden="true"></div>
+
+  <div class="container creative-container">
+    <!-- Header Block (Light Mode) -->
+    <header class="creative-header">
+      <div class="eyebrow-wrapper">
+        <span class="eyebrow-text">Creative range</span>
+      </div>
+
+      <h2 class="creative-title">
+        Tech, fashion, wellness, <span class="title-highlight">everywhere in between.</span>
+      </h2>
+    </header>
+  </div>
+
+  <!-- Tilted Tiles 3D Gallery Viewport -->
+  <div class="tilted-tiles-viewport" id="tilted-tiles-scene">
+    <!-- Top & Bottom Gradient Masks to seamlessly blend into light background -->
+    <div class="tile-mask-fade tile-mask-top" aria-hidden="true"></div>
+    <div class="tile-mask-fade tile-mask-bottom" aria-hidden="true"></div>
+
+    <!-- 3D Perspective Plane with Parallax Response -->
+    <div class="tilted-plane" id="tilted-plane">
+      {columns.map((col, colIdx) => (
+        <div 
+          class={`tile-column ${col.reverse ? "scroll-reverse" : "scroll-forward"}`}
+          style={`--col-duration: ${col.duration};`}
+        >
+          <!-- Set A: Rendered Items -->
+          <div class="tile-column-track">
+            {col.items.map((tile) => (
+              <figure class="tile-card" data-category={tile.category}>
+                <div class="tile-image-wrap">
+                  <img 
+                    src={tile.image} 
+                    alt={tile.title} 
+                    loading="lazy" 
+                    decoding="async" 
+                    class="tile-img" 
+                  />
+                  <div class="tile-overlay">
+                    <span class="tile-badge">{tile.category}</span>
+                    <span class="tile-caption">{tile.title}</span>
+                  </div>
+                </div>
+              </figure>
+            ))}
+          </div>
+
+          <!-- Set B: Duplicate Track for Seamless Infinite Marquee Loop -->
+          <div class="tile-column-track" aria-hidden="true">
+            {col.items.map((tile) => (
+              <figure class="tile-card" data-category={tile.category}>
+                <div class="tile-image-wrap">
+                  <img 
+                    src={tile.image} 
+                    alt="" 
+                    loading="lazy" 
+                    decoding="async" 
+                    class="tile-img" 
+                  />
+                  <div class="tile-overlay">
+                    <span class="tile-badge">{tile.category}</span>
+                    <span class="tile-caption">{tile.title}</span>
+                  </div>
+                </div>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  function initCreativeRange() {
+    const section = document.getElementById("creative-range");
+    const plane = document.getElementById("tilted-plane");
+    const scene = document.getElementById("tilted-tiles-scene");
+    if (!section) return;
+
+    // Viewport Intersection Observer for Staggered Entrance
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            section.classList.add("is-visible");
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    observer.observe(section);
+
+    // Interactive Pointer Parallax
+    if (scene && plane && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      let rafId: number | null = null;
+      let targetTiltX = 0;
+      let targetTiltY = 0;
+      let currentTiltX = 0;
+      let currentTiltY = 0;
+
+      const handlePointerMove = (e: MouseEvent) => {
+        const rect = scene.getBoundingClientRect();
+        if (e.clientY < rect.top || e.clientY > rect.bottom) return;
+
+        const normalizedX = (e.clientX - rect.left) / rect.width - 0.5; // -0.5 to 0.5
+        const normalizedY = (e.clientY - rect.top) / rect.height - 0.5; // -0.5 to 0.5
+
+        // Parallax strength: max +/- 6 deg
+        targetTiltY = normalizedX * 8;
+        targetTiltX = -normalizedY * 6;
+
+        if (!rafId) {
+          rafId = requestAnimationFrame(updateParallax);
+        }
+      };
+
+      const updateParallax = () => {
+        currentTiltX += (targetTiltX - currentTiltX) * 0.08;
+        currentTiltY += (targetTiltY - currentTiltY) * 0.08;
+
+        plane.style.setProperty("--parallax-x", `${currentTiltX.toFixed(2)}deg`);
+        plane.style.setProperty("--parallax-y", `${currentTiltY.toFixed(2)}deg`);
+
+        if (Math.abs(targetTiltX - currentTiltX) > 0.01 || Math.abs(targetTiltY - currentTiltY) > 0.01) {
+          rafId = requestAnimationFrame(updateParallax);
+        } else {
+          rafId = null;
+        }
+      };
+
+      window.addEventListener("mousemove", handlePointerMove, { passive: true });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCreativeRange);
+  } else {
+    initCreativeRange();
+  }
+
+  document.addEventListener("astro:page-load", initCreativeRange);
+</script>
+
+<style>
+  /* ==========================================================================
+     LIGHT MODE SECTION CONTAINER
+     Inverse of Dark Obsidian: Background is pure luminous white, Text is Dark
+     ========================================================================== */
+  .creative-range-section {
+    position: relative;
+    width: 100%;
+    padding-top: clamp(80px, 12vh, 130px);
+    padding-bottom: clamp(60px, 10vh, 110px);
+    background-color: #ffffff;
+    color: #050811;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Soft ethereal ambient illumination */
+  .creative-ambient-light {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1200px, 100vw);
+    height: 500px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(2, 132, 199, 0.06) 0%, rgba(240, 249, 255, 0.6) 45%, transparent 75%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .creative-container {
+    position: relative;
+    z-index: 2;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ==========================================================================
+     HEADER: Light Mode Typography
+     ========================================================================== */
+  .creative-header {
+    text-align: center;
+    max-width: 860px;
+    margin-bottom: clamp(40px, 6vh, 64px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .eyebrow-wrapper {
+    margin-bottom: clamp(12px, 1.8vh, 18px);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: 
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .eyebrow-text {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #0284c7; /* Vibrant brand cyan-blue optimized for light mode contrast */
+    display: inline-block;
+  }
+
+  .creative-title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.3rem, 4.4vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: -0.035em;
+    color: #050811; /* Inverted dark obsidian color */
+    margin: 0;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: 
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+  }
+
+  /* Celestial Gradient Accent for "everywhere in between." on Light Background */
+  .title-highlight {
+    background: linear-gradient(135deg, #0070f3 0%, #0099ff 45%, #00c0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 2px 10px rgba(0, 153, 255, 0.18));
+  }
+
+  /* Staggered entrance trigger */
+  .creative-range-section.is-visible .eyebrow-wrapper,
+  .creative-range-section.is-visible .creative-title {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .creative-range-section.is-visible .tilted-tiles-viewport {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* ==========================================================================
+     TILTED TILES 3D PERSPECTIVE SCENE
+     Exact React Bits Pro Spec: perspective: 1600px, rotateX: 40deg, rotateY: 16deg, rotateZ: -20deg
+     ========================================================================== */
+  .tilted-tiles-viewport {
+    position: relative;
+    width: 100%;
+    height: clamp(520px, 68vh, 760px);
+    perspective: 1600px;
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+    opacity: 0;
+    transform: scale(0.97);
+    transition: 
+      opacity 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
+      transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+  }
+
+  /* Gradient Vignette Mask fading top & bottom into light background */
+  .tile-mask-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: clamp(80px, 16vh, 160px);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .tile-mask-top {
+    top: 0;
+    background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .tile-mask-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  /* 3D Tilted Plane */
+  .tilted-plane {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 180%;
+    max-width: 2200px;
+    height: 240%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: clamp(14px, 1.8vw, 24px);
+    pointer-events: auto;
+    transform-style: preserve-3d;
+    transform: 
+      translate(-50%, -50%)
+      rotateX(calc(36deg + var(--parallax-x, 0deg)))
+      rotateY(calc(14deg + var(--parallax-y, 0deg)))
+      rotateZ(-18deg)
+      scale(1);
+    will-change: transform;
+    transition: transform 0.15s ease-out;
+  }
+
+  /* Scrolling Columns */
+  .tile-column {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .tile-column-track {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 1.8vw, 24px);
+    flex-shrink: 0;
+    will-change: transform;
+  }
+
+  /* Forward scroll (upwards) */
+  .scroll-forward .tile-column-track {
+    animation: scrollUp var(--col-duration, 30s) linear infinite;
+  }
+
+  /* Reverse scroll (downwards) */
+  .scroll-reverse .tile-column-track {
+    animation: scrollDown var(--col-duration, 30s) linear infinite;
+  }
+
+  @keyframes scrollUp {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(calc(-100% - clamp(14px, 1.8vw, 24px)));
+    }
+  }
+
+  @keyframes scrollDown {
+    0% {
+      transform: translateY(calc(-100% - clamp(14px, 1.8vw, 24px)));
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  /* Pause scroll when hovering over the plane */
+  .tilted-plane:hover .tile-column-track {
+    animation-play-state: paused;
+  }
+
+  /* ==========================================================================
+     TILE CARDS: Premium Aspect, Shadows & Micro-interactions
+     ========================================================================== */
+  .tile-card {
+    position: relative;
+    margin: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #f1f5f9;
+    box-shadow: 
+      0 12px 28px -8px rgba(15, 23, 42, 0.12),
+      0 4px 12px -2px rgba(15, 23, 42, 0.06),
+      0 0 0 1px rgba(15, 23, 42, 0.06);
+    transition: 
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+  }
+
+  .tile-card:hover {
+    transform: scale(1.04) translateZ(20px);
+    box-shadow: 
+      0 24px 44px -10px rgba(15, 23, 42, 0.22),
+      0 8px 18px -4px rgba(15, 23, 42, 0.12),
+      0 0 0 1px rgba(2, 132, 199, 0.3);
+    z-index: 5;
+  }
+
+  .tile-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+
+  .tile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tile-card:hover .tile-img {
+    transform: scale(1.08);
+  }
+
+  /* Tile Hover Overlay & Captions */
+  .tile-overlay {
+    position: absolute;
+    inset: 0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, transparent 40%, rgba(0, 0, 0, 0.75) 100%);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .tile-card:hover .tile-overlay {
+    opacity: 1;
+  }
+
+  .tile-badge {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    color: #0284c7;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tile-caption {
+    color: #ffffff;
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  }
+
+  /* ==========================================================================
+     RESPONSIVE BREAKPOINTS
+     ========================================================================== */
+  @media (max-width: 1024px) {
+    .tilted-plane {
+      width: 210%;
+      height: 250%;
+      grid-template-columns: repeat(4, 1fr);
+      transform: 
+        translate(-50%, -50%)
+        rotateX(30deg)
+        rotateY(10deg)
+        rotateZ(-14deg);
+    }
+
+    .tile-column:nth-child(5) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .creative-range-section {
+      padding-top: clamp(60px, 9vh, 90px);
+      padding-bottom: clamp(50px, 8vh, 80px);
+    }
+
+    .tilted-tiles-viewport {
+      height: 480px;
+      perspective: 1200px;
+    }
+
+    .tilted-plane {
+      width: 230%;
+      height: 260%;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      transform: 
+        translate(-50%, -50%)
+        rotateX(24deg)
+        rotateY(8deg)
+        rotateZ(-12deg);
+    }
+
+    .tile-column:nth-child(4),
+    .tile-column:nth-child(5) {
+      display: none;
+    }
+
+    .tile-card {
+      border-radius: 14px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tile-column-track {
+      animation: none !important;
+    }
+
+    .tilted-plane {
+      transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg) !important;
+    }
+  }
+</style>

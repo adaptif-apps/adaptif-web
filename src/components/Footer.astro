@@ -1,66 +1,80 @@
 ---
-import BinaryOrbitsBg from "./BinaryOrbitsBg.astro";
+const creativeDesignLinks = [
+  { label: "Ad creative", href: "#service-ad-creative" },
+  { label: "Social media creative", href: "#service-social-media" },
+  { label: "Presentation design", href: "#service-presentation-design" },
+  { label: "Illustration design", href: "#service-illustration-design" },
+  { label: "Branding services", href: "#service-branding-services" },
+  { label: "eBook & report design", href: "#service-ebook-report" },
+  { label: "Concept creation", href: "#service-concept-creation" },
+  { label: "Print design", href: "#service-print-design" },
+  { label: "Packaging & merchandise design", href: "#service-packaging-merchandise" },
+];
 
-const navLinks = [
-  { label: "Services", href: "#services-carousel" },
+const productionLinks = [
+  { label: "Video production", href: "#service-video-production" },
+  { label: "Motion design", href: "#service-motion-design" },
+  { label: "Email creation", href: "#service-email-creation" },
+  { label: "Web design", href: "#service-web-design" },
+  { label: "Design Systems", href: "#service-design-systems" },
+  { label: "Product Design", href: "#service-product-design" },
+  { label: "Copywriting", href: "#service-copywriting" },
+];
+
+const aiServiceLinks = [
+  { label: "AI-powered creative", href: "#service-ai-powered-creative" },
+  { label: "AI consulting", href: "#service-ai-consulting" },
+  { label: "Automation", href: "#service-automation" },
+  { label: "Data services", href: "#service-data-services" },
+];
+
+const marketingLinks = [
+  { label: "Campaign strategy", href: "#service-campaign-strategy" },
+];
+
+const whyUsLinks = [
+  { label: "Our creative talent", href: "#creative-talent" },
+  { label: "AI excellence", href: "#ai-excellence" },
+  { label: "Our technology", href: "#our-technology" },
+  { label: "Meet your dedicated team", href: "#dedicated-team" },
+];
+
+const mainMenuLinks = [
   { label: "Our Work", href: "#our-work" },
-  { label: "Workflows", href: "#workflows" },
-  { label: "Our Difference", href: "#our-difference" },
+  { label: "Resources", href: "#resources" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Dedicated Team", href: "#dedicated-team" },
   { label: "FAQs", href: "#faqs" },
+  { label: "Book a Call", href: "#contact" },
 ];
 ---
 
 <footer class="site-footer" id="contact" data-theme="dark">
-  <BinaryOrbitsBg
-    colors={["#48c8ff", "#8c6d00"]}
-    backgroundColor="#0A0A0A"
-    stars={70000}
-    starSize={1.7}
-    sparkle={0.5}
-    arms={3}
-    twist={3.5}
-    armStrength={0.5}
-    dust={0.5}
-    core={1.3}
-    coreSize={0.07}
-    innerVoid={0}
-    thickness={0.05}
-    tilt={62}
-    roll={-8}
-    scale={1.76}
-    centerX={0.5}
-    centerY={0.52}
-    speed={0.15000000000000036}
-    twinkle={0.35}
-    depth={0.4}
-    glow={0.45}
-    intensity={1}
-  />
+  <div class="footer-ambient-glow" aria-hidden="true"></div>
 
-  <!-- Smooth top fade from FaqSection void -->
-  <div class="footer-top-fade" aria-hidden="true"></div>
-  <!-- Subtle radial readability scrim behind center CTA -->
-  <div class="footer-scrim" aria-hidden="true"></div>
+  <div class="footer-inner">
+    <!-- Top CTA Band -->
+    <div class="footer-cta-band reveal-item">
+      <div class="footer-cta-copy">
+        <span class="footer-eyebrow">GET STARTED</span>
+        <h2 class="footer-headline">
+          Ready to fuel your <span class="title-highlight">creative engine?</span>
+        </h2>
+        <p class="footer-subcopy">
+          Plug an AI-driven creative department into your team with unlimited requests, rapid turnarounds, and one predictable monthly subscription.
+        </p>
+      </div>
 
-  <div class="footer-shell">
-    <!-- Top Spacer for balanced vertical centering -->
-    <div class="footer-top-spacer" aria-hidden="true"></div>
-
-    <!-- Centerpiece CTA -->
-    <div class="footer-hero-cta reveal-item">
-      <span class="footer-eyebrow">READY TO SCALE?</span>
-      <h2 class="footer-title">
-        Plug your creative <br />
-        <span class="title-highlight">engine</span> in today.
-      </h2>
-      <p class="footer-subtitle">
-        Unlimited requests, rapid turnarounds, and a dedicated creative team—all for one predictable monthly rate.
-      </p>
-
-      <div class="footer-cta-row">
-        <a href="mailto:hello@adaptif.com?subject=Book%20a%20Call%20—%20Adaptif" class="adaptif-btn">
+      <div class="footer-cta-action">
+        <a href="#contact" class="adaptif-btn">
           <span>Book a Call</span>
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+          >
             <path
               d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
               stroke="currentColor"
@@ -70,59 +84,116 @@ const navLinks = [
             />
           </svg>
         </a>
-
-        <a href="mailto:hello@adaptif.com" class="footer-email-pill">
-          <span>hello@adaptif.com</span>
-        </a>
       </div>
     </div>
 
-    <!-- Bottom Footer Bar -->
-    <div class="footer-bottom reveal-item" style="--reveal-delay: 120ms;">
-      <div class="footer-bar">
-        <div class="footer-brand">
-          <a href="/" class="footer-brand-link" aria-label="Adaptif Home">
-            <svg
-              class="footer-logo-mark"
-              width="28"
-              height="28"
-              viewBox="0 0 411 411"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <rect width="411" height="411" rx="92" fill="url(#footerLogoGrad)" />
-              <path
-                d="M322.303 143.165C322.303 128.431 317.87 116.298 309.005 106.764C300.139 96.9708 287.753 92.0742 271.847 92.0742C258.288 92.0742 246.423 95.8101 236.254 103.281C226.084 110.753 217.479 119.385 210.439 129.179C192.968 153.65 182.929 167.449 180.321 170.575C169.63 184.492 158.027 195.828 145.511 204.588C136.645 210.517 128.822 213.481 122.043 213.481C113.177 213.481 108.744 209.615 108.744 201.883C108.744 196.47 111.743 190.413 117.74 183.712C125.042 175.465 128.692 169.02 128.692 164.38C128.692 159.483 127.128 155.875 123.998 153.555C121.13 150.978 117.61 149.689 113.438 149.689C106.137 149.689 100.27 152.91 95.8371 159.354C91.4043 165.798 89.1879 173.402 89.1879 182.165C89.1879 194.798 93.36 205.23 101.704 213.461C110.309 221.434 121.391 225.42 134.95 225.42C149.813 225.42 163.372 220.402 175.628 210.368C191.012 197.757 205.875 180.126 220.217 157.476C231.168 140.46 239.382 129.498 244.858 124.602C255.288 115.068 265.197 110.301 274.584 110.301C283.189 110.301 290.1 113.005 295.315 118.414C300.791 123.565 303.529 130.779 303.529 140.056C303.529 146.501 302.355 152.945 300.008 159.39C297.662 165.576 293.75 170.729 288.274 174.853C282.799 178.977 273.542 183.743 260.504 189.156C245.12 195.34 228.431 200.623 210.439 205.004C191.142 209.644 176.54 213.381 166.632 216.216C146.553 221.628 131.169 229.1 120.478 238.634C108.483 249.455 102.486 263.497 102.486 280.76C102.486 292.611 106.267 302.273 113.83 309.745C121.391 317.474 131.3 321.339 143.555 321.339C152.421 321.339 161.939 318.891 172.108 313.994C182.277 308.84 191.533 301.241 199.878 291.192C213.698 274.442 227.65 256.405 241.73 237.081C240.165 244.037 238.47 251.901 236.645 260.663C234.82 269.422 233.907 277.926 233.907 286.171C233.907 309.619 242.904 321.341 260.896 321.341C274.716 321.341 286.189 316.058 295.316 305.495C304.703 294.931 309.396 282.303 309.396 267.614C309.396 261.946 307.962 257.308 305.094 253.699C302.486 249.835 299.226 247.903 295.315 247.903C291.664 247.903 288.666 249.063 286.319 251.383C283.972 253.704 282.799 256.926 282.799 261.051C282.799 262.856 283.32 265.176 284.363 268.011C285.406 270.845 285.928 273.809 285.928 276.901C285.928 282.827 284.102 288.239 280.452 293.136C276.801 297.772 271.586 300.092 264.806 300.092C258.548 300.092 255.419 294.55 255.419 283.465C255.419 264.656 261.416 239.277 273.41 207.328C276.018 205.524 278.495 204.107 280.842 203.076C296.748 195.605 307.699 187.488 313.697 178.725C319.433 170.221 322.302 158.367 322.302 143.165H322.303ZM253.073 207.716C228.561 247.143 207.7 273.431 190.491 286.578C179.539 294.826 168.718 298.949 158.028 298.949C150.727 298.949 144.86 296.373 140.427 291.219C135.994 285.805 133.778 278.719 133.778 269.957C133.778 259.394 136.646 250.377 142.382 242.905C148.119 235.174 156.985 229.633 168.979 226.283C196.358 218.553 213.829 213.914 221.391 212.368C234.429 210.048 244.989 208.497 253.073 207.716Z"
-                fill="white"
-              />
-              <defs>
-                <linearGradient id="footerLogoGrad" x1="0" y1="0" x2="411" y2="411" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#56D3FF" />
-                  <stop offset="1" stop-color="#0AA3F8" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <span class="footer-brand-name">adaptif</span>
-          </a>
-          <p class="footer-tagline">The fuel behind your creative engine.</p>
-        </div>
-
-        <nav class="footer-nav" aria-label="Footer navigation">
-          {
-            navLinks.map((link) => (
-              <a href={link.href} class="footer-nav-link">
-                {link.label}
-              </a>
-            ))
-          }
-        </nav>
+    <!-- Full Menu & Submenu Sitemap -->
+    <nav class="footer-sitemap reveal-item" aria-label="Footer Navigation" style="--reveal-delay: 80ms;">
+      <!-- Column 1: Creative Design Services -->
+      <div class="footer-col">
+        <a href="#creative-design" class="footer-col-heading">
+          <span>Creative Design Services</span>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <ul class="footer-link-list">
+          {creativeDesignLinks.map((link) => (
+            <li><a href={link.href} class="footer-link">{link.label}</a></li>
+          ))}
+        </ul>
       </div>
 
-      <div class="footer-legal">
-        <span>© {new Date().getFullYear()} Adaptif. All rights reserved.</span>
-        <span class="footer-legal-sep" aria-hidden="true">•</span>
-        <span>Design, Dev &amp; Marketing Subscription</span>
+      <!-- Column 2: Production Services -->
+      <div class="footer-col">
+        <a href="#production-services" class="footer-col-heading">
+          <span>Production Services</span>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <ul class="footer-link-list">
+          {productionLinks.map((link) => (
+            <li><a href={link.href} class="footer-link">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 3: AI Services & Marketing Services -->
+      <div class="footer-col footer-col-stacked">
+        <div class="footer-subgroup">
+          <a href="#ai-services" class="footer-col-heading">
+            <span>AI Services</span>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <ul class="footer-link-list">
+            {aiServiceLinks.map((link) => (
+              <li><a href={link.href} class="footer-link">{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="footer-subgroup">
+          <a href="#marketing-services" class="footer-col-heading">
+            <span>Marketing services</span>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <ul class="footer-link-list">
+            {marketingLinks.map((link) => (
+              <li><a href={link.href} class="footer-link">{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Column 4: Why Us -->
+      <div class="footer-col">
+        <span class="footer-col-heading is-static">Why Us</span>
+        <ul class="footer-link-list">
+          {whyUsLinks.map((link) => (
+            <li><a href={link.href} class="footer-link">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 5: Navigation / Company -->
+      <div class="footer-col">
+        <span class="footer-col-heading is-static">Explore</span>
+        <ul class="footer-link-list">
+          {mainMenuLinks.map((link) => (
+            <li><a href={link.href} class="footer-link">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Bottom Brand & Legal Bar -->
+    <div class="footer-bottom reveal-item" style="--reveal-delay: 140ms;">
+      <div class="footer-brand-wrap">
+        <a href="/" class="footer-logo-link" aria-label="Adaptif Home">
+          <img
+            src="/logo.svg"
+            alt="Adaptif"
+            class="footer-logo"
+            width="124"
+            height="48"
+            loading="lazy"
+            decoding="async"
+          />
+        </a>
+        <span class="footer-tagline">The fuel behind your creative engine.</span>
+      </div>
+
+      <div class="footer-meta">
+        <span class="footer-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>Accepting new partners</span>
+        </span>
+        <span class="footer-copyright">© 2026 Adaptif. All rights reserved.</span>
       </div>
     </div>
   </div>
@@ -142,7 +213,7 @@ const navLinks = [
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.08, rootMargin: "0px 0px -20px 0px" }
     );
 
     items.forEach((item) => observer.observe(item));
@@ -157,86 +228,82 @@ const navLinks = [
     position: relative;
     width: 100vw;
     min-height: 100dvh;
-    background-color: #0a0a0a;
-    color: #ffffff;
-    overflow: hidden;
+    background-color: var(--color-void, #030712);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    color: var(--color-text-primary, #f8fafc);
     user-select: text;
   }
 
-  .footer-top-fade {
+  .footer-ambient-glow {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 180px;
-    background: linear-gradient(180deg, var(--color-void, #030712) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .footer-scrim {
-    position: absolute;
-    inset: 0;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(1240px, 96vw);
+    height: 92%;
     background: radial-gradient(
-      circle at 50% 46%,
-      rgba(3, 7, 18, 0.58) 0%,
-      rgba(3, 7, 18, 0.25) 45%,
-      transparent 78%
+      ellipse 58% 52% at 50% 50%,
+      rgba(72, 200, 255, 0.085) 0%,
+      rgba(10, 163, 248, 0.03) 45%,
+      transparent 75%
     );
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
   }
 
-  .footer-shell {
+  .footer-inner {
     position: relative;
-    z-index: 2;
-    flex: 1;
+    z-index: 1;
     width: 100%;
     max-width: var(--container-max, 1240px);
+    min-height: 100dvh;
     margin: 0 auto;
-    padding: clamp(48px, 6vh, 72px) 24px clamp(28px, 4vh, 42px);
+    padding: clamp(56px, 7vh, 88px) clamp(20px, 3.5vw, 32px) clamp(32px, 4vh, 44px);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: clamp(40px, 5vh, 64px);
   }
 
-  .footer-top-spacer {
-    height: 24px;
+  /* Top CTA Band */
+  .footer-cta-band {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px;
+    padding-bottom: clamp(32px, 4.5vh, 48px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  /* Centerpiece CTA */
-  .footer-hero-cta {
-    text-align: center;
-    max-width: 780px;
-    margin: auto;
-    padding: 32px 0;
+  .footer-cta-copy {
+    max-width: 680px;
   }
 
   .footer-eyebrow {
     display: inline-block;
     font-family: var(--font-family-body);
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: #48c8ff;
-    margin-bottom: 18px;
+    margin-bottom: 12px;
   }
 
-  .footer-title {
-    margin: 0 0 22px;
+  .footer-headline {
+    margin: 0 0 14px;
     font-family: var(--font-family-display, serif);
-    font-size: clamp(2.8rem, 6vw, 5.2rem);
+    font-size: clamp(2.4rem, 4.4vw, 3.85rem);
     font-weight: 400;
-    line-height: 1.06;
+    line-height: 1.08;
     letter-spacing: -0.035em;
     color: #ffffff;
-    text-shadow: 0 4px 28px rgba(0, 0, 0, 0.45);
   }
 
-  .footer-title .title-highlight {
+  .footer-headline .title-highlight {
     font-style: italic;
     background: linear-gradient(135deg, #7fe2ff 0%, #48c8ff 50%, #1da5ff 100%);
     -webkit-background-clip: text;
@@ -244,144 +311,163 @@ const navLinks = [
     background-clip: text;
     display: inline-block;
     padding-right: 0.06em;
-    filter: drop-shadow(0 2px 16px rgba(72, 200, 255, 0.45));
+    filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.4));
   }
 
-  .footer-subtitle {
-    margin: 0 auto 36px;
-    max-width: 560px;
-    font-family: var(--font-family-body);
-    font-size: clamp(1rem, 1.3vw, 1.15rem);
-    font-weight: 400;
-    line-height: 1.6;
-    color: rgba(226, 232, 240, 0.82);
-  }
-
-  .footer-cta-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-
-  .footer-email-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 26px;
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    color: rgba(255, 255, 255, 0.9);
-    font-family: var(--font-family-body);
-    font-size: var(--font-size-btn, 0.94rem);
-    font-weight: 500;
-    text-decoration: none;
-    transition:
-      background-color 0.25s ease,
-      border-color 0.25s ease,
-      transform 0.25s var(--ease-spring);
-  }
-
-  .footer-email-pill:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(72, 200, 255, 0.45);
-    transform: translateY(-2px);
-  }
-
-  /* Bottom Bar */
-  .footer-bottom {
-    width: 100%;
-    padding-top: 28px;
-  }
-
-  .footer-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 28px;
-    padding: 20px 26px;
-    border-radius: 20px;
-    background: rgba(8, 13, 24, 0.62);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  }
-
-  .footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .footer-brand-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    color: #ffffff;
-  }
-
-  .footer-brand-name {
-    font-family: var(--font-family-display, serif);
-    font-style: italic;
-    font-size: 1.45rem;
-    letter-spacing: -0.02em;
-    color: #ffffff;
-  }
-
-  .footer-tagline {
+  .footer-subcopy {
     margin: 0;
     font-family: var(--font-family-body);
-    font-size: 0.85rem;
-    color: rgba(226, 232, 240, 0.58);
+    font-size: clamp(0.94rem, 1.15vw, 1.04rem);
+    line-height: 1.55;
+    color: rgba(226, 232, 240, 0.72);
+    max-width: 560px;
   }
 
-  .footer-nav {
+  .footer-cta-action {
+    flex-shrink: 0;
+  }
+
+  /* Sitemap Grid */
+  .footer-sitemap {
+    display: grid;
+    grid-template-columns: 1.2fr 1.05fr 1fr 0.95fr 0.85fr;
+    gap: clamp(24px, 3vw, 40px);
+    align-items: start;
+  }
+
+  .footer-col-stacked {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 24px;
+    flex-direction: column;
+    gap: 28px;
   }
 
-  .footer-nav-link {
+  .footer-col-heading {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-family: var(--font-family-body);
-    font-size: 0.88rem;
-    font-weight: 500;
-    color: rgba(226, 232, 240, 0.78);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #48c8ff;
+    margin-bottom: 16px;
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
-  .footer-nav-link:hover {
-    color: #48c8ff;
+  .footer-col-heading svg {
+    opacity: 0.7;
+    transition: transform 0.25s var(--ease-spring), opacity 0.2s ease;
   }
 
-  .footer-legal {
+  a.footer-col-heading:hover {
+    color: #9ce6ff;
+  }
+
+  a.footer-col-heading:hover svg {
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
+
+  .footer-link-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-link {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: rgba(226, 232, 240, 0.76);
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s var(--ease-spring);
+  }
+
+  .footer-link:hover {
+    color: #ffffff;
+    transform: translateX(3px);
+  }
+
+  /* Bottom Bar */
+  .footer-bottom {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 18px;
-    font-family: var(--font-family-body);
-    font-size: 0.8rem;
-    color: rgba(226, 232, 240, 0.45);
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: clamp(22px, 3vh, 30px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .footer-legal-sep {
-    opacity: 0.5;
+  .footer-brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .footer-logo-link {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .footer-logo {
+    height: 32px;
+    width: auto;
+    display: block;
+  }
+
+  .footer-tagline {
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    color: rgba(148, 163, 184, 0.8);
+  }
+
+  .footer-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill, 9999px);
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #9ce6ff;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.85);
+  }
+
+  .footer-copyright {
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    color: rgba(148, 163, 184, 0.75);
   }
 
   /* Reveal Animation */
   .reveal-item {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(18px);
     transition:
       opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
@@ -393,32 +479,36 @@ const navLinks = [
     transform: translateY(0);
   }
 
-  @media (max-width: 900px) {
-    .footer-bar {
+  /* Responsive */
+  @media (max-width: 1080px) {
+    .footer-sitemap {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 32px 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-cta-band {
       flex-direction: column;
       align-items: flex-start;
-      gap: 18px;
-      padding: 20px;
+      gap: 24px;
     }
 
-    .footer-nav {
+    .footer-sitemap {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px 20px;
+    }
+
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
       gap: 16px;
     }
   }
 
-  @media (max-width: 640px) {
-    .footer-shell {
-      padding: 40px 18px 24px;
-    }
-
-    .footer-cta-row {
-      flex-direction: column;
-      width: 100%;
-    }
-
-    .footer-cta-row .adaptif-btn,
-    .footer-cta-row .footer-email-pill {
-      width: 100%;
+  @media (max-width: 480px) {
+    .footer-sitemap {
+      grid-template-columns: 1fr;
     }
   }
 </style>

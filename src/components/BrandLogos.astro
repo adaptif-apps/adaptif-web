@@ -97,7 +97,12 @@ const sequence2 = fullSet.map((logo, idx) => ({
     color: var(--color-text-muted);
     text-align: center;
     margin: 0;
-    transition: color 0.3s ease;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: 
+      opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      color 0.3s ease;
   }
 
   .brand-logos-heading:hover {
@@ -111,6 +116,11 @@ const sequence2 = fullSet.map((logo, idx) => ({
     max-width: 1180px;
     margin-inline: auto;
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(18px);
+    transition: 
+      opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
     mask-image: linear-gradient(
       to right,
       transparent 0%,
@@ -125,6 +135,12 @@ const sequence2 = fullSet.map((logo, idx) => ({
       black 90%,
       transparent 100%
     );
+  }
+
+  .brand-logos-section.is-visible .brand-logos-heading,
+  .brand-logos-section.is-visible .marquee-viewport {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .marquee-track {

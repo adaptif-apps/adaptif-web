@@ -131,6 +131,11 @@
 
   .eyebrow-wrapper {
     margin-bottom: clamp(14px, 2vh, 20px);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: 
+      opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .eyebrow-text {
@@ -153,6 +158,11 @@
     margin-bottom: clamp(18px, 2.5vh, 24px);
     max-width: 540px;
     text-wrap: balance;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: 
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s,
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
   }
 
   .rethinking-paragraph {
@@ -164,6 +174,11 @@
     margin-bottom: clamp(28px, 4vh, 38px);
     max-width: 520px;
     text-wrap: pretty;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.16s,
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.16s;
   }
 
   .rethinking-action-row {
@@ -171,6 +186,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.24s,
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.24s;
   }
 
   .btn-primary-cta {
@@ -255,6 +275,37 @@
   .rethinking-visual-wrapper {
     position: relative;
     width: 100%;
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    transition: 
+      opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s,
+      transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.22s;
+  }
+
+  /* Staggered Reveal Trigger */
+  .rethinking-section.is-visible .eyebrow-wrapper,
+  .rethinking-section.is-visible .rethinking-title,
+  .rethinking-section.is-visible .rethinking-paragraph,
+  .rethinking-section.is-visible .rethinking-action-row {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .rethinking-section.is-visible .rethinking-visual-wrapper {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow-wrapper,
+    .rethinking-title,
+    .rethinking-paragraph,
+    .rethinking-action-row,
+    .rethinking-visual-wrapper {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
   }
 
   .image-viewport {

@@ -598,15 +598,6 @@ const serviceCards: ServiceCard[] = [
       border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .service-card:hover,
-  .service-card.is-active {
-    transform: translateY(-8px) scale(1.01);
-    box-shadow: 
-      0 28px 56px -12px rgba(15, 23, 42, 0.2),
-      0 10px 20px -4px rgba(15, 23, 42, 0.1),
-      0 0 0 1px rgba(2, 132, 199, 0.35);
-  }
-
   /* Media Background */
   .card-media {
     position: absolute;
@@ -626,12 +617,6 @@ const serviceCards: ServiceCard[] = [
       filter 0.5s ease;
   }
 
-  .service-card:hover .card-img,
-  .service-card.is-active .card-img {
-    transform: scale(1.08);
-    filter: brightness(0.92);
-  }
-
   /* Default Scrim */
   .card-scrim-default {
     position: absolute;
@@ -646,7 +631,7 @@ const serviceCards: ServiceCard[] = [
     transition: opacity 0.45s ease;
   }
 
-  /* Hover Scrim: Darkens slightly from bottom to amplify tags readability */
+  /* Hover / Active Scrim: Darkens slightly from bottom to amplify tags readability */
   .card-scrim-hover {
     position: absolute;
     inset: 0;
@@ -661,14 +646,8 @@ const serviceCards: ServiceCard[] = [
     transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .service-card:hover .card-scrim-hover,
-  .service-card.is-active .card-scrim-hover {
-    opacity: 1;
-  }
-
-
   /* ==========================================================================
-     CARD CONTENT & HOVER TAGS REVEAL
+     CARD CONTENT & TAGS DRAWER
      ========================================================================== */
   .card-content {
     position: relative;
@@ -699,7 +678,7 @@ const serviceCards: ServiceCard[] = [
     filter: drop-shadow(0 2px 12px rgba(72, 200, 255, 0.35));
   }
 
-  /* Tags Drawer: Hidden initially, expands on card hover or touch tap */
+  /* Tags Drawer: Hidden by default, expands on desktop hover or mobile tap */
   .card-tags-drawer {
     display: grid;
     grid-template-rows: 0fr;
@@ -707,12 +686,6 @@ const serviceCards: ServiceCard[] = [
     transition: 
       grid-template-rows 0.45s cubic-bezier(0.16, 1, 0.3, 1),
       opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .service-card:hover .card-tags-drawer,
-  .service-card.is-active .card-tags-drawer {
-    grid-template-rows: 1fr;
-    opacity: 1;
   }
 
   .card-tags-inner {
@@ -730,11 +703,6 @@ const serviceCards: ServiceCard[] = [
     transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
   }
 
-  .service-card:hover .tags-divider,
-  .service-card.is-active .tags-divider {
-    transform: scaleX(1);
-  }
-
   .tags-cloud {
     display: flex;
     flex-wrap: wrap;
@@ -744,9 +712,78 @@ const serviceCards: ServiceCard[] = [
     transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
   }
 
-  .service-card:hover .tags-cloud,
+  /* ==========================================================================
+     ACTIVE STATE (Controlled by explicit tap/click toggle on mobile & desktop)
+     ========================================================================== */
+  .service-card.is-active {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 
+      0 28px 56px -12px rgba(15, 23, 42, 0.2),
+      0 10px 20px -4px rgba(15, 23, 42, 0.1),
+      0 0 0 1px rgba(2, 132, 199, 0.35);
+  }
+
+  .service-card.is-active .card-img {
+    transform: scale(1.08);
+    filter: brightness(0.92);
+  }
+
+  .service-card.is-active .card-scrim-hover {
+    opacity: 1;
+  }
+
+  .service-card.is-active .card-tags-drawer {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .service-card.is-active .tags-divider {
+    transform: scaleX(1);
+  }
+
   .service-card.is-active .tags-cloud {
     transform: translateY(0);
+  }
+
+  /* ==========================================================================
+     DESKTOP HOVER ONLY (Disabled on mobile / touch devices)
+     ========================================================================== */
+  @media (hover: hover) and (pointer: fine) {
+    .service-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 
+        0 28px 56px -12px rgba(15, 23, 42, 0.2),
+        0 10px 20px -4px rgba(15, 23, 42, 0.1),
+        0 0 0 1px rgba(2, 132, 199, 0.35);
+    }
+
+    .service-card:hover .card-img {
+      transform: scale(1.08);
+      filter: brightness(0.92);
+    }
+
+    .service-card:hover .card-scrim-hover {
+      opacity: 1;
+    }
+
+    .service-card:hover .card-tags-drawer {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .service-card:hover .tags-divider {
+      transform: scaleX(1);
+    }
+
+    .service-card:hover .tags-cloud {
+      transform: translateY(0);
+    }
+
+    .tag-chip:hover {
+      background: rgba(72, 200, 255, 0.22);
+      border-color: rgba(72, 200, 255, 0.5);
+      color: #ffffff;
+    }
   }
 
   .tag-chip {

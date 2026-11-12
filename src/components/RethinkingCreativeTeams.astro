@@ -31,7 +31,7 @@
         <!-- CTA and Highlights -->
         <div class="rethinking-action-row">
           <a href="#contact" class="btn-primary-cta">
-            <span class="btn-glow-pulse" aria-hidden="true"></span>
+            <span class="btn-glow-aurora" aria-hidden="true"></span>
             <span class="btn-content">
               <span>Book a Call</span>
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -178,9 +178,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 13px 28px;
-    font-size: 0.98rem;
+    padding: 14px 32px;
+    font-size: var(--font-size-btn);
     font-weight: 600;
+    letter-spacing: -0.01em;
     color: #ffffff;
     background: 
       radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%),
@@ -207,36 +208,42 @@
   .btn-content svg {
     color: #ffffff;
     filter: drop-shadow(0 1px 2px rgba(0, 20, 60, 0.4));
-    transition: transform var(--duration-fast) var(--ease-spring);
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: arrow-nudge 3s ease-in-out infinite;
   }
 
-  .btn-glow-pulse {
+  .btn-glow-aurora {
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 60%;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.6),
-      transparent
-    );
-    transform: skewX(-20deg);
-    transition: left 0.75s ease;
+    inset: -2px;
+    background: radial-gradient(circle at 50% 0%, rgba(72, 200, 255, 0.8) 0%, transparent 70%);
+    opacity: 0.6;
+    transition: opacity var(--duration-fast);
   }
 
   .btn-primary-cta:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.01);
     box-shadow: var(--shadow-button-hover);
   }
 
-  .btn-primary-cta:hover .btn-glow-pulse {
-    left: 180%;
+  .btn-primary-cta:hover .btn-glow-aurora {
+    opacity: 1;
   }
 
   .btn-primary-cta:hover .btn-content svg {
-    transform: translateX(3px);
+    animation: none;
+    transform: translateX(5px);
+  }
+
+  @keyframes arrow-nudge {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(3.5px);
+    }
+    40% {
+      transform: translateX(0);
+    }
   }
 
   .action-caption {

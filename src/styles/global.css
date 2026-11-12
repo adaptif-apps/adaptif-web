@@ -133,6 +133,21 @@ img, svg {
   -webkit-text-fill-color: transparent;
 }
 
+/* ==========================================================================
+   Micro-Animations
+   ========================================================================== */
+@keyframes arrow-nudge {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(3.5px);
+  }
+  40% {
+    transform: translateX(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

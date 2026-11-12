@@ -33,11 +33,12 @@
     renderer.setPixelRatio(dpr);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.z = 2.4;
+    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+    camera.position.set(0, 0.18, 2.35);
+    camera.lookAt(0, 0, 0);
 
     // -----------------------------------------------------------------------
-    // 1. Procedural Painterly Cosmic Vortex Shader
+    // 1. Procedural Translucent Painterly Cosmic Vortex Shader (3D Perspective)
     // -----------------------------------------------------------------------
     const vortexVertexShader = `
       varying vec2 vUv;
@@ -54,7 +55,6 @@
       uniform vec2 uResolution;
       uniform vec2 uMouse;
 
-      // Hash & 2D Simplex-like Value Noise
       float hash(vec2 p) {
         p = fract(p * vec2(123.34, 456.21));
         p += dot(p, p + 45.32);
@@ -89,73 +89,72 @@
         vec2 uv = (vUv - 0.5) * aspect;
 
         // Subtle mouse parallax
-        uv += (uMouse - 0.5) * 0.035;
+        uv += (uMouse - 0.5) * 0.03;
 
-        // Perspective tilt to match the oval funnel in the reference
-        vec2 p = uv;
-        p.y *= 1.38;
-        // Slight diagonal tilt
-        float tilt = -0.14;
+        // Diagonal galaxy tilt
+        float tilt = -0.16;
         float ct = cos(tilt);
         float st = sin(tilt);
-        p = mat2(ct, -st, st, ct) * p;
+        vec2 q = mat2(ct, -st, st, ct) * uv;
+
+        // True 3D perspective projection onto an inclined galactic plane
+        // Near edge (bottom) expands toward viewer; far edge (top) recedes
+        float persp = 1.0 / max(0.32, 1.0 + q.y * 0.62);
+        vec2 p = vec2(q.x * persp, q.y * 1.65 * persp);
 
         float r = length(p);
         float angle = atan(p.y, p.x);
 
-        // Differential spiral twist (stronger near the event horizon)
-        float invR = 1.0 / (r + 0.16);
-        float spin = uTime * 0.16;
-        float spiralAngle = angle + invR * 2.05 - spin * (0.65 + 0.55 * invR);
+        // Slower, graceful differential spiral rotation
+        float invR = 1.0 / (r + 0.18);
+        float spin = uTime * 0.045;
+        float spiralAngle = angle + invR * 2.15 - spin * (0.6 + 0.45 * invR);
 
-        // Domain-warped painterly brush strokes along the spiral
+        // Domain-warped translucent nebula currents
         vec2 warpCoord = vec2(
-          cos(spiralAngle) * (r * 3.2 + 0.4),
-          sin(spiralAngle) * (r * 3.2 + 0.4)
+          cos(spiralAngle) * (r * 3.0 + 0.35),
+          sin(spiralAngle) * (r * 3.0 + 0.35)
         );
-        float n1 = fbm(warpCoord * 1.45 + vec2(uTime * 0.04, -uTime * 0.03));
-        float n2 = fbm(warpCoord * 3.1 - vec2(n1 * 1.35) + vec2(-uTime * 0.05));
+        float n1 = fbm(warpCoord * 1.4 + vec2(uTime * 0.012, -uTime * 0.01));
+        float n2 = fbm(warpCoord * 2.9 - vec2(n1 * 1.3) + vec2(-uTime * 0.015));
 
-        // Spiral arm density (2 major + harmonic filaments)
-        float arms = sin(spiralAngle * 2.0 + n1 * 4.2 + log(r + 0.08) * 3.6);
-        float filaments = sin(spiralAngle * 5.0 - n2 * 5.5 + r * 7.5);
-        float swirl = smoothstep(-0.35, 0.88, arms * 0.65 + filaments * 0.35 + (n2 - 0.5) * 0.8);
+        float arms = sin(spiralAngle * 2.0 + n1 * 4.0 + log(r + 0.08) * 3.5);
+        float filaments = sin(spiralAngle * 5.0 - n2 * 5.2 + r * 7.0);
+        float swirl = smoothstep(-0.3, 0.9, arms * 0.65 + filaments * 0.35 + (n2 - 0.5) * 0.75);
 
-        // Radial envelope: deep black event horizon in center, glowing accretion band, soft outer falloff
-        float holeMask = smoothstep(0.14, 0.31, r + (n1 - 0.5) * 0.04);
-        float innerRim = exp(-pow((r - 0.28) * 5.2, 2.0));
-        float midDisk = exp(-pow((r - 0.52) * 2.1, 2.0));
-        float outerGlow = exp(-r * 1.35);
+        // Radial envelope: deep black hole center, translucent accretion cloud, soft outer fade
+        float holeMask = smoothstep(0.14, 0.34, r + (n1 - 0.5) * 0.04);
+        float innerRim = exp(-pow((r - 0.30) * 4.8, 2.0));
+        float midDisk = exp(-pow((r - 0.56) * 1.9, 2.0));
+        float outerGlow = exp(-r * 1.25);
 
-        // Color Palette matching reference image
-        vec3 cVoid = vec3(0.008, 0.014, 0.032);
-        vec3 cCobalt = vec3(0.06, 0.17, 0.34);
-        vec3 cSlateBlue = vec3(0.14, 0.31, 0.50);
-        vec3 cViolet = vec3(0.24, 0.14, 0.34);
-        vec3 cAmber = vec3(0.76, 0.37, 0.11);
-        vec3 cGold = vec3(0.98, 0.72, 0.28);
-        vec3 cSpark = vec3(1.0, 0.93, 0.76);
+        // Palette matching reference, tuned for airy translucency over #030712
+        vec3 cVoid = vec3(0.012, 0.024, 0.058);
+        vec3 cCobalt = vec3(0.05, 0.16, 0.34);
+        vec3 cSlateBlue = vec3(0.12, 0.28, 0.46);
+        vec3 cViolet = vec3(0.22, 0.13, 0.32);
+        vec3 cAmber = vec3(0.72, 0.36, 0.11);
+        vec3 cGold = vec3(0.95, 0.70, 0.28);
+        vec3 cSpark = vec3(1.0, 0.92, 0.74);
 
-        // Base cosmic canvas
         vec3 col = cVoid;
 
-        // Deep blue & violet swirling currents
-        float blueBand = smoothstep(0.15, 0.85, n1) * outerGlow;
-        col = mix(col, cCobalt, blueBand * 0.92);
-        col = mix(col, cSlateBlue, smoothstep(0.45, 0.92, n2) * midDisk * 0.78);
-        col += cViolet * innerRim * (0.45 + 0.55 * n1) * 0.65;
+        // Translucent nebula layers (more transparent so stars pop)
+        float blueBand = smoothstep(0.22, 0.88, n1) * outerGlow;
+        col = mix(col, cCobalt, blueBand * 0.48);
+        col = mix(col, cSlateBlue, smoothstep(0.5, 0.94, n2) * midDisk * 0.38);
+        col += cViolet * innerRim * (0.4 + 0.6 * n1) * 0.32;
 
-        // Warm copper, amber & golden accretion streams
-        float warmMask = swirl * (midDisk * 1.15 + outerGlow * 0.45);
-        col = mix(col, cAmber, clamp(warmMask * 0.95, 0.0, 1.0));
-        col += cGold * pow(clamp(warmMask, 0.0, 1.0), 1.8) * (0.75 + 0.55 * n2);
-        col += cSpark * pow(clamp(swirl * n2 * midDisk, 0.0, 1.0), 3.0) * 1.25;
+        float warmMask = swirl * (midDisk * 0.62 + outerGlow * 0.24);
+        col = mix(col, cAmber, clamp(warmMask * 0.68, 0.0, 1.0));
+        col += cGold * pow(clamp(warmMask, 0.0, 1.0), 1.7) * (0.45 + 0.4 * n2);
+        col += cSpark * pow(clamp(swirl * n2 * midDisk, 0.0, 1.0), 3.0) * 0.58;
 
-        // Carve out the black hole center with a crisp dark depth
+        // Black hole core
         col *= holeMask;
 
-        // Subtle outer vignette so edges blend seamlessly into #030712
-        float edgeFade = 1.0 - smoothstep(0.65, 1.45, length(uv));
+        // Seamless edge blend into #030712
+        float edgeFade = 1.0 - smoothstep(0.65, 1.55, length(uv));
         col = mix(vec3(0.012, 0.027, 0.071), col, edgeFade);
 
         gl_FragColor = vec4(col, 1.0);
@@ -180,20 +179,25 @@
     vortexMesh.frustumCulled = false;
     scene.add(vortexMesh);
 
+    // Shared 3D galaxy group inclined in true 3D perspective
+    const galaxyGroup = new THREE.Group();
+    galaxyGroup.rotation.x = -0.92; // ~53 deg perspective tilt
+    galaxyGroup.rotation.z = 0.16;  // subtle diagonal angle
+    scene.add(galaxyGroup);
+
     // -----------------------------------------------------------------------
-    // 2. Orbiting Golden Stardust Particles
+    // 2. Orbiting Golden Stardust & Fine Stars (3D Spiral)
     // -----------------------------------------------------------------------
-    const dustCount = 2200;
+    const dustCount = 4200;
     const dustPositions = new Float32Array(dustCount * 3);
     const dustData = new Float32Array(dustCount * 4); // radius, angle, speed, size
 
     for (let i = 0; i < dustCount; i++) {
-      // Bias density toward the glowing accretion band (0.28 - 1.15)
-      const r = 0.24 + Math.pow(Math.random(), 1.25) * 1.15;
+      const r = 0.25 + Math.pow(Math.random(), 1.15) * 1.65;
       const armOffset = (i % 2) * Math.PI;
-      const angle = armOffset + r * 3.1 + (Math.random() - 0.5) * 2.4;
-      const speed = (0.14 + Math.random() * 0.14) / (r + 0.22);
-      const size = 1.0 + Math.random() * 2.6;
+      const angle = armOffset + r * 3.0 + (Math.random() - 0.5) * 2.8;
+      const speed = (0.12 + Math.random() * 0.12) / (r + 0.28);
+      const size = 1.1 + Math.random() * 2.8;
 
       dustData[i * 4] = r;
       dustData[i * 4 + 1] = angle;
@@ -201,8 +205,8 @@
       dustData[i * 4 + 3] = size;
 
       dustPositions[i * 3] = Math.cos(angle) * r;
-      dustPositions[i * 3 + 1] = (Math.sin(angle) * r) / 1.38;
-      dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
+      dustPositions[i * 3 + 1] = Math.sin(angle) * r;
+      dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.12 - 0.16 / (r + 0.35);
     }
 
     const dustGeo = new THREE.BufferGeometry();
@@ -230,24 +234,19 @@
           float speed = aData.z;
           float size = aData.w;
 
-          float a = angle0 - uTime * speed * 0.45;
-          vec2 pos2d = vec2(cos(a) * r, sin(a) * r / 1.38);
+          // Slower spiral orbit
+          float a = angle0 - uTime * speed * 0.14;
+          vec3 localPos = vec3(cos(a) * r, sin(a) * r, position.z);
 
-          // Match slight diagonal tilt
-          float tilt = 0.14;
-          float ct = cos(tilt);
-          float st = sin(tilt);
-          pos2d = mat2(ct, -st, st, ct) * pos2d;
-
-          vec4 mvPosition = modelViewMatrix * vec4(pos2d, position.z, 1.0);
+          vec4 mvPosition = modelViewMatrix * vec4(localPos, 1.0);
           gl_Position = projectionMatrix * mvPosition;
-          gl_PointSize = size * uPixelRatio * (2.2 / max(-mvPosition.z, 0.5));
+          gl_PointSize = size * uPixelRatio * (2.6 / max(-mvPosition.z, 0.5));
 
-          float twinkle = 0.65 + 0.35 * sin(uTime * 1.8 + angle0 * 7.0);
-          float holeFade = smoothstep(0.22, 0.36, r);
-          float outerFade = 1.0 - smoothstep(0.95, 1.42, r);
-          vAlpha = twinkle * holeFade * outerFade * 0.85;
-          vHeat = clamp(1.0 - (r - 0.25) * 0.75, 0.0, 1.0);
+          float twinkle = 0.65 + 0.35 * sin(uTime * 1.4 + angle0 * 7.0);
+          float holeFade = smoothstep(0.22, 0.38, r);
+          float outerFade = 1.0 - smoothstep(1.3, 1.9, r);
+          vAlpha = twinkle * holeFade * outerFade * 0.92;
+          vHeat = clamp(1.0 - (r - 0.25) * 0.55, 0.0, 1.0);
         }
       `,
       fragmentShader: `
@@ -257,39 +256,48 @@
           vec2 c = gl_PointCoord - 0.5;
           float d = length(c);
           if (d > 0.5) discard;
-          float glow = pow(1.0 - d * 2.0, 2.2);
-          vec3 col = mix(vec3(0.95, 0.62, 0.24), vec3(1.0, 0.94, 0.78), vHeat);
+          float glow = pow(1.0 - d * 2.0, 2.0);
+          vec3 col = mix(vec3(0.95, 0.65, 0.28), vec3(1.0, 0.96, 0.86), vHeat);
           gl_FragColor = vec4(col, glow * vAlpha);
         }
       `,
     });
 
     const dustPoints = new THREE.Points(dustGeo, dustMat);
-    scene.add(dustPoints);
+    galaxyGroup.add(dustPoints);
 
     // -----------------------------------------------------------------------
-    // 3. Bright 4-Point Diffraction Spike Stars
+    // 3. Bright 4-Point Diffraction Spike Stars (Orbiting in Spiral!)
     // -----------------------------------------------------------------------
-    const starCount = 42;
+    const starCount = 115;
     const starPositions = new Float32Array(starCount * 3);
-    const starSeeds = new Float32Array(starCount * 3); // size, phase, warmth
+    const starOrbits = new Float32Array(starCount * 4); // radius, angle0, speed, size
+    const starSeeds = new Float32Array(starCount * 2);  // phase, warmth
 
     for (let i = 0; i < starCount; i++) {
-      // Keep stars mostly outside the black hole core
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 0.38 + Math.random() * 1.05;
-      starPositions[i * 3] = Math.cos(angle) * dist * 1.25;
-      starPositions[i * 3 + 1] = Math.sin(angle) * dist * 0.78;
-      starPositions[i * 3 + 2] = 0.05;
+      const r = 0.34 + Math.pow(Math.random(), 0.95) * 1.65;
+      const armOffset = (i % 2) * Math.PI;
+      const angle = armOffset + r * 2.6 + (Math.random() - 0.5) * 3.4;
+      const speed = (0.10 + Math.random() * 0.10) / (r + 0.3);
+      const size = 14.0 + Math.random() * 24.0;
 
-      starSeeds[i * 3] = 14.0 + Math.random() * 22.0;
-      starSeeds[i * 3 + 1] = Math.random() * Math.PI * 2.0;
-      starSeeds[i * 3 + 2] = Math.random(); // 0 = cool white, 1 = warm gold
+      starOrbits[i * 4] = r;
+      starOrbits[i * 4 + 1] = angle;
+      starOrbits[i * 4 + 2] = speed;
+      starOrbits[i * 4 + 3] = size;
+
+      starPositions[i * 3] = Math.cos(angle) * r;
+      starPositions[i * 3 + 1] = Math.sin(angle) * r;
+      starPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.18 - 0.12 / (r + 0.35);
+
+      starSeeds[i * 2] = Math.random() * Math.PI * 2.0;
+      starSeeds[i * 2 + 1] = Math.random(); // 0 = cool white, 1 = warm gold
     }
 
     const starGeo = new THREE.BufferGeometry();
     starGeo.setAttribute("position", new THREE.BufferAttribute(starPositions, 3));
-    starGeo.setAttribute("aSeed", new THREE.BufferAttribute(starSeeds, 3));
+    starGeo.setAttribute("aOrbit", new THREE.BufferAttribute(starOrbits, 4));
+    starGeo.setAttribute("aSeed", new THREE.BufferAttribute(starSeeds, 2));
 
     const starMat = new THREE.ShaderMaterial({
       transparent: true,
@@ -300,48 +308,62 @@
         uPixelRatio: { value: dpr },
       },
       vertexShader: `
-        attribute vec3 aSeed;
+        attribute vec4 aOrbit;
+        attribute vec2 aSeed;
         uniform float uTime;
         uniform float uPixelRatio;
         varying float vTwinkle;
         varying float vWarmth;
+        varying float vFade;
 
         void main() {
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          float r = aOrbit.x;
+          float angle0 = aOrbit.y;
+          float speed = aOrbit.z;
+          float size = aOrbit.w;
+
+          // Spiral orbit synchronized with the galaxy
+          float a = angle0 - uTime * speed * 0.14;
+          vec3 localPos = vec3(cos(a) * r, sin(a) * r, position.z);
+
+          vec4 mvPosition = modelViewMatrix * vec4(localPos, 1.0);
           gl_Position = projectionMatrix * mvPosition;
-          vTwinkle = 0.65 + 0.35 * sin(uTime * 1.4 + aSeed.y);
-          vWarmth = aSeed.z;
-          gl_PointSize = aSeed.x * uPixelRatio * (0.85 + 0.15 * vTwinkle);
+
+          vTwinkle = 0.68 + 0.32 * sin(uTime * 1.2 + aSeed.x);
+          vWarmth = aSeed.y;
+          vFade = smoothstep(0.28, 0.45, r) * (1.0 - smoothstep(1.45, 2.0, r));
+
+          gl_PointSize = size * uPixelRatio * (2.4 / max(-mvPosition.z, 0.5)) * (0.85 + 0.15 * vTwinkle);
         }
       `,
       fragmentShader: `
         varying float vTwinkle;
         varying float vWarmth;
+        varying float vFade;
         void main() {
           vec2 uv = gl_PointCoord - 0.5;
           float d = length(uv);
           if (d > 0.5) discard;
 
-          // Core + 4-point diffraction spikes
-          float core = exp(-d * 14.0);
-          float spikeH = exp(-abs(uv.y) * 34.0) * exp(-abs(uv.x) * 6.5);
-          float spikeV = exp(-abs(uv.x) * 34.0) * exp(-abs(uv.y) * 6.5);
-          float intensity = clamp(core + (spikeH + spikeV) * 0.75, 0.0, 1.0);
+          float core = exp(-d * 13.0);
+          float spikeH = exp(-abs(uv.y) * 34.0) * exp(-abs(uv.x) * 6.0);
+          float spikeV = exp(-abs(uv.x) * 34.0) * exp(-abs(uv.y) * 6.0);
+          float intensity = clamp(core + (spikeH + spikeV) * 0.78, 0.0, 1.0);
 
-          vec3 coolStar = vec3(0.86, 0.94, 1.0);
-          vec3 warmStar = vec3(1.0, 0.85, 0.52);
+          vec3 coolStar = vec3(0.88, 0.95, 1.0);
+          vec3 warmStar = vec3(1.0, 0.87, 0.56);
           vec3 col = mix(coolStar, warmStar, vWarmth);
 
-          gl_FragColor = vec4(col, intensity * vTwinkle * 0.9);
+          gl_FragColor = vec4(col, intensity * vTwinkle * vFade * 0.95);
         }
       `,
     });
 
     const starPoints = new THREE.Points(starGeo, starMat);
-    scene.add(starPoints);
+    galaxyGroup.add(starPoints);
 
     // -----------------------------------------------------------------------
-    // Resize, Mouse & Visibility Loop
+    // Resize, Mouse Parallax & Visibility Loop
     // -----------------------------------------------------------------------
     const handleResize = () => {
       const rect = canvas.parentElement?.getBoundingClientRect();
@@ -388,6 +410,11 @@
       currentMouse.x += (targetMouse.x - currentMouse.x) * 0.04;
       currentMouse.y += (targetMouse.y - currentMouse.y) * 0.04;
 
+      // Subtle 3D camera parallax
+      camera.position.x = (currentMouse.x - 0.5) * 0.14;
+      camera.position.y = 0.18 + (currentMouse.y - 0.5) * 0.08;
+      camera.lookAt(0, 0, 0);
+
       vortexUniforms.uTime.value = elapsed;
       vortexUniforms.uMouse.value.set(currentMouse.x, currentMouse.y);
       dustMat.uniforms.uTime.value = elapsed;
@@ -398,7 +425,6 @@
 
     renderFrame();
 
-    // Cleanup on Astro view transition if applicable
     document.addEventListener(
       "astro:before-swap",
       () => {
@@ -439,10 +465,9 @@
     width: 100%;
     height: 100%;
     display: block;
-    opacity: 0.92;
+    opacity: 0.94;
   }
 
-  /* Subtle dark scrim & top-edge blend so footer typography stays crisp */
   .footer-vortex-scrim {
     position: absolute;
     inset: 0;
@@ -450,14 +475,14 @@
       linear-gradient(
         180deg,
         rgba(3, 7, 18, 0.86) 0%,
-        rgba(3, 7, 18, 0.42) 22%,
-        rgba(3, 7, 18, 0.48) 72%,
+        rgba(3, 7, 18, 0.38) 22%,
+        rgba(3, 7, 18, 0.44) 72%,
         rgba(3, 7, 18, 0.88) 100%
       ),
       radial-gradient(
         ellipse 75% 65% at 50% 52%,
-        rgba(3, 7, 18, 0.12) 0%,
-        rgba(3, 7, 18, 0.62) 100%
+        rgba(3, 7, 18, 0.1) 0%,
+        rgba(3, 7, 18, 0.58) 100%
       );
     pointer-events: none;
   }

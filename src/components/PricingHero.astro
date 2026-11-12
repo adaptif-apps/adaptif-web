@@ -529,6 +529,17 @@ const fullStackFeatures: PlanFeature[] = [
         if (!item || !detail) return;
 
         const isOpen = trigger.getAttribute("aria-expanded") === "true";
+
+        // Close any other open dropdown before opening the clicked one
+        if (!isOpen) {
+          root.querySelectorAll<HTMLElement>(".plan-feature-item.is-open").forEach((openItem) => {
+            if (openItem === item) return;
+            openItem.classList.remove("is-open");
+            openItem.querySelector<HTMLButtonElement>(".feature-row-btn")?.setAttribute("aria-expanded", "false");
+            openItem.querySelector<HTMLElement>(".feature-row-detail")?.setAttribute("aria-hidden", "true");
+          });
+        }
+
         trigger.setAttribute("aria-expanded", isOpen ? "false" : "true");
         item.classList.toggle("is-open", !isOpen);
         detail.setAttribute("aria-hidden", isOpen ? "true" : "false");

@@ -97,7 +97,16 @@ const whyUsItems: WhyUsItem[] = [
       <img 
         src="/logo.svg" 
         alt="Adaptif" 
-        class="brand-logo" 
+        class="brand-logo brand-logo-default" 
+        width="116" 
+        height="56" 
+        loading="eager" 
+        decoding="async" 
+      />
+      <img 
+        src="/logo-dark.svg" 
+        alt="Adaptif" 
+        class="brand-logo brand-logo-dark" 
         width="116" 
         height="56" 
         loading="eager" 
@@ -559,6 +568,80 @@ const whyUsItems: WhyUsItem[] = [
       0 0 38px -2px rgba(72, 200, 255, 0.35);
   }
 
+  /* ==========================================================================
+     LIGHT THEME (WHEN MENU FLOATS OVER LIGHT BACKGROUND SECTIONS)
+     ========================================================================== */
+  .header-container.theme-light.is-scrolled:not(.mobile-open) .header-capsule {
+    background: rgba(255, 255, 255, 0.84);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(15, 23, 42, 0.09);
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 1),
+      0 12px 32px -6px rgba(15, 23, 42, 0.08),
+      0 0 24px -4px rgba(2, 132, 199, 0.12);
+  }
+
+  .header-container.theme-light.is-scrolled:not(.mobile-open) .header-capsule:hover {
+    border-color: rgba(2, 132, 199, 0.32);
+    box-shadow: 
+      inset 0 1px 2px 0 rgba(255, 255, 255, 1),
+      0 16px 40px -4px rgba(15, 23, 42, 0.12),
+      0 0 32px -2px rgba(2, 132, 199, 0.2);
+  }
+
+  .header-container.theme-light .nav-link {
+    color: #334155;
+  }
+
+  .header-container.theme-light .nav-link:hover,
+  .header-container.theme-light .nav-item-services:hover .nav-link-services,
+  .header-container.theme-light .nav-item-services.is-open .nav-link-services,
+  .header-container.theme-light .nav-item-why-us:hover .nav-link-why-us,
+  .header-container.theme-light .nav-item-why-us.is-open .nav-link-why-us {
+    color: #0f172a;
+  }
+
+  .header-container.theme-light .nav-link::before {
+    background: rgba(15, 23, 42, 0.06);
+  }
+
+  .header-container.theme-light .chevron-arrow {
+    color: #64748b;
+  }
+
+  .header-container.theme-light .nav-item-services:hover .chevron-arrow,
+  .header-container.theme-light .nav-item-services.is-open .chevron-arrow,
+  .header-container.theme-light .nav-item-why-us:hover .chevron-arrow,
+  .header-container.theme-light .nav-item-why-us.is-open .chevron-arrow {
+    color: #0284c7;
+  }
+
+  .header-container.theme-light .mobile-toggle {
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.12);
+  }
+
+  .header-container.theme-light .mobile-toggle:hover {
+    background: rgba(15, 23, 42, 0.1);
+  }
+
+  .header-container.theme-light .mobile-toggle .bar {
+    background-color: #0f172a;
+  }
+
+  .header-container.theme-light .btn-cta-header {
+    box-shadow: 
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.65),
+      0 4px 16px -2px rgba(10, 163, 248, 0.45);
+  }
+
+  .header-container.theme-light .btn-cta-header:hover {
+    box-shadow: 
+      inset 0 1px 2px 0 rgba(255, 255, 255, 0.8),
+      0 8px 24px -2px rgba(10, 163, 248, 0.6);
+  }
+
   /* When mobile menu is open: completely borderless, glowless, and completely static (no shrinking or hover shifts) */
   .header-container.mobile-open .header-capsule,
   .header-container.mobile-open .header-capsule:hover {
@@ -585,6 +668,7 @@ const whyUsItems: WhyUsItem[] = [
 
   /* Brand Logo */
   .brand-link {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -597,12 +681,40 @@ const whyUsItems: WhyUsItem[] = [
     height: 34px;
     width: auto;
     object-fit: contain;
+    transition: 
+      transform var(--duration-fast) var(--ease-spring),
+      opacity 0.35s ease;
+  }
+
+  .brand-logo-default {
+    display: block;
+    opacity: 1;
     filter: drop-shadow(0 2px 8px rgba(0, 102, 255, 0.25));
-    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .brand-logo-dark {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.06));
   }
 
   .brand-link:hover .brand-logo {
     transform: scale(1.03);
+  }
+
+  /* When over light background: crossfade logo */
+  .header-container.theme-light .brand-logo-default {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .header-container.theme-light .brand-logo-dark {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   /* Desktop Navigation */
@@ -2016,13 +2128,36 @@ const whyUsItems: WhyUsItem[] = [
   const mobileWhyUsBtn = document.getElementById('mobile-why-us-accordion');
   const mobileWhyUsPanel = document.getElementById('mobile-why-us-panel');
 
+  function updateHeaderTheme() {
+    if (!headerContainer) return;
+    const capsule = headerContainer.querySelector('.header-capsule');
+    const rect = capsule ? capsule.getBoundingClientRect() : headerContainer.getBoundingClientRect();
+    const sampleY = rect.top + (rect.height / 2);
+
+    const lightSections = document.querySelectorAll('[data-theme="light"], .creative-range-section');
+    let isOverLight = false;
+
+    for (const sec of lightSections) {
+      const sRect = sec.getBoundingClientRect();
+      if (sRect.top <= sampleY && sRect.bottom >= sampleY) {
+        isOverLight = true;
+        break;
+      }
+    }
+
+    headerContainer.classList.toggle('theme-light', isOverLight);
+  }
+
   function handleScroll() {
     if (!headerContainer) return;
     const isScrolled = window.scrollY > 20;
     headerContainer.classList.toggle('is-scrolled', isScrolled);
+    updateHeaderTheme();
   }
 
   window.addEventListener('scroll', handleScroll, { passive: true });
+  window.addEventListener('resize', updateHeaderTheme, { passive: true });
+  document.addEventListener('astro:page-load', handleScroll);
   handleScroll();
 
   // Desktop Mega Menus: Helper to wire hover, click, and accessibility

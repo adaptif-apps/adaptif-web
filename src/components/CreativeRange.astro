@@ -1,5 +1,7 @@
 ---
-// CreativeRange.astro - Light Mode Section with Tall Tilted Tiles Gallery (Zero Pointer Interactivity)
+// CreativeRange.astro - Light Mode Section with Tilted Tiles Gallery
+// Configuration: columns=15, perspective=900, rotateX=48, rotateY=0, rotateZ=0, planeWidth=210, parallax=false
+
 interface TileItem {
   id: string;
   image: string;
@@ -7,72 +9,55 @@ interface TileItem {
   category: "Tech" | "Fashion" | "Wellness" | "Brand" | "3D";
 }
 
-// 8 distinct rich items per column to support generous vertical scrolling without gaps
-const column1: TileItem[] = [
-  { id: "c1-1", image: "/header_images/work-0.jpg", title: "Apex FinTech Core", category: "Tech" },
-  { id: "c1-2", image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg", title: "Aura Botanical Skin", category: "Wellness" },
-  { id: "c1-3", image: "/header_images/work-3.jpg", title: "Vogue Maison Capsule", category: "Fashion" },
-  { id: "c1-4", image: "/work/9e80968f8b616f415454cfd43eb454c8.jpg", title: "Solstice AI Assistant", category: "Tech" },
-  { id: "c1-5", image: "/header_images/work-7.jpg", title: "Luminary High Jewelry", category: "Fashion" },
-  { id: "c1-6", image: "/images/why-us/creative-talent.jpg", title: "Studio Form & Brand", category: "Brand" },
-  { id: "c1-7", image: "/header_images/work-11.jpg", title: "Seraph Mindful Routine", category: "Wellness" },
-  { id: "c1-8", image: "/work/0cb17cbee8ef36202bfb1b0e17338257.jpg", title: "Kinetics Form & Motion", category: "3D" },
+const allAssets: TileItem[] = [
+  { id: "ast-1", image: "/header_images/work-0.jpg", title: "Apex FinTech Core", category: "Tech" },
+  { id: "ast-2", image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg", title: "Aura Botanical Skin", category: "Wellness" },
+  { id: "ast-3", image: "/header_images/work-3.jpg", title: "Vogue Maison Capsule", category: "Fashion" },
+  { id: "ast-4", image: "/work/9e80968f8b616f415454cfd43eb454c8.jpg", title: "Solstice AI Assistant", category: "Tech" },
+  { id: "ast-5", image: "/header_images/work-7.jpg", title: "Luminary High Jewelry", category: "Fashion" },
+  { id: "ast-6", image: "/images/why-us/creative-talent.jpg", title: "Studio Form & Brand", category: "Brand" },
+  { id: "ast-7", image: "/header_images/work-11.jpg", title: "Seraph Mindful Routine", category: "Wellness" },
+  { id: "ast-8", image: "/work/0cb17cbee8ef36202bfb1b0e17338257.jpg", title: "Kinetics Form & Motion", category: "3D" },
+  { id: "ast-9", image: "/header_images/work-1.jpg", title: "Hyperion Cloud OS", category: "Tech" },
+  { id: "ast-10", image: "/work/664bbf117716eb69519b17e2f37bee2a.jpg", title: "Zenith Herbal Essence", category: "Wellness" },
+  { id: "ast-11", image: "/header_images/work-4.jpg", title: "Studio Noir Editorial", category: "Fashion" },
+  { id: "ast-12", image: "/header_images/work-8.jpg", title: "Chrono Kinetic Engine", category: "Tech" },
+  { id: "ast-13", image: "/images/why-us/our-technology.jpg", title: "Quantum Neural Stack", category: "Tech" },
+  { id: "ast-14", image: "/header_images/work-2.jpg", title: "Equinox Organic Ritual", category: "Wellness" },
+  { id: "ast-15", image: "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg", title: "Synthetix Neural UI", category: "3D" },
+  { id: "ast-16", image: "/header_images/work-5.jpg", title: "Moderne Atelier Runway", category: "Fashion" },
+  { id: "ast-17", image: "/work/ade59a73aba7c39e38d6aa91565627bc.jpg", title: "Prism Spatial Sound", category: "3D" },
+  { id: "ast-18", image: "/header_images/work-9.jpg", title: "Nirvana Flow Tonic", category: "Wellness" },
+  { id: "ast-19", image: "/images/why-us/ai-excellence.jpg", title: "Cognitive Visuals", category: "Tech" },
+  { id: "ast-20", image: "/header_images/work-6.jpg", title: "Velvet Couture SS26", category: "Fashion" },
+  { id: "ast-21", image: "/header_images/work-10.jpg", title: "Quantico Crypto Vault", category: "Tech" },
+  { id: "ast-22", image: "/images/designed-to-keep-up/card-1-deadlines.jpg", title: "Pulse Velocity Tracker", category: "Tech" },
+  { id: "ast-23", image: "/header_images/work-12.jpg", title: "Vector 3D Topology", category: "3D" },
+  { id: "ast-24", image: "/images/designed-to-keep-up/card-2-talent.jpg", title: "Collective Design Studio", category: "Brand" },
+  { id: "ast-25", image: "/images/rethinking-creative-teams.jpg", title: "Rethink Creative Labs", category: "Brand" },
+  { id: "ast-26", image: "/images/designed-to-keep-up/card-3-plan.jpg", title: "Blueprint Architecture", category: "Tech" },
 ];
 
-const column2: TileItem[] = [
-  { id: "c2-1", image: "/work/0cb17cbee8ef36202bfb1b0e17338257.jpg", title: "Kinetics Form & Motion", category: "3D" },
-  { id: "c2-2", image: "/header_images/work-1.jpg", title: "Hyperion Cloud OS", category: "Tech" },
-  { id: "c2-3", image: "/work/664bbf117716eb69519b17e2f37bee2a.jpg", title: "Zenith Herbal Essence", category: "Wellness" },
-  { id: "c2-4", image: "/header_images/work-4.jpg", title: "Studio Noir Editorial", category: "Fashion" },
-  { id: "c2-5", image: "/header_images/work-8.jpg", title: "Chrono Kinetic Engine", category: "Tech" },
-  { id: "c2-6", image: "/images/why-us/our-technology.jpg", title: "Quantum Neural Stack", category: "Tech" },
-  { id: "c2-7", image: "/header_images/work-2.jpg", title: "Equinox Organic Ritual", category: "Wellness" },
-  { id: "c2-8", image: "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg", title: "Synthetix Neural UI", category: "3D" },
-];
+// Generate 15 distinct columns with balanced alternating drift
+const totalColumns = 15;
+const tilesPerCol = 6;
+const speedPresets = ["34s", "29s", "38s", "31s", "36s", "28s", "35s", "30s", "37s", "27s", "33s", "39s", "32s", "30s", "35s"];
 
-const column3: TileItem[] = [
-  { id: "c3-1", image: "/header_images/work-2.jpg", title: "Equinox Organic Ritual", category: "Wellness" },
-  { id: "c3-2", image: "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg", title: "Synthetix Neural UI", category: "Tech" },
-  { id: "c3-3", image: "/header_images/work-5.jpg", title: "Moderne Atelier Runway", category: "Fashion" },
-  { id: "c3-4", image: "/work/ade59a73aba7c39e38d6aa91565627bc.jpg", title: "Prism Spatial Sound", category: "3D" },
-  { id: "c3-5", image: "/header_images/work-9.jpg", title: "Nirvana Flow Tonic", category: "Wellness" },
-  { id: "c3-6", image: "/images/why-us/ai-excellence.jpg", title: "Cognitive Visuals", category: "Tech" },
-  { id: "c3-7", image: "/header_images/work-6.jpg", title: "Velvet Couture SS26", category: "Fashion" },
-  { id: "c3-8", image: "/header_images/work-10.jpg", title: "Quantico Crypto Vault", category: "Tech" },
-];
-
-const column4: TileItem[] = [
-  { id: "c4-1", image: "/header_images/work-6.jpg", title: "Velvet Couture SS26", category: "Fashion" },
-  { id: "c4-2", image: "/header_images/work-10.jpg", title: "Quantico Crypto Vault", category: "Tech" },
-  { id: "c4-3", image: "/images/designed-to-keep-up/card-1-deadlines.jpg", title: "Pulse Velocity Tracker", category: "Tech" },
-  { id: "c4-4", image: "/header_images/work-12.jpg", title: "Vector 3D Topology", category: "3D" },
-  { id: "c4-5", image: "/images/designed-to-keep-up/card-2-talent.jpg", title: "Collective Design Studio", category: "Brand" },
-  { id: "c4-6", image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg", title: "Aura Botanical Skin", category: "Wellness" },
-  { id: "c4-7", image: "/header_images/work-8.jpg", title: "Chrono Kinetic Engine", category: "Tech" },
-  { id: "c4-8", image: "/header_images/work-3.jpg", title: "Vogue Maison Capsule", category: "Fashion" },
-];
-
-const column5: TileItem[] = [
-  { id: "c5-1", image: "/work/9e80968f8b616f415454cfd43eb454c8.jpg", title: "Solstice AI Assistant", category: "Tech" },
-  { id: "c5-2", image: "/header_images/work-3.jpg", title: "Vogue Maison Capsule", category: "Fashion" },
-  { id: "c5-3", image: "/header_images/work-0.jpg", title: "Apex FinTech Core", category: "Tech" },
-  { id: "c5-4", image: "/header_images/work-7.jpg", title: "Luminary High Jewelry", category: "Fashion" },
-  { id: "c5-5", image: "/images/rethinking-creative-teams.jpg", title: "Rethink Creative Labs", category: "Brand" },
-  { id: "c5-6", image: "/images/designed-to-keep-up/card-3-plan.jpg", title: "Blueprint Architecture", category: "Tech" },
-  { id: "c5-7", image: "/work/664bbf117716eb69519b17e2f37bee2a.jpg", title: "Zenith Herbal Essence", category: "Wellness" },
-  { id: "c5-8", image: "/work/ade59a73aba7c39e38d6aa91565627bc.jpg", title: "Prism Spatial Sound", category: "3D" },
-];
-
-const columns = [
-  { items: column1, reverse: false, duration: "38s" },
-  { items: column2, reverse: true,  duration: "32s" },
-  { items: column3, reverse: false, duration: "42s" },
-  { items: column4, reverse: true,  duration: "34s" },
-  { items: column5, reverse: false, duration: "40s" },
-];
+const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
+  const colItems: TileItem[] = [];
+  for (let i = 0; i < tilesPerCol; i++) {
+    const assetIdx = (colIdx * 3 + i * 5) % allAssets.length;
+    colItems.push(allAssets[assetIdx]);
+  }
+  return {
+    items: colItems,
+    reverse: colIdx % 2 === 1,
+    duration: speedPresets[colIdx % speedPresets.length]
+  };
+});
 ---
 
-<section class="creative-range-section" id="creative-range">
+<section class="creative-range-section" id="creative-range" data-theme="light">
   <!-- Subtle Light Ambient Tone -->
   <div class="creative-ambient-light" aria-hidden="true"></div>
 
@@ -89,13 +74,13 @@ const columns = [
     </header>
   </div>
 
-  <!-- Tilted Tiles 3D Gallery Viewport (Generous Height for Scroll Exploration) -->
+  <!-- Tilted Tiles 3D Gallery Viewport (Exact Spec: perspective=900, planeWidth=210) -->
   <div class="tilted-tiles-viewport" id="tilted-tiles-scene">
-    <!-- Top & Bottom Gradient Masks to seamlessly blend into light background -->
+    <!-- Top & Bottom Gradient Masks to blend into white canvas -->
     <div class="tile-mask-fade tile-mask-top" aria-hidden="true"></div>
     <div class="tile-mask-fade tile-mask-bottom" aria-hidden="true"></div>
 
-    <!-- 3D Perspective Plane (Pure Scroll Aesthetics, Zero Pointer Interference) -->
+    <!-- 3D Perspective Plane: rotateX=48, rotateY=0, rotateZ=0, planeWidth=210% -->
     <div class="tilted-plane" id="tilted-plane">
       {columns.map((col) => (
         <div 
@@ -119,7 +104,7 @@ const columns = [
             ))}
           </div>
 
-          <!-- Set B: Duplicate Track for Seamless Infinite Marquee Loop -->
+          <!-- Set B: Duplicate Track for Seamless Infinite Loop -->
           <div class="tile-column-track" aria-hidden="true">
             {col.items.map((tile) => (
               <figure class="tile-card" data-category={tile.category}>
@@ -155,7 +140,7 @@ const columns = [
           }
         });
       },
-      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+      { threshold: 0.06, rootMargin: "0px 0px -40px 0px" }
     );
     observer.observe(section);
   }
@@ -178,7 +163,7 @@ const columns = [
     position: relative;
     width: 100%;
     padding-top: clamp(80px, 11vh, 120px);
-    padding-bottom: clamp(80px, 12vh, 140px);
+    padding-bottom: clamp(90px, 13vh, 150px);
     background-color: #ffffff;
     color: #050811;
     overflow: hidden;
@@ -235,7 +220,7 @@ const columns = [
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: #0284c7; /* Vibrant brand cyan-blue optimized for light mode contrast */
+    color: #0284c7; /* Vibrant brand cyan-blue */
     display: inline-block;
   }
 
@@ -245,7 +230,7 @@ const columns = [
     font-weight: 400;
     line-height: 1.14;
     letter-spacing: -0.035em;
-    color: #050811; /* Inverted dark obsidian color */
+    color: #050811;
     margin: 0;
     opacity: 0;
     transform: translateY(22px);
@@ -276,19 +261,24 @@ const columns = [
   }
 
   /* ==========================================================================
-     TILTED TILES 3D PERSPECTIVE SCENE (TALL VIEWPORT FOR SCROLL DISCOVERY)
-     Exact Spec: perspective: 1600px, rotateX: 36deg, rotateY: 14deg, rotateZ: -18deg
-     Pointer events completely disabled so mouse scroll is 100% natural and fluid.
+     TILTED TILES 3D PERSPECTIVE SCENE
+     Exact User Configuration:
+     columns={15}
+     perspective={900}
+     rotateX={48}
+     rotateY={0}
+     rotateZ={0}
+     planeWidth={210}
+     parallax={false}
      ========================================================================== */
   .tilted-tiles-viewport {
     position: relative;
     width: 100%;
-    /* Generous height allowing natural scroll exploration */
-    height: clamp(900px, 115vh, 1380px);
-    perspective: 1600px;
+    height: clamp(850px, 110vh, 1350px);
+    perspective: 900px;
     perspective-origin: 50% 50%;
     overflow: hidden;
-    pointer-events: none; /* No pointer interception */
+    pointer-events: none;
     user-select: none;
     opacity: 0;
     transform: scale(0.97);
@@ -309,32 +299,31 @@ const columns = [
 
   .tile-mask-top {
     top: 0;
-    background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0.92) 35%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0.94) 35%, rgba(255, 255, 255, 0) 100%);
   }
 
   .tile-mask-bottom {
     bottom: 0;
-    background: linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.92) 35%, rgba(255, 255, 255, 0) 100%);
+    background: linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.94) 35%, rgba(255, 255, 255, 0) 100%);
   }
 
-  /* 3D Tilted Plane */
+  /* 3D Tilted Plane: planeWidth=210%, rotateX=48, rotateY=0, rotateZ=0 */
   .tilted-plane {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 180%;
-    max-width: 2300px;
+    width: 210%;
     height: 320%;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: clamp(16px, 2vw, 26px);
+    grid-template-columns: repeat(15, 1fr);
+    gap: clamp(8px, 0.9vw, 14px);
     pointer-events: none;
     transform-style: preserve-3d;
     transform: 
       translate(-50%, -50%)
-      rotateX(36deg)
-      rotateY(14deg)
-      rotateZ(-18deg);
+      rotateX(48deg)
+      rotateY(0deg)
+      rotateZ(0deg);
     will-change: transform;
   }
 
@@ -349,7 +338,7 @@ const columns = [
   .tile-column-track {
     display: flex;
     flex-direction: column;
-    gap: clamp(16px, 2vw, 26px);
+    gap: clamp(8px, 0.9vw, 14px);
     flex-shrink: 0;
     will-change: transform;
     pointer-events: none;
@@ -357,12 +346,12 @@ const columns = [
 
   /* Forward scroll (upwards) */
   .scroll-forward .tile-column-track {
-    animation: scrollUp var(--col-duration, 38s) linear infinite;
+    animation: scrollUp var(--col-duration, 32s) linear infinite;
   }
 
   /* Reverse scroll (downwards) */
   .scroll-reverse .tile-column-track {
-    animation: scrollDown var(--col-duration, 38s) linear infinite;
+    animation: scrollDown var(--col-duration, 32s) linear infinite;
   }
 
   @keyframes scrollUp {
@@ -370,13 +359,13 @@ const columns = [
       transform: translateY(0);
     }
     100% {
-      transform: translateY(calc(-100% - clamp(16px, 2vw, 26px)));
+      transform: translateY(calc(-100% - clamp(8px, 0.9vw, 14px)));
     }
   }
 
   @keyframes scrollDown {
     0% {
-      transform: translateY(calc(-100% - clamp(16px, 2vw, 26px)));
+      transform: translateY(calc(-100% - clamp(8px, 0.9vw, 14px)));
     }
     100% {
       transform: translateY(0);
@@ -384,17 +373,17 @@ const columns = [
   }
 
   /* ==========================================================================
-     TILE CARDS: Premium Aspect & Shadows (No hover pause or tilt)
+     TILE CARDS: Clean aspect, crisp subtle borders & natural shadow
      ========================================================================== */
   .tile-card {
     position: relative;
     margin: 0;
-    border-radius: 18px;
+    border-radius: clamp(10px, 1.2vw, 16px);
     overflow: hidden;
     background: #f1f5f9;
     box-shadow: 
-      0 12px 28px -8px rgba(15, 23, 42, 0.12),
-      0 4px 12px -2px rgba(15, 23, 42, 0.06),
+      0 8px 20px -6px rgba(15, 23, 42, 0.12),
+      0 2px 6px -1px rgba(15, 23, 42, 0.05),
       0 0 0 1px rgba(15, 23, 42, 0.06);
     pointer-events: none;
   }
@@ -420,21 +409,15 @@ const columns = [
      ========================================================================== */
   @media (max-width: 1024px) {
     .tilted-tiles-viewport {
-      height: clamp(800px, 100vh, 1100px);
+      height: clamp(750px, 95vh, 1050px);
     }
 
     .tilted-plane {
-      width: 210%;
-      height: 320%;
-      grid-template-columns: repeat(4, 1fr);
-      transform: 
-        translate(-50%, -50%)
-        rotateX(30deg)
-        rotateY(10deg)
-        rotateZ(-14deg);
+      width: 230%;
+      grid-template-columns: repeat(12, 1fr);
     }
 
-    .tile-column:nth-child(5) {
+    .tile-column:nth-child(n+13) {
       display: none;
     }
   }
@@ -446,29 +429,22 @@ const columns = [
     }
 
     .tilted-tiles-viewport {
-      height: clamp(650px, 85vh, 850px);
-      perspective: 1200px;
+      height: clamp(600px, 80vh, 800px);
+      perspective: 750px;
     }
 
     .tilted-plane {
-      width: 230%;
-      height: 320%;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      transform: 
-        translate(-50%, -50%)
-        rotateX(24deg)
-        rotateY(8deg)
-        rotateZ(-12deg);
+      width: 250%;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 8px;
     }
 
-    .tile-column:nth-child(4),
-    .tile-column:nth-child(5) {
+    .tile-column:nth-child(n+10) {
       display: none;
     }
 
     .tile-card {
-      border-radius: 14px;
+      border-radius: 8px;
     }
   }
 
@@ -478,7 +454,7 @@ const columns = [
     }
 
     .tilted-plane {
-      transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg) !important;
+      transform: translate(-50%, -50%) rotateX(0deg) !important;
     }
   }
 </style>

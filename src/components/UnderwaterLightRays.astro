@@ -67,19 +67,19 @@ const { class: className = "" } = Astro.props;
       float dist = length(dir);
 
       // Gentle sway over time
-      float sway = sin(time * 0.28 + seed * 3.1) * 0.035 + cos(time * 0.19 + angle * 2.0) * 0.015;
+      float sway = sin(time * 0.22 + seed * 3.1) * 0.04 + cos(time * 0.16 + angle * 1.5) * 0.02;
       float a = angle + sway;
 
-      // Multi-frequency angular bands for organic light shafts
-      float n1 = noise(vec2(a * freq + seed * 10.0, time * 0.14 + seed));
-      float n2 = noise(vec2(a * (freq * 2.15) - time * 0.09 + seed * 5.0, dist * 1.4 - time * 0.12));
-      float ray = pow(clamp(n1 * 0.65 + n2 * 0.45, 0.0, 1.0), 2.1);
+      // Low-frequency, soft-edged angular bands for diffuse volumetric shafts
+      float n1 = noise(vec2(a * freq + seed * 10.0, time * 0.11 + seed));
+      float n2 = noise(vec2(a * (freq * 1.65) - time * 0.08 + seed * 5.0, dist * 0.9 - time * 0.09));
+      float ray = pow(clamp(n1 * 0.65 + n2 * 0.35, 0.0, 1.0), 1.35);
 
-      // Narrow cone envelope centered straight-ish down (-PI/2)
-      float cone = exp(-pow((angle + 1.5708) / 0.72, 2.0));
+      // Wide, soft cone envelope
+      float cone = exp(-pow((angle + 1.5708) / 0.95, 2.0));
 
-      // Depth attenuation: bright near surface, smoothly dissolving into abyss
-      float depthFade = smoothstep(1.45, 0.08, dist);
+      // Depth attenuation: softly dissolving into abyss
+      float depthFade = smoothstep(1.55, 0.05, dist);
       return ray * cone * depthFade;
     }
 
@@ -105,27 +105,27 @@ const { class: className = "" } = Astro.props;
 
       // Broad ambient underwater scatter from surface
       float distFromOrigin = length(aspectUv - origin);
-      float scatter = exp(-distFromOrigin * 1.55) * smoothstep(0.05, 0.95, uv.y);
-      col += midSea * scatter * 0.75;
+      float scatter = exp(-distFromOrigin * 1.35) * smoothstep(0.05, 0.95, uv.y);
+      col += midSea * scatter * 0.85;
 
-      // Layered volumetric god-rays
-      float r1 = rayLayer(aspectUv, origin, t, 1.3, 6.5);
-      float r2 = rayLayer(aspectUv, origin + vec2(-0.08 * aspect, 0.04), t * 0.85, 4.7, 10.5);
-      float r3 = rayLayer(aspectUv, origin + vec2(0.05 * aspect, -0.02), t * 1.1, 8.2, 15.0);
+      // Soft, diffuse volumetric god-rays
+      float r1 = rayLayer(aspectUv, origin, t, 1.3, 3.2);
+      float r2 = rayLayer(aspectUv, origin + vec2(-0.08 * aspect, 0.04), t * 0.85, 4.7, 5.2);
+      float r3 = rayLayer(aspectUv, origin + vec2(0.05 * aspect, -0.02), t * 1.1, 8.2, 7.5);
 
-      float combinedRays = r1 * 0.55 + r2 * 0.35 + r3 * 0.25;
+      float combinedRays = r1 * 0.55 + r2 * 0.32 + r3 * 0.18;
 
-      // Add cyan-to-ice volumetric light
-      col += mix(rayCyan, rayIce, smoothstep(0.45, 1.0, uv.y)) * combinedRays * 0.85;
+      // Add cyan-to-ice volumetric light (softened)
+      col += mix(rayCyan, rayIce, smoothstep(0.5, 1.0, uv.y)) * combinedRays * 0.58;
 
-      // Top water-surface caustic ripples (only near the very top 14% of viewport)
-      float surfaceMask = smoothstep(0.84, 1.0, uv.y);
+      // Soft top water-surface caustic glow
+      float surfaceMask = smoothstep(0.82, 1.0, uv.y);
       if (surfaceMask > 0.001) {
-        vec2 surfUv = vec2(aspectUv.x * 5.5, (1.0 - uv.y) * 18.0);
-        float ripple = fbm(surfUv + vec2(t * 0.16, -t * 0.08));
-        float crest = smoothstep(0.54, 0.82, ripple);
-        float centerGlow = exp(-pow((aspectUv.x - origin.x) * 1.6, 2.0));
-        col += rayIce * crest * surfaceMask * (0.14 + 0.28 * centerGlow);
+        vec2 surfUv = vec2(aspectUv.x * 3.2, (1.0 - uv.y) * 10.0);
+        float ripple = fbm(surfUv + vec2(t * 0.14, -t * 0.06));
+        float crest = smoothstep(0.42, 0.88, ripple);
+        float centerGlow = exp(-pow((aspectUv.x - origin.x) * 1.35, 2.0));
+        col += rayIce * crest * surfaceMask * (0.1 + 0.22 * centerGlow);
       }
 
       // Very subtle suspended underwater light motes inside the beams (not stars)

@@ -1,0 +1,260 @@
+---
+// UnderwaterLightRays.astro - Volumetric Underwater God-Rays WebGL Shader
+// Renders organic, slowly swaying light shafts refracting from a water surface into deep obsidian void.
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div class:list={["underwater-rays-root", className]} aria-hidden="true">
+  <canvas class="underwater-rays-canvas"></canvas>
+</div>
+
+<script>
+  import * as THREE from "three";
+
+  const VERTEX_SHADER = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position, 1.0);
+    }
+  `;
+
+  const FRAGMENT_SHADER = `
+    precision highp float;
+
+    varying vec2 vUv;
+    uniform float uTime;
+    uniform vec2 uResolution;
+
+    // 2D Hash & Value Noise
+    float hash(vec2 p) {
+      p = fract(p * vec2(123.34, 456.21));
+      p += dot(p, p + 45.32);
+      return fract(p.x * p.y);
+    }
+
+    float noise(vec2 p) {
+      vec2 i = floor(p);
+      vec2 f = fract(p);
+      vec2 u = f * f * (3.0 - 2.0 * f);
+      return mix(
+        mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+        mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+        u.y
+      );
+    }
+
+    float fbm(vec2 p) {
+      float v = 0.0;
+      float a = 0.5;
+      mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
+      for (int i = 0; i < 4; i++) {
+        v += a * noise(p);
+        p = rot * p * 2.02;
+        a *= 0.5;
+      }
+      return v;
+    }
+
+    // Computes a single volumetric light-ray layer fanning from the surface origin
+    float rayLayer(vec2 uv, vec2 origin, float time, float seed, float freq) {
+      vec2 dir = uv - origin;
+      float angle = atan(dir.y, dir.x); // negative below origin
+      float dist = length(dir);
+
+      // Gentle sway over time
+      float sway = sin(time * 0.28 + seed * 3.1) * 0.035 + cos(time * 0.19 + angle * 2.0) * 0.015;
+      float a = angle + sway;
+
+      // Multi-frequency angular bands for organic light shafts
+      float n1 = noise(vec2(a * freq + seed * 10.0, time * 0.14 + seed));
+      float n2 = noise(vec2(a * (freq * 2.15) - time * 0.09 + seed * 5.0, dist * 1.4 - time * 0.12));
+      float ray = pow(clamp(n1 * 0.65 + n2 * 0.45, 0.0, 1.0), 2.1);
+
+      // Narrow cone envelope centered straight-ish down (-PI/2)
+      float cone = exp(-pow((angle + 1.5708) / 0.72, 2.0));
+
+      // Depth attenuation: bright near surface, smoothly dissolving into abyss
+      float depthFade = smoothstep(1.45, 0.08, dist);
+      return ray * cone * depthFade;
+    }
+
+    void main() {
+      vec2 uv = vUv;
+      float aspect = uResolution.x / max(uResolution.y, 1.0);
+      vec2 aspectUv = vec2((uv.x - 0.5) * aspect + 0.5, uv.y);
+
+      float t = uTime;
+
+      // Light source sits just above the top edge, slightly right of center to frame the cards & hero
+      vec2 origin = vec2(0.5 + 0.06 * aspect, 1.12);
+
+      // Base deep-water gradient (abyssal void at bottom -> deep obsidian-teal at top)
+      vec3 voidCol = vec3(0.0039, 0.0118, 0.0275);       // #010307
+      vec3 deepSea = vec3(0.015, 0.065, 0.145);          // Deep abyssal blue
+      vec3 midSea  = vec3(0.035, 0.185, 0.325);          // Underwater cerulean
+      vec3 rayCyan = vec3(0.282, 0.784, 1.000);          // #48C8FF Adaptif Cyan
+      vec3 rayIce  = vec3(0.780, 0.945, 1.000);          // Sun-kissed surface ice
+
+      float verticalGrad = smoothstep(0.02, 0.98, uv.y);
+      vec3 col = mix(voidCol, deepSea, pow(verticalGrad, 1.45));
+
+      // Broad ambient underwater scatter from surface
+      float distFromOrigin = length(aspectUv - origin);
+      float scatter = exp(-distFromOrigin * 1.55) * smoothstep(0.05, 0.95, uv.y);
+      col += midSea * scatter * 0.75;
+
+      // Layered volumetric god-rays
+      float r1 = rayLayer(aspectUv, origin, t, 1.3, 6.5);
+      float r2 = rayLayer(aspectUv, origin + vec2(-0.08 * aspect, 0.04), t * 0.85, 4.7, 10.5);
+      float r3 = rayLayer(aspectUv, origin + vec2(0.05 * aspect, -0.02), t * 1.1, 8.2, 15.0);
+
+      float combinedRays = r1 * 0.55 + r2 * 0.35 + r3 * 0.25;
+
+      // Add cyan-to-ice volumetric light
+      col += mix(rayCyan, rayIce, smoothstep(0.45, 1.0, uv.y)) * combinedRays * 0.85;
+
+      // Top water-surface caustic ripples (only near the very top 14% of viewport)
+      float surfaceMask = smoothstep(0.84, 1.0, uv.y);
+      if (surfaceMask > 0.001) {
+        vec2 surfUv = vec2(aspectUv.x * 5.5, (1.0 - uv.y) * 18.0);
+        float ripple = fbm(surfUv + vec2(t * 0.16, -t * 0.08));
+        float crest = smoothstep(0.52, 0.78, ripple);
+        float centerGlow = exp(-pow((aspectUv.x - origin.x) * 1.6, 2.0));
+        col += rayIce * crest * surfaceMask * (0.28 + 0.55 * centerGlow);
+      }
+
+      // Very subtle suspended underwater light motes inside the beams (not stars)
+      vec2 moteUv = aspectUv * vec2(18.0, 12.0) + vec2(sin(t * 0.12) * 0.4, -t * 0.08);
+      vec2 moteCell = floor(moteUv);
+      vec2 moteLocal = fract(moteUv) - 0.5;
+      float moteRand = hash(moteCell);
+      if (moteRand > 0.92) {
+        vec2 offset = vec2(hash(moteCell + 1.7), hash(moteCell + 3.1)) - 0.5;
+        float d = length(moteLocal - offset * 0.65);
+        float speck = smoothstep(0.11, 0.0, d);
+        float beamMask = clamp(combinedRays * 1.6 + scatter * 0.4, 0.0, 1.0);
+        col += rayIce * speck * beamMask * 0.22 * smoothstep(0.15, 0.85, uv.y);
+      }
+
+      // Smooth vignette & bottom dissolve into exact --color-void (#010307)
+      float bottomDissolve = smoothstep(0.0, 0.24, uv.y);
+      col = mix(voidCol, col, bottomDissolve);
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  function initUnderwaterRays() {
+    const roots = document.querySelectorAll<HTMLElement>(".underwater-rays-root");
+
+    roots.forEach((root) => {
+      if (root.dataset.initialized === "true") return;
+      root.dataset.initialized = "true";
+
+      const canvas = root.querySelector<HTMLCanvasElement>(".underwater-rays-canvas");
+      if (!canvas) return;
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: false,
+        antialias: false,
+        powerPreference: "high-performance",
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+      const uniforms = {
+        uTime: { value: 0 },
+        uResolution: { value: new THREE.Vector2(root.clientWidth, root.clientHeight) },
+      };
+
+      const geometry = new THREE.PlaneGeometry(2, 2);
+      const material = new THREE.ShaderMaterial({
+        vertexShader: VERTEX_SHADER,
+        fragmentShader: FRAGMENT_SHADER,
+        uniforms,
+        depthWrite: false,
+        depthTest: false,
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+
+      const resize = () => {
+        const w = Math.max(root.clientWidth, 1);
+        const h = Math.max(root.clientHeight, 1);
+        renderer.setSize(w, h, false);
+        uniforms.uResolution.value.set(w, h);
+      };
+
+      resize();
+      const ro = new ResizeObserver(resize);
+      ro.observe(root);
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let isVisible = true;
+      let rafId = 0;
+      const startTime = performance.now();
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          isVisible = entries[0]?.isIntersecting ?? true;
+          if (isVisible && !prefersReducedMotion && rafId === 0) {
+            rafId = requestAnimationFrame(render);
+          }
+        },
+        { threshold: 0.01 }
+      );
+      io.observe(root);
+
+      const render = (now: number) => {
+        if (!isVisible) {
+          rafId = 0;
+          return;
+        }
+        uniforms.uTime.value = (now - startTime) * 0.001;
+        renderer.render(scene, camera);
+        if (!prefersReducedMotion) {
+          rafId = requestAnimationFrame(render);
+        }
+      };
+
+      if (prefersReducedMotion) {
+        renderer.render(scene, camera);
+      } else {
+        rafId = requestAnimationFrame(render);
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initUnderwaterRays);
+  } else {
+    initUnderwaterRays();
+  }
+  document.addEventListener("astro:page-load", initUnderwaterRays);
+</script>
+
+<style>
+  .underwater-rays-root {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .underwater-rays-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>

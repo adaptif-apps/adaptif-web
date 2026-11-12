@@ -1,6 +1,6 @@
 ---
 // PricingHero.astro - Adaptif Luminous Obsidian Glass Pricing Hero
-import GlimmerWrap from "./GlimmerWrap.astro";
+import UnderwaterLightRays from "./UnderwaterLightRays.astro";
 
 interface PlanFeature {
   id: string;
@@ -112,40 +112,11 @@ const fullStackFeatures: PlanFeature[] = [
 ---
 
 <section class="pricing-hero" id="pricing-hero">
-  <!-- Living WebGL Starfield + Volumetric Obsidian Atmosphere -->
+  <!-- Volumetric Underwater Light Rays Atmosphere -->
   <div class="pricing-bg" aria-hidden="true">
-    <div class="pricing-glimmer-layer">
-      <GlimmerWrap
-        colors={["#FFFFFF", "#48c8ff"]}
-        count={900}
-        size={1.4}
-        brightness={0.72}
-        spread={1}
-        hollow={0.08}
-        perspective={0.7}
-        centerX={0.62}
-        centerY={0.46}
-        speed={0.35}
-        direction="outward"
-        twist={0}
-        turbulence={0}
-        trail={0.06}
-        glitter={0.01}
-        twinkle={0.45}
-        focus={0.62}
-        aperture={0.45}
-        backgroundColor="#010307"
-        sizeVariance={0.55}
-        glintSize={1}
-        boost={5}
-        parallax={0}
-        waves={true}
-        intro={true}
-        paused={false}
-      />
+    <div class="pricing-rays-layer">
+      <UnderwaterLightRays />
     </div>
-    <div class="pricing-glow-cards"></div>
-    <div class="pricing-glow-intro"></div>
     <div class="pricing-bottom-fade"></div>
   </div>
 
@@ -511,53 +482,9 @@ const fullStackFeatures: PlanFeature[] = [
     z-index: 0;
   }
 
-  .pricing-glimmer-layer {
+  .pricing-rays-layer {
     position: absolute;
     inset: 0;
-    opacity: 0.85;
-    mask-image: linear-gradient(
-      to bottom,
-      #000000 0%,
-      #000000 65%,
-      rgba(0, 0, 0, 0.35) 88%,
-      transparent 100%
-    );
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      #000000 0%,
-      #000000 65%,
-      rgba(0, 0, 0, 0.35) 88%,
-      transparent 100%
-    );
-  }
-
-  .pricing-glow-cards {
-    position: absolute;
-    top: 12%;
-    right: 4%;
-    width: clamp(420px, 55vw, 840px);
-    height: clamp(420px, 68vh, 760px);
-    background: radial-gradient(
-      ellipse 60% 55% at 55% 48%,
-      rgba(72, 200, 255, 0.16) 0%,
-      rgba(22, 61, 168, 0.14) 45%,
-      transparent 78%
-    );
-    filter: blur(52px);
-  }
-
-  .pricing-glow-intro {
-    position: absolute;
-    top: 22%;
-    left: -6%;
-    width: clamp(320px, 40vw, 580px);
-    height: clamp(320px, 48vh, 520px);
-    background: radial-gradient(
-      ellipse 60% 55% at 40% 50%,
-      rgba(43, 127, 255, 0.12) 0%,
-      transparent 74%
-    );
-    filter: blur(60px);
   }
 
   .pricing-bottom-fade {

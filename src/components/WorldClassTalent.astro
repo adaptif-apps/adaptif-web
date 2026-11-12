@@ -1,0 +1,287 @@
+---
+---
+
+<section class="talent-section" id="world-class-talent" data-theme="light">
+  <div class="talent-split">
+    <div class="talent-content-pane">
+      <div class="talent-pane-glow" aria-hidden="true"></div>
+      <div class="talent-content-inner reveal-item">
+        <span class="talent-eyebrow">WORK WITH THE BEST</span>
+
+        <h2 class="talent-title">
+          <span class="title-highlight">World-class talent</span>
+          <br />
+          without limits
+        </h2>
+
+        <p class="talent-lead">
+          Partner with leading global creative talent senior designers, project managers, animators, copywriters, AI specialists, and more; carefully selected from top brands and agencies worldwide.
+        </p>
+
+        <p class="talent-note">
+          Plus, a dedicated project manager ensures your briefs stay aligned and on schedule from start to finish.
+        </p>
+
+        <div class="talent-actions">
+          <a href="#contact" class="talent-cta">
+            <span>Book a call</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="talent-media-pane reveal-item" style="--reveal-delay: 120ms;">
+      <img
+        src="/images/world-class-talent.jpg"
+        alt="Creative specialist working on a laptop in warm sunlight"
+        class="talent-image"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  </div>
+</section>
+
+<script>
+  const initWorldClassTalent = () => {
+    const items = document.querySelectorAll("#world-class-talent .reveal-item");
+    if (!items.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  };
+
+  initWorldClassTalent();
+  document.addEventListener("astro:page-load", initWorldClassTalent);
+</script>
+
+<style>
+  .talent-section {
+    position: relative;
+    width: 100%;
+    background-color: #eaf6fe;
+    overflow: hidden;
+    user-select: text;
+  }
+
+  .talent-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    min-height: 640px;
+  }
+
+  .talent-content-pane {
+    position: relative;
+    background: linear-gradient(155deg, #eef8ff 0%, #e4f3fd 100%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: clamp(72px, 8vw, 112px) clamp(28px, 5vw, 76px);
+    overflow: hidden;
+  }
+
+  .talent-pane-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(
+      ellipse 55% 55% at 50% 50%,
+      rgba(56, 189, 248, 0.1) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .talent-content-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 530px;
+    margin-left: auto;
+  }
+
+  .talent-eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0284c7;
+    margin-bottom: 16px;
+  }
+
+  .talent-title {
+    margin: 0 0 28px;
+    font-family: var(--font-family-display, serif);
+    font-size: clamp(2.5rem, 4.3vw, 3.75rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: #0b0f19;
+  }
+
+  .talent-title .title-highlight {
+    font-style: italic;
+    background: linear-gradient(135deg, #0070f3 0%, #0099ff 45%, #00c0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+    padding-right: 0.06em;
+    filter: drop-shadow(0 2px 10px rgba(0, 153, 255, 0.16));
+  }
+
+  .talent-lead {
+    margin: 0 0 20px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.04rem, 1.3vw, 1.18rem);
+    font-weight: 400;
+    line-height: 1.56;
+    color: #1e293b;
+  }
+
+  .talent-note {
+    margin: 0 0 32px;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #475569;
+    max-width: 440px;
+  }
+
+  .talent-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  .talent-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 24px;
+    border-radius: 10px;
+    background: #0b0f19;
+    color: #ffffff;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-decoration: none;
+    box-shadow: 0 10px 24px -8px rgba(11, 15, 25, 0.35);
+    transition:
+      transform 0.25s var(--ease-spring),
+      background-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .talent-cta svg {
+    transition: transform 0.25s var(--ease-spring);
+  }
+
+  .talent-cta:hover {
+    background: #141c2f;
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -8px rgba(2, 132, 199, 0.32);
+  }
+
+  .talent-cta:hover svg {
+    transform: translateX(3px);
+  }
+
+  .talent-media-pane {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 640px;
+    background-color: #111827;
+    overflow: hidden;
+  }
+
+  .talent-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+    display: block;
+  }
+
+  /* Reveal Animation */
+  .reveal-item {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal-item.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 960px) {
+    .talent-split {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .talent-content-pane {
+      justify-content: flex-start;
+      padding: 72px 24px;
+    }
+
+    .talent-content-inner {
+      margin-left: 0;
+      max-width: 600px;
+    }
+
+    .talent-media-pane {
+      min-height: 420px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .talent-content-pane {
+      padding: 64px 20px;
+    }
+
+    .talent-media-pane {
+      min-height: 340px;
+    }
+  }
+</style>

@@ -123,9 +123,9 @@ const { class: className = "" } = Astro.props;
       if (surfaceMask > 0.001) {
         vec2 surfUv = vec2(aspectUv.x * 5.5, (1.0 - uv.y) * 18.0);
         float ripple = fbm(surfUv + vec2(t * 0.16, -t * 0.08));
-        float crest = smoothstep(0.52, 0.78, ripple);
+        float crest = smoothstep(0.54, 0.82, ripple);
         float centerGlow = exp(-pow((aspectUv.x - origin.x) * 1.6, 2.0));
-        col += rayIce * crest * surfaceMask * (0.28 + 0.55 * centerGlow);
+        col += rayIce * crest * surfaceMask * (0.14 + 0.28 * centerGlow);
       }
 
       // Very subtle suspended underwater light motes inside the beams (not stars)

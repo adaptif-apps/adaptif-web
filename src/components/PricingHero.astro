@@ -774,7 +774,7 @@ const fullStackFeatures: PlanFeature[] = [
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 28px 24px 24px;
+    padding: 28px 22px 24px;
     border-radius: var(--radius-md);
     backdrop-filter: blur(26px) saturate(175%);
     -webkit-backdrop-filter: blur(26px) saturate(175%);
@@ -911,7 +911,7 @@ const fullStackFeatures: PlanFeature[] = [
   .plan-pricing {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 20px;
   }
 
@@ -925,7 +925,7 @@ const fullStackFeatures: PlanFeature[] = [
   .plan-amount {
     grid-area: 1 / 1;
     font-family: var(--font-family-display);
-    font-size: clamp(2.65rem, 3.2vw, 3.15rem);
+    font-size: clamp(2.45rem, 2.85vw, 2.95rem);
     font-weight: 400;
     line-height: 0.95;
     letter-spacing: -0.02em;
@@ -971,9 +971,10 @@ const fullStackFeatures: PlanFeature[] = [
   }
 
   .plan-unit {
-    font-size: 0.76rem;
+    font-size: 0.75rem;
     font-weight: 500;
     color: rgba(248, 250, 252, 0.9);
+    white-space: nowrap;
   }
 
   .plan-save-badge {
@@ -987,6 +988,8 @@ const fullStackFeatures: PlanFeature[] = [
     font-weight: 800;
     letter-spacing: 0.04em;
     line-height: 1.2;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition:
       opacity 0.22s var(--ease-spring),
       transform 0.22s var(--ease-spring);

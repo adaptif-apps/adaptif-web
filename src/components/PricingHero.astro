@@ -921,6 +921,40 @@ const fullStackFeatures: PlanFeature[] = [
   }
 
   /* ========================================================================
+     Staggered Entrance Animations on Page Load
+     ======================================================================== */
+  @keyframes pricingFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+
+  .pricing-eyebrow-pill,
+  .pricing-title,
+  .pricing-copy,
+  .pricing-intro-actions,
+  .billing-bar,
+  .plan-card--creative,
+  .plan-card--featured {
+    animation: pricingFadeUp 0.78s var(--ease-spring) both;
+  }
+
+  .pricing-eyebrow-pill { animation-delay: 0.06s; }
+  .pricing-title        { animation-delay: 0.14s; }
+  .pricing-copy         { animation-delay: 0.22s; }
+  .pricing-intro-actions { animation-delay: 0.30s; }
+  .billing-bar          { animation-delay: 0.20s; }
+  .plan-card--creative  { animation-delay: 0.30s; }
+  .plan-card--featured  { animation-delay: 0.40s; }
+
+  /* ========================================================================
      Responsive Breakpoints
      ======================================================================== */
   @media (max-width: 1080px) {

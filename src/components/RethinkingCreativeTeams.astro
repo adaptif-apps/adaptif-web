@@ -3,9 +3,11 @@
 ---
 
 <section class="rethinking-section" id="why-us">
-  <!-- Volumetric Ambient Light Glows -->
-  <div class="ambient-glow-left" aria-hidden="true"></div>
-  <div class="ambient-glow-right" aria-hidden="true"></div>
+  <!-- Volumetric Ambient Light Glows with Smooth Bottom Mask to prevent any edge cut -->
+  <div class="ambient-glow-wrapper" aria-hidden="true">
+    <div class="ambient-glow-left"></div>
+    <div class="ambient-glow-right"></div>
+  </div>
 
   <div class="rethinking-container">
     <div class="rethinking-grid">
@@ -16,10 +18,9 @@
           <span class="eyebrow-text">RETHINKING CREATIVE TEAMS</span>
         </div>
 
-        <!-- Main Title (Two Lines) -->
+        <!-- Main Title -->
         <h2 class="rethinking-title">
-          The backup your creative team <br class="br-desktop" />
-          has been waiting for
+          The backup your creative team has been waiting for
         </h2>
 
         <!-- Description Paragraph -->
@@ -73,29 +74,35 @@
     overflow: hidden;
   }
 
-  /* Ambient Diffuse Illumination Fields */
+  /* Ambient Diffuse Illumination Fields with Smooth Bottom Feather */
+  .ambient-glow-wrapper {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+    mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 65%, transparent 100%);
+  }
+
   .ambient-glow-left {
     position: absolute;
-    top: 20%;
+    top: 15%;
     left: -10%;
-    width: 600px;
-    height: 600px;
+    width: 550px;
+    height: 550px;
     background: radial-gradient(circle, rgba(0, 102, 255, 0.12) 0%, transparent 65%);
     filter: blur(80px);
-    pointer-events: none;
-    z-index: 0;
   }
 
   .ambient-glow-right {
     position: absolute;
-    top: 30%;
+    top: 20%;
     right: -8%;
-    width: 700px;
-    height: 700px;
+    width: 600px;
+    height: 600px;
     background: radial-gradient(circle, rgba(72, 200, 255, 0.14) 0%, rgba(0, 70, 220, 0.05) 50%, transparent 70%);
     filter: blur(90px);
-    pointer-events: none;
-    z-index: 0;
   }
 
   .rethinking-container {
@@ -139,12 +146,13 @@
     font-family: var(--font-family-display);
     font-size: clamp(2.3rem, 3.8vw, 3.5rem);
     font-weight: 400;
-    line-height: 1.1;
+    line-height: 1.12;
     letter-spacing: -0.035em;
     color: var(--color-text-white);
     margin: 0;
     margin-bottom: clamp(18px, 2.5vh, 24px);
-    max-width: 640px;
+    max-width: 540px;
+    text-wrap: balance;
   }
 
   .rethinking-paragraph {

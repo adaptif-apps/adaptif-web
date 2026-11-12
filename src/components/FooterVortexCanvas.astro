@@ -128,10 +128,11 @@
         float midDisk = exp(-pow((r - 0.56) * 1.9, 2.0));
         float outerGlow = exp(-r * 1.25);
 
-        // Palette matching reference, tuned for airy translucency over #030712
+        // Palette matching reference + Adaptif #21BCFF cyan, tuned for airy translucency
         vec3 cVoid = vec3(0.012, 0.024, 0.058);
         vec3 cCobalt = vec3(0.05, 0.16, 0.34);
         vec3 cSlateBlue = vec3(0.12, 0.28, 0.46);
+        vec3 cBrandCyan = vec3(0.129, 0.737, 1.0); // #21BCFF
         vec3 cViolet = vec3(0.22, 0.13, 0.32);
         vec3 cAmber = vec3(0.72, 0.36, 0.11);
         vec3 cGold = vec3(0.95, 0.70, 0.28);
@@ -139,11 +140,12 @@
 
         vec3 col = cVoid;
 
-        // Translucent nebula layers (more transparent so stars pop)
+        // Translucent nebula layers with #21BCFF cyan highlights
         float blueBand = smoothstep(0.22, 0.88, n1) * outerGlow;
-        col = mix(col, cCobalt, blueBand * 0.48);
-        col = mix(col, cSlateBlue, smoothstep(0.5, 0.94, n2) * midDisk * 0.38);
-        col += cViolet * innerRim * (0.4 + 0.6 * n1) * 0.32;
+        col = mix(col, cCobalt, blueBand * 0.44);
+        col = mix(col, cSlateBlue, smoothstep(0.5, 0.94, n2) * midDisk * 0.34);
+        col += cBrandCyan * smoothstep(0.42, 0.95, n2) * (midDisk * 0.26 + innerRim * 0.22);
+        col += cViolet * innerRim * (0.4 + 0.6 * n1) * 0.28;
 
         float warmMask = swirl * (midDisk * 0.62 + outerGlow * 0.24);
         col = mix(col, cAmber, clamp(warmMask * 0.68, 0.0, 1.0));
@@ -186,32 +188,35 @@
     scene.add(galaxyGroup);
 
     // -----------------------------------------------------------------------
-    // 2. Orbiting Golden Stardust & Fine Stars (3D Spiral)
+    // 2. Orbiting Golden, White & #21BCFF Stardust & Fine Stars (3D Spiral)
     // -----------------------------------------------------------------------
-    const dustCount = 4200;
+    const dustCount = 8500;
     const dustPositions = new Float32Array(dustCount * 3);
     const dustData = new Float32Array(dustCount * 4); // radius, angle, speed, size
+    const dustTint = new Float32Array(dustCount);      // 0..1 color selector
 
     for (let i = 0; i < dustCount; i++) {
-      const r = 0.25 + Math.pow(Math.random(), 1.15) * 1.65;
+      const r = 0.24 + Math.pow(Math.random(), 1.05) * 1.85;
       const armOffset = (i % 2) * Math.PI;
-      const angle = armOffset + r * 3.0 + (Math.random() - 0.5) * 2.8;
+      const angle = armOffset + r * 3.0 + (Math.random() - 0.5) * 3.2;
       const speed = (0.12 + Math.random() * 0.12) / (r + 0.28);
-      const size = 1.1 + Math.random() * 2.8;
+      const size = 1.0 + Math.random() * 2.9;
 
       dustData[i * 4] = r;
       dustData[i * 4 + 1] = angle;
       dustData[i * 4 + 2] = speed;
       dustData[i * 4 + 3] = size;
+      dustTint[i] = Math.random();
 
       dustPositions[i * 3] = Math.cos(angle) * r;
       dustPositions[i * 3 + 1] = Math.sin(angle) * r;
-      dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.12 - 0.16 / (r + 0.35);
+      dustPositions[i * 3 + 2] = (Math.random() - 0.5) * 0.14 - 0.16 / (r + 0.35);
     }
 
     const dustGeo = new THREE.BufferGeometry();
     dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
     dustGeo.setAttribute("aData", new THREE.BufferAttribute(dustData, 4));
+    dustGeo.setAttribute("aTint", new THREE.BufferAttribute(dustTint, 1));
 
     const dustMat = new THREE.ShaderMaterial({
       transparent: true,
@@ -223,10 +228,12 @@
       },
       vertexShader: `
         attribute vec4 aData;
+        attribute float aTint;
         uniform float uTime;
         uniform float uPixelRatio;
         varying float vAlpha;
         varying float vHeat;
+        varying float vTint;
 
         void main() {
           float r = aData.x;
@@ -244,20 +251,25 @@
 
           float twinkle = 0.65 + 0.35 * sin(uTime * 1.4 + angle0 * 7.0);
           float holeFade = smoothstep(0.22, 0.38, r);
-          float outerFade = 1.0 - smoothstep(1.3, 1.9, r);
-          vAlpha = twinkle * holeFade * outerFade * 0.92;
+          float outerFade = 1.0 - smoothstep(1.45, 2.1, r);
+          vAlpha = twinkle * holeFade * outerFade * 0.94;
           vHeat = clamp(1.0 - (r - 0.25) * 0.55, 0.0, 1.0);
+          vTint = aTint;
         }
       `,
       fragmentShader: `
         varying float vAlpha;
         varying float vHeat;
+        varying float vTint;
         void main() {
           vec2 c = gl_PointCoord - 0.5;
           float d = length(c);
           if (d > 0.5) discard;
           float glow = pow(1.0 - d * 2.0, 2.0);
-          vec3 col = mix(vec3(0.95, 0.65, 0.28), vec3(1.0, 0.96, 0.86), vHeat);
+          vec3 warmCol = mix(vec3(0.95, 0.65, 0.28), vec3(1.0, 0.96, 0.86), vHeat);
+          vec3 cyanCol = vec3(0.129, 0.737, 1.0); // #21BCFF
+          // ~30% of stars carry the #21BCFF cyan glow
+          vec3 col = mix(warmCol, cyanCol, smoothstep(0.68, 0.88, vTint));
           gl_FragColor = vec4(col, glow * vAlpha);
         }
       `,
@@ -269,7 +281,7 @@
     // -----------------------------------------------------------------------
     // 3. Bright 4-Point Diffraction Spike Stars (Orbiting in Spiral!)
     // -----------------------------------------------------------------------
-    const starCount = 115;
+    const starCount = 240;
     const starPositions = new Float32Array(starCount * 3);
     const starOrbits = new Float32Array(starCount * 4); // radius, angle0, speed, size
     const starSeeds = new Float32Array(starCount * 2);  // phase, warmth
@@ -352,7 +364,9 @@
 
           vec3 coolStar = vec3(0.88, 0.95, 1.0);
           vec3 warmStar = vec3(1.0, 0.87, 0.56);
-          vec3 col = mix(coolStar, warmStar, vWarmth);
+          vec3 cyanStar = vec3(0.129, 0.737, 1.0); // #21BCFF
+          vec3 col = mix(coolStar, warmStar, smoothstep(0.0, 0.65, vWarmth));
+          col = mix(col, cyanStar, smoothstep(0.68, 0.92, vWarmth));
 
           gl_FragColor = vec4(col, intensity * vTwinkle * vFade * 0.95);
         }

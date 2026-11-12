@@ -1,0 +1,471 @@
+---
+// ProofInMetrics.astro - Section: Proof in the metrics
+interface StatItem {
+  id: string;
+  number: string;
+  unit: string;
+  label: string;
+  iconType: "industries" | "speed" | "rating";
+  accentColor?: string;
+}
+
+const stats: StatItem[] = [
+  {
+    id: "stat-industries",
+    number: "12+",
+    unit: "Industries",
+    label: "Trusted by growing brands",
+    iconType: "industries",
+    accentColor: "rgba(72, 200, 255, 0.4)"
+  },
+  {
+    id: "stat-turnaround",
+    number: "48",
+    unit: "hrs",
+    label: "Avg. turnaround",
+    iconType: "speed",
+    accentColor: "rgba(0, 190, 255, 0.4)"
+  },
+  {
+    id: "stat-satisfaction",
+    number: "4.9",
+    unit: "/5",
+    label: "Client satisfaction",
+    iconType: "rating",
+    accentColor: "rgba(72, 220, 255, 0.4)"
+  }
+];
+---
+
+<section class="metrics-section" id="proof-in-the-metrics">
+  <!-- Ambient Atmospheric Lighting -->
+  <div class="metrics-glow-ambient" aria-hidden="true"></div>
+
+  <div class="container metrics-container">
+    <!-- Header Block -->
+    <div class="metrics-header">
+      <div class="eyebrow-wrapper">
+        <span class="eyebrow-text">PROOF IN THE METRICS</span>
+      </div>
+
+      <h2 class="metrics-title">
+        Work that actually moves the numbers
+      </h2>
+    </div>
+
+    <!-- 3 Statistics Cards Grid -->
+    <div class="metrics-grid">
+      {stats.map((stat, idx) => (
+        <article class="stat-card" style={`--stat-accent: ${stat.accentColor}; --card-idx: ${idx};`}>
+          <!-- Card Specular Rim -->
+          <div class="stat-specular-edge" aria-hidden="true"></div>
+
+          <!-- Subtle Radial Spotlight on Hover -->
+          <div class="stat-hover-glow" aria-hidden="true"></div>
+
+          <!-- Card Header: Micro Icon & Indicator -->
+          <div class="stat-card-top">
+            <div class="stat-icon-badge" aria-hidden="true">
+              {stat.iconType === "industries" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+              )}
+              {stat.iconType === "speed" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+              )}
+              {stat.iconType === "rating" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+              )}
+            </div>
+
+            {stat.iconType === "rating" && (
+              <div class="rating-stars" aria-label="5 stars rating">
+                {[...Array(5)].map(() => (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#48C8FF" stroke="none" aria-hidden="true">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                  </svg>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <!-- Main Metric Block -->
+          <div class="stat-body">
+            <div class="stat-number-wrap">
+              <span class="stat-number">{stat.number}</span>
+              <span class="stat-unit">{stat.unit}</span>
+            </div>
+
+            <p class="stat-label">{stat.label}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- CTA Trigger -->
+    <div class="metrics-cta-row">
+      <a href="#work" class="btn-primary-cta">
+        <span class="btn-glow-aurora" aria-hidden="true"></span>
+        <span class="btn-content">
+          <span>Our Work</span>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .metrics-section {
+    position: relative;
+    width: 100%;
+    padding-top: clamp(60px, 9vh, 100px);
+    padding-bottom: clamp(70px, 11vh, 130px);
+    background-color: var(--color-void, #010307);
+    overflow: hidden;
+  }
+
+  /* Ambient Lighting */
+  .metrics-glow-ambient {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(900px, 90vw);
+    height: 450px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(72, 200, 255, 0.08) 0%, rgba(0, 102, 255, 0.03) 50%, transparent 75%);
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .metrics-container {
+    position: relative;
+    z-index: 1;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Header */
+  .metrics-header {
+    text-align: center;
+    max-width: 840px;
+    margin-bottom: clamp(40px, 6vh, 60px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .eyebrow-wrapper {
+    margin-bottom: clamp(12px, 1.8vh, 18px);
+  }
+
+  .eyebrow-text {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #48C8FF;
+    display: inline-block;
+  }
+
+  .metrics-title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.3rem, 4.2vw, 3.6rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+    color: var(--color-text-white);
+    margin: 0;
+  }
+
+  /* Grid of 3 Cards */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(18px, 2.4vw, 28px);
+    width: 100%;
+    max-width: 1160px;
+  }
+
+  /* Obsidian Glass Card */
+  .stat-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 240px;
+    padding: clamp(26px, 3.2vw, 36px);
+    background: 
+      radial-gradient(ellipse 100% 60% at 50% 0%, rgba(20, 38, 85, 0.45) 0%, rgba(5, 11, 28, 0.75) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-lg, 24px);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -1px 2px 0 rgba(0, 102, 255, 0.12),
+      0 16px 40px -10px rgba(0, 4, 15, 0.7);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    overflow: hidden;
+    transition: 
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  /* Top Specular Rim */
+  .stat-specular-edge {
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.35) 40%,
+      rgba(72, 200, 255, 0.5) 60%,
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  /* Hover Radial Ambient Light */
+  .stat-hover-glow {
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, var(--stat-accent, rgba(72, 200, 255, 0.35)) 0%, transparent 70%);
+    opacity: 0.18;
+    filter: blur(35px);
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.32);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.28),
+      inset 0 -1px 2px 0 rgba(0, 102, 255, 0.2),
+      0 24px 50px -12px rgba(0, 6, 22, 0.85),
+      0 0 30px -8px rgba(72, 200, 255, 0.25);
+  }
+
+  .stat-card:hover .stat-hover-glow {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(1.15);
+  }
+
+  /* Card Top Row */
+  .stat-card-top {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: clamp(24px, 3vh, 32px);
+  }
+
+  .stat-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #48C8FF;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  }
+
+  .rating-stars {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 10px;
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.18);
+    border-radius: var(--radius-pill);
+  }
+
+  /* Main Stat Body */
+  .stat-body {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-number-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .stat-number {
+    font-size: clamp(2.8rem, 4.4vw, 4.2rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: #ffffff;
+    text-shadow: 0 4px 18px rgba(72, 200, 255, 0.25);
+  }
+
+  .stat-unit {
+    font-size: clamp(1.2rem, 1.8vw, 1.6rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .stat-label {
+    font-size: clamp(0.92rem, 1.1vw, 1.05rem);
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--color-text-secondary, #94a3b8);
+    margin: 0;
+  }
+
+  /* CTA Row */
+  .metrics-cta-row {
+    position: relative;
+    z-index: 2;
+    margin-top: clamp(40px, 6vh, 56px);
+    display: flex;
+    justify-content: center;
+  }
+
+  /* CTA Button (Identical to Hero & Rethinking Button Style) */
+  .btn-primary-cta {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    font-size: var(--font-size-btn, 0.95rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #ffffff;
+    background: 
+      radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%),
+      linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
+    border: none;
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-button-primary);
+    text-shadow: 0 1px 2px rgba(0, 60, 130, 0.35);
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 
+      transform var(--duration-fast, 160ms) var(--ease-spring),
+      box-shadow var(--duration-fast, 160ms) var(--ease-spring);
+  }
+
+  .btn-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-content svg {
+    color: #ffffff;
+    filter: drop-shadow(0 1px 2px rgba(0, 20, 60, 0.4));
+    transition: transform var(--duration-fast, 160ms) var(--ease-spring);
+  }
+
+  .btn-glow-aurora {
+    position: absolute;
+    inset: -2px;
+    background: radial-gradient(circle at 50% 0%, rgba(72, 200, 255, 0.8) 0%, transparent 70%);
+    opacity: 0.6;
+    transition: opacity var(--duration-fast, 160ms);
+  }
+
+  .btn-primary-cta:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: var(--shadow-button-hover);
+  }
+
+  .btn-primary-cta:hover .btn-glow-aurora {
+    opacity: 1;
+  }
+
+  .btn-primary-cta:hover .btn-content svg {
+    transform: translateX(4px);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 960px) {
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-card:last-child {
+      grid-column: span 2;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .metrics-header {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .metrics-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .stat-card:last-child {
+      grid-column: span 1;
+    }
+
+    .stat-card {
+      min-height: auto;
+      padding: 24px 20px;
+    }
+
+    .stat-card-top {
+      margin-bottom: 20px;
+    }
+
+    .stat-number {
+      font-size: 2.8rem;
+    }
+
+    .stat-unit {
+      font-size: 1.25rem;
+    }
+
+    .metrics-cta-row {
+      width: 100%;
+    }
+
+    .btn-primary-cta {
+      width: 100%;
+    }
+  }
+</style>

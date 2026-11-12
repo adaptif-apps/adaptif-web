@@ -110,23 +110,27 @@
         float spin = uTime * 0.045;
         float spiralAngle = angle + invR * 2.15 - spin * (0.6 + 0.45 * invR);
 
-        // Domain-warped translucent nebula currents
+        // Domain-warped irregular, wispy nebula currents
         vec2 warpCoord = vec2(
-          cos(spiralAngle) * (r * 3.0 + 0.35),
-          sin(spiralAngle) * (r * 3.0 + 0.35)
+          cos(spiralAngle) * (r * 2.8 + 0.35),
+          sin(spiralAngle) * (r * 2.8 + 0.35)
         );
-        float n1 = fbm(warpCoord * 1.4 + vec2(uTime * 0.012, -uTime * 0.01));
-        float n2 = fbm(warpCoord * 2.9 - vec2(n1 * 1.3) + vec2(-uTime * 0.015));
+        float n1 = fbm(warpCoord * 1.25 + vec2(uTime * 0.012, -uTime * 0.01));
+        vec2 irregularWarp = warpCoord + vec2(n1 - 0.5, (1.0 - n1) - 0.5) * (0.65 + r * 0.45);
+        float n2 = fbm(irregularWarp * 2.35 - vec2(n1 * 1.65) + vec2(-uTime * 0.014, uTime * 0.008));
+        float n3 = fbm(irregularWarp * 0.85 + vec2(n2 * 1.9, -n1 * 1.4));
 
-        float arms = sin(spiralAngle * 2.0 + n1 * 4.0 + log(r + 0.08) * 3.5);
-        float filaments = sin(spiralAngle * 5.0 - n2 * 5.2 + r * 7.0);
-        float swirl = smoothstep(-0.3, 0.9, arms * 0.65 + filaments * 0.35 + (n2 - 0.5) * 0.75);
+        // Break up regular sine ribbons with strong FBM cloud turbulence
+        float arms = sin(spiralAngle * 2.0 + n1 * 5.8 + n3 * 3.4 + log(r + 0.08) * 3.1);
+        float filaments = sin(spiralAngle * 4.0 - n2 * 6.8 + n3 * 4.2 + r * 5.8);
+        float cloudWisp = (n2 * 0.55 + n3 * 0.45) - 0.42;
+        float swirl = smoothstep(-0.55, 1.05, arms * 0.42 + filaments * 0.25 + cloudWisp * 1.15);
 
-        // Radial envelope: deep black hole center, translucent accretion cloud, soft outer fade
-        float holeMask = smoothstep(0.14, 0.34, r + (n1 - 0.5) * 0.04);
-        float innerRim = exp(-pow((r - 0.30) * 4.8, 2.0));
-        float midDisk = exp(-pow((r - 0.56) * 1.9, 2.0));
-        float outerGlow = exp(-r * 1.25);
+        // Diffuse radial envelope with misty irregular inner edge
+        float holeMask = smoothstep(0.10, 0.42, r + (n1 - 0.5) * 0.09 + (n3 - 0.5) * 0.06);
+        float innerRim = exp(-pow((r - 0.32) * 3.6, 2.0));
+        float midDisk = exp(-pow((r - 0.58) * 1.45, 2.0));
+        float outerGlow = exp(-r * 1.05);
 
         // Palette matching reference + Adaptif #21BCFF cyan, tuned for airy translucency
         vec3 cVoid = vec3(0.012, 0.024, 0.058);

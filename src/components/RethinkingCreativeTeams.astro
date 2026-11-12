@@ -16,11 +16,10 @@
           <span class="eyebrow-text">RETHINKING CREATIVE TEAMS</span>
         </div>
 
-        <!-- Main Title -->
+        <!-- Main Title (Two Lines) -->
         <h2 class="rethinking-title">
-          The backup your <br class="br-desktop" />
-          creative team has <br class="br-desktop" />
-          been waiting for
+          The backup your creative team <br class="br-desktop" />
+          has been waiting for
         </h2>
 
         <!-- Description Paragraph -->
@@ -47,31 +46,18 @@
         </div>
       </div>
 
-      <!-- Right Column: Interactive Luminous Glass Visual -->
+      <!-- Right Column: Clean Feature Image (No Frame, No Tag) -->
       <div class="rethinking-visual-wrapper">
-        <div class="rethinking-glass-card">
-          <!-- Specular Light Rim Effect -->
-          <div class="glass-specular-edge" aria-hidden="true"></div>
-
-          <!-- Feature Image -->
-          <div class="image-viewport">
-            <img 
-              src="/images/rethinking-creative-teams.jpg" 
-              alt="Adaptif creative team collaborating with luminous connected workstations" 
-              class="rethinking-img"
-              width="1200"
-              height="806"
-              loading="lazy"
-              decoding="async"
-            />
-            <div class="image-gradient-overlay" aria-hidden="true"></div>
-          </div>
-
-          <!-- Glass Pill Status Chip -->
-          <div class="floating-glass-chip">
-            <span class="chip-pulse"></span>
-            <span class="chip-text">Workflow Integration Active</span>
-          </div>
+        <div class="image-viewport">
+          <img 
+            src="/images/rethinking-creative-teams.jpg" 
+            alt="Adaptif creative team collaborating with luminous connected workstations" 
+            class="rethinking-img"
+            width="1200"
+            height="806"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
     </div>
@@ -151,14 +137,14 @@
 
   .rethinking-title {
     font-family: var(--font-family-display);
-    font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+    font-size: clamp(2.3rem, 3.8vw, 3.5rem);
     font-weight: 400;
-    line-height: 1.08;
+    line-height: 1.1;
     letter-spacing: -0.035em;
     color: var(--color-text-white);
     margin: 0;
     margin-bottom: clamp(18px, 2.5vh, 24px);
-    text-wrap: balance;
+    max-width: 640px;
   }
 
   .rethinking-paragraph {
@@ -261,51 +247,21 @@
   }
 
   /* ==========================================================================
-     Right Column: Luminous Obsidian Glass Visual
+     Right Column: Clean Feature Image (No Frame, No Tag)
      ========================================================================== */
   .rethinking-visual-wrapper {
     position: relative;
     width: 100%;
   }
 
-  .rethinking-glass-card {
-    position: relative;
-    border-radius: 24px;
-    background-color: #030716;
-    background-image: 
-      radial-gradient(ellipse 65% 50% at 50% 0%, rgba(72, 200, 255, 0.16) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 40% at 90% 90%, rgba(0, 102, 255, 0.1) 0%, transparent 60%);
-    border: 1px solid rgba(72, 200, 255, 0.28);
-    box-shadow: 
-      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.3),
-      inset 0 -1px 1px 0 rgba(0, 229, 255, 0.15),
-      0 28px 70px -14px rgba(0, 2, 8, 0.96),
-      0 0 50px -6px rgba(72, 200, 255, 0.28);
-    padding: 12px;
-    overflow: hidden;
-    transition: 
-      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      border-color 0.35s ease,
-      box-shadow 0.35s ease;
-  }
-
-  .rethinking-glass-card:hover {
-    transform: translateY(-4px) scale(1.008);
-    border-color: rgba(72, 200, 255, 0.5);
-    box-shadow: 
-      inset 0 1px 2px 0 rgba(255, 255, 255, 0.45),
-      0 34px 85px -12px rgba(0, 2, 8, 0.98),
-      0 0 65px -4px rgba(72, 200, 255, 0.42);
-  }
-
   .image-viewport {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 10.75;
-    border-radius: 16px;
+    border-radius: 20px;
     overflow: hidden;
-    background: #02050e;
-    border: 1px solid rgba(72, 200, 255, 0.15);
+    background: transparent;
+    box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.75);
   }
 
   .rethinking-img {
@@ -317,50 +273,9 @@
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
   }
 
-  .rethinking-glass-card:hover .rethinking-img {
-    transform: scale(1.035);
-    filter: brightness(1.05) saturate(1.12);
-  }
-
-  .image-gradient-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(3, 7, 22, 0.1) 0%,
-      transparent 30%,
-      rgba(2, 5, 14, 0.3) 100%
-    );
-    pointer-events: none;
-  }
-
-  /* Floating Glass Status Chip */
-  .floating-glass-chip {
-    position: absolute;
-    bottom: 24px;
-    left: 24px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 14px;
-    border-radius: var(--radius-pill);
-    background: rgba(3, 7, 22, 0.82);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(72, 200, 255, 0.35);
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 255, 255, 0.2),
-      0 8px 24px -4px rgba(0, 0, 0, 0.7);
-    pointer-events: none;
-  }
-
-  .chip-pulse {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #48C8FF;
-    box-shadow: 0 0 10px #48C8FF;
-    animation: chipPulse 1.8s infinite;
+  .image-viewport:hover .rethinking-img {
+    transform: scale(1.025);
+    filter: brightness(1.04) saturate(1.1);
   }
 
   @keyframes chipPulse {

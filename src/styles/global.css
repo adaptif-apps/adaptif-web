@@ -133,6 +133,16 @@ img, svg {
   -webkit-text-fill-color: transparent;
 }
 
+/* Celestial Brand Gradient Highlight */
+.title-highlight {
+  color: #48C8FF;
+  background: linear-gradient(135deg, #7fe2ff 0%, #48C8FF 50%, #1da5ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.35));
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

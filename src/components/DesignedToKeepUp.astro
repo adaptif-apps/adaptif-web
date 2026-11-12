@@ -47,7 +47,7 @@ const cards: Card[] = [
 
       <h2 class="keep-up-title">
         Fast, sharp and always in sync with your team. <br class="br-desktop" />
-        <span class="title-sub">Work with a creative partner to match your pace.</span>
+        <span class="title-sub">Work with a creative partner <span class="title-highlight">to match your pace.</span></span>
       </h2>
     </div>
 
@@ -182,6 +182,15 @@ const cards: Card[] = [
   .title-sub {
     color: var(--color-text-secondary);
     display: inline;
+  }
+
+  .title-highlight {
+    color: #48C8FF;
+    background: linear-gradient(135deg, #7fe2ff 0%, #48C8FF 50%, #1da5ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline;
+    filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.35));
   }
 
   .br-desktop {

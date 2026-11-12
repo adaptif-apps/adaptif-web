@@ -1,0 +1,365 @@
+---
+interface Props {
+  id?: string;
+}
+
+const { id = "footer-galaxy" } = Astro.props;
+---
+
+<div class="galaxy-bg-wrap" id={id} aria-hidden="true">
+  <canvas class="galaxy-canvas"></canvas>
+  <div class="galaxy-readability-scrim"></div>
+</div>
+
+<script>
+  import * as THREE from "three";
+
+  const initGalaxyBackground = () => {
+    const wraps = document.querySelectorAll<HTMLElement>(".galaxy-bg-wrap");
+    wraps.forEach((wrap) => {
+      if (wrap.dataset.initialized === "true") return;
+      wrap.dataset.initialized = "true";
+
+      const canvas = wrap.querySelector<HTMLCanvasElement>(".galaxy-canvas");
+      if (!canvas) return;
+
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      // Config matching Aurora Spiral Galaxy preset
+      const STAR_COUNT = window.innerWidth < 768 ? 38000 : 68000;
+      const ARMS = 3;
+      const TWIST = 3.15;
+      const ARM_STRENGTH = 0.68;
+      const CORE_SIZE = 0.36;
+      const INNER_VOID = 0.08;
+      const THICKNESS = 0.055;
+      const TILT_RAD = THREE.MathUtils.degToRad(62);
+      const ROLL_RAD = THREE.MathUtils.degToRad(-8);
+      const SPEED = 0.18;
+
+      let width = wrap.clientWidth || window.innerWidth;
+      let height = wrap.clientHeight || window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: false,
+        powerPreference: "high-performance",
+      });
+      renderer.setPixelRatio(dpr);
+      renderer.setSize(width, height, false);
+      renderer.setClearColor(0x000000, 0);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.set(0, 0, 5.2);
+
+      // Build starfield geometry
+      const positions = new Float32Array(STAR_COUNT * 3);
+      const colors = new Float32Array(STAR_COUNT * 3);
+      const scales = new Float32Array(STAR_COUNT);
+      const seeds = new Float32Array(STAR_COUNT);
+      const radii = new Float32Array(STAR_COUNT);
+
+      const coreColor = new THREE.Color("#f3c877");
+      const warmMidColor = new THREE.Color("#d9e6ec");
+      const armColor = new THREE.Color("#56b4ff");
+      const deepOuterColor = new THREE.Color("#1f6fb8");
+      const tempColor = new THREE.Color();
+
+      for (let i = 0; i < STAR_COUNT; i++) {
+        // Radial distribution: denser near core, extending out to radius ~3.8
+        const u = Math.random();
+        const r = INNER_VOID + Math.pow(u, 1.38) * 3.85;
+        radii[i] = r;
+
+        const armIndex = i % ARMS;
+        const armAngle = (armIndex / ARMS) * Math.PI * 2;
+        const spinAngle = r * TWIST;
+
+        // Scatter around spiral arm (tighter with ARM_STRENGTH)
+        const spread = (1.0 - ARM_STRENGTH * 0.65) * (0.35 + r * 0.22);
+        const randomAngle =
+          (Math.random() - 0.5 + (Math.random() - 0.5)) * spread;
+
+        // 15% halo/background stars for natural depth
+        const isHalo = Math.random() < 0.15;
+        const angle = isHalo
+          ? Math.random() * Math.PI * 2
+          : armAngle + spinAngle + randomAngle;
+
+        // Dust lane darkening along inner edge of arms
+        const isDustEdge = !isHalo && randomAngle < -spread * 0.25;
+
+        const x = Math.cos(angle) * r;
+        const z = Math.sin(angle) * r;
+        const ySpread = THICKNESS * (1.1 + r * 0.32) * (isHalo ? 2.4 : 1.0);
+        const y = (Math.random() - 0.5 + (Math.random() - 0.5)) * ySpread;
+
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+
+        // Color gradient from warm golden core -> crisp white-cyan -> deep azure arms
+        const normR = Math.min(r / 3.6, 1.0);
+        if (normR < CORE_SIZE) {
+          const t = normR / CORE_SIZE;
+          tempColor.lerpColors(coreColor, warmMidColor, t * 0.75);
+        } else {
+          const t = (normR - CORE_SIZE) / (1.0 - CORE_SIZE);
+          tempColor.lerpColors(warmMidColor, armColor, Math.min(t * 1.25, 1.0));
+          if (t > 0.65) {
+            tempColor.lerp(deepOuterColor, (t - 0.65) * 1.4);
+          }
+        }
+
+        // Dust lanes dim slightly; sparkle stars shine brighter
+        const isSparkle = Math.random() < 0.08;
+        const brightness = isDustEdge
+          ? 0.45 + Math.random() * 0.25
+          : isSparkle
+          ? 1.15 + Math.random() * 0.35
+          : 0.72 + Math.random() * 0.35;
+
+        colors[i * 3] = tempColor.r * brightness;
+        colors[i * 3 + 1] = tempColor.g * brightness;
+        colors[i * 3 + 2] = tempColor.b * brightness;
+
+        scales[i] = isSparkle
+          ? 1.85 + Math.random() * 1.35
+          : 0.65 + Math.random() * 1.05;
+        seeds[i] = Math.random() * 100.0;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute("aScale", new THREE.BufferAttribute(scales, 1));
+      geometry.setAttribute("aSeed", new THREE.BufferAttribute(seeds, 1));
+      geometry.setAttribute("aRadius", new THREE.BufferAttribute(radii, 1));
+
+      const uniforms = {
+        uTime: { value: 0 },
+        uPixelRatio: { value: dpr },
+        uSpeed: { value: SPEED },
+        uHoverBoost: { value: 0 },
+        uPointer: { value: new THREE.Vector2(99, 99) },
+        uRippleTime: { value: -10.0 },
+        uRippleOrigin: { value: new THREE.Vector2(0, 0) },
+      };
+
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        vertexShader: `
+          uniform float uTime;
+          uniform float uPixelRatio;
+          uniform float uSpeed;
+          uniform float uHoverBoost;
+          uniform vec2 uPointer;
+          uniform float uRippleTime;
+          uniform vec2 uRippleOrigin;
+
+          attribute vec3 aColor;
+          attribute float aScale;
+          attribute float aSeed;
+          attribute float aRadius;
+
+          varying vec3 vColor;
+          varying float vAlpha;
+
+          void main() {
+            // Differential orbital rotation: inner stars orbit slightly faster
+            float angularVel = uSpeed * (0.55 + 1.15 / (0.45 + aRadius));
+            float angleOffset = uTime * angularVel * (1.0 + uHoverBoost * 0.55);
+            float c = cos(angleOffset);
+            float s = sin(angleOffset);
+
+            vec3 pos = position;
+            pos.xz = mat2(c, -s, s, c) * pos.xz;
+
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            vec4 clipPos = projectionMatrix * mvPosition;
+
+            // Pointer tidal filament interaction in NDC space
+            vec2 ndc = clipPos.xy / max(clipPos.w, 0.0001);
+            float distToPointer = length(ndc - uPointer);
+            float wake = exp(-distToPointer * distToPointer * 12.0) * uHoverBoost;
+            clipPos.xy += normalize(ndc - uPointer + 0.0001) * wake * 0.045;
+
+            // Click density-wave ripple
+            float rippleAge = uTime - uRippleTime;
+            float rippleBoost = 0.0;
+            if (rippleAge > 0.0 && rippleAge < 2.4) {
+              float ringR = rippleAge * 1.15;
+              float distRipple = abs(length(ndc - uRippleOrigin) - ringR);
+              rippleBoost = exp(-distRipple * distRipple * 65.0) * (1.0 - rippleAge / 2.4);
+            }
+
+            gl_Position = clipPos;
+
+            // Twinkle & depth dimming
+            float twinkle = 0.72 + 0.28 * sin(uTime * 1.85 + aSeed * 6.2831);
+            float size = (1.70 * aScale + rippleBoost * 2.2 + wake * 1.4) * uPixelRatio;
+            gl_PointSize = clamp(size * (5.0 / max(-mvPosition.z, 1.0)), 1.0, 12.0);
+
+            // Slight far-side depth dimming
+            float depthDim = clamp((mvPosition.z + 7.5) / 4.2, 0.35, 1.0);
+            vColor = aColor * (1.0 + uHoverBoost * 0.18 + rippleBoost * 0.75);
+            vAlpha = twinkle * depthDim * 0.88;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vColor;
+          varying float vAlpha;
+
+          void main() {
+            float d = length(gl_PointCoord - vec2(0.5));
+            if (d > 0.5) discard;
+
+            // Soft star core + halo glow
+            float core = smoothstep(0.5, 0.0, d);
+            float glow = pow(core, 2.2);
+            gl_FragColor = vec4(vColor, glow * vAlpha);
+          }
+        `,
+      });
+
+      const galaxyPoints = new THREE.Points(geometry, material);
+      // Apply Tilt (62°) and Roll (-8°), positioned slightly low-center (Center Y: 0.52)
+      galaxyPoints.rotation.x = TILT_RAD;
+      galaxyPoints.rotation.z = ROLL_RAD;
+      galaxyPoints.position.set(0, -0.1, 0);
+      galaxyPoints.scale.setScalar(1.22);
+      scene.add(galaxyPoints);
+
+      // Pointer & click interactivity on the parent footer
+      const footerEl = wrap.closest("footer") || wrap;
+      let targetHover = 0;
+
+      const onPointerMove = (e: PointerEvent) => {
+        const rect = wrap.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+        uniforms.uPointer.value.set(nx, ny);
+        targetHover = 0.65;
+      };
+
+      const onPointerLeave = () => {
+        targetHover = 0;
+        uniforms.uPointer.value.set(99, 99);
+      };
+
+      const onPointerDown = (e: PointerEvent) => {
+        const rect = wrap.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        const ny = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+        uniforms.uRippleOrigin.value.set(nx, ny);
+        uniforms.uRippleTime.value = uniforms.uTime.value;
+      };
+
+      footerEl.addEventListener("pointermove", onPointerMove, { passive: true });
+      footerEl.addEventListener("pointerleave", onPointerLeave, { passive: true });
+      footerEl.addEventListener("pointerdown", onPointerDown, { passive: true });
+
+      // Resize handling
+      const onResize = () => {
+        width = wrap.clientWidth || window.innerWidth;
+        height = wrap.clientHeight || window.innerHeight;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height, false);
+      };
+      const resizeObserver = new ResizeObserver(onResize);
+      resizeObserver.observe(wrap);
+
+      // Pause GPU loop when footer is off-screen
+      let isInView = false;
+      let rafId = 0;
+      let lastTime = performance.now();
+
+      const renderFrame = (now: number) => {
+        const dt = Math.min((now - lastTime) / 1000, 0.05);
+        lastTime = now;
+
+        if (!prefersReducedMotion) {
+          uniforms.uTime.value += dt;
+          uniforms.uHoverBoost.value +=
+            (targetHover - uniforms.uHoverBoost.value) * 0.08;
+        }
+
+        renderer.render(scene, camera);
+
+        if (isInView && !prefersReducedMotion) {
+          rafId = requestAnimationFrame(renderFrame);
+        }
+      };
+
+      const visObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isInView = entry.isIntersecting;
+            if (isInView) {
+              lastTime = performance.now();
+              cancelAnimationFrame(rafId);
+              rafId = requestAnimationFrame(renderFrame);
+            } else {
+              cancelAnimationFrame(rafId);
+            }
+          });
+        },
+        { threshold: 0.01 }
+      );
+      visObserver.observe(wrap);
+
+      // Render one initial frame immediately
+      renderer.render(scene, camera);
+    });
+  };
+
+  initGalaxyBackground();
+  document.addEventListener("astro:page-load", initGalaxyBackground);
+</script>
+
+<style>
+  .galaxy-bg-wrap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    background-color: var(--color-void, #030712);
+  }
+
+  .galaxy-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Subtle top/bottom fade & readability scrim so footer typography stays crisp */
+  .galaxy-readability-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        180deg,
+        var(--color-void, #030712) 0%,
+        rgba(3, 7, 18, 0.35) 18%,
+        rgba(3, 7, 18, 0.28) 55%,
+        rgba(3, 7, 18, 0.72) 100%
+      );
+    pointer-events: none;
+  }
+</style>

@@ -54,13 +54,6 @@ const {
     </script>
   </head>
   <body>
-    <!-- Background Volumetric Ambient Illumination -->
-    <div class="ambient-light-container" aria-hidden="true">
-      <div class="light-beam-top"></div>
-      <div class="light-flare-center"></div>
-      <div class="grid-subtle-overlay"></div>
-    </div>
-
     <!-- Page Content -->
     <slot />
   </body>
@@ -68,72 +61,6 @@ const {
 
 <style>
   .ambient-light-container {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-    width: 100%;
-    max-width: 100vw;
-  }
-
-  /* The primary overhead beam (moodboard inspiration) */
-  .light-beam-top {
-    position: absolute;
-    top: -240px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(90vw, 1100px);
-    height: 700px;
-    background: radial-gradient(
-      ellipse 65% 55% at 50% 20%,
-      rgba(0, 102, 255, 0.28) 0%,
-      rgba(0, 229, 255, 0.12) 35%,
-      rgba(1, 3, 7, 0) 75%
-    );
-    filter: blur(40px);
-    opacity: 0.85;
-    animation: pulseBeam 9s ease-in-out infinite alternate;
-  }
-
-  /* Central optical horizon glow */
-  .light-flare-center {
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(95vw, 1300px);
-    height: 380px;
-    background: radial-gradient(
-      ellipse 60% 30% at 50% 50%,
-      rgba(0, 140, 255, 0.08) 0%,
-      rgba(0, 229, 255, 0.03) 40%,
-      transparent 70%
-    );
-    filter: blur(60px);
-  }
-
-  /* Mathematical micro-grid overlay (subtle cybernetic depth as seen in 1fce...) */
-  .grid-subtle-overlay {
-    position: absolute;
-    inset: 0;
-    background-size: 60px 60px;
-    background-image: 
-      linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, black 20%, transparent 80%);
-    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 20%, black 20%, transparent 80%);
-    opacity: 0.7;
-  }
-
-  @keyframes pulseBeam {
-    0% {
-      opacity: 0.75;
-      transform: translateX(-50%) scale(0.98);
-    }
-    100% {
-      opacity: 0.95;
-      transform: translateX(-50%) scale(1.02);
-    }
+    display: none;
   }
 </style>

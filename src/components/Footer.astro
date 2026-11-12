@@ -1,5 +1,5 @@
 ---
-import GalaxyBackground from "./GalaxyBackground.astro";
+import FooterVortexCanvas from "./FooterVortexCanvas.astro";
 
 const creativeDesignLinks = [
   { label: "Ad creative", href: "#service-ad-creative" },
@@ -52,8 +52,7 @@ const mainMenuLinks = [
 ---
 
 <footer class="site-footer" id="contact" data-theme="dark">
-  <GalaxyBackground />
-  <div class="footer-ambient-glow" aria-hidden="true"></div>
+  <FooterVortexCanvas />
 
   <div class="footer-inner">
     <!-- Top CTA Band -->
@@ -388,7 +387,8 @@ const mainMenuLinks = [
     font-size: 0.9rem;
     font-weight: 400;
     line-height: 1.4;
-    color: rgba(226, 232, 240, 0.76);
+    color: rgba(241, 245, 249, 0.86);
+    text-shadow: 0 1px 8px rgba(3, 7, 18, 0.85);
     text-decoration: none;
     transition: color 0.2s ease, transform 0.2s var(--ease-spring);
   }

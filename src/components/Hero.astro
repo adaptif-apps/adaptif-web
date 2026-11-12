@@ -265,21 +265,20 @@ import ReelGallery from "./ReelGallery.astro";
     padding: 14px 32px;
     border-radius: var(--radius-pill);
     background: 
-      radial-gradient(ellipse 90% 70% at 50% 0%, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 70%),
-      linear-gradient(180deg, #32b5ff 0%, #177eff 55%, #0257e0 100%);
-    border: 1px solid rgba(160, 230, 255, 0.65);
+      radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%),
+      linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
+    border: none;
     box-shadow: var(--shadow-button-primary);
     color: #ffffff;
     font-size: var(--font-size-btn);
     font-weight: 600;
     letter-spacing: -0.01em;
-    text-shadow: 0 1px 2px rgba(0, 20, 60, 0.45);
+    text-shadow: 0 1px 2px rgba(0, 60, 130, 0.35);
     overflow: hidden;
     cursor: pointer;
     transition: 
       transform var(--duration-fast) var(--ease-spring),
-      box-shadow var(--duration-fast) var(--ease-spring),
-      border-color var(--duration-fast);
+      box-shadow var(--duration-fast) var(--ease-spring);
   }
 
   .btn-primary-content {
@@ -305,7 +304,6 @@ import ReelGallery from "./ReelGallery.astro";
 
   .btn-primary-hero:hover {
     transform: translateY(-2px) scale(1.01);
-    border-color: rgba(255, 255, 255, 0.9);
     box-shadow: var(--shadow-button-hover);
   }
 

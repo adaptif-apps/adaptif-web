@@ -175,56 +175,157 @@ const serviceCards: ServiceCard[] = [
       if (track.__servicesCarouselInitialized) return;
       track.__servicesCarouselInitialized = true;
 
-      // Staggered entrance observer
-      const observer = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              section.classList.add("is-visible");
-            }
-          });
-        },
-        { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
-      );
-      observer.observe(section);
+      const cards = Array.from(track.querySelectorAll(".service-card"));
+      const originalCount = Math.floor(cards.length / 2);
 
-      const duration = 42; // CSS animation duration in seconds
+      let isVisible = true;
+      let isPausedByHover = false;
+      let activeCard = null;
+
+      // Dragging state
+      let isMouseDown = false;
+      let isTouchActive = false;
       let isDragging = false;
       let startX = 0;
       let startY = 0;
       let dragStartX = 0;
       let hasMoved = false;
       let isHorizontal = false;
-      let activeCard = null;
 
-      function getTrackTranslateX() {
-        try {
-          const style = window.getComputedStyle(track);
-          const matrix = new DOMMatrixReadOnly(style.transform);
-          return matrix.m41 || 0;
-        } catch (e) {
-          return 0;
+      let currentX = 0;
+      let loopDistance = 0;
+
+      function updateDimensions() {
+        if (cards.length > originalCount && cards[originalCount]) {
+          const firstOffset = cards[0].offsetLeft;
+          const cloneOffset = cards[originalCount].offsetLeft;
+          const dist = cloneOffset - firstOffset;
+          if (dist > 0) {
+            loopDistance = dist;
+            return;
+          }
         }
+        loopDistance = (track.scrollWidth / 2) || 1;
       }
 
-      function getHalfWidth() {
-        return (track.scrollWidth / 2) || 1;
-      }
+      updateDimensions();
+      window.addEventListener("resize", updateDimensions);
+      window.addEventListener("load", updateDimensions);
 
-      // Touch events for finger drag / swipe on mobile
+      // Section visibility via IntersectionObserver
+      const observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              section.classList.add("is-visible");
+              isVisible = true;
+            } else {
+              isVisible = false;
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: "60px 0px" }
+      );
+      observer.observe(section);
+
+      // Smooth continuous auto-scroll ticker
+      let lastTime = performance.now();
+      const speedPixelsPerSecond = 55; // Silky smooth marquee speed
+
+      function tick(now) {
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+
+        if (loopDistance <= 1) {
+          updateDimensions();
+        }
+
+        const isPaused = isPausedByHover || isDragging || isMouseDown || isTouchActive || (activeCard !== null);
+
+        if (isVisible && !isPaused && loopDistance > 1) {
+          currentX -= speedPixelsPerSecond * dt;
+          while (currentX <= -loopDistance) currentX += loopDistance;
+          while (currentX > 0) currentX -= loopDistance;
+          track.style.transform = "translate3d(" + currentX.toFixed(2) + "px, 0, 0)";
+        }
+
+        requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+
+      // Desktop Hover Pause
+      viewport.addEventListener("mouseenter", function () {
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          isPausedByHover = true;
+        }
+      });
+      viewport.addEventListener("mouseleave", function () {
+        isPausedByHover = false;
+      });
+
+      // Desktop Mouse Drag
+      viewport.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) return;
+        isMouseDown = true;
+        hasMoved = false;
+        isDragging = false;
+        startX = e.clientX;
+        dragStartX = currentX;
+      });
+
+      window.addEventListener("mousemove", function (e) {
+        if (!isMouseDown) return;
+        const deltaX = e.clientX - startX;
+
+        if (!hasMoved) {
+          if (Math.abs(deltaX) > 4) {
+            hasMoved = true;
+            isDragging = true;
+            viewport.classList.add("is-dragging");
+          }
+        }
+
+        if (isDragging) {
+          e.preventDefault();
+          currentX = dragStartX + deltaX;
+          if (loopDistance > 0) {
+            while (currentX <= -loopDistance) currentX += loopDistance;
+            while (currentX > 0) currentX -= loopDistance;
+          }
+          track.style.transform = "translate3d(" + currentX.toFixed(2) + "px, 0, 0)";
+        }
+      });
+
+      window.addEventListener("mouseup", function () {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        viewport.classList.remove("is-dragging");
+
+        if (hasMoved) {
+          setTimeout(function () {
+            isDragging = false;
+            hasMoved = false;
+          }, 60);
+        } else {
+          isDragging = false;
+        }
+      });
+
+      // Mobile Touch Drag
       viewport.addEventListener("touchstart", function (e) {
         if (e.touches.length !== 1) return;
         const touch = e.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
-        dragStartX = getTrackTranslateX();
+        dragStartX = currentX;
         hasMoved = false;
         isHorizontal = false;
-        isDragging = true;
+        isTouchActive = true;
+        isDragging = false;
       }, { passive: true });
 
       window.addEventListener("touchmove", function (e) {
-        if (!isDragging || e.touches.length !== 1) return;
+        if (!isTouchActive || e.touches.length !== 1) return;
         const touch = e.touches[0];
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
@@ -234,103 +335,49 @@ const serviceCards: ServiceCard[] = [
             if (Math.abs(deltaX) >= Math.abs(deltaY)) {
               isHorizontal = true;
               hasMoved = true;
-              track.classList.add("is-paused");
+              isDragging = true;
               viewport.classList.add("is-dragging");
             } else {
+              isTouchActive = false;
               isDragging = false;
               return;
             }
           }
         }
 
-        if (isHorizontal) {
+        if (isHorizontal && isDragging) {
           if (e.cancelable) e.preventDefault();
-          const halfWidth = getHalfWidth();
-          let current = dragStartX + deltaX;
-          while (current <= -halfWidth) current += halfWidth;
-          while (current > 0) current -= halfWidth;
-          track.style.transform = "translateX(" + current + "px)";
+          currentX = dragStartX + deltaX;
+          if (loopDistance > 0) {
+            while (currentX <= -loopDistance) currentX += loopDistance;
+            while (currentX > 0) currentX -= loopDistance;
+          }
+          track.style.transform = "translate3d(" + currentX.toFixed(2) + "px, 0, 0)";
         }
       }, { passive: false });
 
-      function onDragEnd() {
-        if (!isDragging && !hasMoved) return;
-        isDragging = false;
+      function onTouchEnd() {
+        if (!isTouchActive && !isDragging) return;
+        isTouchActive = false;
         viewport.classList.remove("is-dragging");
 
         if (hasMoved) {
-          const current = getTrackTranslateX();
-          const halfWidth = getHalfWidth();
-          let norm = current % halfWidth;
-          if (norm > 0) norm -= halfWidth;
-          const progress = Math.abs(norm) / halfWidth;
-          const delay = -(progress * duration);
-
-          track.style.animationDelay = delay + "s";
-          track.style.transform = "";
-
-          if (!activeCard) {
-            track.classList.remove("is-paused");
-          }
+          setTimeout(function () {
+            isDragging = false;
+            hasMoved = false;
+          }, 60);
+        } else {
+          isDragging = false;
         }
       }
 
-      window.addEventListener("touchend", onDragEnd, { passive: true });
-      window.addEventListener("touchcancel", onDragEnd, { passive: true });
+      window.addEventListener("touchend", onTouchEnd, { passive: true });
+      window.addEventListener("touchcancel", onTouchEnd, { passive: true });
 
-      // Desktop mouse drag support
-      let isMouseDown = false;
-      viewport.addEventListener("mousedown", function (e) {
-        if (e.button !== 0) return;
-        isMouseDown = true;
-        startX = e.clientX;
-        dragStartX = getTrackTranslateX();
-        hasMoved = false;
-      });
-
-      window.addEventListener("mousemove", function (e) {
-        if (!isMouseDown) return;
-        const deltaX = e.clientX - startX;
-        if (Math.abs(deltaX) > 5) {
-          hasMoved = true;
-          track.classList.add("is-paused");
-          viewport.classList.add("is-dragging");
-          const halfWidth = getHalfWidth();
-          let current = dragStartX + deltaX;
-          while (current <= -halfWidth) current += halfWidth;
-          while (current > 0) current -= halfWidth;
-          track.style.transform = "translateX(" + current + "px)";
-        }
-      });
-
-      window.addEventListener("mouseup", function () {
-        if (!isMouseDown) return;
-        isMouseDown = false;
-        viewport.classList.remove("is-dragging");
-        if (hasMoved) {
-          const current = getTrackTranslateX();
-          const halfWidth = getHalfWidth();
-          let norm = current % halfWidth;
-          if (norm > 0) norm -= halfWidth;
-          const progress = Math.abs(norm) / halfWidth;
-          const delay = -(progress * duration);
-
-          track.style.animationDelay = delay + "s";
-          track.style.transform = "";
-
-          if (!activeCard) {
-            track.classList.remove("is-paused");
-          }
-          setTimeout(function () { hasMoved = false; }, 50);
-        }
-      });
-
-      // Card tap toggle
-      const cards = track.querySelectorAll(".service-card");
+      // Card Tap Toggle (Desktop and Mobile)
       cards.forEach(function (card) {
-        card.addEventListener("click", function (e) {
-          if (hasMoved) {
-            hasMoved = false;
+        card.addEventListener("click", function () {
+          if (hasMoved || isDragging) {
             return;
           }
 
@@ -341,10 +388,8 @@ const serviceCards: ServiceCard[] = [
           if (!isActive) {
             card.classList.add("is-active");
             activeCard = card;
-            track.classList.add("is-paused");
           } else {
             activeCard = null;
-            track.classList.remove("is-paused");
           }
         });
       });
@@ -355,7 +400,6 @@ const serviceCards: ServiceCard[] = [
           if (activeCard) {
             cards.forEach(function (c) { c.classList.remove("is-active"); });
             activeCard = null;
-            track.classList.remove("is-paused");
           }
         }
       });
@@ -493,10 +537,12 @@ const serviceCards: ServiceCard[] = [
       transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
   }
 
-  .carousel-viewport.is-dragging {
-    cursor: grabbing;
+  .carousel-viewport.is-dragging,
+  .carousel-viewport.is-dragging * {
+    cursor: grabbing !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
   }
-
 
   /* Unified track for continuous horizontal marquee */
   .carousel-track {
@@ -504,31 +550,9 @@ const serviceCards: ServiceCard[] = [
     align-items: center;
     width: max-content;
     will-change: transform;
-    animation: scrollHorizontal 42s linear infinite;
     touch-action: pan-y;
     user-select: none;
     -webkit-user-select: none;
-  }
-
-  /* Desktop hover pause */
-  @media (hover: hover) and (pointer: fine) {
-    .carousel-viewport:hover .carousel-track {
-      animation-play-state: paused;
-    }
-  }
-
-  /* Explicit paused state (when card is tapped / active or being dragged) */
-  .carousel-track.is-paused {
-    animation-play-state: paused !important;
-  }
-
-  @keyframes scrollHorizontal {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
   }
 
   /* ==========================================================================
@@ -573,6 +597,9 @@ const serviceCards: ServiceCard[] = [
     object-fit: cover;
     display: block;
     transform: scale(1.02);
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-drag: none;
     transition: 
       transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
       filter 0.5s ease;

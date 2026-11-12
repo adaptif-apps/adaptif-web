@@ -1,0 +1,420 @@
+---
+// WorkflowsSection.astro - "Built on workflows that just work." Bento Section (Light Mode)
+// Sketch Specification:
+// Header:
+//   - Eyebrow: "SIMPLE BY DESIGN"
+//   - Title: "Built on workflows that just work." (with "that just work." in italic cyan accent)
+//   - Subtitle: "From brief to delivery, every step is streamlined so you stay focused on strategy, not logistics."
+//   - CTA: "Learn more" pill button
+// Grid: 3-column Bento layout:
+//   - Card 1 (top-left): "From brief to delivery, no back-and-forth."
+//   - Card 2 (top-middle): "Plugs into your stack instantly."
+//   - Card 3 (bottom-left, col-span-2): "Get inspired by work that actually converted."
+//   - Card 4 (right, row-span-2): "Brand assets, always ready to go."
+---
+
+<section class="workflows-section" id="workflows" data-theme="light">
+  <!-- Soft Ambient Glow -->
+  <div class="workflows-ambient-glow" aria-hidden="true"></div>
+
+  <div class="container workflows-container">
+    <!-- Header Block (Left Aligned as in Sketch) -->
+    <header class="workflows-header">
+      <div class="eyebrow-wrapper">
+        <span class="eyebrow-text">SIMPLE BY DESIGN</span>
+      </div>
+
+      <h2 class="workflows-title">
+        Built on workflows <span class="title-highlight">that just work.</span>
+      </h2>
+
+      <p class="workflows-subtitle">
+        From brief to delivery, every step is streamlined so you stay focused on strategy, not logistics.
+      </p>
+
+      <div class="cta-wrapper">
+        <a href="#learn-more" class="learn-more-btn">
+          <span>Learn more</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Bento Workflows Grid (3 Columns: 2x2 on left, 1 tall card on right) -->
+    <div class="workflows-bento">
+      <!-- Card 1: From brief to delivery -->
+      <article class="bento-card card-delivery" style="--card-index: 0;">
+        <div class="card-media-wrapper">
+          <img 
+            src="/workflows/card1-delivery.jpg" 
+            alt="From brief to delivery, no back-and-forth - Submit your request, get a delivery in 1-2 days, request revisions if needed. That's the whole process." 
+            loading="lazy" 
+            decoding="async" 
+            class="bento-img"
+          />
+        </div>
+      </article>
+
+      <!-- Card 2: Plugs into your stack instantly -->
+      <article class="bento-card card-stack" style="--card-index: 1;">
+        <div class="card-media-wrapper">
+          <img 
+            src="/workflows/card2-stack.jpg" 
+            alt="Plugs into your stack instantly - Whether you run on Notion, ClickUp, Slack, or Asana, Adaptif connects with it so your team never has to change how they work." 
+            loading="lazy" 
+            decoding="async" 
+            class="bento-img"
+          />
+        </div>
+      </article>
+
+      <!-- Card 3: Get inspired by work that actually converted (spans 2 columns) -->
+      <article class="bento-card card-converted" style="--card-index: 2;">
+        <div class="card-media-wrapper">
+          <img 
+            src="/workflows/card3-converted.jpg" 
+            alt="Get inspired by work that actually converted - Browse a curated library of high-performing creative, from social campaigns to brand identities — and use it to brief your next project faster." 
+            loading="lazy" 
+            decoding="async" 
+            class="bento-img"
+          />
+        </div>
+      </article>
+
+      <!-- Card 4: Brand assets, always ready to go (spans 2 rows) -->
+      <article class="bento-card card-assets" style="--card-index: 3;">
+        <div class="card-media-wrapper">
+          <img 
+            src="/workflows/card4-assets.jpg" 
+            alt="Brand assets, always ready to go - Upload your logos, fonts, and guidelines once. Your creative team uses them on every project from day one." 
+            loading="lazy" 
+            decoding="async" 
+            class="bento-img"
+          />
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    function initWorkflows() {
+      const section = document.getElementById("workflows");
+      if (!section) return;
+
+      const observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              section.classList.add("is-visible");
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+      );
+      observer.observe(section);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initWorkflows);
+    } else {
+      initWorkflows();
+    }
+    document.addEventListener("astro:page-load", initWorkflows);
+  })();
+</script>
+
+<style>
+  /* ==========================================================================
+     WORKFLOWS SECTION: Light Mode Clean Canvas & Bento Layout
+     ========================================================================== */
+  .workflows-section {
+    position: relative;
+    width: 100%;
+    padding-top: clamp(80px, 11vh, 130px);
+    padding-bottom: clamp(90px, 13vh, 150px);
+    background-color: #fafaf8;
+    color: #0b0f19;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* Soft Light Cyan/Sky Ambient Glow */
+  .workflows-ambient-glow {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1200px, 100vw);
+    height: 520px;
+    background: radial-gradient(ellipse 65% 55% at 50% 0%, rgba(2, 132, 199, 0.06) 0%, rgba(240, 249, 255, 0.5) 45%, transparent 75%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .workflows-container {
+    position: relative;
+    z-index: 2;
+    max-width: var(--container-max, 1240px);
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+  }
+
+  /* ==========================================================================
+     HEADER: Left Aligned Editorial Typography
+     ========================================================================== */
+  .workflows-header {
+    max-width: 740px;
+    margin-bottom: clamp(38px, 5.5vh, 60px);
+  }
+
+  .eyebrow-wrapper {
+    margin-bottom: clamp(10px, 1.6vh, 16px);
+    opacity: 0;
+    transform: translateY(14px);
+    transition: 
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .eyebrow-text {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #0284c7;
+    display: inline-block;
+  }
+
+  .workflows-title {
+    font-family: var(--font-family-display, serif);
+    font-size: clamp(2.3rem, 4.4vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: -0.035em;
+    color: #0b0f19;
+    margin: 0;
+    margin-bottom: clamp(14px, 2vh, 20px);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+  }
+
+  /* Signature cyan gradient italic accent */
+  .workflows-title .title-highlight {
+    font-style: italic;
+    background: linear-gradient(135deg, #0070f3 0%, #0099ff 45%, #00c0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 2px 10px rgba(0, 153, 255, 0.18));
+  }
+
+  .workflows-subtitle {
+    font-family: var(--font-family-body, sans-serif);
+    font-size: clamp(0.96rem, 1.15vw, 1.12rem);
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+    margin-bottom: clamp(22px, 3vh, 32px);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.18s;
+  }
+
+  .cta-wrapper {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: 
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.24s,
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.24s;
+  }
+
+  .learn-more-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.18);
+    border-radius: 9999px;
+    text-decoration: none;
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+    transition: 
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease,
+      transform 0.25s var(--ease-spring, cubic-bezier(0.16, 1, 0.3, 1)),
+      box-shadow 0.25s ease;
+  }
+
+  .learn-more-btn:hover {
+    background: #0b0f19;
+    color: #ffffff;
+    border-color: #0b0f19;
+    box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.22);
+    transform: translateY(-2px);
+  }
+
+  /* Staggered entrance */
+  .workflows-section.is-visible .eyebrow-wrapper,
+  .workflows-section.is-visible .workflows-title,
+  .workflows-section.is-visible .workflows-subtitle,
+  .workflows-section.is-visible .cta-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ==========================================================================
+     BENTO WORKFLOWS GRID
+     Row 1: [Card 1 (1 col)] [Card 2 (1 col)] [Card 4 (1 col, 2 rows)]
+     Row 2: [Card 3 (2 cols)                ] [Card 4 (continued   )]
+     ========================================================================== */
+  .workflows-bento {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: clamp(16px, 1.8vw, 24px);
+    align-items: stretch;
+  }
+
+  .bento-card {
+    position: relative;
+    border-radius: clamp(18px, 2vw, 26px);
+    overflow: hidden;
+    background-color: #0b1120;
+    box-shadow: 
+      0 10px 28px -10px rgba(15, 23, 42, 0.1),
+      0 2px 8px -2px rgba(15, 23, 42, 0.04),
+      0 0 0 1px rgba(15, 23, 42, 0.06);
+    opacity: 0;
+    transform: translateY(28px);
+    transition: 
+      opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) calc(0.2s + var(--card-index, 0) * 0.08s),
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) calc(0.2s + var(--card-index, 0) * 0.08s),
+      box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .workflows-section.is-visible .bento-card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .bento-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 20px 42px -12px rgba(15, 23, 42, 0.16),
+      0 4px 14px -2px rgba(15, 23, 42, 0.06),
+      0 0 0 1px rgba(15, 23, 42, 0.1);
+  }
+
+  /* Specific Card Placements */
+  .card-delivery {
+    grid-column: 1;
+    grid-row: 1;
+    background-color: #e8f4fc;
+  }
+
+  .card-stack {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .card-converted {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+  }
+
+  .card-assets {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  /* Image Container & Smooth Hover Scaling */
+  .card-media-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+  }
+
+  .bento-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.002);
+    transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bento-card:hover .bento-img {
+    transform: scale(1.035);
+  }
+
+  /* ==========================================================================
+     RESPONSIVE BREAKPOINTS
+     ========================================================================== */
+  @media (max-width: 960px) {
+    .workflows-bento {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: auto;
+      gap: 20px;
+    }
+
+    .card-delivery {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .card-stack {
+      grid-column: 2;
+      grid-row: auto;
+    }
+
+    .card-converted {
+      grid-column: 1 / span 2;
+      grid-row: auto;
+    }
+
+    .card-assets {
+      grid-column: 1 / span 2;
+      grid-row: auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .workflows-section {
+      padding-top: 60px;
+      padding-bottom: 80px;
+    }
+
+    .workflows-header {
+      margin-bottom: 32px;
+    }
+
+    .workflows-bento {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    .card-delivery,
+    .card-stack,
+    .card-converted,
+    .card-assets {
+      grid-column: 1;
+      grid-row: auto;
+    }
+
+    .bento-card {
+      border-radius: 20px;
+    }
+  }
+</style>

@@ -2,7 +2,9 @@
 // ProofInMetrics.astro - Section: Proof in the metrics
 interface StatItem {
   id: string;
-  number: string;
+  target: number;
+  suffix: string;
+  decimals: number;
   unit: string;
   label: string;
   iconType: "industries" | "speed" | "rating";
@@ -12,7 +14,9 @@ interface StatItem {
 const stats: StatItem[] = [
   {
     id: "stat-industries",
-    number: "12+",
+    target: 12,
+    suffix: "+",
+    decimals: 0,
     unit: "Industries",
     label: "Trusted by growing brands",
     iconType: "industries",
@@ -20,7 +24,9 @@ const stats: StatItem[] = [
   },
   {
     id: "stat-turnaround",
-    number: "48",
+    target: 48,
+    suffix: "",
+    decimals: 0,
     unit: "hrs",
     label: "Avg. turnaround",
     iconType: "speed",
@@ -28,7 +34,9 @@ const stats: StatItem[] = [
   },
   {
     id: "stat-satisfaction",
-    number: "4.9",
+    target: 4.9,
+    suffix: "",
+    decimals: 1,
     unit: "/5",
     label: "Client satisfaction",
     iconType: "rating",
@@ -49,7 +57,7 @@ const stats: StatItem[] = [
       </div>
 
       <h2 class="metrics-title">
-        Work that actually moves the numbers
+        Work that actually <span class="title-highlight">moves the numbers</span>
       </h2>
     </div>
 
@@ -99,7 +107,14 @@ const stats: StatItem[] = [
           <!-- Main Metric Block -->
           <div class="stat-body">
             <div class="stat-number-wrap">
-              <span class="stat-number">{stat.number}</span>
+              <span 
+                class="stat-number" 
+                data-target={stat.target} 
+                data-suffix={stat.suffix} 
+                data-decimals={stat.decimals}
+              >
+                0{stat.suffix}
+              </span>
               <span class="stat-unit">{stat.unit}</span>
             </div>
 
@@ -123,6 +138,94 @@ const stats: StatItem[] = [
     </div>
   </div>
 </section>
+
+<script>
+  function setupMetricsObserver() {
+    const section = document.getElementById("proof-in-the-metrics");
+    if (!section) return;
+
+    // Check if user prefers reduced motion
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            section.classList.add("is-visible");
+
+            if (!prefersReducedMotion) {
+              startCountUp(section);
+            } else {
+              // Direct assignment if motion is reduced
+              const counters = section.querySelectorAll<HTMLElement>(".stat-number[data-target]");
+              counters.forEach((el) => {
+                const target = el.dataset.target || "0";
+                const suffix = el.dataset.suffix || "";
+                el.textContent = target + suffix;
+              });
+            }
+
+            observer.unobserve(section);
+          }
+        });
+      },
+      {
+        threshold: 0.2,
+        rootMargin: "0px 0px -40px 0px"
+      }
+    );
+
+    observer.observe(section);
+  }
+
+  function startCountUp(container: HTMLElement) {
+    const counters = container.querySelectorAll<HTMLElement>(".stat-number[data-target]");
+    const duration = 1800; // 1.8s for ultra smooth and satisfying count-up
+
+    // Small delay to allow the card entrance animation to settle
+    setTimeout(() => {
+      const startTime = performance.now();
+
+      function update(currentTime: number) {
+        const elapsed = currentTime - startTime;
+        const rawProgress = Math.min(elapsed / duration, 1);
+        // Exponential ease out for smooth deceleration
+        const progress = rawProgress === 1 ? 1 : 1 - Math.pow(2, -10 * rawProgress);
+
+        counters.forEach((el) => {
+          const target = parseFloat(el.dataset.target || "0");
+          const suffix = el.dataset.suffix || "";
+          const decimals = parseInt(el.dataset.decimals || "0", 10);
+
+          const currentVal = target * progress;
+          el.textContent = currentVal.toFixed(decimals) + suffix;
+        });
+
+        if (rawProgress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          // Guarantee final exact value
+          counters.forEach((el) => {
+            const target = el.dataset.target || "0";
+            const suffix = el.dataset.suffix || "";
+            el.textContent = target + suffix;
+          });
+        }
+      }
+
+      requestAnimationFrame(update);
+    }, 280);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupMetricsObserver);
+  } else {
+    setupMetricsObserver();
+  }
+
+  // Astro page swap / client hydration support
+  document.addEventListener("astro:page-load", setupMetricsObserver);
+</script>
 
 <style>
   .metrics-section {
@@ -171,6 +274,11 @@ const stats: StatItem[] = [
 
   .eyebrow-wrapper {
     margin-bottom: clamp(12px, 1.8vh, 18px);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: 
+      opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .eyebrow-text {
@@ -190,6 +298,21 @@ const stats: StatItem[] = [
     letter-spacing: -0.035em;
     color: var(--color-text-white);
     margin: 0;
+    opacity: 0;
+    transform: translateY(22px);
+    transition: 
+      opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.08s,
+      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+  }
+
+  /* Celestial Gradient Highlight for "moves the numbers" */
+  .title-highlight {
+    color: #48C8FF;
+    background: linear-gradient(135deg, #7fe2ff 0%, #48C8FF 50%, #1da5ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.35));
   }
 
   /* Grid of 3 Cards */
@@ -220,10 +343,26 @@ const stats: StatItem[] = [
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(32px);
     transition: 
-      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
       border-color 0.35s ease,
       box-shadow 0.35s ease;
+  }
+
+  /* Staggered entrance delays for the cards */
+  .stat-card[style*="--card-idx: 0"] {
+    transition-delay: 0.18s, 0.18s, 0s, 0s;
+  }
+
+  .stat-card[style*="--card-idx: 1"] {
+    transition-delay: 0.30s, 0.30s, 0s, 0s;
+  }
+
+  .stat-card[style*="--card-idx: 2"] {
+    transition-delay: 0.42s, 0.42s, 0s, 0s;
   }
 
   /* Top Specular Rim */
@@ -258,21 +397,6 @@ const stats: StatItem[] = [
     transition: opacity 0.4s ease, transform 0.4s ease;
   }
 
-  .stat-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(72, 200, 255, 0.32);
-    box-shadow: 
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.28),
-      inset 0 -1px 2px 0 rgba(0, 102, 255, 0.2),
-      0 24px 50px -12px rgba(0, 6, 22, 0.85),
-      0 0 30px -8px rgba(72, 200, 255, 0.25);
-  }
-
-  .stat-card:hover .stat-hover-glow {
-    opacity: 0.45;
-    transform: translateX(-50%) scale(1.15);
-  }
-
   /* Card Top Row */
   .stat-card-top {
     position: relative;
@@ -294,6 +418,11 @@ const stats: StatItem[] = [
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: #48C8FF;
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    opacity: 0;
+    transform: scale(0.82);
+    transition: 
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s;
   }
 
   .rating-stars {
@@ -304,6 +433,11 @@ const stats: StatItem[] = [
     background: rgba(72, 200, 255, 0.08);
     border: 1px solid rgba(72, 200, 255, 0.18);
     border-radius: var(--radius-pill);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: 
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.42s,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.42s;
   }
 
   /* Main Stat Body */
@@ -328,6 +462,7 @@ const stats: StatItem[] = [
     line-height: 1;
     letter-spacing: -0.04em;
     color: #ffffff;
+    font-variant-numeric: tabular-nums;
     text-shadow: 0 4px 18px rgba(72, 200, 255, 0.25);
   }
 
@@ -345,6 +480,11 @@ const stats: StatItem[] = [
     line-height: 1.45;
     color: var(--color-text-secondary, #94a3b8);
     margin: 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: 
+      opacity 0.6s ease 0.36s,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.36s;
   }
 
   /* CTA Row */
@@ -354,6 +494,43 @@ const stats: StatItem[] = [
     margin-top: clamp(40px, 6vh, 56px);
     display: flex;
     justify-content: center;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: 
+      opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.52s,
+      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.52s;
+  }
+
+  /* Triggered State when entering viewport */
+  .metrics-section.is-visible .eyebrow-wrapper,
+  .metrics-section.is-visible .metrics-title,
+  .metrics-section.is-visible .stat-card,
+  .metrics-section.is-visible .stat-label,
+  .metrics-section.is-visible .metrics-cta-row {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .metrics-section.is-visible .stat-icon-badge,
+  .metrics-section.is-visible .rating-stars {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Card Hover Interactions */
+  .metrics-section.is-visible .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.32);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.28),
+      inset 0 -1px 2px 0 rgba(0, 102, 255, 0.2),
+      0 24px 50px -12px rgba(0, 6, 22, 0.85),
+      0 0 30px -8px rgba(72, 200, 255, 0.25);
+  }
+
+  .stat-card:hover .stat-hover-glow {
+    opacity: 0.45;
+    transform: translateX(-50%) scale(1.15);
   }
 
   /* CTA Button (Identical to Hero & Rethinking Button Style) */
@@ -466,6 +643,20 @@ const stats: StatItem[] = [
 
     .btn-primary-cta {
       width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow-wrapper,
+    .metrics-title,
+    .stat-card,
+    .stat-icon-badge,
+    .rating-stars,
+    .stat-label,
+    .metrics-cta-row {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
     }
   }
 </style>

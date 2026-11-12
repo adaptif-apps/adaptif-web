@@ -1,6 +1,9 @@
 ---
 // Header.astro - Floating Luminous Glass Capsule with Services Mega Menu
 
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isActiveRoute = (href: string) => (href.replace(/\/+$/, "") || "/") === currentPath;
+
 interface ServiceItem {
   title: string;
   desc: string;
@@ -325,7 +328,13 @@ const whyUsItems: WhyUsItem[] = [
           </div>
         </li>
         <li><a href="#resources" class="nav-link">Resources</a></li>
-        <li><a href="/pricing" class="nav-link">Pricing</a></li>
+        <li>
+          <a
+            href="/pricing"
+            class:list={["nav-link", { "is-active": isActiveRoute("/pricing") }]}
+            aria-current={isActiveRoute("/pricing") ? "page" : undefined}
+          >Pricing</a>
+        </li>
         <li><a href="#dedicated-team" class="nav-link">Dedicated Team</a></li>
       </ul>
     </nav>
@@ -483,7 +492,13 @@ const whyUsItems: WhyUsItem[] = [
             </div>
           </li>
           <li><a href="#resources" class="mobile-nav-link">Resources</a></li>
-          <li><a href="/pricing" class="mobile-nav-link">Pricing</a></li>
+          <li>
+            <a
+              href="/pricing"
+              class:list={["mobile-nav-link", { "is-active": isActiveRoute("/pricing") }]}
+              aria-current={isActiveRoute("/pricing") ? "page" : undefined}
+            >Pricing</a>
+          </li>
           <li><a href="#dedicated-team" class="mobile-nav-link">Dedicated Team</a></li>
         </ul>
 
@@ -604,6 +619,18 @@ const whyUsItems: WhyUsItem[] = [
 
   .header-container.theme-light .nav-link::before {
     background: rgba(15, 23, 42, 0.06);
+  }
+
+  .header-container.theme-light .nav-link.is-active {
+    color: #0284c7;
+  }
+
+  .header-container.theme-light .nav-link.is-active::before {
+    opacity: 1;
+    transform: scale(1);
+    background: rgba(2, 132, 199, 0.1);
+    border: 1px solid rgba(2, 132, 199, 0.24);
+    box-shadow: none;
   }
 
   .header-container.theme-light .chevron-arrow {
@@ -785,6 +812,24 @@ const whyUsItems: WhyUsItem[] = [
   .nav-item-why-us.is-open .nav-link-why-us::before {
     opacity: 1;
     transform: scale(1);
+  }
+
+  .nav-link.is-active {
+    color: var(--color-text-white);
+  }
+
+  .nav-link.is-active::before {
+    opacity: 1;
+    transform: scale(1);
+    background: rgba(72, 200, 255, 0.14);
+    border: 1px solid rgba(72, 200, 255, 0.34);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 0 16px rgba(72, 200, 255, 0.18);
+  }
+
+  .mobile-nav-link.is-active {
+    color: var(--color-brand-cyan, #48C8FF);
   }
 
   .chevron-arrow {
@@ -1288,14 +1333,14 @@ const whyUsItems: WhyUsItem[] = [
     font-size: var(--font-size-btn);
     font-weight: 600;
     letter-spacing: -0.01em;
-    color: #ffffff;
+    color: #031528;
     background: 
       radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%),
       linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
     border: none;
     border-radius: var(--radius-pill);
     box-shadow: var(--shadow-button-primary);
-    text-shadow: 0 1px 2px rgba(0, 60, 130, 0.35);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
     overflow: hidden;
     cursor: pointer;
     transition: 
@@ -1311,8 +1356,8 @@ const whyUsItems: WhyUsItem[] = [
   .btn-arrow {
     position: relative;
     z-index: 2;
-    color: #ffffff;
-    filter: drop-shadow(0 1px 2px rgba(0, 20, 60, 0.4));
+    color: #031528;
+    filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25));
     transition: transform var(--duration-fast) var(--ease-spring);
   }
 

@@ -152,12 +152,12 @@ img, svg {
   --btn-bg-top: #56d3ff;
   --btn-bg-mid: #30baff;
   --btn-bg-bottom: #0aa3f8;
-  --btn-color: #ffffff;
+  --btn-color: #031528;
   --btn-specular: rgba(255, 255, 255, 0.48);
   --btn-glow: rgba(72, 200, 255, 0.8);
   --btn-shadow: var(--shadow-button-primary);
   --btn-shadow-hover: var(--shadow-button-hover);
-  --btn-text-shadow: 0 1px 2px rgba(0, 60, 130, 0.35);
+  --btn-text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 
   position: relative;
   display: inline-flex;
@@ -203,7 +203,7 @@ img, svg {
 
 .adaptif-btn svg {
   color: currentColor;
-  filter: drop-shadow(0 1px 2px rgba(0, 20, 60, 0.35));
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25));
   transition: transform var(--duration-fast) var(--ease-spring);
 }
 
@@ -229,6 +229,7 @@ img, svg {
   --btn-bg-top: #263147;
   --btn-bg-mid: #141c2c;
   --btn-bg-bottom: #090d16;
+  --btn-color: #ffffff;
   --btn-specular: rgba(255, 255, 255, 0.24);
   --btn-glow: rgba(148, 197, 255, 0.35);
   --btn-shadow:

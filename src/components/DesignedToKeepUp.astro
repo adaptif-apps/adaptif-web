@@ -1,0 +1,312 @@
+---
+// DesignedToKeepUp.astro - Feature Cards: Designed to Keep Up
+interface Card {
+  image: string;
+  alt: string;
+  title: string;
+  description: string;
+}
+
+const cards: Card[] = [
+  {
+    image: "/images/designed-to-keep-up/card-1-deadlines.jpg",
+    alt: "Smartphone traversing through cosmic speed rays",
+    title: "Deadlines measured in hours",
+    description: "Clear ownership, async collaboration and smart use of AI let us ship selected projects in 12 hours, keeping feedback loops tight and quality high."
+  },
+  {
+    image: "/images/designed-to-keep-up/card-2-talent.jpg",
+    alt: "Athletic sneaker in motion breaking limits on city pavement",
+    title: "We’re limits off, talent on",
+    description: "Global creatives and smart AI tools working as one team, giving your brand richer ideas, faster delivery and reliably strong creative output."
+  },
+  {
+    image: "/images/designed-to-keep-up/card-3-plan.jpg",
+    alt: "Designer hands typing on laptop in vibrant botanical workspace",
+    title: "One plan for whatever’s next",
+    description: "Tap into a wide range of services and pivot whenever you need, while AI‑assisted workflows keep your creative efficient, on‑brief and worth it."
+  }
+];
+---
+
+<section class="keep-up-section" id="designed-to-keep-up">
+  <!-- Subtle Ambient Glows -->
+  <div class="ambient-glow-top" aria-hidden="true"></div>
+  <div class="ambient-glow-bottom" aria-hidden="true"></div>
+
+  <div class="container keep-up-container">
+    <!-- Header Block -->
+    <div class="keep-up-header">
+      <div class="eyebrow-wrapper">
+        <span class="eyebrow-text">DESIGNED TO KEEP UP</span>
+      </div>
+
+      <h2 class="keep-up-title">
+        Fast, sharp and always in sync with your team. <br class="br-desktop" />
+        <span class="title-sub">Work with a creative partner to match your pace.</span>
+      </h2>
+    </div>
+
+    <!-- 3-Cards Grid -->
+    <div class="cards-grid">
+      {cards.map((card, index) => (
+        <article class="card-item" style={`--card-index: ${index};`}>
+          <!-- Card Glass Border & Specular Glow -->
+          <div class="card-glass-glow" aria-hidden="true"></div>
+
+          <!-- Card Image Viewport -->
+          <div class="card-image-box">
+            <img 
+              src={card.image} 
+              alt={card.alt} 
+              class="card-img"
+              width="409"
+              height="648"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="card-image-overlay" aria-hidden="true"></div>
+          </div>
+
+          <!-- Card Content -->
+          <div class="card-content">
+            <h3 class="card-title">{card.title}</h3>
+            <p class="card-description">{card.description}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .keep-up-section {
+    position: relative;
+    width: 100%;
+    padding-top: clamp(60px, 9vh, 100px);
+    padding-bottom: clamp(70px, 11vh, 130px);
+    background-color: var(--color-void, #010307);
+    overflow: hidden;
+  }
+
+  /* Ambient Atmospheric Glows */
+  .ambient-glow-top {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(90vw, 1000px);
+    height: 380px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(72, 200, 255, 0.08) 0%, transparent 70%);
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .ambient-glow-bottom {
+    position: absolute;
+    bottom: -100px;
+    right: 5%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.07) 0%, transparent 65%);
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .keep-up-container {
+    position: relative;
+    z-index: 1;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: clamp(1.25rem, 4vw, 3rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Header Section */
+  .keep-up-header {
+    text-align: center;
+    max-width: 920px;
+    margin-bottom: clamp(40px, 6vh, 64px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .eyebrow-wrapper {
+    margin-bottom: clamp(12px, 1.8vh, 18px);
+  }
+
+  .eyebrow-text {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #48C8FF;
+    display: inline-block;
+  }
+
+  .keep-up-title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.2rem, 3.8vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+    color: var(--color-text-white);
+    margin: 0;
+  }
+
+  .title-sub {
+    color: var(--color-text-secondary);
+    display: inline;
+  }
+
+  .br-desktop {
+    display: inline;
+  }
+
+  /* 3-Cards Grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(20px, 2.8vw, 32px);
+    width: 100%;
+  }
+
+  /* Individual Card */
+  .card-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: rgba(4, 9, 26, 0.55);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    padding: 14px;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.08),
+      0 18px 45px -12px rgba(0, 0, 0, 0.85);
+    transition: 
+      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  .card-item:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.4);
+    box-shadow: 
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.15),
+      0 24px 60px -10px rgba(0, 0, 0, 0.9),
+      0 0 35px -5px rgba(72, 200, 255, 0.2);
+  }
+
+  /* Card Image Viewport */
+  .card-image-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 13;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #02050e;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+    display: block;
+    filter: brightness(0.96) saturate(1.05);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  }
+
+  .card-item:hover .card-img {
+    transform: scale(1.04);
+    filter: brightness(1.04) saturate(1.12);
+  }
+
+  .card-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(2, 5, 14, 0.02) 0%,
+      rgba(2, 5, 14, 0.35) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Card Typography Content */
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 10px 14px 10px;
+    flex-grow: 1;
+  }
+
+  .card-title {
+    font-size: clamp(1.15rem, 1.35vw, 1.3rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-text-white);
+    margin: 0 0 10px 0;
+    line-height: 1.25;
+  }
+
+  .card-description {
+    font-size: clamp(0.88rem, 0.95vw, 0.96rem);
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    color: var(--color-text-secondary);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* Responsive Breakpoints */
+  @media (max-width: 980px) {
+    .cards-grid {
+      grid-template-columns: 1fr;
+      max-width: 540px;
+      margin-inline: auto;
+    }
+
+    .br-desktop {
+      display: none;
+    }
+
+    .card-image-box {
+      aspect-ratio: 16 / 11;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 980px) {
+    .cards-grid {
+      max-width: 600px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .keep-up-header {
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .eyebrow-wrapper {
+      margin-bottom: 10px;
+    }
+
+    .card-item {
+      padding: 12px;
+    }
+
+    .card-content {
+      padding: 16px 6px 10px 6px;
+    }
+  }
+</style>

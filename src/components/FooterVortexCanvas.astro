@@ -101,10 +101,9 @@
         float r = length(p);
         float angle = atan(p.y, p.x);
 
-        // Slower, graceful differential spiral rotation
+        // Coherent spiral rotation without infinite radial windup over time
         float invR = 1.0 / (r + 0.18);
-        float spin = uTime * 0.045;
-        float spiralAngle = angle + invR * 2.15 - spin * (0.6 + 0.45 * invR);
+        float spiralAngle = angle + invR * 2.15 - uTime * 0.045;
 
         // Domain-warped irregular, wispy nebula currents
         vec2 warpCoord = vec2(

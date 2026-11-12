@@ -1,0 +1,311 @@
+---
+// Faithful WebGL implementation of the Binary Orbits background component.
+// Configured with:
+//   colors: ["#48c8ff", "#8c6d00"]
+//   core: 1.3
+//   thickness: 0.05
+//   scale: 1.76
+//   speed: 0.15000000000000036
+//   interactive: false
+//   clickRipple: false
+
+interface Props {
+  colors?: [string, string];
+  core?: number;
+  thickness?: number;
+  scale?: number;
+  speed?: number;
+  interactive?: boolean;
+  clickRipple?: boolean;
+  class?: string;
+}
+
+const {
+  colors = ["#48c8ff", "#8c6d00"],
+  core = 1.3,
+  thickness = 0.05,
+  scale = 1.76,
+  speed = 0.15000000000000036,
+  interactive = false,
+  clickRipple = false,
+  class: className = "",
+} = Astro.props;
+---
+
+<div
+  class={`binary-orbits-wrap ${className}`}
+  data-color-a={colors[0]}
+  data-color-b={colors[1]}
+  data-core={core}
+  data-thickness={thickness}
+  data-scale={scale}
+  data-speed={speed}
+  data-interactive={interactive}
+  data-click-ripple={clickRipple}
+  aria-hidden="true"
+>
+  <div class="binary-orbits-canvas-host"></div>
+</div>
+
+<style>
+  .binary-orbits-wrap {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .binary-orbits-canvas-host {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<script>
+  import * as THREE from "three";
+
+  const VERTEX_SHADER = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position, 1.0);
+    }
+  `;
+
+  const FRAGMENT_SHADER = `
+    precision highp float;
+
+    uniform float uTime;
+    uniform vec2 uResolution;
+    uniform vec3 uColorA;
+    uniform vec3 uColorB;
+    uniform float uCore;
+    uniform float uThickness;
+    uniform float uScale;
+    uniform float uSpeed;
+
+    varying vec2 vUv;
+
+    #define PI 3.14159265359
+
+    mat2 rot(float a) {
+      float s = sin(a);
+      float c = cos(a);
+      return mat2(c, -s, s, c);
+    }
+
+    float hash21(vec2 p) {
+      p = fract(p * vec2(123.34, 456.21));
+      p += dot(p, p + 45.32);
+      return fract(p.x * p.y);
+    }
+
+    void main() {
+      vec2 uv = (gl_FragCoord.xy - 0.5 * uResolution.xy) / min(uResolution.x, uResolution.y);
+      uv *= uScale;
+
+      float t = uTime * uSpeed * 2.2;
+
+      // Subtle tilted orbital plane for cinematic depth
+      vec2 p = uv;
+      p = rot(0.28) * p;
+      p.y *= 1.18;
+
+      // Binary pair positions orbiting the barycenter
+      float orbitR = 0.52;
+      vec2 posA = vec2(cos(t), sin(t)) * orbitR;
+      vec2 posB = -posA;
+
+      float dA = length(p - posA);
+      float dB = length(p - posB);
+      float dCenter = length(p);
+
+      // Luminous binary cores scaled by uCore
+      float coreA = (0.022 * uCore) / (dA * dA + 0.0045);
+      float coreB = (0.022 * uCore) / (dB * dB + 0.0045);
+
+      // Soft outer coronas
+      float haloA = exp(-dA * 2.8) * 0.55 * uCore;
+      float haloB = exp(-dB * 2.8) * 0.55 * uCore;
+
+      // Primary orbital ring & secondary harmonic rings
+      float ringDist1 = abs(dCenter - orbitR);
+      float ring1 = exp(-pow(ringDist1 / max(uThickness * 0.42, 0.008), 2.0));
+
+      float ringDist2 = abs(dCenter - orbitR * 1.48);
+      float ring2 = exp(-pow(ringDist2 / max(uThickness * 0.58, 0.012), 2.0)) * 0.45;
+
+      float ringDist3 = abs(dCenter - orbitR * 0.58);
+      float ring3 = exp(-pow(ringDist3 / max(uThickness * 0.5, 0.01), 2.0)) * 0.35;
+
+      // Directional orbital trail along each body's path
+      float angleP = atan(p.y, p.x);
+      float angleA = atan(posA.y, posA.x);
+      float angleB = atan(posB.y, posB.x);
+
+      float trailA = smoothstep(2.4, 0.0, mod(angleA - angleP + 2.0 * PI, 2.0 * PI));
+      float trailB = smoothstep(2.4, 0.0, mod(angleB - angleP + 2.0 * PI, 2.0 * PI));
+
+      // Gravitational interference ripples emanating from the binary pair
+      float wave = sin(dCenter * 18.0 - t * 3.0 + atan(p.y, p.x) * 2.0) * 0.5 + 0.5;
+      float rippleMask = exp(-dCenter * 1.35) * 0.14 * wave;
+
+      // Color composition
+      vec3 col = vec3(0.012, 0.027, 0.071); // #030712 void base
+
+      // Add orbital trails
+      col += uColorA * ring1 * (0.22 + 0.85 * trailA);
+      col += uColorB * ring1 * (0.22 + 0.85 * trailB);
+
+      // Harmonic rings & gravitational ripples
+      vec3 blendAB = mix(uColorA, uColorB, 0.5 + 0.5 * sin(angleP * 2.0 - t * 2.0));
+      col += blendAB * (ring2 + ring3) * 0.48;
+      col += blendAB * rippleMask;
+
+      // Add binary star cores + coronas
+      col += uColorA * (coreA * 0.42 + haloA * 0.55);
+      col += uColorB * (coreB * 0.48 + haloB * 0.65);
+
+      // Subtle white-hot core centers
+      col += vec3(0.88, 0.96, 1.0) * exp(-dA * 22.0) * 0.85 * uCore;
+      col += vec3(1.0, 0.93, 0.78) * exp(-dB * 22.0) * 0.75 * uCore;
+
+      // Subtle distant starfield dust
+      vec2 starGrid = fract(uv * 28.0) - 0.5;
+      vec2 starId = floor(uv * 28.0);
+      float n = hash21(starId);
+      if (n > 0.965) {
+        float twinkle = 0.5 + 0.5 * sin(uTime * 1.4 + n * 40.0);
+        float star = smoothstep(0.16, 0.0, length(starGrid)) * twinkle * 0.35;
+        col += mix(uColorA, vec3(1.0), 0.7) * star;
+      }
+
+      // Soft vignette so edges blend into deep void
+      float vig = smoothstep(2.1, 0.35, length(uv / uScale * 1.1));
+      col = mix(vec3(0.012, 0.027, 0.071), col, vig);
+
+      // Tone mapping for smooth highlights
+      col = col / (1.0 + col * 0.38);
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `;
+
+  const initBinaryOrbits = () => {
+    const wraps = document.querySelectorAll<HTMLElement>(".binary-orbits-wrap");
+    wraps.forEach((wrap) => {
+      if (wrap.dataset.initialized === "true") return;
+      wrap.dataset.initialized = "true";
+
+      const host = wrap.querySelector<HTMLElement>(".binary-orbits-canvas-host");
+      if (!host) return;
+
+      const colorA = new THREE.Color(wrap.dataset.colorA || "#48c8ff");
+      const colorB = new THREE.Color(wrap.dataset.colorB || "#8c6d00");
+      const core = parseFloat(wrap.dataset.core || "1.3");
+      const thickness = parseFloat(wrap.dataset.thickness || "0.05");
+      const scale = parseFloat(wrap.dataset.scale || "1.76");
+      const speed = parseFloat(wrap.dataset.speed || "0.15000000000000036");
+
+      const canvas = document.createElement("canvas");
+      canvas.style.cssText =
+        "position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;";
+
+      let renderer: THREE.WebGLRenderer;
+      try {
+        renderer = new THREE.WebGLRenderer({
+          canvas,
+          alpha: false,
+          antialias: false,
+          powerPreference: "high-performance",
+        });
+      } catch (err) {
+        console.warn("WebGL not available for BinaryOrbitsBg", err);
+        return;
+      }
+
+      host.appendChild(canvas);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+      const uniforms = {
+        uTime: { value: 0 },
+        uResolution: { value: new THREE.Vector2(1, 1) },
+        uColorA: { value: colorA },
+        uColorB: { value: colorB },
+        uCore: { value: core },
+        uThickness: { value: thickness },
+        uScale: { value: scale },
+        uSpeed: { value: speed },
+      };
+
+      const material = new THREE.ShaderMaterial({
+        vertexShader: VERTEX_SHADER,
+        fragmentShader: FRAGMENT_SHADER,
+        uniforms,
+        depthWrite: false,
+        depthTest: false,
+      });
+
+      const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+      scene.add(quad);
+
+      const resize = () => {
+        const w = Math.max(host.clientWidth, 1);
+        const h = Math.max(host.clientHeight, 1);
+        renderer.setSize(w, h, false);
+        const dpr = renderer.getPixelRatio();
+        uniforms.uResolution.value.set(w * dpr, h * dpr);
+      };
+
+      resize();
+      const ro = new ResizeObserver(resize);
+      ro.observe(host);
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let isVisible = true;
+      let rafId = 0;
+      let lastTime = performance.now();
+
+      const renderFrame = (now: number) => {
+        if (!isVisible) {
+          rafId = 0;
+          return;
+        }
+        const dt = Math.min((now - lastTime) * 0.001, 0.05);
+        lastTime = now;
+        if (!reducedMotion) {
+          uniforms.uTime.value += dt;
+        }
+        renderer.render(scene, camera);
+        rafId = requestAnimationFrame(renderFrame);
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible && !rafId) {
+              lastTime = performance.now();
+              rafId = requestAnimationFrame(renderFrame);
+            }
+          });
+        },
+        { threshold: 0.01 }
+      );
+      io.observe(wrap);
+
+      rafId = requestAnimationFrame(renderFrame);
+    });
+  };
+
+  initBinaryOrbits();
+  document.addEventListener("astro:page-load", initBinaryOrbits);
+</script>

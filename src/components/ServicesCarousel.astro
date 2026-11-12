@@ -164,249 +164,210 @@ const serviceCards: ServiceCard[] = [
   </div>
 </section>
 
-<script>
-  function initServicesCarousel() {
-    const section = document.getElementById("services-carousel");
-    const viewport = document.getElementById("carousel-viewport");
-    const track = document.getElementById("carousel-track");
-    if (!section || !viewport || !track) return;
+<script is:inline>
+  (function () {
+    function initServicesCarousel() {
+      const section = document.getElementById("services-carousel");
+      const viewport = document.getElementById("carousel-viewport");
+      const track = document.getElementById("carousel-track");
+      if (!section || !viewport || !track) return;
 
-    // Prevent duplicate initialization on Astro page loads
-    if ((track as any).__servicesCarouselInitialized) return;
-    (track as any).__servicesCarouselInitialized = true;
+      if (track.__servicesCarouselInitialized) return;
+      track.__servicesCarouselInitialized = true;
 
-    let isVisible = false;
-    let isHovered = false;
-    let isDragging = false;
-    let isMouseDown = false;
-    let activeCard: HTMLElement | null = null;
+      // Staggered entrance observer
+      const observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              section.classList.add("is-visible");
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
+      );
+      observer.observe(section);
 
-    let currentX = 0;
-    const speed = 0.85; // smooth ~60fps auto-scroll speed
-    let animationFrameId: number | null = null;
-    let halfWidth = track.scrollWidth / 2;
+      const duration = 42; // CSS animation duration in seconds
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+      let dragStartX = 0;
+      let hasMoved = false;
+      let isHorizontal = false;
+      let activeCard = null;
 
-    function updateHalfWidth() {
-      const totalWidth = track.scrollWidth;
-      if (totalWidth > 0) {
-        halfWidth = totalWidth / 2;
-      }
-    }
-
-    // Touch & Mouse Drag variables
-    let startX = 0;
-    let startY = 0;
-    let dragStartX = 0;
-    let hasMoved = false;
-    let isHorizontalGesture = false;
-
-    // Viewport Intersection Observer for Staggered Entrance & CPU optimization
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            section.classList.add("is-visible");
-            isVisible = true;
-            updateHalfWidth();
-            startLoop();
-          } else {
-            isVisible = false;
-            stopLoop();
-          }
-        });
-      },
-      { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
-    );
-    observer.observe(section);
-
-    function tick() {
-      if (!isVisible) return;
-
-      const shouldPause = isHovered || isDragging || activeCard !== null;
-
-      if (!shouldPause) {
-        currentX -= speed;
-        if (halfWidth > 0) {
-          while (currentX <= -halfWidth) currentX += halfWidth;
-          while (currentX > 0) currentX -= halfWidth;
-        }
-        track.style.transform = `translate3d(${currentX}px, 0, 0)`;
-      }
-
-      animationFrameId = requestAnimationFrame(tick);
-    }
-
-    function startLoop() {
-      if (!animationFrameId) {
-        animationFrameId = requestAnimationFrame(tick);
-      }
-    }
-
-    function stopLoop() {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-      }
-    }
-
-    // Desktop hover pause
-    viewport.addEventListener("mouseenter", () => {
-      // Only pause on hover if device has fine pointer (mouse), not touch
-      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-        isHovered = true;
-      }
-    });
-
-    viewport.addEventListener("mouseleave", () => {
-      isHovered = false;
-    });
-
-    // Touch Drag & Tap Handlers for Mobile
-    function onTouchStart(e: TouchEvent) {
-      if (e.touches.length !== 1) return;
-      const touch = e.touches[0];
-      startX = touch.clientX;
-      startY = touch.clientY;
-      dragStartX = currentX;
-      hasMoved = false;
-      isHorizontalGesture = false;
-      isDragging = true;
-      updateHalfWidth();
-    }
-
-    function onTouchMove(e: TouchEvent) {
-      if (!isDragging || e.touches.length !== 1) return;
-      const touch = e.touches[0];
-      const deltaX = touch.clientX - startX;
-      const deltaY = touch.clientY - startY;
-
-      // Determine gesture direction on initial movement
-      if (!hasMoved) {
-        if (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6) {
-          if (Math.abs(deltaX) >= Math.abs(deltaY)) {
-            isHorizontalGesture = true;
-            hasMoved = true;
-            viewport.classList.add("is-dragging");
-          } else {
-            // User is scrolling vertically down the page
-            isDragging = false;
-            return;
-          }
+      function getTrackTranslateX() {
+        try {
+          const style = window.getComputedStyle(track);
+          const matrix = new DOMMatrixReadOnly(style.transform);
+          return matrix.m41 || 0;
+        } catch (e) {
+          return 0;
         }
       }
 
-      if (isHorizontalGesture) {
-        // Prevent vertical page scroll while actively dragging carousel horizontally
-        if (e.cancelable) e.preventDefault();
-
-        currentX = dragStartX + deltaX;
-        if (halfWidth > 0) {
-          while (currentX <= -halfWidth) currentX += halfWidth;
-          while (currentX > 0) currentX -= halfWidth;
-        }
-        track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+      function getHalfWidth() {
+        return (track.scrollWidth / 2) || 1;
       }
-    }
 
-    function onTouchEnd() {
-      isDragging = false;
-      viewport.classList.remove("is-dragging");
-    }
-
-    viewport.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd, { passive: true });
-    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
-
-    // Desktop Mouse Drag support
-    viewport.addEventListener("mousedown", (e: MouseEvent) => {
-      if (e.button !== 0) return; // Left click only
-      isMouseDown = true;
-      startX = e.clientX;
-      dragStartX = currentX;
-      hasMoved = false;
-      updateHalfWidth();
-    });
-
-    window.addEventListener("mousemove", (e: MouseEvent) => {
-      if (!isMouseDown) return;
-      const deltaX = e.clientX - startX;
-      if (Math.abs(deltaX) > 5) {
-        hasMoved = true;
+      // Touch events for finger drag / swipe on mobile
+      viewport.addEventListener("touchstart", function (e) {
+        if (e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        dragStartX = getTrackTranslateX();
+        hasMoved = false;
+        isHorizontal = false;
         isDragging = true;
-        viewport.classList.add("is-dragging");
-        currentX = dragStartX + deltaX;
-        if (halfWidth > 0) {
-          while (currentX <= -halfWidth) currentX += halfWidth;
-          while (currentX > 0) currentX -= halfWidth;
-        }
-        track.style.transform = `translate3d(${currentX}px, 0, 0)`;
-      }
-    });
+      }, { passive: true });
 
-    window.addEventListener("mouseup", () => {
-      if (isMouseDown) {
-        isMouseDown = false;
+      window.addEventListener("touchmove", function (e) {
+        if (!isDragging || e.touches.length !== 1) return;
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+
+        if (!hasMoved) {
+          if (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6) {
+            if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+              isHorizontal = true;
+              hasMoved = true;
+              track.classList.add("is-paused");
+              viewport.classList.add("is-dragging");
+            } else {
+              isDragging = false;
+              return;
+            }
+          }
+        }
+
+        if (isHorizontal) {
+          if (e.cancelable) e.preventDefault();
+          const halfWidth = getHalfWidth();
+          let current = dragStartX + deltaX;
+          while (current <= -halfWidth) current += halfWidth;
+          while (current > 0) current -= halfWidth;
+          track.style.transform = "translateX(" + current + "px)";
+        }
+      }, { passive: false });
+
+      function onDragEnd() {
+        if (!isDragging && !hasMoved) return;
+        isDragging = false;
         viewport.classList.remove("is-dragging");
-        setTimeout(() => {
-          isDragging = false;
-        }, 50);
-      }
-    });
 
-    // Card Tap / Click: toggle active description and pause/resume
-    const cards = track.querySelectorAll<HTMLElement>(".service-card");
-    cards.forEach((card) => {
-      card.addEventListener("click", (e) => {
-        // If it was a drag gesture, do not toggle
         if (hasMoved) {
-          hasMoved = false;
-          return;
+          const current = getTrackTranslateX();
+          const halfWidth = getHalfWidth();
+          let norm = current % halfWidth;
+          if (norm > 0) norm -= halfWidth;
+          const progress = Math.abs(norm) / halfWidth;
+          const delay = -(progress * duration);
+
+          track.style.animationDelay = delay + "s";
+          track.style.transform = "";
+
+          if (!activeCard) {
+            track.classList.remove("is-paused");
+          }
         }
+      }
 
-        const isCurrentlyActive = card.classList.contains("is-active");
+      window.addEventListener("touchend", onDragEnd, { passive: true });
+      window.addEventListener("touchcancel", onDragEnd, { passive: true });
 
-        // Close any currently active card
-        cards.forEach((c) => c.classList.remove("is-active"));
+      // Desktop mouse drag support
+      let isMouseDown = false;
+      viewport.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) return;
+        isMouseDown = true;
+        startX = e.clientX;
+        dragStartX = getTrackTranslateX();
+        hasMoved = false;
+      });
 
-        if (!isCurrentlyActive) {
-          // Open this card and pause
-          card.classList.add("is-active");
-          activeCard = card;
-        } else {
-          // Re-tap closes the card and resumes movement!
-          activeCard = null;
+      window.addEventListener("mousemove", function (e) {
+        if (!isMouseDown) return;
+        const deltaX = e.clientX - startX;
+        if (Math.abs(deltaX) > 5) {
+          hasMoved = true;
+          track.classList.add("is-paused");
+          viewport.classList.add("is-dragging");
+          const halfWidth = getHalfWidth();
+          let current = dragStartX + deltaX;
+          while (current <= -halfWidth) current += halfWidth;
+          while (current > 0) current -= halfWidth;
+          track.style.transform = "translateX(" + current + "px)";
         }
       });
-    });
 
-    // Tapping outside cards closes any active card and resumes movement
-    document.addEventListener("click", (e) => {
-      if (!track.contains(e.target as Node)) {
-        if (activeCard) {
-          cards.forEach((c) => c.classList.remove("is-active"));
-          activeCard = null;
+      window.addEventListener("mouseup", function () {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        viewport.classList.remove("is-dragging");
+        if (hasMoved) {
+          const current = getTrackTranslateX();
+          const halfWidth = getHalfWidth();
+          let norm = current % halfWidth;
+          if (norm > 0) norm -= halfWidth;
+          const progress = Math.abs(norm) / halfWidth;
+          const delay = -(progress * duration);
+
+          track.style.animationDelay = delay + "s";
+          track.style.transform = "";
+
+          if (!activeCard) {
+            track.classList.remove("is-paused");
+          }
+          setTimeout(function () { hasMoved = false; }, 50);
         }
-      }
-    });
+      });
 
-    // Window resize
-    window.addEventListener("resize", () => {
-      updateHalfWidth();
-    });
+      // Card tap toggle
+      const cards = track.querySelectorAll(".service-card");
+      cards.forEach(function (card) {
+        card.addEventListener("click", function (e) {
+          if (hasMoved) {
+            hasMoved = false;
+            return;
+          }
 
-    // Initial measurement
-    updateHalfWidth();
-    startLoop();
-  }
+          const isActive = card.classList.contains("is-active");
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initServicesCarousel);
-  } else {
-    initServicesCarousel();
-  }
+          cards.forEach(function (c) { c.classList.remove("is-active"); });
 
-  document.addEventListener("astro:page-load", initServicesCarousel);
+          if (!isActive) {
+            card.classList.add("is-active");
+            activeCard = card;
+            track.classList.add("is-paused");
+          } else {
+            activeCard = null;
+            track.classList.remove("is-paused");
+          }
+        });
+      });
+
+      // Tap outside cards closes active card and resumes movement
+      document.addEventListener("click", function (e) {
+        if (!track.contains(e.target)) {
+          if (activeCard) {
+            cards.forEach(function (c) { c.classList.remove("is-active"); });
+            activeCard = null;
+            track.classList.remove("is-paused");
+          }
+        }
+      });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initServicesCarousel);
+    } else {
+      initServicesCarousel();
+    }
+    document.addEventListener("astro:page-load", initServicesCarousel);
+  })();
 </script>
 
 <style>
@@ -543,9 +504,31 @@ const serviceCards: ServiceCard[] = [
     align-items: center;
     width: max-content;
     will-change: transform;
+    animation: scrollHorizontal 42s linear infinite;
     touch-action: pan-y;
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  /* Desktop hover pause */
+  @media (hover: hover) and (pointer: fine) {
+    .carousel-viewport:hover .carousel-track {
+      animation-play-state: paused;
+    }
+  }
+
+  /* Explicit paused state (when card is tapped / active or being dragged) */
+  .carousel-track.is-paused {
+    animation-play-state: paused !important;
+  }
+
+  @keyframes scrollHorizontal {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
 
   /* ==========================================================================

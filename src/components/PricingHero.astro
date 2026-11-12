@@ -1,0 +1,902 @@
+---
+// PricingHero.astro - Luminous Obsidian Glass Pricing Hero Section
+
+interface PlanFeature {
+  label: string;
+  detail: string;
+  icon:
+    | "ticket"
+    | "chat"
+    | "branding"
+    | "digital"
+    | "uiux"
+    | "print"
+    | "headset"
+    | "code"
+    | "megaphone"
+    | "wrench"
+    | "ai";
+}
+
+const creativeFeatures: PlanFeature[] = [
+  {
+    label: "1 Ticket at a Time",
+    detail: "Submit unlimited requests in your queue; we work on one active deliverable at a time with 1–2 day turnarounds.",
+    icon: "ticket",
+  },
+  {
+    label: "Real-Time Chat",
+    detail: "Direct Slack or workspace communication with your creative lead for rapid feedback and daily updates.",
+    icon: "chat",
+  },
+  {
+    label: "Branding",
+    detail: "Logos, visual identities, brand guidelines, typography systems, and cohesive brand kits.",
+    icon: "branding",
+  },
+  {
+    label: "Digital Media",
+    detail: "Social media assets, ad creatives, pitch decks, motion graphics, and campaign visuals.",
+    icon: "digital",
+  },
+  {
+    label: "UIUX",
+    detail: "High-converting landing pages, web apps, mobile interfaces, wireframes, and Figma design systems.",
+    icon: "uiux",
+  },
+  {
+    label: "Print Media",
+    detail: "Packaging, merchandise, editorial layouts, brochures, and print-ready production files.",
+    icon: "print",
+  },
+];
+
+const fullStackFeatures: PlanFeature[] = [
+  {
+    label: "2 Tickets at a Time",
+    detail: "Double your active throughput with two parallel workstreams running simultaneously every business day.",
+    icon: "ticket",
+  },
+  {
+    label: "Weekly Strategy Call",
+    detail: "Dedicated weekly sync with your creative director to align on roadmap, campaign priorities, and growth.",
+    icon: "headset",
+  },
+  {
+    label: "Development",
+    detail: "Production-ready web development, custom frontends, animations, CMS integration, and landing page builds.",
+    icon: "code",
+  },
+  {
+    label: "Marketing",
+    detail: "Campaign strategy, conversion copywriting, multi-channel ad creative, and launch assets.",
+    icon: "megaphone",
+  },
+  {
+    label: "Maintenance",
+    detail: "Ongoing site updates, performance tuning, QA, and continuous design system upkeep.",
+    icon: "wrench",
+  },
+  {
+    label: "AI",
+    detail: "Custom AI visuals, automated creative workflows, and AI-accelerated production directed by senior leads.",
+    icon: "ai",
+  },
+];
+---
+
+<section class="pricing-hero-section is-visible" id="pricing-hero">
+  <!-- Ambient Volumetric Glow -->
+  <div class="pricing-ambient-bg" aria-hidden="true">
+    <div class="pricing-glow-right"></div>
+    <div class="pricing-glow-left"></div>
+    <div class="pricing-bottom-fade"></div>
+  </div>
+
+  <div class="container pricing-hero-container">
+    <div class="pricing-hero-grid">
+      <!-- Left Column: Intro Copy & CTA -->
+      <div class="pricing-intro">
+        <span class="pricing-eyebrow">FLEXIBLE PLANS</span>
+
+        <h1 class="pricing-title">
+          Your full-time creative team,
+          <span class="pricing-title-accent">for one hire.</span>
+        </h1>
+
+        <p class="pricing-description">
+          From brand identity and social content to web, AI visuals, and copywriting, one Adaptif subscription gives you a dedicated creative team that delivers work in 1–2 days, every day.
+        </p>
+
+        <div class="pricing-intro-cta">
+          <a href="#contact" class="adaptif-btn pricing-book-btn">
+            <span>Book a call</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Column: Billing Toggle + Plan Cards -->
+      <div class="pricing-plans-column">
+        <!-- Billing Selector -->
+        <div class="billing-toggle-wrap">
+          <div class="billing-toggle" role="tablist" aria-label="Billing frequency">
+            <button
+              type="button"
+              class="billing-option"
+              role="tab"
+              aria-selected="false"
+              data-billing="monthly"
+            >
+              <span>MONTHLY</span>
+            </button>
+            <button
+              type="button"
+              class="billing-option is-active"
+              role="tab"
+              aria-selected="true"
+              data-billing="annual"
+            >
+              <span>ANNUAL</span>
+              <span class="billing-save-tag">SAVE 20%</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="pricing-cards-grid">
+          <!-- Plan 1: Creative -->
+          <article class="plan-card plan-card--creative">
+            <header class="plan-header">
+              <div class="plan-icon" aria-hidden="true">
+                <!-- Geometric Pyramid / Triangle Wireframe -->
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                  <path d="M18 4L32 29H4L18 4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+                  <path d="M18 4L18 29M11 16.5H25M7.5 22.8H28.5" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" />
+                </svg>
+              </div>
+              <div class="plan-heading">
+                <h2 class="plan-name">Creative</h2>
+                <p class="plan-tagline">For brands that need consistent creative output.</p>
+              </div>
+            </header>
+
+            <div class="plan-price-row">
+              <span
+                class="plan-price"
+                data-annual="$1.750"
+                data-monthly="$2.190"
+              >$1.750</span>
+              <div class="plan-price-meta">
+                <div class="plan-unit-row">
+                  <span class="plan-unit">USD/Month</span>
+                  <span class="plan-save-badge" data-save-badge>SAVE 20%</span>
+                </div>
+                <span class="plan-pause">Pause anytime</span>
+              </div>
+            </div>
+
+            <div class="plan-included-label">What's included</div>
+
+            <ul class="plan-features" role="list">
+              {creativeFeatures.map((feat) => (
+                <li class="plan-feature-item">
+                  <button type="button" class="feature-trigger" aria-expanded="false">
+                    <span class="feature-left">
+                      <span class="feature-icon" aria-hidden="true">
+                        {feat.icon === "ticket" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                            <path d="M13 5v2M13 17v2M13 11v2" />
+                          </svg>
+                        )}
+                        {feat.icon === "chat" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                          </svg>
+                        )}
+                        {feat.icon === "branding" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
+                            <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
+                            <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
+                            <path d="M2 12a10 10 0 0 1 18-6" />
+                            <path d="M2 16h.01" />
+                            <path d="M21.8 16c.2-2 .131-5.354 0-6" />
+                            <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
+                            <path d="M8.65 22c.21-.66.45-1.32.57-2" />
+                            <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
+                          </svg>
+                        )}
+                        {feat.icon === "digital" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4l7.07 17 2.51-7.39L21 11.07z" />
+                          </svg>
+                        )}
+                        {feat.icon === "uiux" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2" />
+                            <path d="M3 9h18M9 21V9" />
+                          </svg>
+                        )}
+                        {feat.icon === "print" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                            <path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" />
+                            <rect x="6" y="14" width="12" height="8" rx="1" />
+                          </svg>
+                        )}
+                      </span>
+                      <span class="feature-label">{feat.label}</span>
+                    </span>
+                    <svg class="feature-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  <div class="feature-detail" hidden>
+                    <p>{feat.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <a href="#contact" class="adaptif-btn plan-cta-btn">
+              <span>Start with Creative</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+
+          <!-- Plan 2: Full Stack (Most Popular) -->
+          <article class="plan-card plan-card--featured">
+            <div class="popular-badge">
+              <span>✦ MOST POPULAR ✦</span>
+            </div>
+
+            <header class="plan-header">
+              <div class="plan-icon" aria-hidden="true">
+                <!-- Geometric 4-Node Frame Wireframe -->
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+                  <rect x="7" y="7" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
+                  <rect x="22" y="7" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
+                  <rect x="7" y="22" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
+                  <rect x="22" y="22" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
+                  <path d="M14 10.5H22M14 25.5H22M10.5 14V22M25.5 14V22" stroke="currentColor" stroke-width="1.3" />
+                  <circle cx="18" cy="18" r="2.2" stroke="currentColor" stroke-width="1.3" />
+                </svg>
+              </div>
+              <div class="plan-heading">
+                <h2 class="plan-name">Full Stack</h2>
+                <p class="plan-tagline">For teams that can't afford creative bottlenecks.</p>
+              </div>
+            </header>
+
+            <div class="plan-price-row">
+              <span
+                class="plan-price"
+                data-annual="$3.750"
+                data-monthly="$4.690"
+              >$3.750</span>
+              <div class="plan-price-meta">
+                <div class="plan-unit-row">
+                  <span class="plan-unit">USD/Month</span>
+                </div>
+                <span class="plan-pause">Pause anytime</span>
+              </div>
+            </div>
+
+            <div class="plan-included-label plan-included-label--plus">
+              <span>All in Creative Plan</span>
+              <span class="plus-mark">+</span>
+            </div>
+
+            <ul class="plan-features" role="list">
+              {fullStackFeatures.map((feat) => (
+                <li class="plan-feature-item">
+                  <button type="button" class="feature-trigger" aria-expanded="false">
+                    <span class="feature-left">
+                      <span class="feature-icon" aria-hidden="true">
+                        {feat.icon === "ticket" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                            <path d="M13 5v2M13 17v2M13 11v2" />
+                          </svg>
+                        )}
+                        {feat.icon === "headset" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3" />
+                          </svg>
+                        )}
+                        {feat.icon === "code" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 18 22 12 16 6" />
+                            <polyline points="8 6 2 12 8 18" />
+                            <line x1="14" y1="4" x2="10" y2="20" />
+                          </svg>
+                        )}
+                        {feat.icon === "megaphone" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m3 11 18-5v12L3 14v-3z" />
+                            <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+                          </svg>
+                        )}
+                        {feat.icon === "wrench" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                          </svg>
+                        )}
+                        {feat.icon === "ai" && (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6 2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />
+                            <circle cx="12" cy="12" r="2.5" />
+                          </svg>
+                        )}
+                      </span>
+                      <span class="feature-label">{feat.label}</span>
+                    </span>
+                    <svg class="feature-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  <div class="feature-detail" hidden>
+                    <p>{feat.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <a href="#contact" class="adaptif-btn plan-cta-btn">
+              <span>Get Full Stack</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initPricingHero() {
+    const section = document.getElementById("pricing-hero");
+    if (!section) return;
+
+    // Billing frequency toggle
+    const billingBtns = section.querySelectorAll<HTMLButtonElement>(".billing-option");
+    const priceEls = section.querySelectorAll<HTMLElement>(".plan-price");
+    const saveBadge = section.querySelector<HTMLElement>("[data-save-badge]");
+
+    billingBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const mode = btn.dataset.billing === "monthly" ? "monthly" : "annual";
+
+        billingBtns.forEach((b) => {
+          const active = b === btn;
+          b.classList.toggle("is-active", active);
+          b.setAttribute("aria-selected", active ? "true" : "false");
+        });
+
+        priceEls.forEach((el) => {
+          const next = mode === "monthly" ? el.dataset.monthly : el.dataset.annual;
+          if (next) el.textContent = next;
+        });
+
+        if (saveBadge) {
+          saveBadge.style.display = mode === "annual" ? "inline-flex" : "none";
+        }
+      });
+    });
+
+    // Feature row accordion toggle
+    const triggers = section.querySelectorAll<HTMLButtonElement>(".feature-trigger");
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const item = trigger.closest(".plan-feature-item");
+        const detail = item?.querySelector<HTMLElement>(".feature-detail");
+        if (!item || !detail) return;
+
+        const isOpen = trigger.getAttribute("aria-expanded") === "true";
+        trigger.setAttribute("aria-expanded", isOpen ? "false" : "true");
+        item.classList.toggle("is-open", !isOpen);
+        detail.hidden = isOpen;
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initPricingHero);
+  } else {
+    initPricingHero();
+  }
+  document.addEventListener("astro:page-load", initPricingHero);
+</script>
+
+<style>
+  .pricing-hero-section {
+    position: relative;
+    min-height: calc(100dvh - 40px);
+    padding-top: calc(var(--header-height) + clamp(48px, 8vh, 96px));
+    padding-bottom: clamp(64px, 10vh, 120px);
+    display: flex;
+    align-items: center;
+    background-color: #050c17;
+    overflow: hidden;
+  }
+
+  /* Volumetric Background */
+  .pricing-ambient-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .pricing-glow-right {
+    position: absolute;
+    top: 8%;
+    right: 6%;
+    width: clamp(420px, 54vw, 820px);
+    height: clamp(420px, 65vh, 760px);
+    background: radial-gradient(
+      ellipse 60% 55% at 55% 50%,
+      rgba(45, 165, 255, 0.2) 0%,
+      rgba(18, 74, 145, 0.14) 45%,
+      transparent 78%
+    );
+    filter: blur(48px);
+  }
+
+  .pricing-glow-left {
+    position: absolute;
+    top: 25%;
+    left: -8%;
+    width: clamp(320px, 42vw, 620px);
+    height: clamp(320px, 50vh, 540px);
+    background: radial-gradient(
+      ellipse 60% 55% at 40% 50%,
+      rgba(22, 68, 130, 0.16) 0%,
+      transparent 75%
+    );
+    filter: blur(60px);
+  }
+
+  .pricing-bottom-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 140px;
+    background: linear-gradient(to top, var(--color-void, #010307) 0%, transparent 100%);
+  }
+
+  .pricing-hero-container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .pricing-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.18fr);
+    gap: clamp(40px, 5vw, 76px);
+    align-items: center;
+  }
+
+  /* ========================================================================
+     Left Column: Intro
+     ======================================================================== */
+  .pricing-intro {
+    max-width: 470px;
+  }
+
+  .pricing-eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+    margin-bottom: 18px;
+  }
+
+  .pricing-title {
+    font-family: var(--font-family-body);
+    font-size: clamp(2.15rem, 3.35vw, 3.15rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+
+  .pricing-title-accent {
+    display: block;
+    font-family: var(--font-family-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.1em;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #8be5ff 0%, #48C8FF 55%, #2aa8ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.25));
+  }
+
+  .pricing-description {
+    font-size: clamp(0.95rem, 1.05vw, 1.04rem);
+    line-height: 1.62;
+    color: rgba(226, 232, 240, 0.74);
+    margin-bottom: 30px;
+    max-width: 430px;
+  }
+
+  .pricing-book-btn {
+    padding: 13px 34px;
+    border-radius: 10px;
+    color: #031526;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-shadow: none;
+  }
+
+  /* ========================================================================
+     Right Column: Billing Toggle + Cards
+     ======================================================================== */
+  .pricing-plans-column {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .billing-toggle-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  .billing-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: var(--radius-pill);
+    background: rgba(8, 18, 38, 0.72);
+    border: 1px solid rgba(120, 195, 255, 0.28);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .billing-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: var(--radius-pill);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: rgba(255, 255, 255, 0.84);
+    transition:
+      background var(--duration-fast) var(--ease-spring),
+      color var(--duration-fast) var(--ease-spring),
+      box-shadow var(--duration-fast) var(--ease-spring);
+  }
+
+  .billing-option:hover:not(.is-active) {
+    color: #ffffff;
+  }
+
+  .billing-option.is-active {
+    background: linear-gradient(180deg, #74dcff 0%, #48C8FF 100%);
+    color: #031424;
+    box-shadow:
+      0 0 20px rgba(72, 200, 255, 0.5),
+      inset 0 1px 1px rgba(255, 255, 255, 0.65);
+  }
+
+  .billing-save-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    opacity: 0.9;
+  }
+
+  /* ========================================================================
+     Pricing Cards Grid
+     ======================================================================== */
+  .pricing-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .plan-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 26px 22px 22px;
+    border-radius: 18px;
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    transition:
+      transform var(--duration-normal) var(--ease-spring),
+      border-color var(--duration-normal) var(--ease-spring),
+      box-shadow var(--duration-normal) var(--ease-spring);
+  }
+
+  .plan-card--creative {
+    background: linear-gradient(
+      180deg,
+      rgba(14, 30, 56, 0.72) 0%,
+      rgba(8, 19, 38, 0.84) 100%
+    );
+    border: 1px solid rgba(110, 185, 245, 0.24);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 18px 42px -12px rgba(0, 4, 15, 0.78);
+  }
+
+  .plan-card--creative:hover {
+    border-color: rgba(110, 185, 245, 0.42);
+    transform: translateY(-2px);
+  }
+
+  .plan-card--featured {
+    background: linear-gradient(
+      180deg,
+      rgba(26, 76, 122, 0.52) 0%,
+      rgba(10, 29, 58, 0.84) 100%
+    );
+    border: 1.5px solid rgba(86, 208, 255, 0.85);
+    box-shadow:
+      inset 0 1px 18px rgba(72, 200, 255, 0.16),
+      0 0 34px rgba(72, 200, 255, 0.28),
+      0 20px 50px -12px rgba(0, 4, 15, 0.85);
+  }
+
+  .plan-card--featured:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 1px 22px rgba(72, 200, 255, 0.22),
+      0 0 42px rgba(72, 200, 255, 0.36),
+      0 24px 54px -12px rgba(0, 4, 15, 0.9);
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #041224;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.35),
+      0 0 16px rgba(72, 200, 255, 0.45);
+  }
+
+  /* Card Header */
+  .plan-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .plan-icon {
+    flex-shrink: 0;
+    color: #ffffff;
+    opacity: 0.92;
+    margin-top: 2px;
+  }
+
+  .plan-name {
+    font-family: var(--font-family-body);
+    font-size: 1.38rem;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .plan-tagline {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: rgba(226, 232, 240, 0.72);
+  }
+
+  /* Price Row */
+  .plan-price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .plan-price {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.65rem, 3.2vw, 3.15rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: #a6e3ff;
+  }
+
+  .plan-price-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .plan-unit-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .plan-unit {
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .plan-save-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #041224;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+  }
+
+  .plan-pause {
+    font-size: 0.72rem;
+    color: rgba(203, 213, 225, 0.65);
+  }
+
+  /* Included Label */
+  .plan-included-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--color-brand-cyan, #48C8FF);
+    padding-bottom: 10px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .plan-included-label--plus .plus-mark {
+    font-size: 0.95rem;
+    font-weight: 400;
+    opacity: 0.85;
+  }
+
+  /* Features List */
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 20px;
+    flex: 1;
+  }
+
+  .plan-feature-item {
+    border-radius: 8px;
+    transition: background-color var(--duration-fast) ease;
+  }
+
+  .plan-feature-item:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  .feature-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 7px 4px;
+    color: rgba(241, 245, 249, 0.9);
+    font-size: 0.82rem;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .feature-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(203, 213, 225, 0.78);
+    flex-shrink: 0;
+  }
+
+  .feature-chevron {
+    color: rgba(203, 213, 225, 0.65);
+    flex-shrink: 0;
+    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .plan-feature-item.is-open .feature-chevron {
+    transform: rotate(180deg);
+    color: var(--color-brand-cyan, #48C8FF);
+  }
+
+  .feature-detail {
+    padding: 0 4px 10px 29px;
+    font-size: 0.76rem;
+    line-height: 1.5;
+    color: rgba(148, 163, 184, 0.9);
+  }
+
+  /* Card CTA Button */
+  .plan-cta-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #031526;
+    text-shadow: none;
+    gap: 8px;
+  }
+
+  /* ========================================================================
+     Responsive
+     ======================================================================== */
+  @media (max-width: 1060px) {
+    .pricing-hero-grid {
+      grid-template-columns: 1fr;
+      gap: 44px;
+    }
+
+    .pricing-intro {
+      max-width: 620px;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    .pricing-description {
+      margin-inline: auto;
+    }
+
+    .pricing-intro-cta {
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .pricing-hero-section {
+      padding-top: calc(var(--header-height) + 32px);
+    }
+
+    .pricing-cards-grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .plan-card {
+      padding: 24px 18px 20px;
+    }
+  }
+</style>

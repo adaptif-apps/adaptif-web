@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import PricingHero from "../components/PricingHero.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="Pricing — Adaptif"
+  description="Flexible creative subscription plans. Your full-time creative team, for one hire. Creative and Full Stack plans with 1–2 day turnarounds."
+>
+  <Header />
+  <main>
+    <PricingHero />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+</style>

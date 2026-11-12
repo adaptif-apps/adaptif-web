@@ -53,7 +53,6 @@
       varying vec2 vUv;
       uniform float uTime;
       uniform vec2 uResolution;
-      uniform vec2 uMouse;
 
       float hash(vec2 p) {
         p = fract(p * vec2(123.34, 456.21));
@@ -87,9 +86,6 @@
       void main() {
         vec2 aspect = vec2(uResolution.x / max(uResolution.y, 1.0), 1.0);
         vec2 uv = (vUv - 0.5) * aspect;
-
-        // Subtle mouse parallax
-        uv += (uMouse - 0.5) * 0.03;
 
         // Diagonal galaxy tilt
         float tilt = -0.16;
@@ -170,7 +166,6 @@
     const vortexUniforms = {
       uTime: { value: 0 },
       uResolution: { value: new THREE.Vector2(1, 1) },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
     };
 
     const vortexGeo = new THREE.PlaneGeometry(2, 2);
@@ -396,18 +391,6 @@
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    const targetMouse = { x: 0.5, y: 0.5 };
-    const currentMouse = { x: 0.5, y: 0.5 };
-
-    const handlePointerMove = (e: PointerEvent) => {
-      targetMouse.x = e.clientX / Math.max(window.innerWidth, 1);
-      targetMouse.y = 1.0 - e.clientY / Math.max(window.innerHeight, 1);
-    };
-
-    if (footer) {
-      footer.addEventListener("pointermove", handlePointerMove, { passive: true });
-    }
-
     let isVisible = true;
     const observer = new IntersectionObserver(
       (entries) => {
@@ -425,16 +408,8 @@
       if (!isVisible) return;
 
       const elapsed = prefersReducedMotion ? 0 : clock.getElapsedTime();
-      currentMouse.x += (targetMouse.x - currentMouse.x) * 0.04;
-      currentMouse.y += (targetMouse.y - currentMouse.y) * 0.04;
-
-      // Subtle 3D camera parallax
-      camera.position.x = (currentMouse.x - 0.5) * 0.14;
-      camera.position.y = 0.18 + (currentMouse.y - 0.5) * 0.08;
-      camera.lookAt(0, 0, 0);
 
       vortexUniforms.uTime.value = elapsed;
-      vortexUniforms.uMouse.value.set(currentMouse.x, currentMouse.y);
       dustMat.uniforms.uTime.value = elapsed;
       starMat.uniforms.uTime.value = elapsed;
 
@@ -449,7 +424,6 @@
         cancelAnimationFrame(rafId);
         observer.disconnect();
         window.removeEventListener("resize", handleResize);
-        if (footer) footer.removeEventListener("pointermove", handlePointerMove);
         renderer.dispose();
         vortexGeo.dispose();
         vortexMat.dispose();

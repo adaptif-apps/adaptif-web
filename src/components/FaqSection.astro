@@ -1,0 +1,411 @@
+---
+const faqs = [
+  {
+    question: "What is the minimum commitment?",
+    answer:
+      "All plans are month-to-month by default with no long-term lock-in. You can upgrade, downgrade or pause between billing cycles, so your creative capacity can scale with your pipeline.",
+  },
+  {
+    question: "How does the onboarding work?",
+    answer:
+      "Once you subscribe, we invite you to your workspace, collect your brand assets, tools and priorities, and run a short kickoff to align on goals. Within a few days you’ll be submitting your first briefs and seeing deliveries in 1–2 days.",
+  },
+  {
+    question: "What exactly is included in my Adaptif subscription?",
+    answer:
+      "Every plan includes strategy, project management and creative production across branding, social, web, campaigns, print and AI-powered visuals, within the ticket and capacity limits of your tier. If something is out of scope, we’ll tell you upfront and suggest the best way to tackle it.",
+  },
+  {
+    question: "How does Adaptif use AI in our projects?",
+    answer:
+      "We use AI as a production accelerator—storyboarding, exploration and asset generation—always directed by human creative leads. You keep full rights to the final deliverables, and we follow your brand guidelines on every piece.",
+  },
+  {
+    question: "Can I pause, upgrade, or downgrade my plan?",
+    answer:
+      "Yes. Your subscription is designed to stay flexible as your needs change. You can pause between billing cycles, or move to a different plan if you need more or less capacity.",
+  },
+  {
+    question: "What billing options do you offer?",
+    answer:
+      "You can pay monthly or annually via credit or debit card. Annual plans include a discount and lock in your rate for 12 months. If you need invoicing or procurement approvals, talk to us about an Enterprise agreement.",
+  },
+  {
+    question: "What if my budget isn’t fully used?",
+    answer:
+      "Most clients quickly fill their queue once they see how fast we ship, but if you have a lighter month you can use the time for backlogged improvements: audits, design systems, templates, or experimentation. If you need to slow down, you can pause between billing cycles.",
+  },
+  {
+    question: "What’s the typical cost of a design project without Adaptif?",
+    answer:
+      "A single brand identity, landing page or campaign—handled through traditional agencies or mixed freelancers—can easily match or exceed one month of our subscription, without giving you ongoing capacity. With Adaptif, that same budget gives you a team you can use all month long.",
+  },
+  {
+    question: "What happens if I have more requests than my plan can handle?",
+    answer:
+      "Your requests stay organized in a queue and we work through them based on your plan’s active capacity. If your team consistently needs faster throughput or parallel execution, upgrading to a higher tier is the best fit.",
+  },
+  {
+    question: "What’s included in my subscription, and what’s considered out of scope?",
+    answer:
+      "Your subscription covers the services listed in your plan, including ongoing creative production and support within your active capacity. If a request falls outside the scope of your plan or requires a larger custom engagement, we’ll flag it early and recommend the best next step.",
+  },
+];
+---
+
+<section class="faq-section" id="faqs" data-theme="dark">
+  <div class="faq-ambient-glow" aria-hidden="true"></div>
+
+  <div class="faq-container">
+    <header class="faq-header reveal-item">
+      <span class="faq-eyebrow">FAQS</span>
+      <h2 class="faq-title">
+        Frequently asked <span class="title-highlight">questions</span>
+      </h2>
+    </header>
+
+    <div class="faq-list" role="list">
+      {
+        faqs.map((item, idx) => {
+          const isOpen = idx === 0;
+          const panelId = `faq-panel-${idx}`;
+          const triggerId = `faq-trigger-${idx}`;
+          return (
+            <article
+              class={`faq-item reveal-item ${isOpen ? "is-open" : ""}`}
+              style={`--reveal-delay: ${Math.min(idx * 45, 360)}ms;`}
+              role="listitem"
+            >
+              <button
+                type="button"
+                id={triggerId}
+                class="faq-trigger"
+                aria-expanded={isOpen ? "true" : "false"}
+                aria-controls={panelId}
+              >
+                <span class="faq-question">{item.question}</span>
+                <span class="faq-icon" aria-hidden="true">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  >
+                    <path class="icon-horiz" d="M3.5 8H12.5" />
+                    <path class="icon-vert" d="M8 3.5V12.5" />
+                  </svg>
+                </span>
+              </button>
+
+              <div
+                id={panelId}
+                class="faq-panel"
+                role="region"
+                aria-labelledby={triggerId}
+              >
+                <div class="faq-panel-inner">
+                  <p class="faq-answer">{item.answer}</p>
+                </div>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  const initFaqSection = () => {
+    const section = document.getElementById("faqs");
+    if (!section) return;
+
+    // Reveal animation
+    const items = section.querySelectorAll(".reveal-item");
+    if (items.length) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -30px 0px" }
+      );
+      items.forEach((item) => observer.observe(item));
+    }
+
+    // Accordion toggle
+    const triggers = section.querySelectorAll<HTMLButtonElement>(".faq-trigger");
+    triggers.forEach((btn) => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+
+      btn.addEventListener("click", () => {
+        const parent = btn.closest(".faq-item");
+        if (!parent) return;
+
+        const isCurrentlyOpen = parent.classList.contains("is-open");
+
+        // Close others for a clean single-open accordion feel
+        section.querySelectorAll(".faq-item.is-open").forEach((openItem) => {
+          if (openItem !== parent) {
+            openItem.classList.remove("is-open");
+            const openBtn = openItem.querySelector(".faq-trigger");
+            if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        parent.classList.toggle("is-open", !isCurrentlyOpen);
+        btn.setAttribute("aria-expanded", String(!isCurrentlyOpen));
+      });
+    });
+  };
+
+  initFaqSection();
+  document.addEventListener("astro:page-load", initFaqSection);
+</script>
+
+<style>
+  .faq-section {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-void, #030712);
+    padding: clamp(96px, 10vw, 140px) 0;
+    overflow: hidden;
+    color: var(--color-text-primary, #f8fafc);
+    user-select: text;
+  }
+
+  .faq-ambient-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(1100px, 95vw);
+    height: 100%;
+    background: radial-gradient(
+      ellipse 55% 50% at 50% 50%,
+      rgba(72, 200, 255, 0.075) 0%,
+      rgba(10, 163, 248, 0.025) 45%,
+      transparent 75%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .faq-container {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Header */
+  .faq-header {
+    text-align: center;
+    margin-bottom: clamp(48px, 6vw, 68px);
+  }
+
+  .faq-eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #48c8ff;
+    margin-bottom: clamp(12px, 1.8vh, 18px);
+  }
+
+  .faq-title {
+    margin: 0;
+    font-family: var(--font-family-display, serif);
+    font-size: clamp(2.3rem, 4.4vw, 3.8rem);
+    font-weight: 400;
+    line-height: 1.14;
+    letter-spacing: -0.035em;
+    color: #ffffff;
+  }
+
+  .faq-title .title-highlight {
+    font-style: italic;
+    background: linear-gradient(135deg, #7fe2ff 0%, #48c8ff 50%, #1da5ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+    padding-right: 0.06em;
+    filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.4));
+  }
+
+  /* Accordion List */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .faq-item {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.035) 0%,
+      rgba(255, 255, 255, 0.018) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 8px 24px -12px rgba(0, 0, 0, 0.5);
+    transition:
+      border-color 0.3s ease,
+      background-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .faq-item:hover {
+    border-color: rgba(72, 200, 255, 0.22);
+  }
+
+  .faq-item.is-open {
+    border-color: rgba(72, 200, 255, 0.32);
+    background: linear-gradient(
+      180deg,
+      rgba(72, 200, 255, 0.055) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(127, 226, 255, 0.14),
+      0 14px 32px -14px rgba(10, 163, 248, 0.2);
+  }
+
+  .faq-trigger {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 26px;
+    text-align: left;
+    color: #ffffff;
+    cursor: pointer;
+    user-select: text;
+  }
+
+  .faq-question {
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.25vw, 1.12rem);
+    font-weight: 500;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+    color: rgba(255, 255, 255, 0.94);
+    transition: color 0.25s ease;
+  }
+
+  .faq-item.is-open .faq-question {
+    color: #ffffff;
+  }
+
+  .faq-icon {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    color: #48c8ff;
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease,
+      transform 0.3s var(--ease-spring);
+  }
+
+  .faq-icon .icon-vert {
+    transform-origin: center;
+    transition: transform 0.3s var(--ease-spring), opacity 0.2s ease;
+  }
+
+  .faq-item.is-open .faq-icon {
+    background: rgba(72, 200, 255, 0.18);
+    border-color: rgba(72, 200, 255, 0.42);
+    color: #7fe2ff;
+  }
+
+  .faq-item.is-open .faq-icon .icon-vert {
+    transform: rotate(90deg) scaleY(0);
+    opacity: 0;
+  }
+
+  /* Smooth Grid-Row Accordion Transition */
+  .faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .faq-item.is-open .faq-panel {
+    grid-template-rows: 1fr;
+  }
+
+  .faq-panel-inner {
+    overflow: hidden;
+  }
+
+  .faq-answer {
+    margin: 0;
+    padding: 0 26px 24px;
+    font-family: var(--font-family-body);
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.65;
+    color: rgba(226, 232, 240, 0.74);
+  }
+
+  /* Reveal Animation */
+  .reveal-item {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal-item.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 640px) {
+    .faq-container {
+      padding: 0 18px;
+    }
+
+    .faq-trigger {
+      padding: 18px 20px;
+      gap: 14px;
+    }
+
+    .faq-icon {
+      width: 30px;
+      height: 30px;
+    }
+
+    .faq-answer {
+      padding: 0 20px 20px;
+      font-size: 0.92rem;
+    }
+  }
+</style>

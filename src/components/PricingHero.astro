@@ -159,6 +159,7 @@ const fullStackFeatures: PlanFeature[] = [
         <!-- Billing Frequency Selector -->
         <div class="billing-bar">
           <div class="billing-toggle" role="tablist" aria-label="Billing frequency">
+            <span class="billing-slider" aria-hidden="true"></span>
             <button
               type="button"
               class="billing-btn"
@@ -280,8 +281,10 @@ const fullStackFeatures: PlanFeature[] = [
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </button>
-                  <div class="feature-row-detail" id={feat.id} hidden>
-                    <p>{feat.detail}</p>
+                  <div class="feature-row-detail" id={feat.id} aria-hidden="true">
+                    <div class="feature-row-detail-inner">
+                      <p>{feat.detail}</p>
+                    </div>
                   </div>
                 </li>
               ))}
@@ -387,8 +390,10 @@ const fullStackFeatures: PlanFeature[] = [
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </button>
-                  <div class="feature-row-detail" id={feat.id} hidden>
-                    <p>{feat.detail}</p>
+                  <div class="feature-row-detail" id={feat.id} aria-hidden="true">
+                    <div class="feature-row-detail-inner">
+                      <p>{feat.detail}</p>
+                    </div>
                   </div>
                 </li>
               ))}
@@ -410,9 +415,33 @@ const fullStackFeatures: PlanFeature[] = [
     if (!root || root.dataset.initialized === "true") return;
     root.dataset.initialized = "true";
 
+    const toggle = root.querySelector<HTMLElement>(".billing-toggle");
+    const slider = root.querySelector<HTMLElement>(".billing-slider");
     const billingButtons = root.querySelectorAll<HTMLButtonElement>(".billing-btn");
     const priceElements = root.querySelectorAll<HTMLElement>(".plan-amount");
     const saveBadges = root.querySelectorAll<HTMLElement>("[data-save-badge]");
+
+    const positionSlider = (activeBtn: HTMLButtonElement | null, animate = true) => {
+      if (!toggle || !slider || !activeBtn) return;
+      if (!animate) {
+        slider.style.transition = "none";
+      }
+      const x = activeBtn.offsetLeft;
+      const w = activeBtn.offsetWidth;
+      slider.style.width = `${w}px`;
+      slider.style.transform = `translateX(${x - 4}px)`;
+      if (!animate) {
+        slider.getBoundingClientRect();
+        slider.style.transition = "";
+      }
+    };
+
+    const initialActive = root.querySelector<HTMLButtonElement>(".billing-btn.is-active");
+    positionSlider(initialActive, false);
+    window.addEventListener("resize", () => {
+      const current = root.querySelector<HTMLButtonElement>(".billing-btn.is-active");
+      positionSlider(current, false);
+    });
 
     billingButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -424,15 +453,22 @@ const fullStackFeatures: PlanFeature[] = [
           other.setAttribute("aria-selected", isActive ? "true" : "false");
         });
 
+        positionSlider(btn, true);
+
         priceElements.forEach((el) => {
           const nextValue = mode === "monthly" ? el.dataset.monthly : el.dataset.annual;
-          if (nextValue) {
+          if (nextValue && el.textContent !== nextValue) {
+            el.classList.remove("is-updating");
+            void el.offsetWidth;
             el.textContent = nextValue;
+            el.classList.add("is-updating");
           }
         });
 
         saveBadges.forEach((badge) => {
-          badge.style.display = mode === "annual" ? "inline-flex" : "none";
+          badge.style.opacity = mode === "annual" ? "1" : "0";
+          badge.style.transform = mode === "annual" ? "scale(1)" : "scale(0.9)";
+          badge.style.pointerEvents = mode === "annual" ? "auto" : "none";
         });
       });
     });
@@ -447,7 +483,7 @@ const fullStackFeatures: PlanFeature[] = [
         const isOpen = trigger.getAttribute("aria-expanded") === "true";
         trigger.setAttribute("aria-expanded", isOpen ? "false" : "true");
         item.classList.toggle("is-open", !isOpen);
-        detail.hidden = isOpen;
+        detail.setAttribute("aria-hidden", isOpen ? "true" : "false");
       });
     });
   }
@@ -594,20 +630,40 @@ const fullStackFeatures: PlanFeature[] = [
   }
 
   .billing-toggle {
+    position: relative;
     display: inline-flex;
     align-items: center;
     padding: 4px;
     border-radius: var(--radius-pill);
-    background: rgba(8, 18, 44, 0.72);
-    border: 1px solid rgba(72, 200, 255, 0.25);
+    background: rgba(8, 18, 44, 0.48);
+    border: 1px solid rgba(72, 200, 255, 0.28);
     backdrop-filter: var(--glass-blur-md);
     -webkit-backdrop-filter: var(--glass-blur-md);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 10px 28px -8px rgba(0, 4, 15, 0.7);
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 10px 28px -8px rgba(0, 4, 15, 0.65);
+  }
+
+  .billing-slider {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(180deg, #72dbff 0%, #48c8ff 100%);
+    box-shadow:
+      0 0 22px rgba(72, 200, 255, 0.45),
+      inset 0 1px 1px rgba(255, 255, 255, 0.65);
+    transition:
+      transform 0.36s var(--ease-spring),
+      width 0.36s var(--ease-spring);
+    z-index: 0;
+    pointer-events: none;
   }
 
   .billing-btn {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -617,11 +673,8 @@ const fullStackFeatures: PlanFeature[] = [
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
-    color: rgba(248, 250, 252, 0.78);
-    transition:
-      background var(--duration-fast) var(--ease-spring),
-      color var(--duration-fast) var(--ease-spring),
-      box-shadow var(--duration-fast) var(--ease-spring);
+    color: rgba(248, 250, 252, 0.8);
+    transition: color 0.24s var(--ease-spring);
   }
 
   .billing-btn:hover:not(.is-active) {
@@ -629,11 +682,7 @@ const fullStackFeatures: PlanFeature[] = [
   }
 
   .billing-btn.is-active {
-    background: linear-gradient(180deg, #72dbff 0%, #48c8ff 100%);
     color: #031322;
-    box-shadow:
-      0 0 22px rgba(72, 200, 255, 0.45),
-      inset 0 1px 1px rgba(255, 255, 255, 0.65);
   }
 
   .billing-save-pill {
@@ -661,52 +710,78 @@ const fullStackFeatures: PlanFeature[] = [
     flex-direction: column;
     padding: 28px 24px 24px;
     border-radius: var(--radius-md);
-    backdrop-filter: var(--glass-blur-md);
-    -webkit-backdrop-filter: var(--glass-blur-md);
+    backdrop-filter: blur(26px) saturate(175%);
+    -webkit-backdrop-filter: blur(26px) saturate(175%);
     transition:
       transform var(--duration-normal) var(--ease-spring),
       border-color var(--duration-normal) var(--ease-spring),
       box-shadow var(--duration-normal) var(--ease-spring);
   }
 
+  /* Subtle Diagonal Specular Glass Sheen */
+  .plan-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.03) 34%,
+      transparent 62%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .plan-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
   .plan-card--creative {
     background: linear-gradient(
-      180deg,
-      rgba(10, 22, 50, 0.72) 0%,
-      rgba(4, 10, 26, 0.86) 100%
+      165deg,
+      rgba(16, 38, 76, 0.34) 0%,
+      rgba(5, 13, 30, 0.48) 100%
     );
-    border: 1px solid rgba(148, 197, 255, 0.18);
+    border: 1px solid rgba(160, 212, 255, 0.22);
     box-shadow:
-      var(--border-light-top),
-      0 18px 42px -12px rgba(0, 4, 15, 0.8);
+      inset 0 1px 0 rgba(255, 255, 255, 0.24),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 18px 42px -12px rgba(0, 4, 15, 0.68);
   }
 
   .plan-card--creative:hover {
     transform: translateY(-3px);
-    border-color: rgba(72, 200, 255, 0.36);
+    border-color: rgba(72, 200, 255, 0.42);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 0 18px rgba(72, 200, 255, 0.08),
+      0 22px 48px -12px rgba(0, 4, 15, 0.78);
   }
 
   .plan-card--featured {
     background: linear-gradient(
-      180deg,
-      rgba(18, 56, 98, 0.58) 0%,
-      rgba(6, 18, 42, 0.88) 100%
+      165deg,
+      rgba(24, 82, 138, 0.36) 0%,
+      rgba(7, 22, 48, 0.52) 100%
     );
-    border: 1.5px solid rgba(72, 200, 255, 0.78);
+    border: 1.5px solid rgba(72, 200, 255, 0.72);
     box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 0.28),
-      inset 0 0 24px rgba(72, 200, 255, 0.14),
+      inset 0 1px 1px rgba(255, 255, 255, 0.34),
+      inset 0 0 26px rgba(72, 200, 255, 0.14),
       0 0 36px rgba(72, 200, 255, 0.22),
-      0 22px 52px -12px rgba(0, 4, 15, 0.88);
+      0 22px 52px -12px rgba(0, 4, 15, 0.76);
   }
 
   .plan-card--featured:hover {
     transform: translateY(-3px);
     box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 0.34),
-      inset 0 0 28px rgba(72, 200, 255, 0.2),
+      inset 0 1px 1px rgba(255, 255, 255, 0.42),
+      inset 0 0 32px rgba(72, 200, 255, 0.2),
       0 0 46px rgba(72, 200, 255, 0.32),
-      0 26px 56px -12px rgba(0, 4, 15, 0.92);
+      0 26px 56px -12px rgba(0, 4, 15, 0.84);
   }
 
   .popular-pill {
@@ -782,6 +857,21 @@ const fullStackFeatures: PlanFeature[] = [
     color: #9ce2ff;
   }
 
+  .plan-amount.is-updating {
+    animation: priceSwap 0.28s var(--ease-spring) both;
+  }
+
+  @keyframes priceSwap {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .plan-pricing-meta {
     display: flex;
     flex-direction: column;
@@ -811,6 +901,9 @@ const fullStackFeatures: PlanFeature[] = [
     font-weight: 800;
     letter-spacing: 0.04em;
     line-height: 1.2;
+    transition:
+      opacity 0.22s var(--ease-spring),
+      transform 0.22s var(--ease-spring);
   }
 
   .plan-pause {
@@ -907,10 +1000,28 @@ const fullStackFeatures: PlanFeature[] = [
   }
 
   .feature-row-detail {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+      grid-template-rows 0.3s var(--ease-spring),
+      opacity 0.22s ease;
+  }
+
+  .feature-row-detail-inner {
+    overflow: hidden;
+  }
+
+  .feature-row-detail-inner p {
     padding: 0 10px 10px 33px;
     font-size: 0.77rem;
     line-height: 1.5;
     color: var(--color-text-secondary);
+  }
+
+  .plan-feature-item.is-open .feature-row-detail {
+    grid-template-rows: 1fr;
+    opacity: 1;
   }
 
   /* Card CTA */
@@ -921,38 +1032,57 @@ const fullStackFeatures: PlanFeature[] = [
   }
 
   /* ========================================================================
-     Staggered Entrance Animations on Page Load
+     Home-Matched Staggered Entrance Animations (No Blur)
      ======================================================================== */
-  @keyframes pricingFadeUp {
+  @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(22px);
-      filter: blur(6px);
+      transform: translateY(24px);
     }
     to {
       opacity: 1;
       transform: translateY(0);
-      filter: blur(0);
     }
   }
 
-  .pricing-eyebrow-pill,
-  .pricing-title,
-  .pricing-copy,
-  .pricing-intro-actions,
-  .billing-bar,
-  .plan-card--creative,
-  .plan-card--featured {
-    animation: pricingFadeUp 0.78s var(--ease-spring) both;
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
-  .pricing-eyebrow-pill { animation-delay: 0.06s; }
-  .pricing-title        { animation-delay: 0.14s; }
-  .pricing-copy         { animation-delay: 0.22s; }
-  .pricing-intro-actions { animation-delay: 0.30s; }
-  .billing-bar          { animation-delay: 0.20s; }
-  .plan-card--creative  { animation-delay: 0.30s; }
-  .plan-card--featured  { animation-delay: 0.40s; }
+  .pricing-eyebrow-pill {
+    animation: fadeInDown 0.8s var(--ease-spring) 0.08s backwards;
+  }
+
+  .pricing-title {
+    animation: fadeInUp 0.8s var(--ease-spring) 0.16s backwards;
+  }
+
+  .pricing-copy {
+    animation: fadeInUp 0.8s var(--ease-spring) 0.26s backwards;
+  }
+
+  .pricing-intro-actions {
+    animation: fadeInUp 0.8s var(--ease-spring) 0.36s backwards;
+  }
+
+  .billing-bar {
+    animation: fadeInDown 0.8s var(--ease-spring) 0.18s backwards;
+  }
+
+  .plan-card--creative {
+    animation: fadeInUp 0.8s var(--ease-spring) 0.28s backwards;
+  }
+
+  .plan-card--featured {
+    animation: fadeInUp 0.8s var(--ease-spring) 0.38s backwards;
+  }
 
   /* ========================================================================
      Responsive Breakpoints

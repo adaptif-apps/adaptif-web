@@ -81,11 +81,8 @@ const serviceCards: ServiceCard[] = [
     </header>
   </div>
 
-  <!-- Horizontal Auto-Scrolling Viewport with Edge Fade Masks -->
+  <!-- Horizontal Auto-Scrolling Viewport -->
   <div class="carousel-viewport" id="carousel-viewport">
-    <div class="carousel-mask-edge mask-left" aria-hidden="true"></div>
-    <div class="carousel-mask-edge mask-right" aria-hidden="true"></div>
-
     <!-- Unified Track: Set A + Set B for Seamless -50% Loop -->
     <div class="carousel-track" id="carousel-track">
       <!-- Set A -->
@@ -539,25 +536,6 @@ const serviceCards: ServiceCard[] = [
     cursor: grabbing;
   }
 
-  /* Left and Right Edge Fade Masks */
-  .carousel-mask-edge {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: clamp(40px, 8vw, 140px);
-    z-index: 10;
-    pointer-events: none;
-  }
-
-  .mask-left {
-    left: 0;
-    background: linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 0) 100%);
-  }
-
-  .mask-right {
-    right: 0;
-    background: linear-gradient(to left, #ffffff 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 0) 100%);
-  }
 
   /* Unified track for continuous horizontal marquee */
   .carousel-track {

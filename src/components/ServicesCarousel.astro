@@ -9,7 +9,6 @@ interface ServiceCard {
   rest: string;
   tags: string[];
   image: string;
-  categoryNumber: string;
 }
 
 const serviceCards: ServiceCard[] = [
@@ -18,56 +17,49 @@ const serviceCards: ServiceCard[] = [
     highlight: "Social Media",
     rest: "Creative",
     tags: ["REELS", "POSTS", "STORIES", "CONCEPTS", "CAMPAIGNS"],
-    image: "/header_images/work-3.jpg",
-    categoryNumber: "01"
+    image: "/header_images/work-3.jpg"
   },
   {
     id: "card-marketing",
     highlight: "Marketing",
     rest: "Strategy",
     tags: ["DIGITAL CHANNEL STRATEGY", "CONTENT STRATEGY DEVELOPMENT", "CAMPAIGN PLANNING", "QUICK WINS STRATEGY"],
-    image: "/images/designed-to-keep-up/card-1-deadlines.jpg",
-    categoryNumber: "02"
+    image: "/images/designed-to-keep-up/card-1-deadlines.jpg"
   },
   {
     id: "card-website",
     highlight: "Website",
     rest: "Design",
     tags: ["LANDING PAGE DESIGN", "UX/UI AUDIT", "DESIGN SYSTEMS", "WEBSITE GRAPHICS"],
-    image: "/header_images/work-1.jpg",
-    categoryNumber: "03"
+    image: "/header_images/work-1.jpg"
   },
   {
     id: "card-brand",
     highlight: "Brand",
     rest: "Identity",
     tags: ["BRAND DESIGN", "BRAND DEVELOPMENT", "LOGO DESIGN", "BRAND GUIDELINES", "STORY DEVELOPMENT", "REBRANDING"],
-    image: "/images/why-us/creative-talent.jpg",
-    categoryNumber: "04"
+    image: "/images/why-us/creative-talent.jpg"
   },
   {
     id: "card-email",
     highlight: "Email",
     rest: "Design",
     tags: ["DESIGN & STRATEGY", "HTML5", "TEMPLATES", "NEWSLETTERS"],
-    image: "/images/designed-to-keep-up/card-3-plan.jpg",
-    categoryNumber: "05"
+    image: "/images/designed-to-keep-up/card-3-plan.jpg"
   },
   {
     id: "card-print",
     highlight: "Print",
     rest: "Design",
     tags: ["MAGAZINE / NEWSPAPER", "EDITORIAL", "EVENT COLLATERAL", "POSTER", "STATIONERY", "BROCHURE"],
-    image: "/header_images/work-5.jpg",
-    categoryNumber: "06"
+    image: "/header_images/work-5.jpg"
   },
   {
     id: "card-ad",
     highlight: "Ad",
     rest: "Creative",
     tags: ["AD DESIGN", "SOCIAL MEDIA ADS", "DISPLAY ADS", "NATIVE ADS"],
-    image: "/header_images/work-0.jpg",
-    categoryNumber: "07"
+    image: "/header_images/work-0.jpg"
   }
 ];
 ---
@@ -112,15 +104,6 @@ const serviceCards: ServiceCard[] = [
             <div class="card-scrim-hover"></div>
           </div>
 
-          <!-- Card Top Bar: Category Number & Status Indicator -->
-          <div class="card-top-bar">
-            <span class="card-number">{card.categoryNumber}</span>
-            <div class="card-status-pill">
-              <span class="status-dot"></span>
-              <span class="status-label">AVAILABLE</span>
-            </div>
-          </div>
-
           <!-- Card Content Body -->
           <div class="card-content">
             <!-- Title: Always visible -->
@@ -159,15 +142,6 @@ const serviceCards: ServiceCard[] = [
             <div class="card-scrim-hover"></div>
           </div>
 
-          <!-- Card Top Bar: Category Number & Status Indicator -->
-          <div class="card-top-bar">
-            <span class="card-number">{card.categoryNumber}</span>
-            <div class="card-status-pill">
-              <span class="status-dot"></span>
-              <span class="status-label">AVAILABLE</span>
-            </div>
-          </div>
-
           <!-- Card Content Body -->
           <div class="card-content">
             <!-- Title: Always visible -->
@@ -196,20 +170,237 @@ const serviceCards: ServiceCard[] = [
 <script>
   function initServicesCarousel() {
     const section = document.getElementById("services-carousel");
-    if (!section) return;
+    const viewport = document.getElementById("carousel-viewport");
+    const track = document.getElementById("carousel-track");
+    if (!section || !viewport || !track) return;
 
-    // Viewport Intersection Observer for Staggered Entrance
+    // Prevent duplicate initialization on Astro page loads
+    if ((track as any).__servicesCarouselInitialized) return;
+    (track as any).__servicesCarouselInitialized = true;
+
+    let isVisible = false;
+    let isHovered = false;
+    let isDragging = false;
+    let isMouseDown = false;
+    let activeCard: HTMLElement | null = null;
+
+    let currentX = 0;
+    const speed = 0.85; // smooth ~60fps auto-scroll speed
+    let animationFrameId: number | null = null;
+    let halfWidth = track.scrollWidth / 2;
+
+    function updateHalfWidth() {
+      const totalWidth = track.scrollWidth;
+      if (totalWidth > 0) {
+        halfWidth = totalWidth / 2;
+      }
+    }
+
+    // Touch & Mouse Drag variables
+    let startX = 0;
+    let startY = 0;
+    let dragStartX = 0;
+    let hasMoved = false;
+    let isHorizontalGesture = false;
+
+    // Viewport Intersection Observer for Staggered Entrance & CPU optimization
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             section.classList.add("is-visible");
+            isVisible = true;
+            updateHalfWidth();
+            startLoop();
+          } else {
+            isVisible = false;
+            stopLoop();
           }
         });
       },
-      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+      { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
     );
     observer.observe(section);
+
+    function tick() {
+      if (!isVisible) return;
+
+      const shouldPause = isHovered || isDragging || activeCard !== null;
+
+      if (!shouldPause) {
+        currentX -= speed;
+        if (halfWidth > 0) {
+          while (currentX <= -halfWidth) currentX += halfWidth;
+          while (currentX > 0) currentX -= halfWidth;
+        }
+        track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+      }
+
+      animationFrameId = requestAnimationFrame(tick);
+    }
+
+    function startLoop() {
+      if (!animationFrameId) {
+        animationFrameId = requestAnimationFrame(tick);
+      }
+    }
+
+    function stopLoop() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+
+    // Desktop hover pause
+    viewport.addEventListener("mouseenter", () => {
+      // Only pause on hover if device has fine pointer (mouse), not touch
+      if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        isHovered = true;
+      }
+    });
+
+    viewport.addEventListener("mouseleave", () => {
+      isHovered = false;
+    });
+
+    // Touch Drag & Tap Handlers for Mobile
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+      dragStartX = currentX;
+      hasMoved = false;
+      isHorizontalGesture = false;
+      isDragging = true;
+      updateHalfWidth();
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (!isDragging || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const deltaX = touch.clientX - startX;
+      const deltaY = touch.clientY - startY;
+
+      // Determine gesture direction on initial movement
+      if (!hasMoved) {
+        if (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6) {
+          if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+            isHorizontalGesture = true;
+            hasMoved = true;
+            viewport.classList.add("is-dragging");
+          } else {
+            // User is scrolling vertically down the page
+            isDragging = false;
+            return;
+          }
+        }
+      }
+
+      if (isHorizontalGesture) {
+        // Prevent vertical page scroll while actively dragging carousel horizontally
+        if (e.cancelable) e.preventDefault();
+
+        currentX = dragStartX + deltaX;
+        if (halfWidth > 0) {
+          while (currentX <= -halfWidth) currentX += halfWidth;
+          while (currentX > 0) currentX -= halfWidth;
+        }
+        track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+      }
+    }
+
+    function onTouchEnd() {
+      isDragging = false;
+      viewport.classList.remove("is-dragging");
+    }
+
+    viewport.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    // Desktop Mouse Drag support
+    viewport.addEventListener("mousedown", (e: MouseEvent) => {
+      if (e.button !== 0) return; // Left click only
+      isMouseDown = true;
+      startX = e.clientX;
+      dragStartX = currentX;
+      hasMoved = false;
+      updateHalfWidth();
+    });
+
+    window.addEventListener("mousemove", (e: MouseEvent) => {
+      if (!isMouseDown) return;
+      const deltaX = e.clientX - startX;
+      if (Math.abs(deltaX) > 5) {
+        hasMoved = true;
+        isDragging = true;
+        viewport.classList.add("is-dragging");
+        currentX = dragStartX + deltaX;
+        if (halfWidth > 0) {
+          while (currentX <= -halfWidth) currentX += halfWidth;
+          while (currentX > 0) currentX -= halfWidth;
+        }
+        track.style.transform = `translate3d(${currentX}px, 0, 0)`;
+      }
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (isMouseDown) {
+        isMouseDown = false;
+        viewport.classList.remove("is-dragging");
+        setTimeout(() => {
+          isDragging = false;
+        }, 50);
+      }
+    });
+
+    // Card Tap / Click: toggle active description and pause/resume
+    const cards = track.querySelectorAll<HTMLElement>(".service-card");
+    cards.forEach((card) => {
+      card.addEventListener("click", (e) => {
+        // If it was a drag gesture, do not toggle
+        if (hasMoved) {
+          hasMoved = false;
+          return;
+        }
+
+        const isCurrentlyActive = card.classList.contains("is-active");
+
+        // Close any currently active card
+        cards.forEach((c) => c.classList.remove("is-active"));
+
+        if (!isCurrentlyActive) {
+          // Open this card and pause
+          card.classList.add("is-active");
+          activeCard = card;
+        } else {
+          // Re-tap closes the card and resumes movement!
+          activeCard = null;
+        }
+      });
+    });
+
+    // Tapping outside cards closes any active card and resumes movement
+    document.addEventListener("click", (e) => {
+      if (!track.contains(e.target as Node)) {
+        if (activeCard) {
+          cards.forEach((c) => c.classList.remove("is-active"));
+          activeCard = null;
+        }
+      }
+    });
+
+    // Window resize
+    window.addEventListener("resize", () => {
+      updateHalfWidth();
+    });
+
+    // Initial measurement
+    updateHalfWidth();
+    startLoop();
   }
 
   if (document.readyState === "loading") {
@@ -332,12 +523,20 @@ const serviceCards: ServiceCard[] = [
     position: relative;
     width: 100%;
     overflow: hidden;
-    padding-block: 20px;
+    padding-top: 24px;
+    padding-bottom: 76px;
+    margin-bottom: -44px;
+    touch-action: pan-y;
+    cursor: grab;
     opacity: 0;
     transform: translateY(24px);
     transition: 
       opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
       transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+  }
+
+  .carousel-viewport.is-dragging {
+    cursor: grabbing;
   }
 
   /* Left and Right Edge Fade Masks */
@@ -366,21 +565,9 @@ const serviceCards: ServiceCard[] = [
     align-items: center;
     width: max-content;
     will-change: transform;
-    animation: scrollHorizontal 42s linear infinite;
-  }
-
-  /* Pause auto-scroll on hover */
-  .carousel-track:hover {
-    animation-play-state: paused;
-  }
-
-  @keyframes scrollHorizontal {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   /* ==========================================================================
@@ -401,7 +588,7 @@ const serviceCards: ServiceCard[] = [
       0 0 0 1px rgba(15, 23, 42, 0.08);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
     padding: clamp(22px, 2.6vw, 32px);
     cursor: pointer;
     user-select: none;
@@ -411,7 +598,8 @@ const serviceCards: ServiceCard[] = [
       border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .service-card:hover {
+  .service-card:hover,
+  .service-card.is-active {
     transform: translateY(-8px) scale(1.01);
     box-shadow: 
       0 28px 56px -12px rgba(15, 23, 42, 0.2),
@@ -438,7 +626,8 @@ const serviceCards: ServiceCard[] = [
       filter 0.5s ease;
   }
 
-  .service-card:hover .card-img {
+  .service-card:hover .card-img,
+  .service-card.is-active .card-img {
     transform: scale(1.08);
     filter: brightness(0.92);
   }
@@ -472,57 +661,11 @@ const serviceCards: ServiceCard[] = [
     transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .service-card:hover .card-scrim-hover {
+  .service-card:hover .card-scrim-hover,
+  .service-card.is-active .card-scrim-hover {
     opacity: 1;
   }
 
-  /* ==========================================================================
-     CARD TOP BAR
-     ========================================================================== */
-  .card-top-bar {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .card-number {
-    font-family: var(--font-family-display, sans-serif);
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: rgba(255, 255, 255, 0.65);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-  }
-
-  .card-status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 11px;
-    border-radius: 100px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-
-  .status-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background-color: #38bdf8;
-    box-shadow: 0 0 8px #38bdf8;
-  }
-
-  .status-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: #ffffff;
-  }
 
   /* ==========================================================================
      CARD CONTENT & HOVER TAGS REVEAL
@@ -556,7 +699,7 @@ const serviceCards: ServiceCard[] = [
     filter: drop-shadow(0 2px 12px rgba(72, 200, 255, 0.35));
   }
 
-  /* Tags Drawer: Hidden initially, expands on card hover */
+  /* Tags Drawer: Hidden initially, expands on card hover or touch tap */
   .card-tags-drawer {
     display: grid;
     grid-template-rows: 0fr;
@@ -566,7 +709,8 @@ const serviceCards: ServiceCard[] = [
       opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .service-card:hover .card-tags-drawer {
+  .service-card:hover .card-tags-drawer,
+  .service-card.is-active .card-tags-drawer {
     grid-template-rows: 1fr;
     opacity: 1;
   }
@@ -586,7 +730,8 @@ const serviceCards: ServiceCard[] = [
     transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
   }
 
-  .service-card:hover .tags-divider {
+  .service-card:hover .tags-divider,
+  .service-card.is-active .tags-divider {
     transform: scaleX(1);
   }
 
@@ -599,7 +744,8 @@ const serviceCards: ServiceCard[] = [
     transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
   }
 
-  .service-card:hover .tags-cloud {
+  .service-card:hover .tags-cloud,
+  .service-card.is-active .tags-cloud {
     transform: translateY(0);
   }
 
@@ -635,6 +781,12 @@ const serviceCards: ServiceCard[] = [
     .services-carousel-section {
       padding-top: 50px;
       padding-bottom: 70px;
+    }
+
+    .carousel-viewport {
+      padding-top: 20px;
+      padding-bottom: 64px;
+      margin-bottom: -36px;
     }
 
     .service-card {

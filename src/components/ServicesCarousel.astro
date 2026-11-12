@@ -1,0 +1,578 @@
+---
+// ServicesCarousel.astro - Light Mode Horizontal Auto-scrolling Cards Carousel
+// Cards: 520px x 780px, auto-scroll with pause-on-hover, initial title-only reveal tags on hover
+
+interface ServiceCard {
+  id: string;
+  highlight: string;
+  rest: string;
+  tags: string[];
+  image: string;
+  categoryNumber: string;
+}
+
+const serviceCards: ServiceCard[] = [
+  {
+    id: "card-social-media",
+    highlight: "Social Media",
+    rest: "Creative",
+    tags: ["REELS", "POSTS", "STORIES", "CONCEPTS", "CAMPAIGNS"],
+    image: "/header_images/work-3.jpg",
+    categoryNumber: "01"
+  },
+  {
+    id: "card-marketing",
+    highlight: "Marketing",
+    rest: "Strategy",
+    tags: ["DIGITAL CHANNEL STRATEGY", "CONTENT STRATEGY DEVELOPMENT", "CAMPAIGN PLANNING", "QUICK WINS STRATEGY"],
+    image: "/images/designed-to-keep-up/card-1-deadlines.jpg",
+    categoryNumber: "02"
+  },
+  {
+    id: "card-website",
+    highlight: "Website",
+    rest: "Design",
+    tags: ["LANDING PAGE DESIGN", "UX/UI AUDIT", "DESIGN SYSTEMS", "WEBSITE GRAPHICS"],
+    image: "/header_images/work-1.jpg",
+    categoryNumber: "03"
+  },
+  {
+    id: "card-brand",
+    highlight: "Brand",
+    rest: "Identity",
+    tags: ["BRAND DESIGN", "BRAND DEVELOPMENT", "LOGO DESIGN", "BRAND GUIDELINES", "STORY DEVELOPMENT", "REBRANDING"],
+    image: "/images/why-us/creative-talent.jpg",
+    categoryNumber: "04"
+  },
+  {
+    id: "card-email",
+    highlight: "Email",
+    rest: "Design",
+    tags: ["DESIGN & STRATEGY", "HTML5", "TEMPLATES", "NEWSLETTERS"],
+    image: "/images/designed-to-keep-up/card-3-plan.jpg",
+    categoryNumber: "05"
+  },
+  {
+    id: "card-print",
+    highlight: "Print",
+    rest: "Design",
+    tags: ["MAGAZINE / NEWSPAPER", "EDITORIAL", "EVENT COLLATERAL", "POSTER", "STATIONERY", "BROCHURE"],
+    image: "/header_images/work-5.jpg",
+    categoryNumber: "06"
+  },
+  {
+    id: "card-ad",
+    highlight: "Ad",
+    rest: "Creative",
+    tags: ["AD DESIGN", "SOCIAL MEDIA ADS", "DISPLAY ADS", "NATIVE ADS"],
+    image: "/header_images/work-0.jpg",
+    categoryNumber: "07"
+  }
+];
+---
+
+<section class="services-carousel-section" id="services-carousel" data-theme="light">
+  <!-- Soft Ambient Glow -->
+  <div class="carousel-ambient-glow" aria-hidden="true"></div>
+
+  <!-- Horizontal Auto-Scrolling Viewport with Edge Fade Masks -->
+  <div class="carousel-viewport" id="carousel-viewport">
+    <div class="carousel-mask-edge mask-left" aria-hidden="true"></div>
+    <div class="carousel-mask-edge mask-right" aria-hidden="true"></div>
+
+    <!-- Unified Track: Set A + Set B for Seamless -50% Loop -->
+    <div class="carousel-track" id="carousel-track">
+      <!-- Set A -->
+      {serviceCards.map((card) => (
+        <article class="service-card" tab-index="0">
+          <!-- Background Visual -->
+          <div class="card-media">
+            <img 
+              src={card.image} 
+              alt={`${card.highlight} ${card.rest}`} 
+              loading="eager" 
+              decoding="sync" 
+              class="card-img" 
+            />
+            <div class="card-scrim-default"></div>
+            <div class="card-scrim-hover"></div>
+          </div>
+
+          <!-- Card Top Bar: Category Number & Subtle Icon -->
+          <div class="card-top-bar">
+            <span class="card-number">{card.categoryNumber}</span>
+            <div class="card-status-pill">
+              <span class="status-dot"></span>
+              <span class="status-label">AVAILABLE</span>
+            </div>
+          </div>
+
+          <!-- Card Content Body -->
+          <div class="card-content">
+            <!-- Title: Always visible -->
+            <h3 class="card-title">
+              <span class="title-highlight">{card.highlight}</span> {card.rest}
+            </h3>
+
+            <!-- Tags: Hidden initially, revealed on card hover -->
+            <div class="card-tags-drawer">
+              <div class="card-tags-inner">
+                <div class="tags-divider"></div>
+                <div class="tags-cloud">
+                  {card.tags.map((tag) => (
+                    <span class="tag-chip">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      ))}
+
+      <!-- Set B (Exact Clone for Infinite Seamless -50% Loop) -->
+      {serviceCards.map((card) => (
+        <article class="service-card" aria-hidden="true">
+          <!-- Background Visual -->
+          <div class="card-media">
+            <img 
+              src={card.image} 
+              alt="" 
+              loading="eager" 
+              decoding="sync" 
+              class="card-img" 
+            />
+            <div class="card-scrim-default"></div>
+            <div class="card-scrim-hover"></div>
+          </div>
+
+          <!-- Card Top Bar: Category Number & Subtle Icon -->
+          <div class="card-top-bar">
+            <span class="card-number">{card.categoryNumber}</span>
+            <div class="card-status-pill">
+              <span class="status-dot"></span>
+              <span class="status-label">AVAILABLE</span>
+            </div>
+          </div>
+
+          <!-- Card Content Body -->
+          <div class="card-content">
+            <!-- Title: Always visible -->
+            <h3 class="card-title">
+              <span class="title-highlight">{card.highlight}</span> {card.rest}
+            </h3>
+
+            <!-- Tags: Hidden initially, revealed on card hover -->
+            <div class="card-tags-drawer">
+              <div class="card-tags-inner">
+                <div class="tags-divider"></div>
+                <div class="tags-cloud">
+                  {card.tags.map((tag) => (
+                    <span class="tag-chip">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  function initServicesCarousel() {
+    const section = document.getElementById("services-carousel");
+    if (!section) return;
+
+    // Viewport Intersection Observer for Staggered Entrance
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            section.classList.add("is-visible");
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+    );
+    observer.observe(section);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initServicesCarousel);
+  } else {
+    initServicesCarousel();
+  }
+
+  document.addEventListener("astro:page-load", initServicesCarousel);
+</script>
+
+<style>
+  /* ==========================================================================
+     LIGHT MODE SECTION CONTAINER
+     ========================================================================== */
+  .services-carousel-section {
+    position: relative;
+    width: 100%;
+    padding-top: clamp(60px, 8vh, 100px);
+    padding-bottom: clamp(90px, 12vh, 140px);
+    background-color: #ffffff;
+    color: #050811;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .carousel-ambient-glow {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1100px, 90vw);
+    height: 480px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(2, 132, 199, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ==========================================================================
+     CAROUSEL VIEWPORT & HORIZONTAL TRACK
+     ========================================================================== */
+  .carousel-viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding-block: 24px;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: 
+      opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .services-carousel-section.is-visible .carousel-viewport {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Left and Right Edge Fade Masks */
+  .carousel-mask-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: clamp(40px, 8vw, 140px);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .mask-left {
+    left: 0;
+    background: linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .mask-right {
+    right: 0;
+    background: linear-gradient(to left, #ffffff 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  /* Unified track for continuous horizontal marquee */
+  .carousel-track {
+    display: flex;
+    align-items: center;
+    width: max-content;
+    will-change: transform;
+    animation: scrollHorizontal 48s linear infinite;
+  }
+
+  /* Pause auto-scroll on hover */
+  .carousel-track:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes scrollHorizontal {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ==========================================================================
+     SERVICE CARD: 520px x 780px Exact Dimensions & Smooth Interactions
+     ========================================================================== */
+  .service-card {
+    position: relative;
+    width: clamp(340px, 42vw, 520px);
+    height: clamp(510px, 63vw, 780px);
+    margin-right: clamp(20px, 2.2vw, 32px);
+    flex-shrink: 0;
+    border-radius: 28px;
+    overflow: hidden;
+    background-color: #0b1120;
+    box-shadow: 
+      0 20px 45px -12px rgba(15, 23, 42, 0.14),
+      0 6px 16px -4px rgba(15, 23, 42, 0.08),
+      0 0 0 1px rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(28px, 3.4vw, 42px);
+    cursor: pointer;
+    user-select: none;
+    transition: 
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 
+      0 32px 64px -14px rgba(15, 23, 42, 0.22),
+      0 12px 24px -6px rgba(15, 23, 42, 0.12),
+      0 0 0 1px rgba(2, 132, 199, 0.35);
+  }
+
+  /* Media Background */
+  .card-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.02);
+    transition: 
+      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+      filter 0.5s ease;
+  }
+
+  .service-card:hover .card-img {
+    transform: scale(1.08);
+    filter: brightness(0.92);
+  }
+
+  /* Default Scrim: Ensures title is crisp and readable */
+  .card-scrim-default {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(4, 8, 20, 0.4) 0%,
+      rgba(4, 8, 20, 0.15) 30%,
+      rgba(4, 8, 20, 0.55) 60%,
+      rgba(2, 5, 14, 0.94) 100%
+    );
+    transition: opacity 0.45s ease;
+  }
+
+  /* Hover Scrim: Darkens slightly from bottom to amplify tags readability */
+  .card-scrim-hover {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(2, 6, 18, 0.6) 0%,
+      rgba(2, 6, 18, 0.5) 35%,
+      rgba(1, 4, 12, 0.96) 80%,
+      rgba(1, 3, 10, 0.99) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .service-card:hover .card-scrim-hover {
+    opacity: 1;
+  }
+
+  /* ==========================================================================
+     CARD TOP BAR
+     ========================================================================== */
+  .card-top-bar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .card-number {
+    font-family: var(--font-family-display, sans-serif);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.65);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  }
+
+  .card-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+  }
+
+  .status-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+  }
+
+  /* ==========================================================================
+     CARD CONTENT & HOVER TAGS REVEAL
+     ========================================================================== */
+  .card-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .card-title {
+    font-family: var(--font-family-display, sans-serif);
+    font-size: clamp(2.1rem, 3.6vw, 3.1rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Accent Highlight (Same celestial brand gradient) */
+  .title-highlight {
+    background: linear-gradient(135deg, #7fe2ff 0%, #48C8FF 50%, #1da5ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    filter: drop-shadow(0 2px 12px rgba(72, 200, 255, 0.35));
+  }
+
+  /* Tags Drawer: Hidden initially, expands on card hover */
+  .card-tags-drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: 
+      grid-template-rows 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .service-card:hover .card-tags-drawer {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .card-tags-inner {
+    overflow: hidden;
+  }
+
+  .tags-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(72, 200, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+    margin-top: 20px;
+    margin-bottom: 18px;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s;
+  }
+
+  .service-card:hover .tags-divider {
+    transform: scaleX(1);
+  }
+
+  .tags-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 4px;
+    transform: translateY(16px);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+  }
+
+  .service-card:hover .tags-cloud {
+    transform: translateY(0);
+  }
+
+  .tag-chip {
+    display: inline-block;
+    padding: 6px 13px;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: 
+      background 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease;
+  }
+
+  .tag-chip:hover {
+    background: rgba(72, 200, 255, 0.22);
+    border-color: rgba(72, 200, 255, 0.5);
+    color: #ffffff;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE BREAKPOINTS
+     ========================================================================== */
+  @media (max-width: 768px) {
+    .services-carousel-section {
+      padding-top: 50px;
+      padding-bottom: 70px;
+    }
+
+    .service-card {
+      width: clamp(290px, 80vw, 380px);
+      height: clamp(440px, 115vw, 560px);
+      margin-right: 16px;
+      padding: 24px;
+      border-radius: 22px;
+    }
+
+    .card-title {
+      font-size: 1.85rem;
+    }
+
+    .tag-chip {
+      font-size: 0.65rem;
+      padding: 5px 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carousel-track {
+      animation: none !important;
+      overflow-x: auto;
+    }
+  }
+</style>

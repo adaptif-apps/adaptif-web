@@ -1,7 +1,9 @@
 ---
-// PricingHero.astro - Luminous Obsidian Glass Pricing Hero Section
+// PricingHero.astro - Adaptif Luminous Obsidian Glass Pricing Hero
+import GlimmerWrap from "./GlimmerWrap.astro";
 
 interface PlanFeature {
+  id: string;
   label: string;
   detail: string;
   icon:
@@ -20,109 +22,175 @@ interface PlanFeature {
 
 const creativeFeatures: PlanFeature[] = [
   {
+    id: "creative-ticket",
     label: "1 Ticket at a Time",
-    detail: "Submit unlimited requests in your queue; we work on one active deliverable at a time with 1–2 day turnarounds.",
+    detail:
+      "Queue unlimited requests; we execute one active deliverable at a time with 1–2 day turnarounds.",
     icon: "ticket",
   },
   {
+    id: "creative-chat",
     label: "Real-Time Chat",
-    detail: "Direct Slack or workspace communication with your creative lead for rapid feedback and daily updates.",
+    detail:
+      "Direct Slack or workspace channel with your creative lead for rapid feedback and daily momentum.",
     icon: "chat",
   },
   {
+    id: "creative-branding",
     label: "Branding",
-    detail: "Logos, visual identities, brand guidelines, typography systems, and cohesive brand kits.",
+    detail:
+      "Visual identities, logos, typography systems, brand guidelines, and cohesive art direction.",
     icon: "branding",
   },
   {
+    id: "creative-digital",
     label: "Digital Media",
-    detail: "Social media assets, ad creatives, pitch decks, motion graphics, and campaign visuals.",
+    detail:
+      "Social content, paid ad creatives, pitch decks, motion graphics, and campaign assets.",
     icon: "digital",
   },
   {
+    id: "creative-uiux",
     label: "UIUX",
-    detail: "High-converting landing pages, web apps, mobile interfaces, wireframes, and Figma design systems.",
+    detail:
+      "High-converting landing pages, web apps, mobile interfaces, wireframes, and Figma systems.",
     icon: "uiux",
   },
   {
+    id: "creative-print",
     label: "Print Media",
-    detail: "Packaging, merchandise, editorial layouts, brochures, and print-ready production files.",
+    detail:
+      "Packaging, merchandise, editorial layouts, brochures, and print-ready production files.",
     icon: "print",
   },
 ];
 
 const fullStackFeatures: PlanFeature[] = [
   {
+    id: "fs-ticket",
     label: "2 Tickets at a Time",
-    detail: "Double your active throughput with two parallel workstreams running simultaneously every business day.",
+    detail:
+      "Double your active throughput with two parallel workstreams moving forward every business day.",
     icon: "ticket",
   },
   {
+    id: "fs-strategy",
     label: "Weekly Strategy Call",
-    detail: "Dedicated weekly sync with your creative director to align on roadmap, campaign priorities, and growth.",
+    detail:
+      "Dedicated weekly sync with your creative director to align on roadmap, campaigns, and growth.",
     icon: "headset",
   },
   {
+    id: "fs-dev",
     label: "Development",
-    detail: "Production-ready web development, custom frontends, animations, CMS integration, and landing page builds.",
+    detail:
+      "Production web development, custom frontends, interactive animations, and CMS integrations.",
     icon: "code",
   },
   {
+    id: "fs-marketing",
     label: "Marketing",
-    detail: "Campaign strategy, conversion copywriting, multi-channel ad creative, and launch assets.",
+    detail:
+      "Campaign strategy, conversion copywriting, multi-channel ad creative, and launch execution.",
     icon: "megaphone",
   },
   {
+    id: "fs-maintenance",
     label: "Maintenance",
-    detail: "Ongoing site updates, performance tuning, QA, and continuous design system upkeep.",
+    detail:
+      "Ongoing site updates, performance optimization, QA, and continuous design system upkeep.",
     icon: "wrench",
   },
   {
+    id: "fs-ai",
     label: "AI",
-    detail: "Custom AI visuals, automated creative workflows, and AI-accelerated production directed by senior leads.",
+    detail:
+      "Custom AI visuals, generative asset pipelines, and AI-accelerated workflows directed by senior leads.",
     icon: "ai",
   },
 ];
 ---
 
-<section class="pricing-hero-section is-visible" id="pricing-hero">
-  <!-- Ambient Volumetric Glow -->
-  <div class="pricing-ambient-bg" aria-hidden="true">
-    <div class="pricing-glow-right"></div>
-    <div class="pricing-glow-left"></div>
+<section class="pricing-hero" id="pricing-hero">
+  <!-- Living WebGL Starfield + Volumetric Obsidian Atmosphere -->
+  <div class="pricing-bg" aria-hidden="true">
+    <div class="pricing-glimmer-layer">
+      <GlimmerWrap
+        colors={["#FFFFFF", "#48c8ff"]}
+        count={900}
+        size={1.4}
+        brightness={0.72}
+        spread={1}
+        hollow={0.08}
+        perspective={0.7}
+        centerX={0.62}
+        centerY={0.46}
+        speed={0.35}
+        direction="outward"
+        twist={0}
+        turbulence={0}
+        trail={0.06}
+        glitter={0.01}
+        twinkle={0.45}
+        focus={0.62}
+        aperture={0.45}
+        backgroundColor="#010307"
+        sizeVariance={0.55}
+        glintSize={1}
+        boost={5}
+        parallax={0}
+        waves={true}
+        intro={true}
+        paused={false}
+      />
+    </div>
+    <div class="pricing-glow-cards"></div>
+    <div class="pricing-glow-intro"></div>
     <div class="pricing-bottom-fade"></div>
   </div>
 
-  <div class="container pricing-hero-container">
-    <div class="pricing-hero-grid">
-      <!-- Left Column: Intro Copy & CTA -->
+  <div class="container pricing-container">
+    <div class="pricing-grid">
+      <!-- Left Column: Introduction -->
       <div class="pricing-intro">
-        <span class="pricing-eyebrow">FLEXIBLE PLANS</span>
+        <div class="pricing-eyebrow-pill">
+          <span class="eyebrow-dot" aria-hidden="true"></span>
+          <span>FLEXIBLE PLANS</span>
+        </div>
 
         <h1 class="pricing-title">
           Your full-time creative team,
-          <span class="pricing-title-accent">for one hire.</span>
+          <span class="title-highlight pricing-title-italic">for one hire.</span>
         </h1>
 
-        <p class="pricing-description">
+        <p class="pricing-copy">
           From brand identity and social content to web, AI visuals, and copywriting, one Adaptif subscription gives you a dedicated creative team that delivers work in 1–2 days, every day.
         </p>
 
-        <div class="pricing-intro-cta">
+        <div class="pricing-intro-actions">
           <a href="#contact" class="adaptif-btn pricing-book-btn">
             <span>Book a call</span>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path
+                d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </a>
         </div>
       </div>
 
-      <!-- Right Column: Billing Toggle + Plan Cards -->
-      <div class="pricing-plans-column">
-        <!-- Billing Selector -->
-        <div class="billing-toggle-wrap">
+      <!-- Right Column: Billing Selector + Plan Cards -->
+      <div class="pricing-plans-col">
+        <!-- Billing Frequency Selector -->
+        <div class="billing-bar">
           <div class="billing-toggle" role="tablist" aria-label="Billing frequency">
             <button
               type="button"
-              class="billing-option"
+              class="billing-btn"
               role="tab"
               aria-selected="false"
               data-billing="monthly"
@@ -131,43 +199,52 @@ const fullStackFeatures: PlanFeature[] = [
             </button>
             <button
               type="button"
-              class="billing-option is-active"
+              class="billing-btn is-active"
               role="tab"
               aria-selected="true"
               data-billing="annual"
             >
               <span>ANNUAL</span>
-              <span class="billing-save-tag">SAVE 20%</span>
+              <span class="billing-save-pill">SAVE 20%</span>
             </button>
           </div>
         </div>
 
-        <!-- Cards Grid -->
-        <div class="pricing-cards-grid">
+        <!-- Two-Card Comparison Grid -->
+        <div class="plans-grid">
           <!-- Plan 1: Creative -->
           <article class="plan-card plan-card--creative">
-            <header class="plan-header">
-              <div class="plan-icon" aria-hidden="true">
-                <!-- Geometric Pyramid / Triangle Wireframe -->
-                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                  <path d="M18 4L32 29H4L18 4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
-                  <path d="M18 4L18 29M11 16.5H25M7.5 22.8H28.5" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.85" />
+            <header class="plan-head">
+              <div class="plan-emblem" aria-hidden="true">
+                <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+                  <path
+                    d="M18 4.5L31.5 29.5H4.5L18 4.5Z"
+                    stroke="currentColor"
+                    stroke-width="1.35"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M18 4.5V29.5M11.2 17H24.8M7.8 23.2H28.2"
+                    stroke="currentColor"
+                    stroke-width="1.15"
+                    stroke-opacity="0.78"
+                  />
                 </svg>
               </div>
-              <div class="plan-heading">
+              <div class="plan-title-group">
                 <h2 class="plan-name">Creative</h2>
-                <p class="plan-tagline">For brands that need consistent creative output.</p>
+                <p class="plan-subtitle">For brands that need consistent creative output.</p>
               </div>
             </header>
 
-            <div class="plan-price-row">
+            <div class="plan-pricing">
               <span
-                class="plan-price"
+                class="plan-amount"
                 data-annual="$1.750"
                 data-monthly="$2.190"
               >$1.750</span>
-              <div class="plan-price-meta">
-                <div class="plan-unit-row">
+              <div class="plan-pricing-meta">
+                <div class="plan-unit-line">
                   <span class="plan-unit">USD/Month</span>
                   <span class="plan-save-badge" data-save-badge>SAVE 20%</span>
                 </div>
@@ -175,14 +252,21 @@ const fullStackFeatures: PlanFeature[] = [
               </div>
             </div>
 
-            <div class="plan-included-label">What's included</div>
+            <div class="plan-divider-label">
+              <span>What's included</span>
+            </div>
 
-            <ul class="plan-features" role="list">
+            <ul class="plan-feature-list" role="list">
               {creativeFeatures.map((feat) => (
                 <li class="plan-feature-item">
-                  <button type="button" class="feature-trigger" aria-expanded="false">
-                    <span class="feature-left">
-                      <span class="feature-icon" aria-hidden="true">
+                  <button
+                    type="button"
+                    class="feature-row-btn"
+                    aria-expanded="false"
+                    aria-controls={feat.id}
+                  >
+                    <span class="feature-row-left">
+                      <span class="feature-row-icon" aria-hidden="true">
                         {feat.icon === "ticket" && (
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
@@ -196,20 +280,13 @@ const fullStackFeatures: PlanFeature[] = [
                         )}
                         {feat.icon === "branding" && (
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4" />
-                            <path d="M14 13.12c0 2.38 0 6.38-1 8.88" />
-                            <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02" />
-                            <path d="M2 12a10 10 0 0 1 18-6" />
-                            <path d="M2 16h.01" />
-                            <path d="M21.8 16c.2-2 .131-5.354 0-6" />
-                            <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2" />
-                            <path d="M8.65 22c.21-.66.45-1.32.57-2" />
-                            <path d="M9 6.8a6 6 0 0 1 9 5.2v2" />
+                            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z" />
                           </svg>
                         )}
                         {feat.icon === "digital" && (
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4l7.07 17 2.51-7.39L21 11.07z" />
+                            <rect x="2" y="3" width="20" height="14" rx="2" />
+                            <path d="M8 21h8M12 17v4" />
                           </svg>
                         )}
                         {feat.icon === "uiux" && (
@@ -226,74 +303,77 @@ const fullStackFeatures: PlanFeature[] = [
                           </svg>
                         )}
                       </span>
-                      <span class="feature-label">{feat.label}</span>
+                      <span class="feature-row-label">{feat.label}</span>
                     </span>
-                    <svg class="feature-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg class="feature-row-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </button>
-                  <div class="feature-detail" hidden>
+                  <div class="feature-row-detail" id={feat.id} hidden>
                     <p>{feat.detail}</p>
                   </div>
                 </li>
               ))}
             </ul>
 
-            <a href="#contact" class="adaptif-btn plan-cta-btn">
-              <span>Start with Creative</span>
-              <span aria-hidden="true">→</span>
+            <a href="#contact" class="adaptif-btn adaptif-btn--dark plan-cta">
+              <span>Start with Creative →</span>
             </a>
           </article>
 
           <!-- Plan 2: Full Stack (Most Popular) -->
           <article class="plan-card plan-card--featured">
-            <div class="popular-badge">
+            <div class="popular-pill">
               <span>✦ MOST POPULAR ✦</span>
             </div>
 
-            <header class="plan-header">
-              <div class="plan-icon" aria-hidden="true">
-                <!-- Geometric 4-Node Frame Wireframe -->
-                <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-                  <rect x="7" y="7" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
-                  <rect x="22" y="7" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
-                  <rect x="7" y="22" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
-                  <rect x="22" y="22" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.4" />
-                  <path d="M14 10.5H22M14 25.5H22M10.5 14V22M25.5 14V22" stroke="currentColor" stroke-width="1.3" />
-                  <circle cx="18" cy="18" r="2.2" stroke="currentColor" stroke-width="1.3" />
+            <header class="plan-head">
+              <div class="plan-emblem plan-emblem--cyan" aria-hidden="true">
+                <svg width="34" height="34" viewBox="0 0 36 36" fill="none">
+                  <rect x="7" y="7" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.35" />
+                  <rect x="22" y="7" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.35" />
+                  <rect x="7" y="22" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.35" />
+                  <rect x="22" y="22" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.35" />
+                  <path d="M14 10.5H22M14 25.5H22M10.5 14V22M25.5 14V22" stroke="currentColor" stroke-width="1.25" />
+                  <circle cx="18" cy="18" r="2.2" stroke="currentColor" stroke-width="1.35" />
                 </svg>
               </div>
-              <div class="plan-heading">
+              <div class="plan-title-group">
                 <h2 class="plan-name">Full Stack</h2>
-                <p class="plan-tagline">For teams that can't afford creative bottlenecks.</p>
+                <p class="plan-subtitle">For teams that can't afford creative bottlenecks.</p>
               </div>
             </header>
 
-            <div class="plan-price-row">
+            <div class="plan-pricing">
               <span
-                class="plan-price"
+                class="plan-amount"
                 data-annual="$3.750"
                 data-monthly="$4.690"
               >$3.750</span>
-              <div class="plan-price-meta">
-                <div class="plan-unit-row">
+              <div class="plan-pricing-meta">
+                <div class="plan-unit-line">
                   <span class="plan-unit">USD/Month</span>
                 </div>
                 <span class="plan-pause">Pause anytime</span>
               </div>
             </div>
 
-            <div class="plan-included-label plan-included-label--plus">
+            <div class="plan-divider-label plan-divider-label--plus">
               <span>All in Creative Plan</span>
-              <span class="plus-mark">+</span>
+              <span class="plus-glyph" aria-hidden="true">+</span>
             </div>
 
-            <ul class="plan-features" role="list">
+            <ul class="plan-feature-list" role="list">
               {fullStackFeatures.map((feat) => (
                 <li class="plan-feature-item">
-                  <button type="button" class="feature-trigger" aria-expanded="false">
-                    <span class="feature-left">
-                      <span class="feature-icon" aria-hidden="true">
+                  <button
+                    type="button"
+                    class="feature-row-btn"
+                    aria-expanded="false"
+                    aria-controls={feat.id}
+                  >
+                    <span class="feature-row-left">
+                      <span class="feature-row-icon" aria-hidden="true">
                         {feat.icon === "ticket" && (
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
@@ -330,22 +410,21 @@ const fullStackFeatures: PlanFeature[] = [
                           </svg>
                         )}
                       </span>
-                      <span class="feature-label">{feat.label}</span>
+                      <span class="feature-row-label">{feat.label}</span>
                     </span>
-                    <svg class="feature-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg class="feature-row-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </button>
-                  <div class="feature-detail" hidden>
+                  <div class="feature-row-detail" id={feat.id} hidden>
                     <p>{feat.detail}</p>
                   </div>
                 </li>
               ))}
             </ul>
 
-            <a href="#contact" class="adaptif-btn plan-cta-btn">
-              <span>Get Full Stack</span>
-              <span aria-hidden="true">→</span>
+            <a href="#contact" class="adaptif-btn plan-cta">
+              <span>Get Full Stack →</span>
             </a>
           </article>
         </div>
@@ -355,42 +434,43 @@ const fullStackFeatures: PlanFeature[] = [
 </section>
 
 <script>
-  function initPricingHero() {
-    const section = document.getElementById("pricing-hero");
-    if (!section) return;
+  function setupPricingHero() {
+    const root = document.getElementById("pricing-hero");
+    if (!root || root.dataset.initialized === "true") return;
+    root.dataset.initialized = "true";
 
-    // Billing frequency toggle
-    const billingBtns = section.querySelectorAll<HTMLButtonElement>(".billing-option");
-    const priceEls = section.querySelectorAll<HTMLElement>(".plan-price");
-    const saveBadge = section.querySelector<HTMLElement>("[data-save-badge]");
+    const billingButtons = root.querySelectorAll<HTMLButtonElement>(".billing-btn");
+    const priceElements = root.querySelectorAll<HTMLElement>(".plan-amount");
+    const saveBadges = root.querySelectorAll<HTMLElement>("[data-save-badge]");
 
-    billingBtns.forEach((btn) => {
+    billingButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const mode = btn.dataset.billing === "monthly" ? "monthly" : "annual";
 
-        billingBtns.forEach((b) => {
-          const active = b === btn;
-          b.classList.toggle("is-active", active);
-          b.setAttribute("aria-selected", active ? "true" : "false");
+        billingButtons.forEach((other) => {
+          const isActive = other === btn;
+          other.classList.toggle("is-active", isActive);
+          other.setAttribute("aria-selected", isActive ? "true" : "false");
         });
 
-        priceEls.forEach((el) => {
-          const next = mode === "monthly" ? el.dataset.monthly : el.dataset.annual;
-          if (next) el.textContent = next;
+        priceElements.forEach((el) => {
+          const nextValue = mode === "monthly" ? el.dataset.monthly : el.dataset.annual;
+          if (nextValue) {
+            el.textContent = nextValue;
+          }
         });
 
-        if (saveBadge) {
-          saveBadge.style.display = mode === "annual" ? "inline-flex" : "none";
-        }
+        saveBadges.forEach((badge) => {
+          badge.style.display = mode === "annual" ? "inline-flex" : "none";
+        });
       });
     });
 
-    // Feature row accordion toggle
-    const triggers = section.querySelectorAll<HTMLButtonElement>(".feature-trigger");
-    triggers.forEach((trigger) => {
+    const featureButtons = root.querySelectorAll<HTMLButtonElement>(".feature-row-btn");
+    featureButtons.forEach((trigger) => {
       trigger.addEventListener("click", () => {
         const item = trigger.closest(".plan-feature-item");
-        const detail = item?.querySelector<HTMLElement>(".feature-detail");
+        const detail = item?.querySelector<HTMLElement>(".feature-row-detail");
         if (!item || !detail) return;
 
         const isOpen = trigger.getAttribute("aria-expanded") === "true";
@@ -402,58 +482,80 @@ const fullStackFeatures: PlanFeature[] = [
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initPricingHero);
+    document.addEventListener("DOMContentLoaded", setupPricingHero);
   } else {
-    initPricingHero();
+    setupPricingHero();
   }
-  document.addEventListener("astro:page-load", initPricingHero);
+  document.addEventListener("astro:page-load", setupPricingHero);
 </script>
 
 <style>
-  .pricing-hero-section {
+  .pricing-hero {
     position: relative;
-    min-height: calc(100dvh - 40px);
-    padding-top: calc(var(--header-height) + clamp(48px, 8vh, 96px));
-    padding-bottom: clamp(64px, 10vh, 120px);
+    min-height: 100dvh;
+    padding-top: calc(var(--header-height) + clamp(52px, 8vh, 96px));
+    padding-bottom: clamp(72px, 10vh, 128px);
     display: flex;
     align-items: center;
-    background-color: #050c17;
+    background-color: var(--color-void);
     overflow: hidden;
   }
 
-  /* Volumetric Background */
-  .pricing-ambient-bg {
+  /* ========================================================================
+     Atmospheric WebGL & Volumetric Background
+     ======================================================================== */
+  .pricing-bg {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 0;
   }
 
-  .pricing-glow-right {
+  .pricing-glimmer-layer {
     position: absolute;
-    top: 8%;
-    right: 6%;
-    width: clamp(420px, 54vw, 820px);
-    height: clamp(420px, 65vh, 760px);
-    background: radial-gradient(
-      ellipse 60% 55% at 55% 50%,
-      rgba(45, 165, 255, 0.2) 0%,
-      rgba(18, 74, 145, 0.14) 45%,
-      transparent 78%
+    inset: 0;
+    opacity: 0.85;
+    mask-image: linear-gradient(
+      to bottom,
+      #000000 0%,
+      #000000 65%,
+      rgba(0, 0, 0, 0.35) 88%,
+      transparent 100%
     );
-    filter: blur(48px);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000000 0%,
+      #000000 65%,
+      rgba(0, 0, 0, 0.35) 88%,
+      transparent 100%
+    );
   }
 
-  .pricing-glow-left {
+  .pricing-glow-cards {
     position: absolute;
-    top: 25%;
-    left: -8%;
-    width: clamp(320px, 42vw, 620px);
-    height: clamp(320px, 50vh, 540px);
+    top: 12%;
+    right: 4%;
+    width: clamp(420px, 55vw, 840px);
+    height: clamp(420px, 68vh, 760px);
+    background: radial-gradient(
+      ellipse 60% 55% at 55% 48%,
+      rgba(72, 200, 255, 0.16) 0%,
+      rgba(22, 61, 168, 0.14) 45%,
+      transparent 78%
+    );
+    filter: blur(52px);
+  }
+
+  .pricing-glow-intro {
+    position: absolute;
+    top: 22%;
+    left: -6%;
+    width: clamp(320px, 40vw, 580px);
+    height: clamp(320px, 48vh, 520px);
     background: radial-gradient(
       ellipse 60% 55% at 40% 50%,
-      rgba(22, 68, 130, 0.16) 0%,
-      transparent 75%
+      rgba(43, 127, 255, 0.12) 0%,
+      transparent 74%
     );
     filter: blur(60px);
   }
@@ -463,91 +565,103 @@ const fullStackFeatures: PlanFeature[] = [
     bottom: 0;
     left: 0;
     right: 0;
-    height: 140px;
-    background: linear-gradient(to top, var(--color-void, #010307) 0%, transparent 100%);
+    height: 160px;
+    background: linear-gradient(to top, var(--color-void) 0%, transparent 100%);
   }
 
-  .pricing-hero-container {
+  .pricing-container {
     position: relative;
     z-index: 2;
   }
 
-  .pricing-hero-grid {
+  .pricing-grid {
     display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.18fr);
-    gap: clamp(40px, 5vw, 76px);
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.22fr);
+    gap: clamp(40px, 5vw, 72px);
     align-items: center;
   }
 
   /* ========================================================================
-     Left Column: Intro
+     Left Column: Intro Copy
      ======================================================================== */
   .pricing-intro {
     max-width: 470px;
   }
 
-  .pricing-eyebrow {
-    display: inline-block;
+  .pricing-eyebrow-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: rgba(8, 18, 44, 0.65);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    backdrop-filter: var(--glass-blur-sm);
+    -webkit-backdrop-filter: var(--glass-blur-sm);
     font-family: var(--font-family-body);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-brand-cyan, #48C8FF);
-    margin-bottom: 18px;
+    color: var(--color-brand-cyan);
+    margin-bottom: 22px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+
+  .eyebrow-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-brand-cyan);
+    box-shadow: 0 0 10px var(--color-brand-cyan);
   }
 
   .pricing-title {
-    font-family: var(--font-family-body);
-    font-size: clamp(2.15rem, 3.35vw, 3.15rem);
-    font-weight: 400;
-    line-height: 1.12;
-    letter-spacing: -0.03em;
-    color: #ffffff;
-    margin-bottom: 20px;
-  }
-
-  .pricing-title-accent {
-    display: block;
     font-family: var(--font-family-display);
-    font-style: italic;
+    font-size: clamp(2.65rem, 4.1vw, 3.85rem);
     font-weight: 400;
-    font-size: 1.1em;
-    line-height: 1.06;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #8be5ff 0%, #48C8FF 55%, #2aa8ff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.25));
+    line-height: 1.03;
+    letter-spacing: var(--font-letter-spacing-display);
+    color: var(--color-text-white);
+    margin-bottom: 22px;
   }
 
-  .pricing-description {
-    font-size: clamp(0.95rem, 1.05vw, 1.04rem);
-    line-height: 1.62;
-    color: rgba(226, 232, 240, 0.74);
-    margin-bottom: 30px;
-    max-width: 430px;
+  .pricing-title-italic {
+    display: block;
+    font-style: italic;
+    margin-top: 4px;
+  }
+
+  .pricing-copy {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-subhero);
+    line-height: var(--font-line-height-subhero);
+    letter-spacing: var(--font-letter-spacing-subhero);
+    color: var(--color-text-secondary);
+    margin-bottom: 32px;
+    max-width: 44ch;
+  }
+
+  .pricing-intro-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
   .pricing-book-btn {
-    padding: 13px 34px;
-    border-radius: 10px;
-    color: #031526;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-shadow: none;
+    padding: 14px 32px;
   }
 
   /* ========================================================================
-     Right Column: Billing Toggle + Cards
+     Right Column: Billing Selector & Plans
      ======================================================================== */
-  .pricing-plans-column {
+  .pricing-plans-col {
     display: flex;
     flex-direction: column;
     gap: 28px;
   }
 
-  .billing-toggle-wrap {
+  .billing-bar {
     display: flex;
     justify-content: center;
   }
@@ -557,52 +671,57 @@ const fullStackFeatures: PlanFeature[] = [
     align-items: center;
     padding: 4px;
     border-radius: var(--radius-pill);
-    background: rgba(8, 18, 38, 0.72);
-    border: 1px solid rgba(120, 195, 255, 0.28);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    background: rgba(8, 18, 44, 0.72);
+    border: 1px solid rgba(72, 200, 255, 0.25);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 10px 28px -8px rgba(0, 4, 15, 0.7);
   }
 
-  .billing-option {
+  .billing-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 9px 18px;
     border-radius: var(--radius-pill);
+    font-family: var(--font-family-body);
     font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.07em;
-    color: rgba(255, 255, 255, 0.84);
+    letter-spacing: 0.08em;
+    color: rgba(248, 250, 252, 0.78);
     transition:
       background var(--duration-fast) var(--ease-spring),
       color var(--duration-fast) var(--ease-spring),
       box-shadow var(--duration-fast) var(--ease-spring);
   }
 
-  .billing-option:hover:not(.is-active) {
-    color: #ffffff;
+  .billing-btn:hover:not(.is-active) {
+    color: var(--color-text-white);
   }
 
-  .billing-option.is-active {
-    background: linear-gradient(180deg, #74dcff 0%, #48C8FF 100%);
-    color: #031424;
+  .billing-btn.is-active {
+    background: linear-gradient(180deg, #72dbff 0%, #48c8ff 100%);
+    color: #031322;
     box-shadow:
-      0 0 20px rgba(72, 200, 255, 0.5),
+      0 0 22px rgba(72, 200, 255, 0.45),
       inset 0 1px 1px rgba(255, 255, 255, 0.65);
   }
 
-  .billing-save-tag {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    opacity: 0.9;
+  .billing-save-pill {
+    padding: 2px 7px;
+    border-radius: var(--radius-pill);
+    background: rgba(3, 19, 34, 0.14);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
   }
 
   /* ========================================================================
-     Pricing Cards Grid
+     Plan Cards
      ======================================================================== */
-  .pricing-cards-grid {
+  .plans-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
@@ -613,10 +732,10 @@ const fullStackFeatures: PlanFeature[] = [
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 26px 22px 22px;
-    border-radius: 18px;
-    backdrop-filter: blur(22px) saturate(160%);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    padding: 28px 24px 24px;
+    border-radius: var(--radius-md);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
     transition:
       transform var(--duration-normal) var(--ease-spring),
       border-color var(--duration-normal) var(--ease-spring),
@@ -626,116 +745,123 @@ const fullStackFeatures: PlanFeature[] = [
   .plan-card--creative {
     background: linear-gradient(
       180deg,
-      rgba(14, 30, 56, 0.72) 0%,
-      rgba(8, 19, 38, 0.84) 100%
+      rgba(10, 22, 50, 0.72) 0%,
+      rgba(4, 10, 26, 0.86) 100%
     );
-    border: 1px solid rgba(110, 185, 245, 0.24);
+    border: 1px solid rgba(148, 197, 255, 0.18);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 18px 42px -12px rgba(0, 4, 15, 0.78);
+      var(--border-light-top),
+      0 18px 42px -12px rgba(0, 4, 15, 0.8);
   }
 
   .plan-card--creative:hover {
-    border-color: rgba(110, 185, 245, 0.42);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.36);
   }
 
   .plan-card--featured {
     background: linear-gradient(
       180deg,
-      rgba(26, 76, 122, 0.52) 0%,
-      rgba(10, 29, 58, 0.84) 100%
+      rgba(18, 56, 98, 0.58) 0%,
+      rgba(6, 18, 42, 0.88) 100%
     );
-    border: 1.5px solid rgba(86, 208, 255, 0.85);
+    border: 1.5px solid rgba(72, 200, 255, 0.78);
     box-shadow:
-      inset 0 1px 18px rgba(72, 200, 255, 0.16),
-      0 0 34px rgba(72, 200, 255, 0.28),
-      0 20px 50px -12px rgba(0, 4, 15, 0.85);
+      inset 0 1px 1px rgba(255, 255, 255, 0.28),
+      inset 0 0 24px rgba(72, 200, 255, 0.14),
+      0 0 36px rgba(72, 200, 255, 0.22),
+      0 22px 52px -12px rgba(0, 4, 15, 0.88);
   }
 
   .plan-card--featured:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow:
-      inset 0 1px 22px rgba(72, 200, 255, 0.22),
-      0 0 42px rgba(72, 200, 255, 0.36),
-      0 24px 54px -12px rgba(0, 4, 15, 0.9);
+      inset 0 1px 1px rgba(255, 255, 255, 0.34),
+      inset 0 0 28px rgba(72, 200, 255, 0.2),
+      0 0 46px rgba(72, 200, 255, 0.32),
+      0 26px 56px -12px rgba(0, 4, 15, 0.92);
   }
 
-  .popular-badge {
+  .popular-pill {
     position: absolute;
-    top: -11px;
+    top: -12px;
     left: 50%;
     transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
     padding: 4px 12px;
-    border-radius: 6px;
+    border-radius: var(--radius-pill);
     background: #ffffff;
-    color: #041224;
+    color: #031322;
+    font-family: var(--font-family-body);
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     white-space: nowrap;
     box-shadow:
-      0 4px 14px rgba(0, 0, 0, 0.35),
-      0 0 16px rgba(72, 200, 255, 0.45);
+      0 4px 14px rgba(0, 0, 0, 0.4),
+      0 0 18px rgba(72, 200, 255, 0.45);
   }
 
-  /* Card Header */
-  .plan-header {
+  /* Header */
+  .plan-head {
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
   }
 
-  .plan-icon {
+  .plan-emblem {
     flex-shrink: 0;
-    color: #ffffff;
-    opacity: 0.92;
+    color: rgba(255, 255, 255, 0.9);
     margin-top: 2px;
+  }
+
+  .plan-emblem--cyan {
+    color: var(--color-brand-cyan);
+    filter: drop-shadow(0 0 10px rgba(72, 200, 255, 0.35));
   }
 
   .plan-name {
     font-family: var(--font-family-body);
-    font-size: 1.38rem;
-    font-weight: 500;
-    letter-spacing: -0.025em;
-    color: #ffffff;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-text-white);
     line-height: 1.2;
     margin-bottom: 4px;
   }
 
-  .plan-tagline {
-    font-size: 0.78rem;
-    line-height: 1.4;
-    color: rgba(226, 232, 240, 0.72);
+  .plan-subtitle {
+    font-size: 0.8rem;
+    line-height: 1.42;
+    color: var(--color-text-secondary);
   }
 
-  /* Price Row */
-  .plan-price-row {
+  /* Pricing */
+  .plan-pricing {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 20px;
   }
 
-  .plan-price {
+  .plan-amount {
     font-family: var(--font-family-display);
     font-size: clamp(2.65rem, 3.2vw, 3.15rem);
     font-weight: 400;
     line-height: 0.95;
     letter-spacing: -0.02em;
-    color: #a6e3ff;
+    color: #9ce2ff;
   }
 
-  .plan-price-meta {
+  .plan-pricing-meta {
     display: flex;
     flex-direction: column;
     gap: 3px;
   }
 
-  .plan-unit-row {
+  .plan-unit-line {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -744,7 +870,7 @@ const fullStackFeatures: PlanFeature[] = [
   .plan-unit {
     font-size: 0.76rem;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(248, 250, 252, 0.9);
   }
 
   .plan-save-badge {
@@ -753,118 +879,125 @@ const fullStackFeatures: PlanFeature[] = [
     padding: 2px 6px;
     border-radius: 4px;
     background: #ffffff;
-    color: #041224;
-    font-size: 0.62rem;
+    color: #031322;
+    font-size: 0.6rem;
     font-weight: 800;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
     line-height: 1.2;
   }
 
   .plan-pause {
     font-size: 0.72rem;
-    color: rgba(203, 213, 225, 0.65);
+    color: var(--color-text-secondary);
   }
 
-  /* Included Label */
-  .plan-included-label {
+  /* Divider Label */
+  .plan-divider-label {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--color-brand-cyan, #48C8FF);
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-brand-cyan);
     padding-bottom: 10px;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .plan-included-label--plus .plus-mark {
+  .plan-divider-label--plus .plus-glyph {
     font-size: 0.95rem;
     font-weight: 400;
     opacity: 0.85;
   }
 
-  /* Features List */
-  .plan-features {
+  /* Features */
+  .plan-feature-list {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 2px;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     flex: 1;
   }
 
   .plan-feature-item {
-    border-radius: 8px;
+    border-radius: var(--radius-xs);
     transition: background-color var(--duration-fast) ease;
   }
 
-  .plan-feature-item:hover {
-    background-color: rgba(255, 255, 255, 0.04);
+  .plan-feature-item.is-open {
+    background: rgba(72, 200, 255, 0.07);
   }
 
-  .feature-trigger {
+  .feature-row-btn {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
-    padding: 7px 4px;
-    color: rgba(241, 245, 249, 0.9);
-    font-size: 0.82rem;
-    font-weight: 400;
+    padding: 8px 8px;
+    border-radius: var(--radius-xs);
+    color: var(--color-text-primary);
     text-align: left;
+    transition: background-color var(--duration-fast) ease;
   }
 
-  .feature-left {
+  .feature-row-btn:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .feature-row-left {
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
   }
 
-  .feature-icon {
+  .feature-row-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: rgba(203, 213, 225, 0.78);
+    color: var(--color-brand-cyan);
+    opacity: 0.9;
     flex-shrink: 0;
   }
 
-  .feature-chevron {
-    color: rgba(203, 213, 225, 0.65);
+  .feature-row-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.92);
+  }
+
+  .feature-row-chevron {
+    color: var(--color-text-secondary);
     flex-shrink: 0;
     transition: transform var(--duration-fast) var(--ease-spring);
   }
 
-  .plan-feature-item.is-open .feature-chevron {
+  .plan-feature-item.is-open .feature-row-chevron {
     transform: rotate(180deg);
-    color: var(--color-brand-cyan, #48C8FF);
+    color: var(--color-brand-cyan);
   }
 
-  .feature-detail {
-    padding: 0 4px 10px 29px;
-    font-size: 0.76rem;
+  .feature-row-detail {
+    padding: 0 10px 10px 33px;
+    font-size: 0.77rem;
     line-height: 1.5;
-    color: rgba(148, 163, 184, 0.9);
+    color: var(--color-text-secondary);
   }
 
-  /* Card CTA Button */
-  .plan-cta-btn {
+  /* Card CTA */
+  .plan-cta {
     width: 100%;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 0.84rem;
-    font-weight: 600;
-    color: #031526;
-    text-shadow: none;
-    gap: 8px;
+    padding: 13px 20px;
+    font-size: 0.9rem;
   }
 
   /* ========================================================================
-     Responsive
+     Responsive Breakpoints
      ======================================================================== */
-  @media (max-width: 1060px) {
-    .pricing-hero-grid {
+  @media (max-width: 1080px) {
+    .pricing-grid {
       grid-template-columns: 1fr;
       gap: 44px;
     }
@@ -875,24 +1008,24 @@ const fullStackFeatures: PlanFeature[] = [
       text-align: center;
     }
 
-    .pricing-description {
+    .pricing-copy {
       margin-inline: auto;
     }
 
-    .pricing-intro-cta {
-      display: flex;
+    .pricing-intro-actions {
       justify-content: center;
     }
   }
 
-  @media (max-width: 680px) {
-    .pricing-hero-section {
-      padding-top: calc(var(--header-height) + 32px);
+  @media (max-width: 720px) {
+    .pricing-hero {
+      padding-top: calc(var(--header-height) + 36px);
+      padding-bottom: 64px;
     }
 
-    .pricing-cards-grid {
+    .plans-grid {
       grid-template-columns: 1fr;
-      gap: 28px;
+      gap: 24px;
     }
 
     .plan-card {

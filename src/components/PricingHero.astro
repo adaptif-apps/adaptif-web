@@ -293,7 +293,7 @@ const fullStackFeatures: PlanFeature[] = [
               ))}
             </ul>
 
-            <a href="#contact" class="adaptif-btn adaptif-btn--dark plan-cta">
+            <a href="#contact" class="adaptif-btn adaptif-btn--dark plan-cta plan-cta--creative">
               <span>Start with Creative →</span>
             </a>
           </article>
@@ -1124,6 +1124,24 @@ const fullStackFeatures: PlanFeature[] = [
     width: 100%;
     padding: 13px 20px;
     font-size: 0.9rem;
+  }
+
+  .plan-cta--creative {
+    --btn-bg-top: #1f4880;
+    --btn-bg-mid: #122c55;
+    --btn-bg-bottom: #0a1a36;
+    --btn-specular: rgba(140, 215, 255, 0.32);
+    --btn-glow: rgba(72, 200, 255, 0.36);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    --btn-shadow:
+      0 0 22px rgba(14, 70, 145, 0.28),
+      0 8px 20px rgba(2, 10, 28, 0.45),
+      inset 0 1px 1px rgba(170, 225, 255, 0.28),
+      inset 0 -2px 4px rgba(0, 8, 24, 0.45);
+    --btn-shadow-hover:
+      0 0 28px rgba(72, 200, 255, 0.32),
+      0 12px 26px rgba(2, 10, 28, 0.55),
+      inset 0 1px 2px rgba(185, 232, 255, 0.4);
   }
 
   /* ========================================================================

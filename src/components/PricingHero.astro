@@ -443,6 +443,53 @@ const fullStackFeatures: PlanFeature[] = [
       positionSlider(current, false);
     });
 
+    const parsePrice = (raw: string | undefined) =>
+      Number((raw || "0").replace(/[^0-9]/g, "")) || 0;
+
+    const formatPrice = (value: number) =>
+      "$" + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+    const activeCountAnimations = new WeakMap<HTMLElement, number>();
+
+    const animatePrice = (el: HTMLElement, from: number, to: number, duration = 900, delay = 0) => {
+      const prevRaf = activeCountAnimations.get(el);
+      if (prevRaf) cancelAnimationFrame(prevRaf);
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        el.textContent = formatPrice(to);
+        return;
+      }
+
+      el.textContent = formatPrice(from);
+      const startAt = performance.now() + delay;
+
+      const step = (now: number) => {
+        if (now < startAt) {
+          activeCountAnimations.set(el, requestAnimationFrame(step));
+          return;
+        }
+        const progress = Math.min((now - startAt) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = from + (to - from) * eased;
+        el.textContent = formatPrice(current);
+
+        if (progress < 1) {
+          activeCountAnimations.set(el, requestAnimationFrame(step));
+        } else {
+          el.textContent = formatPrice(to);
+          activeCountAnimations.delete(el);
+        }
+      };
+
+      activeCountAnimations.set(el, requestAnimationFrame(step));
+    };
+
+    // Initial count-up from $0 to target amount on page load
+    priceElements.forEach((el, idx) => {
+      const target = parsePrice(el.dataset.annual || el.textContent || "0");
+      animatePrice(el, 0, target, 950, 260 + idx * 100);
+    });
+
     billingButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const mode = btn.dataset.billing === "monthly" ? "monthly" : "annual";
@@ -457,11 +504,12 @@ const fullStackFeatures: PlanFeature[] = [
 
         priceElements.forEach((el) => {
           const nextValue = mode === "monthly" ? el.dataset.monthly : el.dataset.annual;
-          if (nextValue && el.textContent !== nextValue) {
-            el.classList.remove("is-updating");
-            void el.offsetWidth;
-            el.textContent = nextValue;
-            el.classList.add("is-updating");
+          if (nextValue) {
+            const currentNum = parsePrice(el.textContent || "0");
+            const targetNum = parsePrice(nextValue);
+            if (currentNum !== targetNum) {
+              animatePrice(el, currentNum, targetNum, 420, 0);
+            }
           }
         });
 

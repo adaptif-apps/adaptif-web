@@ -1,0 +1,534 @@
+---
+// OurWorkShowcase.astro - Portfolio Thumbnail Showcase (Dark Mode)
+
+interface PortfolioProject {
+  id: string;
+  title: string;
+  tags: string[];
+  image: string;
+  spanDesktop?: 1 | 2;
+  spanTablet?: 1 | 2;
+}
+
+const projects: PortfolioProject[] = [
+  {
+    id: "sideline-podcast",
+    title: "Sideline Podcast",
+    tags: ["Branding", "Motion Design", "Social Media Creative", "Ad Creative", "Video Production"],
+    image: "/work-featured/sideline.jpg",
+    spanDesktop: 2,
+    spanTablet: 2,
+  },
+  {
+    id: "yum-yum-digital",
+    title: "Yum Yum Digital",
+    tags: ["Branding", "Social Media Creative", "Web Design", "Marketing Campaign"],
+    image: "/work-featured/yumyum.jpg",
+  },
+  {
+    id: "forever-and-ever",
+    title: "Forever & Ever",
+    tags: ["Branding", "App Design", "Web Design", "Social Media Creative"],
+    image: "/work-featured/forever.jpg",
+  },
+  {
+    id: "morganic",
+    title: "Morganic",
+    tags: ["Branding", "Ecommerce", "Social Media Creative", "Ad Creative"],
+    image: "/work-featured/morganic.jpg",
+  },
+  {
+    id: "dunamis-xp",
+    title: "Dunamis XP",
+    tags: ["Branding", "App Design"],
+    image: "/work-featured/dunamis.jpg",
+  },
+  {
+    id: "platemakrs",
+    title: "Platemakrs",
+    tags: ["Branding", "App Design", "Email Campaign", "Social Media", "Ad Creatives"],
+    image: "/work-featured/platemakrs.jpg",
+  },
+  {
+    id: "punch-4-parkinsons",
+    title: "Punch 4 Parkinson’s",
+    tags: ["Branding", "App Design", "Social Media", "Ad Creative"],
+    image: "/header_images/Work Item Container-1.jpg",
+  },
+  {
+    id: "king-energy",
+    title: "King Energy",
+    tags: ["Email Campaign", "Social Media"],
+    image: "/header_images/Work Item Container-2.jpg",
+  },
+  {
+    id: "riizeup",
+    title: "RiizeUp",
+    tags: ["Branding", "Social Media Creative", "Web Design", "Ad Creative", "Packaging", "P.O.P Material"],
+    image: "/header_images/Work Item Container-3.jpg",
+  },
+  {
+    id: "riize-health",
+    title: "Riize Health",
+    tags: ["Branding", "Social Media Creative", "Web Design", "Ad Creative", "Packaging", "P.O.P Material"],
+    image: "/header_images/Work Item Container-4.jpg",
+  },
+  {
+    id: "designer-plants",
+    title: "Designer Plants",
+    tags: ["Branding", "Web Design", "Social Media Creative", "Packaging", "Ad Creative"],
+    image: "/header_images/Work Item Container-5.jpg",
+  },
+  {
+    id: "designer-vertical-gardens",
+    title: "Designer Vertical Gardens",
+    tags: ["Branding", "Web Design", "Social Media Creative", "Packaging", "Ad Creative"],
+    image: "/header_images/Work Item Container-6.jpg",
+  },
+  {
+    id: "miss-bukowski",
+    title: "Miss Bukowski",
+    tags: ["Branding", "Web Design", "Social Media", "Email Campaign"],
+    image: "/header_images/Work Item Container-7.jpg",
+  },
+  {
+    id: "cafe-marbella",
+    title: "Café Marbella",
+    tags: ["Ecommerce Design"],
+    image: "/header_images/Work Item Container-8.jpg",
+  },
+  {
+    id: "webinars-lupulados",
+    title: "Webinars Lupulados",
+    tags: ["Branding", "Social Media Creative", "Ad Creative", "Ecommerce Design", "Marketing Campaign"],
+    image: "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg",
+  },
+  {
+    id: "congreso-de-lupulo",
+    title: "Congreso de Lúpulo",
+    tags: ["Branding", "Social Media Creative", "Ad Creative", "Ecommerce Design", "Marketing Campaign"],
+    image: "/header_images/Work Item Container-10.jpg",
+  },
+  {
+    id: "billy-pet-stuff",
+    title: "Billy Pet Stuff",
+    tags: ["Branding", "Social Media Creative", "Ecommerce Design"],
+    image: "/header_images/Work Item Container-11.jpg",
+  },
+  {
+    id: "high-corner",
+    title: "High Corner",
+    tags: ["Branding", "Social Media Creative", "Ecommerce Design"],
+    image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg",
+  },
+  {
+    id: "maison-etherique",
+    title: "Maison Etherique",
+    tags: ["Branding", "Packaging", "Web Design", "Print Creative"],
+    image: "/header_images/Work Item Container.jpg",
+    spanDesktop: 2,
+  },
+];
+
+const filterGroups = [
+  { id: "all", label: "All Projects" },
+  { id: "branding", label: "Branding" },
+  { id: "web", label: "Web & Ecommerce" },
+  { id: "app", label: "App Design" },
+  { id: "social", label: "Social, Ads & Email" },
+  { id: "packaging", label: "Packaging & Print" },
+  { id: "motion", label: "Motion & Video" },
+];
+
+function getFilterCategories(tags: string[]): string[] {
+  const joined = tags.join(" ").toLowerCase();
+  const cats = ["all"];
+  if (joined.includes("branding")) cats.push("branding");
+  if (joined.includes("web") || joined.includes("ecommerce")) cats.push("web");
+  if (joined.includes("app design")) cats.push("app");
+  if (
+    joined.includes("social") ||
+    joined.includes("ad creative") ||
+    joined.includes("email") ||
+    joined.includes("marketing")
+  ) {
+    cats.push("social");
+  }
+  if (
+    joined.includes("packaging") ||
+    joined.includes("p.o.p") ||
+    joined.includes("print")
+  ) {
+    cats.push("packaging");
+  }
+  if (joined.includes("motion") || joined.includes("video")) cats.push("motion");
+  return cats;
+}
+---
+
+<section class="work-showcase-section" id="work-showcase" aria-label="Selected client projects">
+  <div class="showcase-ambient-glow" aria-hidden="true"></div>
+
+  <div class="showcase-container">
+    <div class="showcase-toolbar">
+      <div class="filter-bar" role="group" aria-label="Filter projects by discipline">
+        {filterGroups.map((group, idx) => (
+          <button
+            type="button"
+            class={idx === 0 ? "filter-pill is-active" : "filter-pill"}
+            data-filter={group.id}
+            aria-pressed={idx === 0 ? "true" : "false"}
+          >
+            {group.label}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="showcase-grid" id="showcase-grid">
+      {projects.map((project, index) => {
+        const categories = getFilterCategories(project.tags).join(",");
+        const spanClasses = [
+          "project-card",
+          project.spanDesktop === 2 ? "span-desktop-2" : "",
+          project.spanTablet === 2 ? "span-tablet-2" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        return (
+          <article
+            class={spanClasses}
+            data-categories={categories}
+            style={`--card-index: ${index};`}
+          >
+            <div class="project-thumb">
+              <img
+                src={project.image}
+                alt={`${project.title} project showcase`}
+                loading={index < 6 ? "eager" : "lazy"}
+                decoding="async"
+                class="project-img"
+              />
+              <div class="project-thumb-vignette" aria-hidden="true"></div>
+            </div>
+
+            <div class="project-meta">
+              <h3 class="project-title">{project.title}</h3>
+              <ul class="project-tags" aria-label={`${project.title} disciplines`}>
+                {project.tags.map((tag) => (
+                  <li class="project-tag">{tag}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<script>
+  function initWorkShowcase() {
+    const section = document.getElementById("work-showcase");
+    const grid = document.getElementById("showcase-grid");
+    if (!section || !grid) return;
+
+    const buttons = Array.from(section.querySelectorAll<HTMLButtonElement>(".filter-pill"));
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>(".project-card"));
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const filter = btn.dataset.filter || "all";
+
+        buttons.forEach((b) => {
+          const active = b === btn;
+          b.classList.toggle("is-active", active);
+          b.setAttribute("aria-pressed", active ? "true" : "false");
+        });
+
+        grid.classList.toggle("is-filtered", filter !== "all");
+
+        cards.forEach((card) => {
+          const cats = (card.dataset.categories || "").split(",");
+          const matches = filter === "all" || cats.includes(filter);
+          card.hidden = !matches;
+        });
+      });
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initWorkShowcase);
+  } else {
+    initWorkShowcase();
+  }
+
+  document.addEventListener("astro:page-load", initWorkShowcase);
+</script>
+
+<style>
+  .work-showcase-section {
+    position: relative;
+    width: 100%;
+    background-color: var(--color-void, #010307);
+    padding: clamp(28px, 4vh, 48px) 0 clamp(80px, 10vh, 130px);
+    overflow: hidden;
+  }
+
+  .showcase-ambient-glow {
+    position: absolute;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1100px, 95vw);
+    height: 420px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(14, 165, 233, 0.1) 0%,
+      rgba(56, 189, 248, 0.03) 45%,
+      transparent 72%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .showcase-container {
+    position: relative;
+    z-index: 1;
+    max-width: var(--container-max, 1280px);
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 3.5vw, 2.5rem);
+  }
+
+  .showcase-toolbar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: clamp(28px, 4vh, 44px);
+  }
+
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 6px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .filter-pill {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
+    font-size: 0.84rem;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .filter-pill:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .filter-pill:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+
+  .filter-pill.is-active {
+    color: #04101d;
+    background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #0ea5e9 100%);
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(56, 189, 248, 0.28);
+  }
+
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(18px, 2vw, 26px);
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(11, 17, 30, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.3s ease,
+      box-shadow 0.35s ease;
+  }
+
+  .project-card[hidden] {
+    display: none;
+  }
+
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow:
+      0 20px 44px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba(56, 189, 248, 0.08);
+  }
+
+  .showcase-grid:not(.is-filtered) .span-desktop-2 {
+    grid-column: span 2;
+  }
+
+  .project-thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #060a13;
+  }
+
+  .showcase-grid:not(.is-filtered) .span-desktop-2 .project-thumb {
+    aspect-ratio: 21 / 10;
+  }
+
+  .project-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .project-card:hover .project-img {
+    transform: scale(1.045);
+  }
+
+  .project-thumb-vignette {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(7, 11, 20, 0.6) 0%,
+      rgba(7, 11, 20, 0.08) 40%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .project-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 22px 22px;
+    flex: 1;
+  }
+
+  .project-title {
+    font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
+    font-size: 1.18rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #f8fafc;
+    margin: 0;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .project-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    color: #94a3b8;
+    font-size: 0.74rem;
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .project-card:hover .project-tag {
+    color: #cbd5e1;
+    border-color: rgba(56, 189, 248, 0.22);
+    background: rgba(56, 189, 248, 0.06);
+  }
+
+  @media (max-width: 1024px) {
+    .showcase-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .showcase-grid:not(.is-filtered) .span-desktop-2 {
+      grid-column: auto;
+    }
+
+    .showcase-grid:not(.is-filtered) .span-desktop-2 .project-thumb {
+      aspect-ratio: 16 / 10;
+    }
+
+    .showcase-grid:not(.is-filtered) .span-tablet-2 {
+      grid-column: span 2;
+    }
+
+    .showcase-grid:not(.is-filtered) .span-tablet-2 .project-thumb {
+      aspect-ratio: 20 / 10;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .showcase-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .showcase-grid:not(.is-filtered) .span-tablet-2 {
+      grid-column: auto;
+    }
+
+    .showcase-grid:not(.is-filtered) .span-tablet-2 .project-thumb {
+      aspect-ratio: 16 / 10;
+    }
+
+    .filter-bar {
+      width: 100%;
+      justify-content: flex-start;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .filter-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-pill {
+      flex-shrink: 0;
+    }
+
+    .project-meta {
+      padding: 16px 18px 18px;
+    }
+  }
+</style>

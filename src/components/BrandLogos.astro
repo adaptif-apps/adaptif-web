@@ -40,21 +40,26 @@ interface Props {
   heading?: string;
   title?: string;
   titleHighlight?: string;
+  lead?: string;
 }
 
 const {
   heading = "Chosen by 500+ of the world’s boldest brands",
   title,
   titleHighlight,
+  lead,
 } = Astro.props;
 ---
 
 <section class="brand-logos-section" aria-label="Brands that trust Adaptif">
   <div class="brand-logos-container">
     {title ? (
-      <h2 class="brand-logos-title">
-        {title}{titleHighlight ? <> <span class="brand-logos-title-highlight">{titleHighlight}</span></> : null}
-      </h2>
+      <div class="brand-logos-intro">
+        <h2 class="brand-logos-title">
+          {title}{titleHighlight ? <> <span class="brand-logos-title-highlight">{titleHighlight}</span></> : null}
+        </h2>
+        {lead ? <p class="brand-logos-lead">{lead}</p> : null}
+      </div>
     ) : null}
 
     {heading ? (
@@ -108,21 +113,28 @@ const {
     gap: 22px;
   }
 
-  .brand-logos-title {
-    font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
-    font-size: clamp(1.75rem, 3.2vw, 2.6rem);
-    font-weight: 400;
-    line-height: 1.22;
-    letter-spacing: -0.02em;
-    color: #f8fafc;
+  .brand-logos-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
     text-align: center;
-    max-width: 820px;
-    margin: 0 0 12px;
     opacity: 0;
     transform: translateY(16px);
     transition:
       opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
       transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .brand-logos-title {
+    font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
+    font-size: clamp(2rem, 3.8vw, 3.1rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: #f8fafc;
+    margin: 0;
   }
 
   .brand-logos-title-highlight {
@@ -131,6 +143,14 @@ const {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .brand-logos-lead {
+    font-size: clamp(0.98rem, 1.3vw, 1.1rem);
+    line-height: 1.6;
+    color: #94a3b8;
+    max-width: 580px;
+    margin: 0;
   }
 
   .brand-logos-heading {
@@ -181,7 +201,7 @@ const {
     );
   }
 
-  .brand-logos-section.is-visible .brand-logos-title,
+  .brand-logos-section.is-visible .brand-logos-intro,
   .brand-logos-section.is-visible .brand-logos-heading,
   .brand-logos-section.is-visible .marquee-viewport {
     opacity: 1;
@@ -248,21 +268,28 @@ const {
     .marquee-track {
       animation-duration: 30s;
     }
-    .brand-logos-title {
-    font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
-    font-size: clamp(1.75rem, 3.2vw, 2.6rem);
-    font-weight: 400;
-    line-height: 1.22;
-    letter-spacing: -0.02em;
-    color: #f8fafc;
+    .brand-logos-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
     text-align: center;
-    max-width: 820px;
-    margin: 0 0 12px;
     opacity: 0;
     transform: translateY(16px);
     transition:
       opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
       transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .brand-logos-title {
+    font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
+    font-size: clamp(2rem, 3.8vw, 3.1rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: #f8fafc;
+    margin: 0;
   }
 
   .brand-logos-title-highlight {
@@ -271,6 +298,14 @@ const {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .brand-logos-lead {
+    font-size: clamp(0.98rem, 1.3vw, 1.1rem);
+    line-height: 1.6;
+    color: #94a3b8;
+    max-width: 580px;
+    margin: 0;
   }
 
   .brand-logos-heading {

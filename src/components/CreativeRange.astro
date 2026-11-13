@@ -205,15 +205,28 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     );
     observer.observe(section);
 
-    // Smooth fade-in per tile as each lazy image finishes loading
-    section.querySelectorAll<HTMLImageElement>(".tile-img").forEach((img) => {
+    // Smooth fade-in per card only after the image has finished loading AND decoding
+    section.querySelectorAll<HTMLElement>(".tile-card").forEach((card) => {
+      const img = card.querySelector<HTMLImageElement>(".tile-img");
+      if (!img) return;
+
+      const reveal = () => {
+        const done = () => {
+          requestAnimationFrame(() => card.classList.add("is-loaded"));
+        };
+        if (typeof img.decode === "function") {
+          img.decode().then(done).catch(done);
+        } else {
+          done();
+        }
+      };
+
       if (img.complete && img.naturalWidth > 0) {
-        img.classList.add("is-loaded");
-        return;
+        reveal();
+      } else {
+        img.addEventListener("load", reveal, { once: true });
+        img.addEventListener("error", () => card.classList.add("is-loaded"), { once: true });
       }
-      const markLoaded = () => img.classList.add("is-loaded");
-      img.addEventListener("load", markLoaded, { once: true });
-      img.addEventListener("error", markLoaded, { once: true });
     });
   }
 
@@ -482,11 +495,17 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     margin-bottom: clamp(8px, 0.9vw, 14px);
     border-radius: clamp(10px, 1.2vw, 16px);
     overflow: hidden;
-    background: #f1f5f9;
+    background: transparent;
     border: 1px solid rgba(15, 23, 42, 0.06);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
     pointer-events: none;
     flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tile-card.is-loaded {
+    opacity: 1;
   }
 
   .tile-image-wrap {
@@ -495,7 +514,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     aspect-ratio: 4 / 5;
     overflow: hidden;
     pointer-events: none;
-    background: #e2e8f0;
+    background: transparent;
   }
 
   .tile-img {
@@ -504,12 +523,6 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     object-fit: cover;
     display: block;
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .tile-img.is-loaded {
-    opacity: 1;
   }
 
   /* ==========================================================================
@@ -619,7 +632,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
   }
 
   .creative-range-section[data-theme="dark"] .tile-card {
-    background: #0b111e;
+    background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
   }

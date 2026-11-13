@@ -1,0 +1,251 @@
+---
+// PricingAiBanner.astro - Floating AI-Powered Production Banner
+---
+
+<section
+  id="ai-production-banner"
+  class="ai-banner-section"
+  aria-labelledby="ai-banner-heading"
+>
+  <div class="container">
+    <div class="ai-banner-card" data-reveal>
+      <!-- Background Artwork -->
+      <div class="ai-banner__media" aria-hidden="true">
+        <img
+          src="/pricing/ai-production-banner.jpg"
+          alt=""
+          class="ai-banner__img"
+          loading="lazy"
+        />
+        <div class="ai-banner__scrim"></div>
+      </div>
+
+      <!-- Foreground Copy -->
+      <div class="ai-banner__content">
+        <div class="ai-banner__eyebrow">
+          <span class="ai-banner__dot" aria-hidden="true"></span>
+          <span>AI-powered production</span>
+        </div>
+
+        <h2 id="ai-banner-heading" class="ai-banner__title">
+          Cut production costs, <span class="title-highlight">Not quality.</span>
+        </h2>
+
+        <p class="ai-banner__desc">
+          Through AI, customers like Amazon, Reddit, and Salesforce managed to spend less than half of what they normally would on similar projects.
+        </p>
+
+        <div class="ai-banner__cta-wrap">
+          <a href="#contact" class="adaptif-btn ai-banner__cta">
+            <span>Book a Demo</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ai-banner-section {
+    position: relative;
+    padding: 2.5rem 0 6.5rem;
+    background: var(--color-void);
+  }
+
+  .ai-banner-card {
+    position: relative;
+    border-radius: 28px;
+    overflow: hidden;
+    min-height: 410px;
+    display: flex;
+    align-items: center;
+    padding: clamp(2.5rem, 5vw, 4.25rem);
+    background: #060d19;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 28px 70px -15px rgba(0, 0, 0, 0.78),
+      0 0 50px -12px rgba(72, 200, 255, 0.18);
+    transition: transform 0.45s var(--ease-spring), border-color 0.35s ease, box-shadow 0.45s ease;
+  }
+
+  .ai-banner-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.35);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      0 34px 80px -14px rgba(0, 0, 0, 0.85),
+      0 0 65px -10px rgba(72, 200, 255, 0.26);
+  }
+
+  .ai-banner__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .ai-banner__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 76% center;
+    display: block;
+    transition: transform 0.8s var(--ease-spring);
+  }
+
+  .ai-banner-card:hover .ai-banner__img {
+    transform: scale(1.025);
+  }
+
+  .ai-banner__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      95deg,
+      rgba(2, 6, 15, 0.94) 0%,
+      rgba(2, 6, 15, 0.86) 42%,
+      rgba(2, 6, 15, 0.38) 68%,
+      rgba(2, 6, 15, 0.12) 100%
+    );
+  }
+
+  .ai-banner__content {
+    position: relative;
+    z-index: 1;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.15rem;
+  }
+
+  .ai-banner__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.38rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: rgba(5, 13, 28, 0.72);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan);
+  }
+
+  .ai-banner__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-brand-cyan);
+    box-shadow: 0 0 10px var(--color-brand-cyan);
+  }
+
+  .ai-banner__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4.2vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--color-text-white);
+    margin: 0;
+  }
+
+  .ai-banner__desc {
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: rgba(226, 232, 240, 0.88);
+    margin: 0;
+    max-width: 500px;
+  }
+
+  .ai-banner__cta-wrap {
+    margin-top: 0.45rem;
+  }
+
+  /* Reveal */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.75s var(--ease-spring), transform 0.75s var(--ease-spring);
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 860px) {
+    .ai-banner-section {
+      padding: 1.5rem 0 4.5rem;
+    }
+
+    .ai-banner-card {
+      min-height: 460px;
+      align-items: flex-end;
+      padding: 2rem 1.5rem;
+      border-radius: 22px;
+    }
+
+    .ai-banner__img {
+      object-position: 68% 25%;
+    }
+
+    .ai-banner__scrim {
+      background: linear-gradient(
+        180deg,
+        rgba(2, 6, 15, 0.25) 0%,
+        rgba(2, 6, 15, 0.72) 45%,
+        rgba(2, 6, 15, 0.95) 82%
+      );
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ai-banner-card,
+    .ai-banner__img,
+    [data-reveal] {
+      transition: none !important;
+    }
+
+    .ai-banner-card:hover,
+    .ai-banner-card:hover .ai-banner__img {
+      transform: none;
+    }
+
+    [data-reveal] {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  const bannerCard = document.querySelector<HTMLElement>("#ai-production-banner [data-reveal]");
+  if (
+    bannerCard &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+    "IntersectionObserver" in window
+  ) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    observer.observe(bannerCard);
+  } else {
+    bannerCard?.classList.add("is-visible");
+  }
+</script>

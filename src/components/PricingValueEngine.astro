@@ -304,13 +304,11 @@ const benefits = [
 
     <!-- Included in all plans -->
     <div class="benefits-panel" data-reveal aria-labelledby="included-plans-heading">
-      <div class="benefits-panel__top">
-        <div class="benefits-panel__heading-group">
-          <span class="benefits-kicker">EVERY SUBSCRIPTION INCLUDES</span>
-          <h3 id="included-plans-heading" class="benefits-panel__title">
-            Included in all plans
-          </h3>
-        </div>
+      <div class="benefits-panel__intro">
+        <span class="benefits-kicker">EVERY SUBSCRIPTION INCLUDES</span>
+        <h3 id="included-plans-heading" class="benefits-panel__title">
+          Included in all plans
+        </h3>
         <div class="benefits-panel__cta">
           <a href="#contact" class="adaptif-btn">
             Book a call
@@ -325,8 +323,8 @@ const benefits = [
       <ul class="benefits-grid">
         {
           benefits.map((benefit) => (
-            <li class={`benefit-card ${benefit.featured ? "benefit-card--featured" : ""}`}>
-              <div class="benefit-card__icon" aria-hidden="true">
+            <li class={`benefit-item ${benefit.featured ? "benefit-item--featured" : ""}`}>
+              <div class="benefit-item__icon" aria-hidden="true">
                 {benefit.icon === "services" && (
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -383,10 +381,10 @@ const benefits = [
                   </svg>
                 )}
               </div>
-              <div class="benefit-card__body">
-                <h4 class="benefit-card__title">{benefit.title}</h4>
+              <div class="benefit-item__body">
+                <h4 class="benefit-item__title">{benefit.title}</h4>
                 {benefit.subtitle && (
-                  <p class="benefit-card__subtitle">{benefit.subtitle}</p>
+                  <p class="benefit-item__subtitle">{benefit.subtitle}</p>
                 )}
               </div>
             </li>
@@ -811,26 +809,24 @@ const benefits = [
     box-shadow: 0 0 12px rgba(72, 200, 255, 0.85);
   }
 
-  /* Benefits Panel */
+  /* Included in all plans — Editorial Split + Hairline Matrix */
   .benefits-panel {
     position: relative;
-    padding: 2.5rem;
-    border-radius: 26px;
-    background: linear-gradient(180deg, rgba(16, 28, 48, 0.65) 0%, rgba(7, 13, 24, 0.82) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.09),
-      0 24px 60px rgba(0, 0, 0, 0.45);
+    padding-top: 3.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: grid;
+    grid-template-columns: minmax(250px, 0.78fr) 1.55fr;
+    gap: 3.5rem;
+    align-items: start;
   }
 
-  .benefits-panel__top {
+  .benefits-panel__intro {
+    position: sticky;
+    top: 7.5rem;
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
   }
 
   .benefits-kicker {
@@ -839,20 +835,20 @@ const benefits = [
     font-weight: 600;
     letter-spacing: 0.14em;
     color: var(--color-brand-cyan);
-    margin-bottom: 0.45rem;
+    margin: 0;
   }
 
   .benefits-panel__title {
     font-family: var(--font-family-display);
-    font-size: clamp(1.9rem, 3.2vw, 2.55rem);
+    font-size: clamp(2.1rem, 3.6vw, 2.95rem);
     font-weight: 400;
-    line-height: 1.1;
+    line-height: 1.06;
     color: var(--color-text-white);
     margin: 0;
   }
 
   .benefits-panel__cta {
-    flex-shrink: 0;
+    margin-top: 0.35rem;
   }
 
   .benefits-grid {
@@ -860,68 +856,68 @@ const benefits = [
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .benefit-card {
-    grid-column: span 2;
+  .benefit-item {
     display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-    padding: 1.35rem 1.25rem;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
-  }
-
-  .benefit-card:hover {
-    border-color: rgba(72, 200, 255, 0.3);
-    background: rgba(72, 200, 255, 0.05);
-    transform: translateY(-2px);
-  }
-
-  .benefit-card--featured {
-    grid-column: span 3;
-    flex-direction: row;
     align-items: flex-start;
-    gap: 1.1rem;
-    background: linear-gradient(135deg, rgba(72, 200, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
-    border-color: rgba(72, 200, 255, 0.22);
+    gap: 1rem;
+    padding: 1.45rem 1.5rem 1.45rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.25s ease;
   }
 
-  .benefit-card__icon {
+  .benefit-item:nth-child(even) {
+    padding-left: 1.75rem;
+    padding-right: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .benefit-item:hover .benefit-item__icon {
+    border-color: rgba(72, 200, 255, 0.5);
+    background: rgba(72, 200, 255, 0.16);
+  }
+
+  .benefit-item__icon {
     flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(72, 200, 255, 0.1);
-    border: 1px solid rgba(72, 200, 255, 0.24);
+    background: rgba(72, 200, 255, 0.09);
+    border: 1px solid rgba(72, 200, 255, 0.22);
     color: var(--color-brand-cyan);
+    transition: border-color 0.25s ease, background 0.25s ease;
   }
 
-  .benefit-card__body {
+  .benefit-item--featured .benefit-item__icon {
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .benefit-item__body {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.3rem;
+    padding-top: 0.1rem;
   }
 
-  .benefit-card__title {
+  .benefit-item__title {
     font-family: var(--font-family-body);
-    font-size: 0.98rem;
+    font-size: 1rem;
     font-weight: 600;
     line-height: 1.35;
     color: var(--color-text-white);
     margin: 0;
   }
 
-  .benefit-card__subtitle {
-    font-size: 0.84rem;
-    line-height: 1.45;
+  .benefit-item__subtitle {
+    font-size: 0.85rem;
+    line-height: 1.5;
     color: var(--color-text-secondary);
     margin: 0;
   }
@@ -976,16 +972,14 @@ const benefits = [
       display: flex;
     }
 
-    .benefits-grid {
-      grid-template-columns: repeat(2, 1fr);
+    .benefits-panel {
+      grid-template-columns: 1fr;
+      gap: 2.25rem;
+      padding-top: 2.5rem;
     }
 
-    .benefit-card {
-      grid-column: span 1;
-    }
-
-    .benefit-card--featured {
-      grid-column: span 2;
+    .benefits-panel__intro {
+      position: static;
     }
   }
 
@@ -994,24 +988,18 @@ const benefits = [
       padding: 4rem 0 4.5rem;
     }
 
-    .pipeline-shell,
     .benefits-panel {
-      padding: 1.35rem;
-      border-radius: 20px;
-    }
-
-    .benefits-panel__top {
-      flex-direction: column;
-      align-items: flex-start;
+      padding-top: 2rem;
     }
 
     .benefits-grid {
       grid-template-columns: 1fr;
     }
 
-    .benefit-card--featured {
-      grid-column: span 1;
-      flex-direction: column;
+    .benefit-item,
+    .benefit-item:nth-child(even) {
+      padding: 1.2rem 0;
+      border-left: none;
     }
   }
 

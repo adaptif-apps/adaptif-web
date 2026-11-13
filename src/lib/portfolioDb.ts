@@ -88,10 +88,9 @@ function mapRow(row: Record<string, any>): PortfolioProject {
 }
 
 export async function listProjects(options: { includeHidden?: boolean } = {}): Promise<PortfolioProject[]> {
-  try {
-    await ensurePortfolioSchema();
+  const queryProjects = async () => {
     const sql = getSql();
-    const rows = options.includeHidden
+    return options.includeHidden
       ? await sql`
           SELECT id, title, description, tags, image, gallery, sort_order, is_published
           FROM portfolio_projects
@@ -103,9 +102,24 @@ export async function listProjects(options: { includeHidden?: boolean } = {}): P
           WHERE is_published = true
           ORDER BY sort_order ASC, created_at ASC
         `;
+  };
+
+  try {
+    const rows = await queryProjects();
     return rows.map(mapRow);
-  } catch (err) {
-    console.error("[portfolioDb] Falling back to static seed:", err);
+  } catch (err: any) {
+    // Only run schema initialization/seed on read if the table does not exist yet
+    if (err?.code === "42P01") {
+      try {
+        await ensurePortfolioSchema();
+        const rows = await queryProjects();
+        return rows.map(mapRow);
+      } catch (retryErr) {
+        console.error("[portfolioDb] Schema init retry failed, falling back to static seed:", retryErr);
+      }
+    } else {
+      console.error("[portfolioDb] Falling back to static seed:", err);
+    }
     return options.includeHidden
       ? portfolioSeed
       : portfolioSeed.filter((p) => p.isPublished);

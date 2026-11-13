@@ -9,6 +9,8 @@ import { listProjects } from "../lib/portfolioDb";
 
 export const prerender = false;
 
+Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+
 const projects = await listProjects({ includeHidden: false });
 ---
 

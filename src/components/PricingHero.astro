@@ -617,10 +617,10 @@ const fullStackFeatures: PlanFeature[] = [
   .pricing-hero {
     position: relative;
     min-height: 100dvh;
-    padding-top: calc(var(--header-height) + clamp(52px, 8vh, 96px));
-    padding-bottom: clamp(72px, 10vh, 128px);
+    padding-top: calc(var(--header-height) + clamp(36px, 5.2vh, 58px));
+    padding-bottom: clamp(68px, 9vh, 104px);
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     background-color: var(--color-void);
     overflow: hidden;
   }
@@ -658,7 +658,7 @@ const fullStackFeatures: PlanFeature[] = [
     display: grid;
     grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.22fr);
     gap: clamp(40px, 5vw, 72px);
-    align-items: center;
+    align-items: start;
   }
 
   /* ========================================================================
@@ -666,6 +666,7 @@ const fullStackFeatures: PlanFeature[] = [
      ======================================================================== */
   .pricing-intro {
     max-width: 470px;
+    padding-top: clamp(72px, 10vh, 118px);
   }
 
   .pricing-eyebrow-pill {
@@ -1286,6 +1287,7 @@ const fullStackFeatures: PlanFeature[] = [
 
     .pricing-intro {
       max-width: 620px;
+      padding-top: 0;
       margin-inline: auto;
       text-align: center;
     }

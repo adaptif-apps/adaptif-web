@@ -155,8 +155,8 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
                   <img 
                     src={tile.image} 
                     alt={tile.title} 
-                    loading={asHero ? "eager" : "lazy"} 
-                    decoding={asHero ? "auto" : "async"} 
+                    loading="lazy" 
+                    decoding="async" 
                     class="tile-img" 
                   />
                 </div>
@@ -170,8 +170,8 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
                   <img 
                     src={tile.image} 
                     alt="" 
-                    loading={asHero ? "eager" : "lazy"} 
-                    decoding={asHero ? "auto" : "async"} 
+                    loading="lazy" 
+                    decoding="async" 
                     class="tile-img" 
                   />
                 </div>
@@ -205,56 +205,16 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     );
     observer.observe(section);
 
-    // On non-hero pages (e.g. Home), preload & decode unique tile images in idle/early-scroll
-    // so they are already rendered before scrolling into view and cached for /our-work
-    if (section.dataset.hero !== "true" && section.dataset.preloaded !== "true") {
-      const preloadTiles = () => {
-        if (section.dataset.preloaded === "true") return;
-        section.dataset.preloaded = "true";
-
-        const uniqueUrls = new Set<string>();
-        section.querySelectorAll<HTMLImageElement>(".tile-img").forEach((img) => {
-          img.loading = "eager";
-          const src = img.currentSrc || img.getAttribute("src");
-          if (src) uniqueUrls.add(src);
-        });
-
-        uniqueUrls.forEach((url) => {
-          const pre = new Image();
-          pre.decoding = "async";
-          pre.src = url;
-          if (typeof pre.decode === "function") {
-            pre.decode().catch(() => {});
-          }
-        });
-      };
-
-      const earlyObserver = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((e) => e.isIntersecting)) {
-            earlyObserver.disconnect();
-            preloadTiles();
-          }
-        },
-        { rootMargin: "1600px 0px" }
-      );
-      earlyObserver.observe(section);
-
-      const scheduleIdlePreload = () => {
-        const ric = (window as any).requestIdleCallback;
-        if (typeof ric === "function") {
-          ric(() => preloadTiles(), { timeout: 1500 });
-        } else {
-          setTimeout(preloadTiles, 800);
-        }
-      };
-
-      if (document.readyState === "complete") {
-        scheduleIdlePreload();
-      } else {
-        window.addEventListener("load", scheduleIdlePreload, { once: true });
+    // Smooth fade-in per tile as each lazy image finishes loading
+    section.querySelectorAll<HTMLImageElement>(".tile-img").forEach((img) => {
+      if (img.complete && img.naturalWidth > 0) {
+        img.classList.add("is-loaded");
+        return;
       }
-    }
+      const markLoaded = () => img.classList.add("is-loaded");
+      img.addEventListener("load", markLoaded, { once: true });
+      img.addEventListener("error", markLoaded, { once: true });
+    });
   }
 
   if (document.readyState === "loading") {
@@ -544,6 +504,12 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     object-fit: cover;
     display: block;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .tile-img.is-loaded {
+    opacity: 1;
   }
 
   /* ==========================================================================

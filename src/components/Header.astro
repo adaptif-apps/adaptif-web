@@ -2186,7 +2186,7 @@ const whyUsItems: WhyUsItem[] = [
     const rect = capsule ? capsule.getBoundingClientRect() : headerContainer.getBoundingClientRect();
     const sampleY = rect.top + (rect.height / 2);
 
-    const lightSections = document.querySelectorAll('[data-theme="light"], .creative-range-section');
+    const lightSections = document.querySelectorAll('[data-theme="light"], .creative-range-section:not([data-theme="dark"])');
     let isOverLight = false;
 
     for (const sec of lightSections) {

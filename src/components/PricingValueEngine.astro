@@ -164,23 +164,23 @@ const benefits = [
         <div class="conduit conduit--left" aria-hidden="true">
           <svg viewBox="0 0 120 260" preserveAspectRatio="none" class="conduit-svg">
             <defs>
-              <linearGradient id="conduit-grad-in" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="conduit-grad-in" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="120" y2="0">
                 <stop offset="0%" stop-color="rgba(148, 163, 184, 0.25)" />
-                <stop offset="100%" stop-color="rgba(72, 200, 255, 0.75)" />
+                <stop offset="100%" stop-color="rgba(72, 200, 255, 0.85)" />
               </linearGradient>
               <marker id="arrow-cyan-in" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                <path d="M 1 1 L 8 5 L 1 9 z" fill="rgba(72, 200, 255, 0.75)" />
+                <path d="M 1 1 L 8 5 L 1 9 z" fill="rgba(72, 200, 255, 0.85)" />
               </marker>
             </defs>
             <!-- Static guide paths with directional arrows -->
-            <path id="in-path-1" d="M 0 42 C 60 42, 60 130, 114 130" class="conduit-track" stroke="url(#conduit-grad-in)" marker-end="url(#arrow-cyan-in)" />
-            <path id="in-path-2" d="M 0 130 C 55 130, 65 130, 114 130" class="conduit-track" stroke="url(#conduit-grad-in)" marker-end="url(#arrow-cyan-in)" />
-            <path id="in-path-3" d="M 0 218 C 60 218, 60 130, 114 130" class="conduit-track" stroke="url(#conduit-grad-in)" marker-end="url(#arrow-cyan-in)" />
+            <path data-in-track="0" d="M 0 42 C 60 42, 60 130, 114 130" class="conduit-track" stroke="url(#conduit-grad-in)" marker-end="url(#arrow-cyan-in)" />
+            <path data-in-track="1" d="M 0 130 C 55 130, 65 130, 114 130" class="conduit-track" stroke="url(#conduit-grad-in)" marker-end="url(#arrow-cyan-in)" />
+            <path data-in-track="2" d="M 0 218 C 60 218, 60 130, 114 130" class="conduit-track" stroke="url(#conduit-grad-in)" marker-end="url(#arrow-cyan-in)" />
 
             <!-- Animated flow pulses -->
-            <path d="M 0 42 C 60 42, 60 130, 114 130" class="conduit-pulse conduit-pulse--1" />
-            <path d="M 0 130 C 55 130, 65 130, 114 130" class="conduit-pulse conduit-pulse--2" />
-            <path d="M 0 218 C 60 218, 60 130, 114 130" class="conduit-pulse conduit-pulse--3" />
+            <path data-in-pulse="0" d="M 0 42 C 60 42, 60 130, 114 130" class="conduit-pulse conduit-pulse--1" />
+            <path data-in-pulse="1" d="M 0 130 C 55 130, 65 130, 114 130" class="conduit-pulse conduit-pulse--2" />
+            <path data-in-pulse="2" d="M 0 218 C 60 218, 60 130, 114 130" class="conduit-pulse conduit-pulse--3" />
           </svg>
         </div>
 
@@ -195,21 +195,27 @@ const benefits = [
         <!-- Column 2: Adaptif Core -->
         <div class="pipeline-col pipeline-col--core">
           <div class="mobile-stage-label">02 / Adaptif</div>
-          <div class="core-card">
-            <div class="core-ring core-ring--outer" aria-hidden="true"></div>
-            <div class="core-ring core-ring--inner" aria-hidden="true"></div>
-            <div class="core-badge">TRANSFORMATION ENGINE</div>
-            <img
-              src="/logo.svg"
-              alt="Adaptif"
-              width="148"
-              height="71"
-              class="core-logo"
-              loading="lazy"
-            />
-            <p class="core-tagline">We design, develop &amp; deliver</p>
-            <div class="core-divider" aria-hidden="true"></div>
-            <span class="core-meta">Your dedicated creative team</span>
+          <div class="core-wrap">
+            <div class="core-card">
+              <div class="core-ring core-ring--outer" aria-hidden="true"></div>
+              <div class="core-ring core-ring--inner" aria-hidden="true"></div>
+              <img
+                src="/logo.svg"
+                alt="Adaptif"
+                width="148"
+                height="71"
+                class="core-logo"
+                loading="lazy"
+              />
+              <p class="core-tagline">We design, develop &amp; deliver</p>
+              <div class="core-divider" aria-hidden="true"></div>
+              <span class="core-meta">Your dedicated creative team</span>
+            </div>
+            <!-- Desktop spine directly anchored to Core bottom -->
+            <div class="engine-spine engine-spine--desktop" aria-hidden="true">
+              <span class="engine-spine__line"></span>
+              <span class="engine-spine__dot"></span>
+            </div>
           </div>
         </div>
 
@@ -223,25 +229,25 @@ const benefits = [
 
         <!-- SVG Conduits: Adaptif -> Output (Desktop) -->
         <div class="conduit conduit--right" aria-hidden="true">
-          <svg viewBox="0 0 120 300" preserveAspectRatio="none" class="conduit-svg">
+          <svg viewBox="0 0 120 310" preserveAspectRatio="none" class="conduit-svg">
             <defs>
-              <linearGradient id="conduit-grad-out" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="conduit-grad-out" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="120" y2="0">
                 <stop offset="0%" stop-color="rgba(72, 200, 255, 0.85)" />
-                <stop offset="100%" stop-color="rgba(72, 200, 255, 0.3)" />
+                <stop offset="100%" stop-color="rgba(72, 200, 255, 0.35)" />
               </linearGradient>
               <marker id="arrow-cyan-out" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
                 <path d="M 1 1 L 8 5 L 1 9 z" fill="#48C8FF" />
               </marker>
             </defs>
-            <path d="M 0 150 C 58 150, 58 38, 114 38" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
-            <path d="M 0 150 C 58 150, 58 112, 114 112" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
-            <path d="M 0 150 C 58 150, 58 188, 114 188" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
-            <path d="M 0 150 C 58 150, 58 262, 114 262" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
+            <path data-out-track="0" d="M 0 155 C 58 155, 58 38, 114 38" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
+            <path data-out-track="1" d="M 0 155 C 58 155, 58 116, 114 116" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
+            <path data-out-track="2" d="M 0 155 C 58 155, 58 194, 114 194" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
+            <path data-out-track="3" d="M 0 155 C 58 155, 58 272, 114 272" class="conduit-track" stroke="url(#conduit-grad-out)" marker-end="url(#arrow-cyan-out)" />
 
-            <path d="M 0 150 C 58 150, 58 38, 114 38" class="conduit-pulse conduit-pulse--out-1" />
-            <path d="M 0 150 C 58 150, 58 112, 114 112" class="conduit-pulse conduit-pulse--out-2" />
-            <path d="M 0 150 C 58 150, 58 188, 114 188" class="conduit-pulse conduit-pulse--out-3" />
-            <path d="M 0 150 C 58 150, 58 262, 114 262" class="conduit-pulse conduit-pulse--out-4" />
+            <path data-out-pulse="0" d="M 0 155 C 58 155, 58 38, 114 38" class="conduit-pulse conduit-pulse--out-1" />
+            <path data-out-pulse="1" d="M 0 155 C 58 155, 58 116, 114 116" class="conduit-pulse conduit-pulse--out-2" />
+            <path data-out-pulse="2" d="M 0 155 C 58 155, 58 194, 114 194" class="conduit-pulse conduit-pulse--out-3" />
+            <path data-out-pulse="3" d="M 0 155 C 58 155, 58 272, 114 272" class="conduit-pulse conduit-pulse--out-4" />
           </svg>
         </div>
 
@@ -290,8 +296,8 @@ const benefits = [
       </div>
     </div>
 
-    <!-- Vertical Flow Spine connecting the Transformation Core to the Plan Benefits -->
-    <div class="engine-spine" aria-hidden="true">
+    <!-- Mobile Vertical Flow Spine -->
+    <div class="engine-spine engine-spine--mobile" aria-hidden="true">
       <span class="engine-spine__line"></span>
       <span class="engine-spine__dot"></span>
     </div>
@@ -478,16 +484,11 @@ const benefits = [
     max-width: 600px;
   }
 
-  /* Pipeline Shell */
+  /* Pipeline Shell (open on void canvas, no outer card) */
   .pipeline-shell {
     position: relative;
-    padding: 2rem;
-    border-radius: 26px;
-    background: linear-gradient(180deg, rgba(14, 24, 42, 0.62) 0%, rgba(5, 11, 22, 0.72) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 24px 60px rgba(0, 0, 0, 0.45);
+    padding: 0;
+    margin-bottom: 3.75rem;
   }
 
   .pipeline-stages {
@@ -628,17 +629,9 @@ const benefits = [
   /* SVG Conduits */
   .conduit {
     width: 100%;
-    height: 300px;
+    height: 100%;
     display: flex;
-    align-items: center;
-  }
-
-  .conduit--left {
-    height: 260px;
-  }
-
-  .conduit--right {
-    height: 310px;
+    align-items: stretch;
   }
 
   .conduit-svg {
@@ -779,26 +772,43 @@ const benefits = [
     letter-spacing: 0.02em;
   }
 
+  .core-wrap {
+    position: relative;
+  }
+
   /* Spine linking Core to Benefits */
   .engine-spine {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  .engine-spine--desktop {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .engine-spine--mobile {
+    display: none;
     padding: 0.25rem 0;
   }
 
   .engine-spine__line {
     width: 1px;
-    height: 44px;
-    background: linear-gradient(180deg, rgba(72, 200, 255, 0.65) 0%, rgba(72, 200, 255, 0.2) 100%);
+    height: var(--spine-height, 92px);
+    background: linear-gradient(180deg, rgba(72, 200, 255, 0.78) 0%, rgba(72, 200, 255, 0.35) 100%);
   }
 
   .engine-spine__dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
+    margin-top: -4px;
     background: var(--color-brand-cyan);
-    box-shadow: 0 0 12px rgba(72, 200, 255, 0.8);
+    box-shadow: 0 0 12px rgba(72, 200, 255, 0.85);
   }
 
   /* Benefits Panel */
@@ -943,9 +953,23 @@ const benefits = [
       gap: 0.25rem;
     }
 
+    .pipeline-shell {
+      margin-bottom: 0;
+    }
+
     .conduit,
-    .node-port {
+    .node-port,
+    .engine-spine--desktop {
       display: none;
+    }
+
+    .engine-spine--mobile {
+      display: flex;
+      padding: 0;
+    }
+
+    .engine-spine--mobile .engine-spine__line {
+      height: 44px;
     }
 
     .mobile-flow-arrow {
@@ -1015,29 +1039,107 @@ const benefits = [
 </style>
 
 <script>
-  const revealEls = document.querySelectorAll<HTMLElement>(
-    "#pricing-value-engine [data-reveal]"
-  );
+  const root = document.getElementById("pricing-value-engine");
 
-  if (
-    revealEls.length > 0 &&
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
-    "IntersectionObserver" in window
-  ) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
+  if (root) {
+    const revealEls = root.querySelectorAll<HTMLElement>("[data-reveal]");
 
-    revealEls.forEach((el) => observer.observe(el));
-  } else {
-    revealEls.forEach((el) => el.classList.add("is-visible"));
+    if (
+      revealEls.length > 0 &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+      "IntersectionObserver" in window
+    ) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+
+      revealEls.forEach((el) => observer.observe(el));
+    } else {
+      revealEls.forEach((el) => el.classList.add("is-visible"));
+    }
+
+    const syncConduitPaths = () => {
+      const leftConduit = root.querySelector<HTMLElement>(".conduit--left");
+      const rightConduit = root.querySelector<HTMLElement>(".conduit--right");
+      const coreCard = root.querySelector<HTMLElement>(".core-card");
+      const benefitsPanel = root.querySelector<HTMLElement>(".benefits-panel");
+      const desktopSpine = root.querySelector<HTMLElement>(".engine-spine--desktop");
+
+      if (!leftConduit || !rightConduit || !coreCard) return;
+
+      const coreRect = coreCard.getBoundingClientRect();
+
+      if (desktopSpine && benefitsPanel) {
+        const panelRect = benefitsPanel.getBoundingClientRect();
+        const spineGap = Math.max(24, Math.round(panelRect.top - coreRect.bottom));
+        desktopSpine.style.setProperty("--spine-height", `${spineGap}px`);
+      }
+
+      if (leftConduit.offsetParent !== null) {
+        const lRect = leftConduit.getBoundingClientRect();
+        const lW = lRect.width;
+        const lH = lRect.height;
+        const lSvg = leftConduit.querySelector("svg");
+        const lGrad = leftConduit.querySelector("#conduit-grad-in");
+        if (lSvg && lW > 0 && lH > 0) {
+          lSvg.setAttribute("viewBox", `0 0 ${lW} ${lH}`);
+          if (lGrad) lGrad.setAttribute("x2", `${lW}`);
+          const coreMidY = coreRect.top + coreRect.height / 2 - lRect.top;
+          const inPorts = root.querySelectorAll<HTMLElement>(".pipeline-node--input .node-port");
+          inPorts.forEach((port, i) => {
+            const pRect = port.getBoundingClientRect();
+            const startY = pRect.top + pRect.height / 2 - lRect.top;
+            const endX = lW - 6;
+            const c1x = lW * 0.5;
+            const d = `M 0 ${startY.toFixed(1)} C ${c1x.toFixed(1)} ${startY.toFixed(1)}, ${c1x.toFixed(1)} ${coreMidY.toFixed(1)}, ${endX.toFixed(1)} ${coreMidY.toFixed(1)}`;
+            leftConduit.querySelector(`[data-in-track="${i}"]`)?.setAttribute("d", d);
+            leftConduit.querySelector(`[data-in-pulse="${i}"]`)?.setAttribute("d", d);
+          });
+        }
+      }
+
+      if (rightConduit.offsetParent !== null) {
+        const rRect = rightConduit.getBoundingClientRect();
+        const rW = rRect.width;
+        const rH = rRect.height;
+        const rSvg = rightConduit.querySelector("svg");
+        const rGrad = rightConduit.querySelector("#conduit-grad-out");
+        if (rSvg && rW > 0 && rH > 0) {
+          rSvg.setAttribute("viewBox", `0 0 ${rW} ${rH}`);
+          if (rGrad) rGrad.setAttribute("x2", `${rW}`);
+          const coreMidY = coreRect.top + coreRect.height / 2 - rRect.top;
+          const outPorts = root.querySelectorAll<HTMLElement>(".pipeline-node--output .node-port");
+          outPorts.forEach((port, i) => {
+            const pRect = port.getBoundingClientRect();
+            const endY = pRect.top + pRect.height / 2 - rRect.top;
+            const endX = rW - 6;
+            const c1x = rW * 0.48;
+            const d = `M 0 ${coreMidY.toFixed(1)} C ${c1x.toFixed(1)} ${coreMidY.toFixed(1)}, ${c1x.toFixed(1)} ${endY.toFixed(1)}, ${endX.toFixed(1)} ${endY.toFixed(1)}`;
+            rightConduit.querySelector(`[data-out-track="${i}"]`)?.setAttribute("d", d);
+            rightConduit.querySelector(`[data-out-pulse="${i}"]`)?.setAttribute("d", d);
+          });
+        }
+      }
+    };
+
+    syncConduitPaths();
+    requestAnimationFrame(syncConduitPaths);
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(syncConduitPaths);
+    }
+    if ("ResizeObserver" in window) {
+      const ro = new ResizeObserver(syncConduitPaths);
+      ro.observe(root);
+    } else {
+      window.addEventListener("resize", syncConduitPaths);
+    }
   }
 </script>

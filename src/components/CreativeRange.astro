@@ -155,7 +155,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
                   <img 
                     src={tile.image} 
                     alt={tile.title} 
-                    loading="lazy" 
+                    loading={asHero ? "eager" : "lazy"} 
                     decoding="async" 
                     class="tile-img" 
                   />
@@ -170,7 +170,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
                   <img 
                     src={tile.image} 
                     alt="" 
-                    loading="lazy" 
+                    loading={asHero ? "eager" : "lazy"} 
                     decoding="async" 
                     class="tile-img" 
                   />
@@ -204,30 +204,6 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
       { threshold: 0.06, rootMargin: "0px 0px -40px 0px" }
     );
     observer.observe(section);
-
-    // Smooth fade-in per card only after the image has finished loading AND decoding
-    section.querySelectorAll<HTMLElement>(".tile-card").forEach((card) => {
-      const img = card.querySelector<HTMLImageElement>(".tile-img");
-      if (!img) return;
-
-      const reveal = () => {
-        const done = () => {
-          requestAnimationFrame(() => card.classList.add("is-loaded"));
-        };
-        if (typeof img.decode === "function") {
-          img.decode().then(done).catch(done);
-        } else {
-          done();
-        }
-      };
-
-      if (img.complete && img.naturalWidth > 0) {
-        reveal();
-      } else {
-        img.addEventListener("load", reveal, { once: true });
-        img.addEventListener("error", () => card.classList.add("is-loaded"), { once: true });
-      }
-    });
   }
 
   if (document.readyState === "loading") {
@@ -342,6 +318,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
 
   .creative-range-section.is-visible .tilted-tiles-viewport {
     opacity: 1;
+    transform: scale(1);
   }
 
   /* ==========================================================================
@@ -364,8 +341,8 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     overflow: hidden;
     pointer-events: none;
     user-select: none;
-    opacity: 0.001;
-    will-change: opacity;
+    opacity: 0;
+    transform: scale(0.97);
     mask-image: linear-gradient(
       to bottom,
       transparent 0%,
@@ -384,7 +361,9 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
       rgba(0, 0, 0, 0.5) 86%,
       transparent 100%
     );
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    transition: 
+      opacity 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
+      transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
   }
 
   /* Gradient Vignette Mask fading top & bottom into light background */
@@ -495,17 +474,13 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     margin-bottom: clamp(8px, 0.9vw, 14px);
     border-radius: clamp(10px, 1.2vw, 16px);
     overflow: hidden;
-    background: transparent;
-    border: 1px solid rgba(15, 23, 42, 0.06);
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    background: #f1f5f9;
+    box-shadow: 
+      0 8px 20px -6px rgba(15, 23, 42, 0.12),
+      0 2px 6px -1px rgba(15, 23, 42, 0.05),
+      0 0 0 1px rgba(15, 23, 42, 0.06);
     pointer-events: none;
     flex-shrink: 0;
-    opacity: 0;
-    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .tile-card.is-loaded {
-    opacity: 1;
   }
 
   .tile-image-wrap {
@@ -514,7 +489,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     aspect-ratio: 4 / 5;
     overflow: hidden;
     pointer-events: none;
-    background: transparent;
+    background: #e2e8f0;
   }
 
   .tile-img {
@@ -632,7 +607,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
   }
 
   .creative-range-section[data-theme="dark"] .tile-card {
-    background: transparent;
+    background: #0b111e;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
   }

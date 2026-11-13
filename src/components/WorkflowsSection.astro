@@ -1,14 +1,27 @@
 ---
-// WorkflowsSection.astro - "Built on workflows that just work." Bento Section (Light Mode)
-// Header:
-//   - Eyebrow: "SIMPLE BY DESIGN"
-//   - Title: "Built on workflows that just work."
-//   - Subtitle: "From brief to delivery, every step is streamlined so you stay focused on strategy, not logistics."
-//   - CTA: "Learn more"
-// Cards: Selectable HTML text, crisp inline SVG icons, and clean background artwork.
+// WorkflowsSection.astro - Bento Workflows Section (Light & Dark Mode)
+interface Props {
+  theme?: "light" | "dark";
+  eyebrow?: string;
+  title?: string;
+  highlightTitle?: string;
+  description?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  theme = "light",
+  eyebrow = "SIMPLE BY DESIGN",
+  title = "Built on workflows",
+  highlightTitle = "that just work.",
+  description = "From brief to delivery, every step is streamlined so you stay focused on strategy, not logistics.",
+  ctaLabel = "Learn more",
+  ctaHref = "#learn-more",
+} = Astro.props;
 ---
 
-<section class="workflows-section" id="workflows" data-theme="light">
+<section class="workflows-section" id="workflows" data-theme={theme}>
   <!-- Soft Ambient Glow -->
   <div class="workflows-ambient-glow" aria-hidden="true"></div>
 
@@ -16,20 +29,20 @@
     <!-- Header Block (Left Aligned) -->
     <header class="workflows-header">
       <div class="eyebrow-wrapper">
-        <span class="eyebrow-text">SIMPLE BY DESIGN</span>
+        <span class="eyebrow-text">{eyebrow}</span>
       </div>
 
       <h2 class="workflows-title">
-        Built on workflows <span class="title-highlight">that just work.</span>
+        {title} <span class="title-highlight">{highlightTitle}</span>
       </h2>
 
       <p class="workflows-subtitle">
-        From brief to delivery, every step is streamlined so you stay focused on strategy, not logistics.
+        {description}
       </p>
 
       <div class="cta-wrapper">
-        <a href="#learn-more" class="learn-more-btn">
-          <span>Learn more</span>
+        <a href={ctaHref} class="learn-more-btn">
+          <span>{ctaLabel}</span>
         </a>
       </div>
     </header>
@@ -797,5 +810,134 @@
     .card-assets {
       min-height: 420px;
     }
+  }
+
+  /* ==========================================================================
+     DARK MODE THEME OVERRIDES (Pricing & Dark Pages)
+     ========================================================================== */
+  .workflows-section[data-theme="dark"] {
+    background-color: var(--color-void);
+    color: var(--color-text-white);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .workflows-section[data-theme="dark"] .workflows-ambient-glow {
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 45%,
+      rgba(72, 200, 255, 0.1) 0%,
+      rgba(16, 120, 255, 0.04) 45%,
+      transparent 72%
+    );
+  }
+
+  .workflows-section[data-theme="dark"] .eyebrow-text {
+    color: var(--color-brand-cyan);
+  }
+
+  .workflows-section[data-theme="dark"] .workflows-title {
+    color: var(--color-text-white);
+  }
+
+  .workflows-section[data-theme="dark"] .workflows-title .title-highlight {
+    background: linear-gradient(135deg, #87e0ff 0%, #48c8ff 55%, #1aa8ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.25));
+  }
+
+  .workflows-section[data-theme="dark"] .workflows-subtitle {
+    color: var(--color-text-secondary);
+  }
+
+  .workflows-section[data-theme="dark"] .learn-more-btn {
+    color: var(--color-text-white);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .workflows-section[data-theme="dark"] .learn-more-btn:hover {
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.5);
+    color: var(--color-text-white);
+    box-shadow: 0 10px 26px -6px rgba(72, 200, 255, 0.3);
+  }
+
+  .workflows-section[data-theme="dark"] .bento-card {
+    background-color: #070e1c;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.09),
+      0 20px 44px -14px rgba(0, 0, 0, 0.7),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  .workflows-section[data-theme="dark"] .bento-card:hover {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 24px 52px -12px rgba(0, 0, 0, 0.8),
+      0 0 0 1px rgba(72, 200, 255, 0.35);
+  }
+
+  .workflows-section[data-theme="dark"] .card-delivery {
+    background: linear-gradient(
+      160deg,
+      rgba(16, 40, 72, 0.72) 0%,
+      rgba(7, 15, 29, 0.94) 100%
+    );
+  }
+
+  .workflows-section[data-theme="dark"] .card-delivery .bento-bg-img {
+    opacity: 0.12;
+    mix-blend-mode: luminosity;
+  }
+
+  .workflows-section[data-theme="dark"] .card-content-light {
+    color: var(--color-text-white);
+  }
+
+  .workflows-section[data-theme="dark"] .card-content-light .card-icon {
+    color: var(--color-brand-cyan);
+  }
+
+  .workflows-section[data-theme="dark"] .card-content-light .card-title {
+    color: var(--color-text-white);
+  }
+
+  .workflows-section[data-theme="dark"] .card-content-light .card-desc {
+    color: var(--color-text-secondary);
+  }
+
+  .workflows-section[data-theme="dark"] .ui-mockup-delivery {
+    background: rgba(8, 17, 34, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+  }
+
+  .workflows-section[data-theme="dark"] .mockup-title {
+    color: var(--color-text-white);
+  }
+
+  .workflows-section[data-theme="dark"] .mockup-btn {
+    background: var(--color-brand-cyan);
+    color: #031528;
+  }
+
+  .workflows-section[data-theme="dark"] .mockup-row {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .workflows-section[data-theme="dark"] .file-name {
+    color: var(--color-text-white);
+  }
+
+  .workflows-section[data-theme="dark"] .file-sub {
+    color: var(--color-text-secondary);
+  }
+
+  .workflows-section[data-theme="dark"] .status-pill {
+    background: rgba(72, 200, 255, 0.15);
+    color: var(--color-brand-cyan);
+    border: 1px solid rgba(72, 200, 255, 0.3);
   }
 </style>

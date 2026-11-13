@@ -18,6 +18,44 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
 >
   <div class="compare-glow" aria-hidden="true"></div>
 
+  <!-- Compact Fixed Header Bar (visible while scrolling through comparison rows on desktop) -->
+  <div class="cmp-fixed-bar" data-fixed-bar aria-hidden="true">
+    <div class="container">
+      <div class="cmp-fixed-bar__inner">
+        <div class="cmp-fixed-bar__label">
+          <span class="cmp-fixed-bar__kicker">PLAN COMPARISON</span>
+        </div>
+        {
+          PLAN_CONFIGS.map((plan) => (
+            <div class={`cmp-fixed-plan ${plan.id === "full-stack" ? "cmp-fixed-plan--featured" : ""}`}>
+              <div class="cmp-fixed-plan__info">
+                <span class="cmp-fixed-plan__name">{plan.name}</span>
+                <span class="cmp-fixed-plan__price">
+                  <span
+                    class="cmp-fixed-amount"
+                    data-plan-id={plan.id}
+                    data-annual={plan.pricing.annual.monthlyEquivalent}
+                    data-monthly={plan.pricing.monthly.monthlyEquivalent}
+                  >
+                    {plan.pricing.annual.monthlyEquivalent}
+                  </span>
+                  <span class="cmp-fixed-plan__unit">/mo</span>
+                </span>
+              </div>
+              <a
+                href={plan.ctaHref}
+                class={`adaptif-btn cmp-fixed-cta ${plan.id === "creative" ? "adaptif-btn--dark" : ""}`}
+                tabindex="-1"
+              >
+                <span>{plan.ctaLabel}</span>
+              </a>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
   <div class="container compare-container">
     <!-- Section Header + Essential Differences Synthesis -->
     <header class="compare-header">
@@ -42,7 +80,7 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
       </div>
     </header>
 
-    <!-- Controls: Billing Cycle + Show Differences Only -->
+    <!-- Billing Cycle Selector -->
     <div class="compare-controls">
       <div class="cmp-billing-toggle" role="tablist" aria-label="Billing cycle">
         <span class="cmp-billing-slider" aria-hidden="true"></span>
@@ -63,27 +101,17 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
           data-cmp-billing="annual"
         >
           <span>Annual</span>
-          <span class="cmp-save-pill">Save 20%</span>
+          <span class="adaptif-tag adaptif-tag--white cmp-toggle-tag">Save 20%</span>
         </button>
       </div>
-
-      <button
-        type="button"
-        class="diff-toggle-btn"
-        aria-pressed="false"
-        data-diff-toggle
-      >
-        <span class="diff-toggle-indicator" aria-hidden="true"></span>
-        <span>Show differences only</span>
-      </button>
     </div>
 
-    <!-- Sticky Desktop Plan Header Row (also serves as stacked Plan Cards on Mobile) -->
-    <div class="plan-header-grid" role="region" aria-label="Plans overview">
+    <!-- Plan Header Row -->
+    <div class="plan-header-grid" data-plan-header-grid role="region" aria-label="Plans overview">
       <div class="plan-header-spacer">
         <span class="plan-header-spacer__kicker">CAPABILITIES &amp; DELIVERABLES</span>
-        <span class="plan-header-spacer__hint" data-filter-status>
-          Showing all 10 categories
+        <span class="plan-header-spacer__hint">
+          Select any category below to inspect deliverables
         </span>
       </div>
 
@@ -93,7 +121,11 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
             class={`cmp-plan-card ${plan.id === "full-stack" ? "cmp-plan-card--featured" : ""}`}
             data-plan-card={plan.id}
           >
-            {plan.badge && <div class="cmp-popular-badge">{plan.badge}</div>}
+            {plan.badge && (
+              <div class="adaptif-tag adaptif-tag--white cmp-popular-badge">
+                {plan.badge}
+              </div>
+            )}
             <div class="cmp-plan-card__head">
               <h3 class="cmp-plan-name">{plan.name}</h3>
               <p class="cmp-plan-desc">{plan.description}</p>
@@ -101,16 +133,20 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
 
             <div class="cmp-plan-price-block">
               <div class="cmp-plan-price-row">
-                <span
-                  class="cmp-plan-amount"
-                  data-annual={plan.pricing.annual.monthlyEquivalent}
-                  data-monthly={plan.pricing.monthly.monthlyEquivalent}
-                >
-                  {plan.pricing.annual.monthlyEquivalent}
-                </span>
+                <div class="cmp-plan-amount-box">
+                  <span class="cmp-plan-amount-sizer" aria-hidden="true">$8,888</span>
+                  <span
+                    class="cmp-plan-amount"
+                    data-plan-id={plan.id}
+                    data-annual={plan.pricing.annual.monthlyEquivalent}
+                    data-monthly={plan.pricing.monthly.monthlyEquivalent}
+                  >
+                    {plan.pricing.annual.monthlyEquivalent}
+                  </span>
+                </div>
                 <span class="cmp-plan-unit">USD/mo</span>
                 {plan.pricing.annual.saveBadge && (
-                  <span class="cmp-plan-save-tag" data-cmp-save-badge>
+                  <span class="adaptif-tag adaptif-tag--white" data-cmp-save-badge>
                     {plan.pricing.annual.saveBadge}
                   </span>
                 )}
@@ -143,16 +179,11 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     <div class="categories-stack" data-categories-stack>
       {
         COMPARISON_CATEGORIES.map((category) => {
-          const hasDifferences = category.features.some((f) =>
-            isDifferent(f.creative, f.fullStack)
-          );
           const panelId = `cat-panel-${category.id}`;
           return (
             <section
               class="cmp-category"
               data-category={category.id}
-              data-has-diff={hasDifferences ? "true" : "false"}
-              data-default-open={category.defaultOpen ? "true" : "false"}
             >
               <h4 class="cmp-category__heading">
                 <button
@@ -165,9 +196,9 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
                   <span class="cmp-category__title-group">
                     <span class="cmp-category__title">{category.title}</span>
                     {category.fullStackOnly ? (
-                      <span class="cmp-cat-badge cmp-cat-badge--cyan">Full Stack only</span>
+                      <span class="adaptif-tag adaptif-tag--cyan">Full Stack only</span>
                     ) : (
-                      <span class="cmp-cat-badge">{category.features.length} items</span>
+                      <span class="adaptif-tag adaptif-tag--muted">{category.features.length} items</span>
                     )}
                   </span>
                   <svg
@@ -190,70 +221,70 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
               <div
                 id={panelId}
                 class={`cmp-category__panel ${category.defaultOpen ? "is-open" : ""}`}
-                hidden={!category.defaultOpen}
+                aria-hidden={category.defaultOpen ? "false" : "true"}
+                inert={!category.defaultOpen ? true : undefined}
               >
-                <ul class="cmp-rows" role="list">
-                  {category.features.map((feat) => {
-                    const diff = isDifferent(feat.creative, feat.fullStack);
-                    return (
-                      <li
-                        class={`cmp-row ${diff ? "cmp-row--diff" : ""}`}
-                        data-diff-row={diff ? "true" : "false"}
-                      >
-                        <div class="cmp-row__feature">
-                          <span class="cmp-row__name">{feat.name}</span>
-                          {feat.note && <span class="cmp-row__note">{feat.note}</span>}
-                        </div>
+                <div class="cmp-category__panel-inner">
+                  <ul class="cmp-rows" role="list">
+                    {category.features.map((feat) => {
+                      const diff = isDifferent(feat.creative, feat.fullStack);
+                      return (
+                        <li class={`cmp-row ${diff ? "cmp-row--diff" : ""}`}>
+                          <div class="cmp-row__feature">
+                            <span class="cmp-row__name">{feat.name}</span>
+                            {feat.note && <span class="cmp-row__note">{feat.note}</span>}
+                          </div>
 
-                        {/* Creative Cell */}
-                        <div class="cmp-row__cell cmp-row__cell--creative">
-                          <span class="cmp-mobile-plan-label">{creativePlan.name}</span>
-                          {typeof feat.creative === "string" ? (
-                            <span class="cmp-value-text">{feat.creative}</span>
-                          ) : feat.creative ? (
-                            <span class="cmp-status cmp-status--yes">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                              <span class="cmp-status__label">Included</span>
-                            </span>
-                          ) : (
-                            <span class="cmp-status cmp-status--no">
-                              <span class="cmp-dash" aria-hidden="true">—</span>
-                              <span class="cmp-status__label">Not included</span>
-                            </span>
-                          )}
-                        </div>
+                          {/* Creative Cell */}
+                          <div class="cmp-row__cell cmp-row__cell--creative">
+                            <span class="cmp-mobile-plan-label">{creativePlan.name}</span>
+                            {typeof feat.creative === "string" ? (
+                              <span class="cmp-value-text">{feat.creative}</span>
+                            ) : feat.creative ? (
+                              <span class="cmp-status cmp-status--yes">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                <span class="cmp-status__label">Included</span>
+                              </span>
+                            ) : (
+                              <span class="cmp-status cmp-status--no">
+                                <span class="cmp-dash" aria-hidden="true">—</span>
+                                <span class="cmp-status__label">Not included</span>
+                              </span>
+                            )}
+                          </div>
 
-                        {/* Full Stack Cell */}
-                        <div class="cmp-row__cell cmp-row__cell--fullstack">
-                          <span class="cmp-mobile-plan-label">{fullStackPlan.name}</span>
-                          {typeof feat.fullStack === "string" ? (
-                            <span class="cmp-value-text cmp-value-text--cyan">
-                              {feat.fullStack}
-                            </span>
-                          ) : feat.fullStack ? (
-                            <span class="cmp-status cmp-status--yes cmp-status--cyan">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                              <span class="cmp-status__label">Included</span>
-                            </span>
-                          ) : (
-                            <span class="cmp-status cmp-status--no">
-                              <span class="cmp-dash" aria-hidden="true">—</span>
-                              <span class="cmp-status__label">Not included</span>
-                            </span>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                          {/* Full Stack Cell */}
+                          <div class="cmp-row__cell cmp-row__cell--fullstack">
+                            <span class="cmp-mobile-plan-label">{fullStackPlan.name}</span>
+                            {typeof feat.fullStack === "string" ? (
+                              <span class="cmp-value-text cmp-value-text--cyan">
+                                {feat.fullStack}
+                              </span>
+                            ) : feat.fullStack ? (
+                              <span class="cmp-status cmp-status--yes cmp-status--cyan">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                <span class="cmp-status__label">Included</span>
+                              </span>
+                            ) : (
+                              <span class="cmp-status cmp-status--no">
+                                <span class="cmp-dash" aria-hidden="true">—</span>
+                                <span class="cmp-status__label">Not included</span>
+                              </span>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
 
-                {category.footnote && (
-                  <p class="cmp-category__footnote">{category.footnote}</p>
-                )}
+                  {category.footnote && (
+                    <p class="cmp-category__footnote">{category.footnote}</p>
+                  )}
+                </div>
               </div>
             </section>
           );
@@ -290,6 +321,100 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   .compare-container {
     position: relative;
     z-index: 1;
+  }
+
+  /* Compact Fixed Table Header */
+  .cmp-fixed-bar {
+    position: fixed;
+    top: 5.25rem;
+    left: 0;
+    right: 0;
+    z-index: 45;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.22s ease, transform 0.28s var(--ease-spring);
+  }
+
+  .cmp-fixed-bar.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .cmp-fixed-bar__inner {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    border-radius: 16px;
+    background: rgba(5, 11, 22, 0.92);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
+  }
+
+  .cmp-fixed-bar__label {
+    padding-left: 0.4rem;
+  }
+
+  .cmp-fixed-bar__kicker {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--color-brand-cyan);
+  }
+
+  .cmp-fixed-plan {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .cmp-fixed-plan--featured {
+    background: rgba(72, 200, 255, 0.08);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .cmp-fixed-plan__info {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  .cmp-fixed-plan__name {
+    font-family: var(--font-family-display);
+    font-size: 1.25rem;
+    color: var(--color-text-white);
+    line-height: 1;
+  }
+
+  .cmp-fixed-plan__price {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #9ce2ff;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .cmp-fixed-plan__unit {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+  }
+
+  .cmp-fixed-cta {
+    padding: 0.44rem 0.85rem;
+    font-size: 0.76rem;
+    flex-shrink: 0;
   }
 
   /* Header & Synthesis */
@@ -378,14 +503,12 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     margin: 0;
   }
 
-  /* Controls Bar */
+  /* Controls Bar (Centered Billing Toggle) */
   .compare-controls {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    justify-content: center;
+    margin-bottom: 1.75rem;
   }
 
   .cmp-billing-toggle {
@@ -417,15 +540,15 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     z-index: 1;
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     padding: 0.5rem 1rem;
     border: none;
     background: transparent;
     color: rgba(255, 255, 255, 0.72);
     font-family: var(--font-family-body);
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     cursor: pointer;
     border-radius: var(--radius-pill);
@@ -436,89 +559,30 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     color: #031528;
   }
 
+  .cmp-toggle-tag {
+    background: rgba(3, 21, 40, 0.14);
+    color: inherit;
+    padding: 2px 6px;
+  }
+
   .cmp-billing-btn:focus-visible,
-  .diff-toggle-btn:focus-visible,
   .cmp-category__trigger:focus-visible,
-  .cmp-plan-cta:focus-visible {
+  .cmp-plan-cta:focus-visible,
+  .cmp-fixed-cta:focus-visible {
     outline: 2px solid var(--color-brand-cyan);
     outline-offset: 2px;
   }
 
-  .cmp-save-pill {
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 0.16rem 0.45rem;
-    border-radius: var(--radius-pill);
-    background: rgba(3, 21, 40, 0.14);
-    color: inherit;
-  }
-
-  .diff-toggle-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.58rem 1.05rem;
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: var(--color-text-white);
-    font-family: var(--font-family-body);
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease;
-  }
-
-  .diff-toggle-btn:hover {
-    border-color: rgba(72, 200, 255, 0.45);
-    background: rgba(72, 200, 255, 0.08);
-  }
-
-  .diff-toggle-btn[aria-pressed="true"] {
-    border-color: rgba(72, 200, 255, 0.65);
-    background: rgba(72, 200, 255, 0.14);
-    color: var(--color-brand-cyan);
-  }
-
-  .diff-toggle-indicator {
-    width: 14px;
-    height: 14px;
-    border-radius: 4px;
-    border: 1.5px solid rgba(255, 255, 255, 0.45);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-
-  .diff-toggle-btn[aria-pressed="true"] .diff-toggle-indicator {
-    background: var(--color-brand-cyan);
-    border-color: var(--color-brand-cyan);
-  }
-
-  .diff-toggle-btn[aria-pressed="true"] .diff-toggle-indicator::after {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 1.5px;
-    background: #031528;
-  }
-
-  /* Sticky Plan Header Grid */
+  /* Plan Header Grid */
   .plan-header-grid {
-    position: sticky;
-    top: 5.25rem;
-    z-index: 20;
     display: grid;
     grid-template-columns: 1.35fr 1fr 1fr;
     gap: 1rem;
     padding: 1rem;
     border-radius: 22px;
-    background: rgba(5, 11, 22, 0.94);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: rgba(5, 11, 22, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
     margin-bottom: 1.25rem;
   }
 
@@ -561,17 +625,9 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
 
   .cmp-popular-badge {
     position: absolute;
-    top: -11px;
+    top: -10px;
     right: 16px;
-    padding: 0.22rem 0.7rem;
-    border-radius: var(--radius-pill);
-    background: var(--color-brand-cyan);
-    color: #031528;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    box-shadow: 0 4px 16px rgba(72, 200, 255, 0.4);
+    box-shadow: 0 4px 16px rgba(72, 200, 255, 0.35);
   }
 
   .cmp-plan-card__head {
@@ -604,32 +660,44 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
 
   .cmp-plan-price-row {
     display: flex;
-    align-items: baseline;
-    gap: 0.4rem;
+    align-items: center;
+    gap: 0.45rem;
     flex-wrap: wrap;
   }
 
+  .cmp-plan-amount-box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .cmp-plan-amount-sizer,
   .cmp-plan-amount {
     font-family: var(--font-family-display);
     font-size: 2rem;
     line-height: 1;
-    color: var(--color-text-white);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .cmp-plan-amount-sizer {
+    visibility: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .cmp-plan-amount {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ce2ff;
   }
 
   .cmp-plan-unit {
     font-size: 0.8rem;
     color: var(--color-text-secondary);
-  }
-
-  .cmp-plan-save-tag {
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 0.16rem 0.5rem;
-    border-radius: var(--radius-pill);
-    background: rgba(72, 200, 255, 0.16);
-    border: 1px solid rgba(72, 200, 255, 0.35);
-    color: var(--color-brand-cyan);
   }
 
   .cmp-plan-billing-note {
@@ -645,7 +713,7 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     font-size: 0.88rem;
   }
 
-  /* Categories Stack */
+  /* Categories Stack & Animated Dropdowns */
   .categories-stack {
     display: flex;
     flex-direction: column;
@@ -657,10 +725,6 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: hidden;
-  }
-
-  .cmp-category.is-hidden-by-filter {
-    display: none;
   }
 
   .cmp-category__heading {
@@ -700,25 +764,10 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     letter-spacing: 0.01em;
   }
 
-  .cmp-cat-badge {
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--color-text-secondary);
-  }
-
-  .cmp-cat-badge--cyan {
-    background: rgba(72, 200, 255, 0.14);
-    border: 1px solid rgba(72, 200, 255, 0.3);
-    color: var(--color-brand-cyan);
-  }
-
   .cmp-category__chevron {
     flex-shrink: 0;
     color: var(--color-text-secondary);
-    transition: transform 0.25s var(--ease-spring);
+    transition: transform 0.28s var(--ease-spring), color 0.2s ease;
   }
 
   .cmp-category__trigger[aria-expanded="true"] .cmp-category__chevron {
@@ -727,7 +776,30 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   }
 
   .cmp-category__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    border-top: 0 solid transparent;
+    transition:
+      grid-template-rows 0.34s var(--ease-spring),
+      opacity 0.22s ease,
+      visibility 0s 0.34s;
+  }
+
+  .cmp-category__panel.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
     border-top: 1px solid rgba(255, 255, 255, 0.07);
+    transition:
+      grid-template-rows 0.38s var(--ease-spring),
+      opacity 0.26s ease 0.04s,
+      visibility 0s 0s;
+  }
+
+  .cmp-category__panel-inner {
+    overflow: hidden;
   }
 
   .cmp-rows {
@@ -752,10 +824,6 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
 
   .cmp-row:hover {
     background: rgba(255, 255, 255, 0.025);
-  }
-
-  .cmp-row.is-hidden-by-filter {
-    display: none;
   }
 
   .cmp-row__feature {
@@ -789,18 +857,19 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   }
 
   .cmp-value-text {
-    font-size: 0.88rem;
-    font-weight: 600;
+    font-size: 0.82rem;
+    font-weight: 700;
     color: var(--color-text-white);
-    padding: 0.25rem 0.7rem;
-    border-radius: var(--radius-pill);
+    padding: 0.26rem 0.65rem;
+    border-radius: 5px;
     background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .cmp-value-text--cyan {
     color: var(--color-brand-cyan);
     background: rgba(72, 200, 255, 0.12);
-    border: 1px solid rgba(72, 200, 255, 0.28);
+    border: 1px solid rgba(72, 200, 255, 0.3);
   }
 
   .cmp-status {
@@ -859,17 +928,18 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
       padding: 4rem 0 5rem;
     }
 
+    .cmp-fixed-bar {
+      display: none;
+    }
+
     .compare-synthesis {
       grid-template-columns: 1fr;
     }
 
     .plan-header-grid {
-      position: static;
       grid-template-columns: 1fr;
       padding: 0;
       background: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
       border: none;
       box-shadow: none;
     }
@@ -942,8 +1012,9 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   @media (prefers-reduced-motion: reduce) {
     .cmp-billing-slider,
     .cmp-category__chevron,
-    .cmp-row,
-    .diff-toggle-btn {
+    .cmp-category__panel,
+    .cmp-fixed-bar,
+    .cmp-row {
       transition: none !important;
     }
   }
@@ -953,10 +1024,10 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   const section = document.getElementById("compare-plans");
 
   if (section) {
-    // 1. Billing Cycle Toggle
+    // 1. Billing Cycle Toggle with Hero-Matched Price Count-Up Animation
     const billingBar = section.querySelector<HTMLElement>(".cmp-billing-toggle");
     const billingBtns = section.querySelectorAll<HTMLButtonElement>("[data-cmp-billing]");
-    const amounts = section.querySelectorAll<HTMLElement>(".cmp-plan-amount");
+    const amounts = section.querySelectorAll<HTMLElement>(".cmp-plan-amount, .cmp-fixed-amount");
     const notes = section.querySelectorAll<HTMLElement>(".cmp-plan-billing-note");
     const saveBadges = section.querySelectorAll<HTMLElement>("[data-cmp-save-badge]");
 
@@ -968,6 +1039,40 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
       billingBar.style.setProperty("--cmp-slider-x", `${btnRect.left - barRect.left - 4}px`);
     };
 
+    const parsePrice = (raw: string | undefined) =>
+      Number((raw || "0").replace(/[^0-9]/g, "")) || 0;
+
+    const formatPrice = (value: number) =>
+      "$" + Math.round(value).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    const activeAnimations = new WeakMap<HTMLElement, number>();
+
+    const animatePrice = (el: HTMLElement, from: number, to: number, duration = 560) => {
+      const prevRaf = activeAnimations.get(el);
+      if (prevRaf) cancelAnimationFrame(prevRaf);
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || from === to) {
+        el.textContent = formatPrice(to);
+        return;
+      }
+
+      const startAt = performance.now();
+      const step = (now: number) => {
+        const progress = Math.min((now - startAt) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = formatPrice(from + (to - from) * eased);
+
+        if (progress < 1) {
+          activeAnimations.set(el, requestAnimationFrame(step));
+        } else {
+          el.textContent = formatPrice(to);
+          activeAnimations.delete(el);
+        }
+      };
+
+      activeAnimations.set(el, requestAnimationFrame(step));
+    };
+
     const setBilling = (cycle: "annual" | "monthly") => {
       billingBtns.forEach((btn) => {
         const isActive = btn.dataset.cmpBilling === cycle;
@@ -977,8 +1082,9 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
       });
 
       amounts.forEach((el) => {
-        const nextVal = el.dataset[cycle];
-        if (nextVal) el.textContent = nextVal;
+        const currentVal = parsePrice(el.textContent || "0");
+        const nextVal = parsePrice(el.dataset[cycle]);
+        animatePrice(el, currentVal, nextVal);
       });
 
       notes.forEach((el) => {
@@ -1007,7 +1113,7 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
       });
     });
 
-    // 2. Category Accordions
+    // 2. Smooth Animated Category Accordions
     const categories = section.querySelectorAll<HTMLElement>("[data-category]");
 
     const setCategoryOpen = (cat: HTMLElement, open: boolean) => {
@@ -1016,7 +1122,10 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
       const panel = panelId ? document.getElementById(panelId) : null;
       if (!trigger || !panel) return;
       trigger.setAttribute("aria-expanded", String(open));
-      panel.hidden = !open;
+      panel.setAttribute("aria-hidden", String(!open));
+      if ("inert" in panel) {
+        (panel as HTMLElement & { inert: boolean }).inert = !open;
+      }
       panel.classList.toggle("is-open", open);
     };
 
@@ -1028,42 +1137,30 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
       });
     });
 
-    // 3. "Show differences only" Filter
-    const diffToggle = section.querySelector<HTMLButtonElement>("[data-diff-toggle]");
-    const filterStatus = section.querySelector<HTMLElement>("[data-filter-status]");
+    // 3. Compact Fixed Plan Header while scrolling inside #compare-plans
+    const planHeaderGrid = section.querySelector<HTMLElement>("[data-plan-header-grid]");
+    const fixedBar = section.querySelector<HTMLElement>("[data-fixed-bar]");
+    const fixedLinks = fixedBar?.querySelectorAll<HTMLAnchorElement>("a");
 
-    diffToggle?.addEventListener("click", () => {
-      const nextPressed = diffToggle.getAttribute("aria-pressed") !== "true";
-      diffToggle.setAttribute("aria-pressed", String(nextPressed));
-
-      let visibleCategoryCount = 0;
-
-      categories.forEach((cat) => {
-        const hasDiff = cat.dataset.hasDiff === "true";
-        const rows = cat.querySelectorAll<HTMLElement>("[data-diff-row]");
-
-        if (nextPressed) {
-          cat.classList.toggle("is-hidden-by-filter", !hasDiff);
-          rows.forEach((row) => {
-            row.classList.toggle("is-hidden-by-filter", row.dataset.diffRow !== "true");
-          });
-          if (hasDiff) {
-            visibleCategoryCount++;
-            setCategoryOpen(cat, true);
-          }
-        } else {
-          cat.classList.remove("is-hidden-by-filter");
-          rows.forEach((row) => row.classList.remove("is-hidden-by-filter"));
-          visibleCategoryCount++;
-          setCategoryOpen(cat, cat.dataset.defaultOpen === "true");
-        }
-      });
-
-      if (filterStatus) {
-        filterStatus.textContent = nextPressed
-          ? `Showing differences across ${visibleCategoryCount} categories`
-          : `Showing all ${categories.length} categories`;
+    const syncFixedBar = () => {
+      if (!planHeaderGrid || !fixedBar) return;
+      if (window.innerWidth <= 920) {
+        fixedBar.classList.remove("is-visible");
+        fixedBar.setAttribute("aria-hidden", "true");
+        fixedLinks?.forEach((a) => (a.tabIndex = -1));
+        return;
       }
-    });
+      const headerRect = planHeaderGrid.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
+      const shouldShow = headerRect.bottom < 105 && sectionRect.bottom > 220;
+
+      fixedBar.classList.toggle("is-visible", shouldShow);
+      fixedBar.setAttribute("aria-hidden", String(!shouldShow));
+      fixedLinks?.forEach((a) => (a.tabIndex = shouldShow ? 0 : -1));
+    };
+
+    window.addEventListener("scroll", syncFixedBar, { passive: true });
+    window.addEventListener("resize", syncFixedBar, { passive: true });
+    syncFixedBar();
   }
 </script>

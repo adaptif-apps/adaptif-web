@@ -5,6 +5,11 @@ import CreativeRange from "../components/CreativeRange.astro";
 import BrandLogos from "../components/BrandLogos.astro";
 import OurWorkShowcase from "../components/OurWorkShowcase.astro";
 import Footer from "../components/Footer.astro";
+import { listProjects } from "../lib/portfolioDb";
+
+export const prerender = false;
+
+const projects = await listProjects({ includeHidden: false });
 ---
 
 <Layout title="Our Work — Adaptif">
@@ -23,7 +28,7 @@ import Footer from "../components/Footer.astro";
       titleHighlight="we care about."
       lead="Every project here started as a brief and ended as something a brand is genuinely proud of."
     />
-    <OurWorkShowcase />
+    <OurWorkShowcase projects={projects} />
   </main>
   <Footer />
 </Layout>

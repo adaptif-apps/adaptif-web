@@ -1,0 +1,1310 @@
+---
+import { listProjects } from "../lib/portfolioDb";
+
+export const prerender = false;
+
+Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+
+const initialProjects = await listProjects({ includeHidden: true });
+
+const tagPresets = [
+  "Branding",
+  "Web Design",
+  "Ecommerce Design",
+  "App Design",
+  "Social Media Creative",
+  "Ad Creative",
+  "Motion Design",
+  "Video Production",
+  "Packaging",
+  "Print Creative",
+  "Email Campaign",
+  "Marketing Campaign",
+  "P.O.P Material",
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Adaptif Studio — Preferences</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="studio-shell">
+      <!-- Modular Left Sidebar -->
+      <aside class="studio-sidebar">
+        <div class="studio-brand">
+          <img src="/logo.svg" alt="Adaptif" class="studio-logo" />
+          <span class="studio-badge">Preferences</span>
+        </div>
+
+        <nav class="studio-nav" aria-label="Preferences modules">
+          <div class="nav-group-label">CMS Modules</div>
+          <button type="button" class="nav-item is-active" aria-current="page">
+            <span>Portfolio</span>
+            <span class="nav-count" id="sidebar-project-count">{initialProjects.length}</span>
+          </button>
+
+          <div class="nav-item is-disabled" aria-disabled="true">
+            <span>Blog &amp; Guides</span>
+            <span class="soon-pill">Soon</span>
+          </div>
+          <div class="nav-item is-disabled" aria-disabled="true">
+            <span>Courses</span>
+            <span class="soon-pill">Soon</span>
+          </div>
+          <div class="nav-item is-disabled" aria-disabled="true">
+            <span>Plugins &amp; Site</span>
+            <span class="soon-pill">Soon</span>
+          </div>
+        </nav>
+
+        <div class="studio-sidebar-footer">
+          <a href="/our-work" target="_blank" rel="noopener noreferrer" class="view-live-btn">
+            <span>View Live /our-work</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Workspace -->
+      <main class="studio-main">
+        <header class="studio-header">
+          <div>
+            <p class="studio-eyebrow">Internal CMS</p>
+            <h1 class="studio-title">Portfolio <span>Showcase</span></h1>
+          </div>
+          <div class="studio-header-actions">
+            <button type="button" class="btn-primary" id="btn-add-brand">
+              + Add Brand
+            </button>
+          </div>
+        </header>
+
+        <div class="studio-workspace">
+          <!-- Left List: Brands -->
+          <section class="brand-list-panel" aria-label="Brands list">
+            <div class="panel-search-wrap">
+              <input
+                type="search"
+                id="brand-search"
+                class="panel-search"
+                placeholder="Search brands..."
+                autocomplete="off"
+              />
+            </div>
+            <div class="brand-list" id="brand-list"></div>
+          </section>
+
+          <!-- Right Editor: Selected Brand -->
+          <section class="brand-editor-panel" aria-label="Brand editor">
+            <div id="editor-empty" class="editor-empty" hidden>
+              Select a brand or click <strong>+ Add Brand</strong> to create one.
+            </div>
+
+            <form id="brand-editor-form" class="editor-form">
+              <div class="editor-top-bar">
+                <div class="editor-meta-info">
+                  <span class="editor-mode-pill" id="editor-mode-pill">Editing</span>
+                  <a
+                    id="editor-share-link"
+                    href="/our-work"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="editor-share-link"
+                  >
+                    /our-work
+                  </a>
+                </div>
+
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="field-published" checked />
+                  <span>Visible on /our-work</span>
+                </label>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="field-title">Brand Title</label>
+                  <input type="text" id="field-title" required placeholder="e.g. Sideline Podcast" />
+                </div>
+
+                <div class="form-field">
+                  <label for="field-description">Description</label>
+                  <textarea
+                    id="field-description"
+                    rows="3"
+                    placeholder="Short brand story shown inside the open gallery overlay..."
+                  ></textarea>
+                </div>
+
+                <!-- Tags Editor -->
+                <div class="form-field">
+                  <label>Tags</label>
+                  <div class="tags-editor-box">
+                    <div class="active-tags" id="active-tags"></div>
+                    <div class="tag-input-row">
+                      <input
+                        type="text"
+                        id="tag-custom-input"
+                        placeholder="Add custom tag and press Enter..."
+                      />
+                      <button type="button" class="btn-secondary" id="btn-add-tag">Add</button>
+                    </div>
+                    <div class="tag-presets" id="tag-presets">
+                      {tagPresets.map((preset) => (
+                        <button type="button" class="preset-chip" data-preset-tag={preset}>
+                          + {preset}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Thumbnail 1:1 -->
+                <div class="form-field">
+                  <label>Thumbnail (1:1)</label>
+                  <div class="thumb-uploader">
+                    <div class="thumb-preview-box">
+                      <img id="thumb-preview-img" src="" alt="Thumbnail preview" />
+                    </div>
+                    <div class="thumb-controls">
+                      <label class="btn-secondary upload-label">
+                        <input type="file" id="thumb-file-input" accept="image/*" hidden />
+                        <span id="thumb-upload-text">Upload New Thumbnail</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="field-image"
+                        placeholder="Or paste image URL..."
+                        required
+                      />
+                      <p class="field-hint">Uploaded images are saved permanently in Vercel Blob.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Gallery Images (Bento) -->
+                <div class="form-field">
+                  <div class="gallery-header-row">
+                    <div>
+                      <label>Overlay Gallery Images</label>
+                      <p class="field-hint">
+                        Up to 12 bento slots in the horizontal overlay (cycles automatically if fewer are uploaded).
+                      </p>
+                    </div>
+                    <label class="btn-secondary upload-label">
+                      <input type="file" id="gallery-files-input" accept="image/*" multiple hidden />
+                      <span id="gallery-upload-text">+ Upload Images</span>
+                    </label>
+                  </div>
+
+                  <div class="gallery-editor-grid" id="gallery-editor-grid"></div>
+                </div>
+              </div>
+
+              <div class="editor-footer">
+                <button type="button" class="btn-danger" id="btn-delete-brand">
+                  Delete Brand
+                </button>
+                <button type="submit" class="btn-primary" id="btn-save-brand">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="studio-toast" role="status" aria-live="polite"></div>
+
+    <script define:vars={{ initialProjects }}>
+      window.__INITIAL_PROJECTS__ = initialProjects;
+    </script>
+
+    <script>
+      interface Project {
+        id: string;
+        title: string;
+        description: string;
+        tags: string[];
+        image: string;
+        gallery: string[];
+        sortOrder: number;
+        isPublished: boolean;
+      }
+
+      let projects: Project[] = Array.isArray((window as any).__INITIAL_PROJECTS__)
+        ? (window as any).__INITIAL_PROJECTS__
+        : [];
+
+      let selectedId: string | null = projects[0]?.id ?? null;
+      let isCreatingNew = false;
+      let draftTags: string[] = [];
+      let draftGallery: string[] = [];
+
+      const listEl = document.getElementById("brand-list")!;
+      const countEl = document.getElementById("sidebar-project-count")!;
+      const searchEl = document.getElementById("brand-search") as HTMLInputElement;
+      const formEl = document.getElementById("brand-editor-form") as HTMLFormElement;
+      const emptyEl = document.getElementById("editor-empty")!;
+
+      const modePillEl = document.getElementById("editor-mode-pill")!;
+      const shareLinkEl = document.getElementById("editor-share-link") as HTMLAnchorElement;
+      const publishedEl = document.getElementById("field-published") as HTMLInputElement;
+      const titleEl = document.getElementById("field-title") as HTMLInputElement;
+      const descEl = document.getElementById("field-description") as HTMLTextAreaElement;
+      const imageEl = document.getElementById("field-image") as HTMLInputElement;
+      const thumbImgEl = document.getElementById("thumb-preview-img") as HTMLImageElement;
+      const thumbFileEl = document.getElementById("thumb-file-input") as HTMLInputElement;
+      const thumbUploadTextEl = document.getElementById("thumb-upload-text")!;
+
+      const activeTagsEl = document.getElementById("active-tags")!;
+      const customTagEl = document.getElementById("tag-custom-input") as HTMLInputElement;
+      const addTagBtn = document.getElementById("btn-add-tag")!;
+
+      const galleryGridEl = document.getElementById("gallery-editor-grid")!;
+      const galleryFilesEl = document.getElementById("gallery-files-input") as HTMLInputElement;
+      const galleryUploadTextEl = document.getElementById("gallery-upload-text")!;
+
+      const addBrandBtn = document.getElementById("btn-add-brand")!;
+      const deleteBtn = document.getElementById("btn-delete-brand") as HTMLButtonElement;
+      const saveBtn = document.getElementById("btn-save-brand") as HTMLButtonElement;
+      const toastEl = document.getElementById("studio-toast")!;
+
+      let toastTimer: any = null;
+      function showToast(msg: string, isError = false) {
+        toastEl.textContent = msg;
+        toastEl.classList.toggle("is-error", isError);
+        toastEl.classList.add("is-visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove("is-visible"), 2600);
+      }
+
+      async function uploadFile(file: File): Promise<string> {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok || !data.url) {
+          throw new Error(data.error || "Upload failed");
+        }
+        return data.url;
+      }
+
+      function renderTags() {
+        activeTagsEl.innerHTML = "";
+        draftTags.forEach((tag, idx) => {
+          const span = document.createElement("span");
+          span.className = "active-tag-chip";
+          span.innerHTML = `<span></span><button type="button" aria-label="Remove tag">&times;</button>`;
+          span.querySelector("span")!.textContent = tag;
+          span.querySelector("button")!.addEventListener("click", () => {
+            draftTags.splice(idx, 1);
+            renderTags();
+          });
+          activeTagsEl.appendChild(span);
+        });
+      }
+
+      function addTag(tag: string) {
+        const clean = tag.trim();
+        if (!clean || draftTags.includes(clean)) return;
+        draftTags.push(clean);
+        renderTags();
+      }
+
+      function renderGallery() {
+        galleryGridEl.innerHTML = "";
+        if (draftGallery.length === 0) {
+          galleryGridEl.innerHTML = `<div class="gallery-empty">No gallery images yet. Upload images above.</div>`;
+          return;
+        }
+
+        draftGallery.forEach((url, idx) => {
+          const card = document.createElement("div");
+          card.className = "gallery-item";
+          card.innerHTML = `
+            <img src="${url}" alt="Gallery item ${idx + 1}" />
+            <span class="gallery-slot-num">#${idx + 1}</span>
+            <div class="gallery-item-actions">
+              <button type="button" data-move="-1" title="Move earlier" ${idx === 0 ? "disabled" : ""}>&larr;</button>
+              <button type="button" data-move="1" title="Move later" ${idx === draftGallery.length - 1 ? "disabled" : ""}>&rarr;</button>
+              <button type="button" data-remove="true" title="Remove">&times;</button>
+            </div>
+          `;
+
+          card.querySelectorAll<HTMLButtonElement>("[data-move]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const delta = Number(btn.dataset.move);
+              const targetIdx = idx + delta;
+              if (targetIdx < 0 || targetIdx >= draftGallery.length) return;
+              const copy = [...draftGallery];
+              [copy[idx], copy[targetIdx]] = [copy[targetIdx], copy[idx]];
+              draftGallery = copy;
+              renderGallery();
+            });
+          });
+
+          card.querySelector<HTMLButtonElement>("[data-remove]")!.addEventListener("click", () => {
+            draftGallery.splice(idx, 1);
+            renderGallery();
+          });
+
+          galleryGridEl.appendChild(card);
+        });
+      }
+
+      function loadEditor(project: Project | null, creating = false) {
+        isCreatingNew = creating;
+        if (!project && !creating) {
+          formEl.hidden = true;
+          emptyEl.hidden = false;
+          return;
+        }
+
+        formEl.hidden = false;
+        emptyEl.hidden = true;
+
+        if (creating) {
+          modePillEl.textContent = "New Brand";
+          modePillEl.classList.add("is-new");
+          shareLinkEl.textContent = "/our-work (saved on create)";
+          shareLinkEl.href = "/our-work";
+          publishedEl.checked = true;
+          titleEl.value = "";
+          descEl.value = "";
+          imageEl.value = "";
+          thumbImgEl.src = "/work-featured/sideline.jpg";
+          draftTags = ["Branding"];
+          draftGallery = [];
+          deleteBtn.hidden = true;
+          saveBtn.textContent = "Create Brand";
+        } else if (project) {
+          modePillEl.textContent = "Editing";
+          modePillEl.classList.remove("is-new");
+          shareLinkEl.textContent = `/our-work?project=${project.id}`;
+          shareLinkEl.href = `/our-work?project=${project.id}`;
+          publishedEl.checked = project.isPublished;
+          titleEl.value = project.title;
+          descEl.value = project.description;
+          imageEl.value = project.image;
+          thumbImgEl.src = project.image;
+          draftTags = [...project.tags];
+          draftGallery = [...project.gallery];
+          deleteBtn.hidden = false;
+          saveBtn.textContent = "Save Changes";
+        }
+
+        renderTags();
+        renderGallery();
+      }
+
+      async function saveOrder(newOrderIds: string[]) {
+        await fetch("/api/projects/reorder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderedIds: newOrderIds }),
+        });
+      }
+
+      function renderList() {
+        const query = searchEl.value.trim().toLowerCase();
+        countEl.textContent = String(projects.length);
+        listEl.innerHTML = "";
+
+        const filtered = projects.filter((p) => p.title.toLowerCase().includes(query));
+
+        filtered.forEach((project) => {
+          const globalIdx = projects.findIndex((p) => p.id === project.id);
+          const row = document.createElement("div");
+          row.className = `brand-row ${!isCreatingNew && project.id === selectedId ? "is-selected" : ""}`;
+
+          row.innerHTML = `
+            <button type="button" class="brand-row-main">
+              <img src="${project.image}" alt="" class="brand-row-thumb" />
+              <div class="brand-row-text">
+                <span class="brand-row-title"></span>
+                <span class="brand-row-sub">${project.isPublished ? "Visible" : "Hidden"} &bull; ${project.tags.length} tags</span>
+              </div>
+            </button>
+            <div class="brand-row-order">
+              <button type="button" class="order-btn" data-dir="-1" title="Move up" ${globalIdx === 0 ? "disabled" : ""}>&uarr;</button>
+              <button type="button" class="order-btn" data-dir="1" title="Move down" ${globalIdx === projects.length - 1 ? "disabled" : ""}>&darr;</button>
+            </div>
+          `;
+
+          row.querySelector(".brand-row-title")!.textContent = project.title;
+          row.querySelector(".brand-row-main")!.addEventListener("click", () => {
+            selectedId = project.id;
+            loadEditor(project, false);
+            renderList();
+          });
+
+          row.querySelectorAll<HTMLButtonElement>(".order-btn").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+              e.stopPropagation();
+              const dir = Number(btn.dataset.dir);
+              const swapIdx = globalIdx + dir;
+              if (swapIdx < 0 || swapIdx >= projects.length) return;
+              const copy = [...projects];
+              [copy[globalIdx], copy[swapIdx]] = [copy[swapIdx], copy[globalIdx]];
+              projects = copy;
+              renderList();
+              try {
+                await saveOrder(projects.map((p) => p.id));
+                showToast("Order updated");
+              } catch {
+                showToast("Failed to save order", true);
+              }
+            });
+          });
+
+          listEl.appendChild(row);
+        });
+      }
+
+      // Events
+      searchEl.addEventListener("input", renderList);
+
+      addBrandBtn.addEventListener("click", () => {
+        selectedId = null;
+        loadEditor(null, true);
+        renderList();
+        titleEl.focus();
+      });
+
+      imageEl.addEventListener("input", () => {
+        if (imageEl.value.trim()) {
+          thumbImgEl.src = imageEl.value.trim();
+        }
+      });
+
+      addTagBtn.addEventListener("click", () => {
+        addTag(customTagEl.value);
+        customTagEl.value = "";
+      });
+
+      customTagEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          addTag(customTagEl.value);
+          customTagEl.value = "";
+        }
+      });
+
+      document.querySelectorAll<HTMLButtonElement>("[data-preset-tag]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.dataset.presetTag) addTag(btn.dataset.presetTag);
+        });
+      });
+
+      thumbFileEl.addEventListener("change", async () => {
+        const file = thumbFileEl.files?.[0];
+        if (!file) return;
+        thumbUploadTextEl.textContent = "Uploading...";
+        try {
+          const url = await uploadFile(file);
+          imageEl.value = url;
+          thumbImgEl.src = url;
+          if (draftGallery.length === 0) {
+            draftGallery.push(url);
+            renderGallery();
+          }
+          showToast("Thumbnail uploaded to Vercel Blob");
+        } catch (err: any) {
+          showToast(err?.message || "Upload failed", true);
+        } finally {
+          thumbUploadTextEl.textContent = "Upload New Thumbnail";
+          thumbFileEl.value = "";
+        }
+      });
+
+      galleryFilesEl.addEventListener("change", async () => {
+        const files = Array.from(galleryFilesEl.files || []);
+        if (files.length === 0) return;
+        galleryUploadTextEl.textContent = `Uploading (${files.length})...`;
+        try {
+          for (const file of files) {
+            const url = await uploadFile(file);
+            draftGallery.push(url);
+          }
+          renderGallery();
+          showToast(`${files.length} image(s) uploaded to Vercel Blob`);
+        } catch (err: any) {
+          showToast(err?.message || "Gallery upload failed", true);
+        } finally {
+          galleryUploadTextEl.textContent = "+ Upload Images";
+          galleryFilesEl.value = "";
+        }
+      });
+
+      formEl.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        saveBtn.disabled = true;
+
+        const payload = {
+          title: titleEl.value.trim(),
+          description: descEl.value.trim(),
+          tags: draftTags,
+          image: imageEl.value.trim(),
+          gallery: draftGallery.length > 0 ? draftGallery : [imageEl.value.trim()],
+          isPublished: publishedEl.checked,
+        };
+
+        try {
+          if (isCreatingNew) {
+            const res = await fetch("/api/projects", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to create brand");
+            projects.push(data.project);
+            selectedId = data.project.id;
+            loadEditor(data.project, false);
+            renderList();
+            showToast("Brand created & live on /our-work");
+          } else if (selectedId) {
+            const res = await fetch(`/api/projects/${encodeURIComponent(selectedId)}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to save changes");
+            const idx = projects.findIndex((p) => p.id === selectedId);
+            if (idx !== -1) projects[idx] = data.project;
+            loadEditor(data.project, false);
+            renderList();
+            showToast("Changes saved & live on /our-work");
+          }
+        } catch (err: any) {
+          showToast(err?.message || "Error saving", true);
+        } finally {
+          saveBtn.disabled = false;
+        }
+      });
+
+      deleteBtn.addEventListener("click", async () => {
+        if (!selectedId) return;
+        const current = projects.find((p) => p.id === selectedId);
+        if (!confirm(`Delete "${current?.title || selectedId}" from portfolio?`)) return;
+
+        try {
+          const res = await fetch(`/api/projects/${encodeURIComponent(selectedId)}`, {
+            method: "DELETE",
+          });
+          if (!res.ok) throw new Error("Failed to delete");
+          projects = projects.filter((p) => p.id !== selectedId);
+          selectedId = projects[0]?.id ?? null;
+          loadEditor(projects[0] ?? null, false);
+          renderList();
+          showToast("Brand deleted");
+        } catch (err: any) {
+          showToast(err?.message || "Delete failed", true);
+        }
+      });
+
+      // Init
+      renderList();
+      loadEditor(projects[0] ?? null, false);
+    </script>
+
+    <style>
+      :root {
+        --bg: #03060d;
+        --panel: #080d18;
+        --panel-2: #0c1324;
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --cyan: #38bdf8;
+        --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-serif: "Instrument Serif", Georgia, serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .studio-shell {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .studio-sidebar {
+        background: #050912;
+        border-right: 1px solid var(--border);
+        padding: 24px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      .studio-brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 8px;
+      }
+
+      .studio-logo {
+        height: 22px;
+        width: auto;
+      }
+
+      .studio-badge {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--cyan);
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        padding: 3px 8px;
+        border-radius: 6px;
+      }
+
+      .studio-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+      }
+
+      .nav-group-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+        padding: 0 10px 6px;
+      }
+
+      .nav-item {
+        appearance: none;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--muted);
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        font-weight: 500;
+        padding: 10px 12px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .nav-item.is-active {
+        background: rgba(56, 189, 248, 0.1);
+        border-color: rgba(56, 189, 248, 0.25);
+        color: #ffffff;
+        font-weight: 600;
+      }
+
+      .nav-item.is-disabled {
+        opacity: 0.48;
+        cursor: not-allowed;
+      }
+
+      .nav-count {
+        font-size: 0.75rem;
+        color: var(--cyan);
+      }
+
+      .soon-pill {
+        font-size: 0.66rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 2px 6px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #94a3b8;
+      }
+
+      .view-live-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: #e2e8f0;
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 500;
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+      }
+
+      .view-live-btn:hover {
+        border-color: rgba(56, 189, 248, 0.4);
+        background: rgba(56, 189, 248, 0.08);
+      }
+
+      .studio-main {
+        padding: 28px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        min-width: 0;
+      }
+
+      .studio-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .studio-eyebrow {
+        margin: 0 0 4px;
+        font-size: 0.74rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--cyan);
+        font-weight: 600;
+      }
+
+      .studio-title {
+        margin: 0;
+        font-family: var(--font-serif);
+        font-size: 2.2rem;
+        font-weight: 400;
+        line-height: 1.05;
+      }
+
+      .studio-title span {
+        font-style: italic;
+        color: var(--cyan);
+      }
+
+      .studio-workspace {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .brand-list-panel,
+      .brand-editor-panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .panel-search-wrap {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .panel-search,
+      input[type="text"],
+      textarea {
+        width: 100%;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text);
+        font-family: var(--font-sans);
+        font-size: 0.88rem;
+        padding: 10px 12px;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .panel-search:focus,
+      input[type="text"]:focus,
+      textarea:focus {
+        border-color: var(--cyan);
+      }
+
+      .brand-list {
+        max-height: calc(100vh - 210px);
+        overflow-y: auto;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      :global(.brand-row) {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        transition: background-color 0.15s ease, border-color 0.15s ease;
+      }
+
+      :global(.brand-row:hover) {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      :global(.brand-row.is-selected) {
+        background: rgba(56, 189, 248, 0.08);
+        border-color: rgba(56, 189, 248, 0.3);
+      }
+
+      :global(.brand-row-main) {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      :global(.brand-row-thumb) {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: #02040a;
+      }
+
+      :global(.brand-row-text) {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      :global(.brand-row-title) {
+        font-size: 0.88rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      :global(.brand-row-sub) {
+        font-size: 0.74rem;
+        color: var(--muted);
+      }
+
+      :global(.brand-row-order) {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      :global(.order-btn) {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+        border-radius: 5px;
+        width: 22px;
+        height: 18px;
+        font-size: 0.7rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      :global(.order-btn:hover:not(:disabled)) {
+        color: #ffffff;
+        border-color: var(--cyan);
+      }
+
+      :global(.order-btn:disabled) {
+        opacity: 0.25;
+        cursor: default;
+      }
+
+      .brand-editor-panel {
+        padding: 22px 24px;
+      }
+
+      .editor-empty {
+        padding: 48px 20px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .editor-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .editor-top-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .editor-meta-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .editor-mode-pill {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #e2e8f0;
+      }
+
+      .editor-mode-pill.is-new {
+        background: rgba(56, 189, 248, 0.16);
+        color: var(--cyan);
+      }
+
+      .editor-share-link {
+        font-size: 0.8rem;
+        color: var(--cyan);
+        text-decoration: none;
+      }
+
+      .editor-share-link:hover {
+        text-decoration: underline;
+      }
+
+      .toggle-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.84rem;
+        color: #cbd5e1;
+        cursor: pointer;
+      }
+
+      .form-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-field > label,
+      .gallery-header-row label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #cbd5e1;
+      }
+
+      .field-hint {
+        margin: 0;
+        font-size: 0.76rem;
+        color: #64748b;
+      }
+
+      .tags-editor-box {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .active-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      :global(.active-tag-chip) {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: rgba(56, 189, 248, 0.12);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        color: #e0f2fe;
+        font-size: 0.78rem;
+        font-weight: 500;
+      }
+
+      :global(.active-tag-chip button) {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #7dd3fc;
+        cursor: pointer;
+        padding: 0;
+        font-size: 0.95rem;
+        line-height: 1;
+      }
+
+      .tag-input-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      .tag-presets {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .preset-chip {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .preset-chip:hover {
+        color: #ffffff;
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+
+      .thumb-uploader {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .thumb-preview-box {
+        width: 112px;
+        height: 112px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #02040a;
+        flex-shrink: 0;
+      }
+
+      .thumb-preview-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .thumb-controls {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .gallery-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .gallery-editor-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+        gap: 10px;
+      }
+
+      :global(.gallery-empty) {
+        grid-column: 1 / -1;
+        padding: 20px;
+        text-align: center;
+        border: 1px dashed var(--border);
+        border-radius: 12px;
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      :global(.gallery-item) {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #02040a;
+      }
+
+      :global(.gallery-item img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      :global(.gallery-slot-num) {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 5px;
+        background: rgba(2, 6, 15, 0.8);
+        color: #e2e8f0;
+      }
+
+      :global(.gallery-item-actions) {
+        position: absolute;
+        inset-inline: 6px;
+        bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        gap: 4px;
+      }
+
+      :global(.gallery-item-actions button) {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(2, 6, 15, 0.85);
+        color: #f8fafc;
+        border-radius: 6px;
+        width: 24px;
+        height: 22px;
+        font-size: 0.74rem;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      :global(.gallery-item-actions button:disabled) {
+        opacity: 0.3;
+        cursor: default;
+      }
+
+      .editor-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 16px;
+        border-top: 1px solid var(--border);
+      }
+
+      .btn-primary,
+      .btn-secondary,
+      .btn-danger {
+        appearance: none;
+        border-radius: 10px;
+        font-family: var(--font-sans);
+        font-size: 0.86rem;
+        font-weight: 600;
+        padding: 10px 16px;
+        cursor: pointer;
+        transition: opacity 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+      }
+
+      .btn-primary {
+        border: 0;
+        background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #0ea5e9 100%);
+        color: #04101d;
+      }
+
+      .btn-secondary {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+      }
+
+      .btn-danger {
+        border: 1px solid rgba(248, 113, 113, 0.3);
+        background: rgba(239, 68, 68, 0.1);
+        color: #fca5a5;
+      }
+
+      .upload-label {
+        cursor: pointer;
+      }
+
+      .toast {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: #0c192d;
+        border: 1px solid rgba(56, 189, 248, 0.45);
+        color: #f8fafc;
+        font-size: 0.86rem;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(10px);
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        z-index: 2000;
+      }
+
+      .toast.is-error {
+        background: #2a0c12;
+        border-color: rgba(248, 113, 113, 0.5);
+      }
+
+      .toast.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (max-width: 1024px) {
+        .studio-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .studio-workspace {
+          grid-template-columns: 1fr;
+        }
+
+        .brand-list {
+          max-height: 280px;
+        }
+      }
+    </style>
+  </body>
+</html>

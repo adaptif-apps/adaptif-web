@@ -156,7 +156,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
                     src={tile.image} 
                     alt={tile.title} 
                     loading={asHero ? "eager" : "lazy"} 
-                    decoding="async" 
+                    decoding={asHero ? "auto" : "async"} 
                     class="tile-img" 
                   />
                 </div>
@@ -171,7 +171,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
                     src={tile.image} 
                     alt="" 
                     loading={asHero ? "eager" : "lazy"} 
-                    decoding="async" 
+                    decoding={asHero ? "auto" : "async"} 
                     class="tile-img" 
                   />
                 </div>
@@ -369,7 +369,6 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
 
   .creative-range-section.is-visible .tilted-tiles-viewport {
     opacity: 1;
-    transform: scale(1);
   }
 
   /* ==========================================================================
@@ -392,8 +391,8 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     overflow: hidden;
     pointer-events: none;
     user-select: none;
-    opacity: 0;
-    transform: scale(0.97);
+    opacity: 0.001;
+    will-change: opacity;
     mask-image: linear-gradient(
       to bottom,
       transparent 0%,
@@ -412,9 +411,7 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
       rgba(0, 0, 0, 0.5) 86%,
       transparent 100%
     );
-    transition: 
-      opacity 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
-      transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
   }
 
   /* Gradient Vignette Mask fading top & bottom into light background */
@@ -526,10 +523,8 @@ const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
     border-radius: clamp(10px, 1.2vw, 16px);
     overflow: hidden;
     background: #f1f5f9;
-    box-shadow: 
-      0 8px 20px -6px rgba(15, 23, 42, 0.12),
-      0 2px 6px -1px rgba(15, 23, 42, 0.05),
-      0 0 0 1px rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
     pointer-events: none;
     flex-shrink: 0;
   }

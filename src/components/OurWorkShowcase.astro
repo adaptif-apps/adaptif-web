@@ -1,129 +1,206 @@
 ---
-// OurWorkShowcase.astro - Uniform 3-Column Portfolio Thumbnail Grid (Dark Mode)
+// OurWorkShowcase.astro - Square 1:1 Portfolio Grid + Shareable Horizontal Bento Gallery Overlay
 
 interface PortfolioProject {
   id: string;
   title: string;
+  description: string;
   tags: string[];
   image: string;
+  gallery: string[];
 }
 
-const projects: PortfolioProject[] = [
+const imagePool = [
+  "/work-featured/sideline.jpg",
+  "/work-featured/yumyum.jpg",
+  "/work-featured/forever.jpg",
+  "/work-featured/morganic.jpg",
+  "/work-featured/dunamis.jpg",
+  "/work-featured/platemakrs.jpg",
+  "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg",
+  "/work/1fce34a3758cff5e47cf0a25904b4854.jpg",
+  "/work/9e80968f8b616f415454cfd43eb454c8.jpg",
+  "/work/0cb17cbee8ef36202bfb1b0e17338257.jpg",
+  "/work/664bbf117716eb69519b17e2f37bee2a.jpg",
+  "/work/ade59a73aba7c39e38d6aa91565627bc.jpg",
+  "/header_images/Work Item Container-1.jpg",
+  "/header_images/Work Item Container-2.jpg",
+  "/header_images/Work Item Container-3.jpg",
+  "/header_images/Work Item Container-4.jpg",
+  "/header_images/Work Item Container-5.jpg",
+  "/header_images/Work Item Container-6.jpg",
+  "/header_images/Work Item Container-7.jpg",
+  "/header_images/Work Item Container-8.jpg",
+  "/header_images/Work Item Container-10.jpg",
+  "/header_images/Work Item Container-11.jpg",
+  "/header_images/Work Item Container.jpg",
+];
+
+function buildGallery(primary: string, offset: number): string[] {
+  const rest = imagePool.filter((img) => img !== primary);
+  const rotated = [...rest.slice(offset % rest.length), ...rest.slice(0, offset % rest.length)];
+  return [primary, ...rotated.slice(0, 11)];
+}
+
+const rawProjects: Omit<PortfolioProject, "gallery">[] = [
   {
     id: "sideline-podcast",
     title: "Sideline Podcast",
+    description:
+      "A sports podcast brand that is energetic, informal, and community-driven, blending passionate game analysis with humor, internet culture, and relatable storytelling.",
     tags: ["Branding", "Motion Design", "Social Media Creative", "Ad Creative", "Video Production"],
     image: "/work-featured/sideline.jpg",
   },
   {
     id: "yum-yum-digital",
     title: "Yum Yum Digital",
+    description:
+      "A bold digital agency identity built around kinetic motion, expressive 3D visuals, and conversion-focused web experiences.",
     tags: ["Branding", "Social Media Creative", "Web Design", "Marketing Campaign"],
     image: "/work-featured/yumyum.jpg",
   },
   {
     id: "forever-and-ever",
     title: "Forever & Ever",
+    description:
+      "A warm, family-centered memory platform designed to make capturing and sharing everyday milestones effortless across web and mobile.",
     tags: ["Branding", "App Design", "Web Design", "Social Media Creative"],
     image: "/work-featured/forever.jpg",
   },
   {
     id: "morganic",
     title: "Morganic",
+    description:
+      "A clean, performance-led wellness and functional nutrition brand pairing vibrant product storytelling with high-converting ecommerce creatives.",
     tags: ["Branding", "Ecommerce", "Social Media Creative", "Ad Creative"],
     image: "/work-featured/morganic.jpg",
   },
   {
     id: "dunamis-xp",
     title: "Dunamis XP",
+    description:
+      "A disciplined athletic training app and brand system engineered for clarity in motion, structured workouts, and daily progress tracking.",
     tags: ["Branding", "App Design"],
     image: "/work-featured/dunamis.jpg",
   },
   {
     id: "platemakrs",
     title: "Platemakrs",
+    description:
+      "A precision-crafted automotive customization platform combining sleek dark UI, interactive configurators, and full-funnel campaign creatives.",
     tags: ["Branding", "App Design", "Email Campaign", "Social Media", "Ad Creatives"],
     image: "/work-featured/platemakrs.jpg",
   },
   {
     id: "punch-4-parkinsons",
     title: "Punch 4 Parkinson’s",
+    description:
+      "An uplifting community fitness initiative uniting boxing-inspired programs, accessible mobile tools, and awareness-driven campaign visuals.",
     tags: ["Branding", "App Design", "Social Media", "Ad Creative"],
     image: "/header_images/Work Item Container-1.jpg",
   },
   {
     id: "king-energy",
     title: "King Energy",
+    description:
+      "High-impact social storytelling and retention email campaigns crafted to keep an active lifestyle audience engaged every week.",
     tags: ["Email Campaign", "Social Media"],
     image: "/header_images/Work Item Container-2.jpg",
   },
   {
     id: "riizeup",
     title: "RiizeUp",
+    description:
+      "A modern wellness brand system spanning retail packaging, in-store P.O.P displays, ecommerce web design, and paid social creative.",
     tags: ["Branding", "Social Media Creative", "Web Design", "Ad Creative", "Packaging", "P.O.P Material"],
     image: "/header_images/Work Item Container-3.jpg",
   },
   {
     id: "riize-health",
     title: "Riize Health",
+    description:
+      "A cohesive healthcare and supplement identity built for shelf presence, digital trust, and omnichannel acquisition campaigns.",
     tags: ["Branding", "Social Media Creative", "Web Design", "Ad Creative", "Packaging", "P.O.P Material"],
     image: "/header_images/Work Item Container-4.jpg",
   },
   {
     id: "designer-plants",
     title: "Designer Plants",
+    description:
+      "Botanical architectural styling translated into an elevated brand, tactile packaging, editorial web design, and seasonal ad campaigns.",
     tags: ["Branding", "Web Design", "Social Media Creative", "Packaging", "Ad Creative"],
     image: "/header_images/Work Item Container-5.jpg",
   },
   {
     id: "designer-vertical-gardens",
     title: "Designer Vertical Gardens",
+    description:
+      "A lush, design-forward visual system showcasing architectural greenery across digital storefronts, packaging, and paid acquisition.",
     tags: ["Branding", "Web Design", "Social Media Creative", "Packaging", "Ad Creative"],
     image: "/header_images/Work Item Container-6.jpg",
   },
   {
     id: "miss-bukowski",
     title: "Miss Bukowski",
+    description:
+      "An expressive editorial lifestyle brand uniting distinctive typography, curated web design, social content, and lifecycle email.",
     tags: ["Branding", "Web Design", "Social Media", "Email Campaign"],
     image: "/header_images/Work Item Container-7.jpg",
   },
   {
     id: "cafe-marbella",
     title: "Café Marbella",
+    description:
+      "A warm, sensory ecommerce experience crafted to highlight single-origin coffee craftsmanship and streamline online ordering.",
     tags: ["Ecommerce Design"],
     image: "/header_images/Work Item Container-8.jpg",
   },
   {
     id: "webinars-lupulados",
     title: "Webinars Lupulados",
+    description:
+      "A specialized brewing education platform combining vibrant event branding, ecommerce ticketing, and multi-channel marketing campaigns.",
     tags: ["Branding", "Social Media Creative", "Ad Creative", "Ecommerce Design", "Marketing Campaign"],
     image: "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg",
   },
   {
     id: "congreso-de-lupulo",
     title: "Congreso de Lúpulo",
+    description:
+      "An international craft-brewing congress identity spanning event branding, ticketed ecommerce, paid media, and campaign assets.",
     tags: ["Branding", "Social Media Creative", "Ad Creative", "Ecommerce Design", "Marketing Campaign"],
     image: "/header_images/Work Item Container-10.jpg",
   },
   {
     id: "billy-pet-stuff",
     title: "Billy Pet Stuff",
+    description:
+      "A playful, approachable pet lifestyle brand built around expressive social creative and a conversion-friendly ecommerce storefront.",
     tags: ["Branding", "Social Media Creative", "Ecommerce Design"],
     image: "/header_images/Work Item Container-11.jpg",
   },
   {
     id: "high-corner",
     title: "High Corner",
+    description:
+      "A crisp, contemporary commerce brand balancing bold visual identity with agile social storytelling and online store design.",
     tags: ["Branding", "Social Media Creative", "Ecommerce Design"],
     image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg",
   },
   {
     id: "maison-etherique",
     title: "Maison Etherique",
+    description:
+      "A refined luxury maison identity expressed through tactile packaging, print collateral, and serene editorial web design.",
     tags: ["Branding", "Packaging", "Web Design", "Print Creative"],
     image: "/header_images/Work Item Container.jpg",
   },
 ];
+
+const projects: PortfolioProject[] = rawProjects.map((p, idx) => ({
+  ...p,
+  gallery: buildGallery(p.image, idx * 2),
+}));
 
 const filterGroups = [
   { id: "all", label: "All Projects" },
@@ -190,29 +267,36 @@ function getFilterCategories(tags: string[]): string[] {
           <article
             class="project-card"
             data-categories={categories}
-            tabindex="0"
+            data-project-id={project.id}
           >
-            <div class="project-thumb">
-              <img
-                src={project.image}
-                alt={`${project.title} project showcase`}
-                loading={index < 6 ? "eager" : "lazy"}
-                decoding="async"
-                class="project-img"
-              />
-              <div class="project-thumb-vignette" aria-hidden="true"></div>
+            <button
+              type="button"
+              class="project-trigger"
+              data-open-project={project.id}
+              aria-label={`Open ${project.title} gallery`}
+            >
+              <div class="project-thumb">
+                <img
+                  src={project.image}
+                  alt={`${project.title} project showcase`}
+                  loading={index < 6 ? "eager" : "lazy"}
+                  decoding="async"
+                  class="project-img"
+                />
+                <div class="project-thumb-vignette" aria-hidden="true"></div>
 
-              <div class="project-overlay">
-                <h3 class="project-title">{project.title}</h3>
-                <div class="project-tags-wrap">
-                  <ul class="project-tags" aria-label={`${project.title} disciplines`}>
-                    {project.tags.map((tag) => (
-                      <li class="project-tag">{tag}</li>
-                    ))}
-                  </ul>
+                <div class="project-overlay">
+                  <h3 class="project-title">{project.title}</h3>
+                  <div class="project-tags-wrap">
+                    <ul class="project-tags" aria-label={`${project.title} disciplines`}>
+                      {project.tags.map((tag) => (
+                        <li class="project-tag">{tag}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
+            </button>
           </article>
         );
       })}
@@ -220,28 +304,105 @@ function getFilterCategories(tags: string[]): string[] {
   </div>
 </section>
 
+<!-- Shareable Project Gallery Overlay -->
+<div
+  class="work-modal"
+  id="work-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="work-modal-title"
+  hidden
+>
+  <div class="work-modal-backdrop" data-close-modal></div>
+
+  <div class="work-modal-shell">
+    <div class="work-modal-topbar">
+      <div class="work-modal-actions">
+        <button type="button" class="modal-action-btn" id="work-modal-copy" aria-label="Copy shareable link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+          <span id="work-modal-copy-label">Copy link</span>
+        </button>
+
+        <button type="button" class="modal-close-btn" id="work-modal-close" aria-label="Close gallery" data-close-modal>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="work-modal-body">
+      <!-- Horizontal Bento Gallery Strip (Desktop) / Stacked Bento (Mobile) -->
+      <div class="modal-gallery-viewport" id="modal-gallery-viewport" tabindex="0" aria-label="Project image gallery">
+        <div class="modal-gallery-track" id="modal-gallery-track"></div>
+      </div>
+
+      <!-- Bottom Info Bar (Desktop) / Top Info Header (Mobile) -->
+      <div class="modal-info-row">
+        <div class="modal-info-title-col">
+          <h2 class="modal-title" id="work-modal-title"></h2>
+        </div>
+        <div class="modal-info-desc-col">
+          <p class="modal-desc" id="work-modal-desc"></p>
+        </div>
+        <div class="modal-info-tags-col">
+          <ul class="modal-tags" id="work-modal-tags"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ projects }}>
+  window.__ADAPTIF_PROJECTS__ = projects;
+</script>
+
 <script>
+  interface ProjectItem {
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    image: string;
+    gallery: string[];
+  }
+
   function initWorkShowcase() {
     const section = document.getElementById("work-showcase");
     const filterBar = document.getElementById("filter-bar");
     const indicator = document.getElementById("filter-indicator");
     const grid = document.getElementById("showcase-grid");
+
+    const modal = document.getElementById("work-modal");
+    const modalTitle = document.getElementById("work-modal-title");
+    const modalDesc = document.getElementById("work-modal-desc");
+    const modalTags = document.getElementById("work-modal-tags");
+    const galleryViewport = document.getElementById("modal-gallery-viewport");
+    const galleryTrack = document.getElementById("modal-gallery-track");
+    const closeBtn = document.getElementById("work-modal-close");
+    const copyBtn = document.getElementById("work-modal-copy");
+    const copyLabel = document.getElementById("work-modal-copy-label");
+
     if (!section || !filterBar || !indicator || !grid) return;
+
+    const projectList: ProjectItem[] = (window as any).__ADAPTIF_PROJECTS__ || [];
+    const projectMap = new Map(projectList.map((p) => [p.id, p]));
 
     const buttons = Array.from(filterBar.querySelectorAll<HTMLButtonElement>(".filter-pill"));
     const cards = Array.from(grid.querySelectorAll<HTMLElement>(".project-card"));
 
     function positionIndicator(target: HTMLElement, animate = true) {
-      if (!indicator || !filterBar) return;
-      if (!animate) {
-        indicator.style.transition = "none";
-      }
+      if (!indicator) return;
+      if (!animate) indicator.style.transition = "none";
       indicator.style.width = `${target.offsetWidth}px`;
       indicator.style.height = `${target.offsetHeight}px`;
       indicator.style.transform = `translate3d(${target.offsetLeft}px, ${target.offsetTop}px, 0)`;
       indicator.style.opacity = "1";
       if (!animate) {
-        // Force reflow then restore transition
         void indicator.offsetWidth;
         indicator.style.transition = "";
       }
@@ -287,6 +448,181 @@ function getFilterCategories(tags: string[]): string[] {
         });
       });
     });
+
+    // --- Shareable Overlay Gallery ---
+    let lastFocusedTrigger: HTMLElement | null = null;
+
+    function createTile(src: string, alt: string, extraClass = "") {
+      const div = document.createElement("div");
+      div.className = `bento-tile ${extraClass}`.trim();
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = alt;
+      img.loading = "eager";
+      img.decoding = "async";
+      div.appendChild(img);
+      return div;
+    }
+
+    function renderGalleryBento(project: ProjectItem) {
+      if (!galleryTrack) return;
+      galleryTrack.innerHTML = "";
+      const imgs = project.gallery;
+
+      // Block 1: Large 2x2 square (0)
+      const b1 = document.createElement("div");
+      b1.className = "bento-block bento-block-square";
+      b1.appendChild(createTile(imgs[0], `${project.title} — featured visual`));
+      galleryTrack.appendChild(b1);
+
+      // Block 2: Top wide (1) + Bottom 2 squares (2, 3)
+      const b2 = document.createElement("div");
+      b2.className = "bento-block bento-block-top-wide";
+      b2.appendChild(createTile(imgs[1], `${project.title} — campaign view`, "tile-wide"));
+      b2.appendChild(createTile(imgs[2], `${project.title} — detail 1`));
+      b2.appendChild(createTile(imgs[3], `${project.title} — detail 2`));
+      galleryTrack.appendChild(b2);
+
+      // Block 3: Tall portrait (4)
+      const b3 = document.createElement("div");
+      b3.className = "bento-block bento-block-tall";
+      b3.appendChild(createTile(imgs[4], `${project.title} — vertical asset`));
+      galleryTrack.appendChild(b3);
+
+      // Block 4: Top 2 squares (5, 6) + Bottom wide (7)
+      const b4 = document.createElement("div");
+      b4.className = "bento-block bento-block-bottom-wide";
+      b4.appendChild(createTile(imgs[5], `${project.title} — detail 3`));
+      b4.appendChild(createTile(imgs[6], `${project.title} — detail 4`));
+      b4.appendChild(createTile(imgs[7], `${project.title} — wide showcase`, "tile-wide-bottom"));
+      galleryTrack.appendChild(b4);
+
+      // Block 5: Tall portrait (8)
+      const b5 = document.createElement("div");
+      b5.className = "bento-block bento-block-tall";
+      b5.appendChild(createTile(imgs[8], `${project.title} — vertical highlight`));
+      galleryTrack.appendChild(b5);
+
+      // Block 6: Top wide (9) + Bottom 2 squares (10, 11)
+      const b6 = document.createElement("div");
+      b6.className = "bento-block bento-block-top-wide";
+      b6.appendChild(createTile(imgs[9], `${project.title} — wide layout`, "tile-wide"));
+      b6.appendChild(createTile(imgs[10], `${project.title} — detail 5`));
+      b6.appendChild(createTile(imgs[11], `${project.title} — detail 6`));
+      galleryTrack.appendChild(b6);
+    }
+
+    function openProjectModal(projectId: string, updateUrl = true) {
+      const project = projectMap.get(projectId);
+      if (!project || !modal || !modalTitle || !modalDesc || !modalTags) return;
+
+      lastFocusedTrigger = document.activeElement as HTMLElement | null;
+
+      modalTitle.textContent = project.title;
+      modalDesc.textContent = project.description;
+      modalTags.innerHTML = "";
+      project.tags.forEach((tag) => {
+        const li = document.createElement("li");
+        li.className = "modal-tag";
+        li.textContent = tag;
+        modalTags.appendChild(li);
+      });
+
+      renderGalleryBento(project);
+
+      modal.hidden = false;
+      requestAnimationFrame(() => {
+        modal.classList.add("is-open");
+        if (galleryViewport) galleryViewport.scrollLeft = 0;
+        closeBtn?.focus({ preventScroll: true });
+      });
+
+      document.documentElement.style.overflow = "hidden";
+
+      if (updateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("project", project.id);
+        window.history.pushState({ project: project.id }, "", url.toString());
+      }
+    }
+
+    function closeProjectModal(updateUrl = true) {
+      if (!modal || modal.hidden) return;
+      modal.classList.remove("is-open");
+      document.documentElement.style.overflow = "";
+
+      if (updateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("project");
+        window.history.pushState({}, "", url.pathname + url.search);
+      }
+
+      setTimeout(() => {
+        if (!modal.classList.contains("is-open")) {
+          modal.hidden = true;
+          lastFocusedTrigger?.focus({ preventScroll: true });
+        }
+      }, 220);
+    }
+
+    grid.querySelectorAll<HTMLButtonElement>("[data-open-project]").forEach((trigger) => {
+      trigger.addEventListener("click", () => {
+        const id = trigger.dataset.openProject;
+        if (id) openProjectModal(id, true);
+      });
+    });
+
+    modal?.querySelectorAll("[data-close-modal]").forEach((el) => {
+      el.addEventListener("click", () => closeProjectModal(true));
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal && !modal.hidden) {
+        closeProjectModal(true);
+      }
+    });
+
+    // Convert vertical wheel into horizontal scroll inside the desktop gallery strip
+    galleryViewport?.addEventListener(
+      "wheel",
+      (e) => {
+        if (window.innerWidth <= 768) return;
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          e.preventDefault();
+          galleryViewport.scrollLeft += e.deltaY;
+        }
+      },
+      { passive: false }
+    );
+
+    copyBtn?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        if (copyLabel) {
+          copyLabel.textContent = "Copied!";
+          setTimeout(() => {
+            copyLabel.textContent = "Copy link";
+          }, 1800);
+        }
+      } catch {
+        // Fallback: no-op if clipboard permission unavailable
+      }
+    });
+
+    window.addEventListener("popstate", () => {
+      const id = new URLSearchParams(window.location.search).get("project");
+      if (id && projectMap.has(id)) {
+        openProjectModal(id, false);
+      } else {
+        closeProjectModal(false);
+      }
+    });
+
+    // Open project directly if URL contains ?project=<id> (shareable link)
+    const initialProjectId = new URLSearchParams(window.location.search).get("project");
+    if (initialProjectId && projectMap.has(initialProjectId)) {
+      openProjectModal(initialProjectId, false);
+    }
   }
 
   if (document.readyState === "loading") {
@@ -387,7 +723,6 @@ function getFilterCategories(tags: string[]): string[] {
     transition: color 0.18s ease, background-color 0.18s ease;
   }
 
-  /* Reserve bold width so active state never widens the filter bar */
   .filter-pill::after {
     content: attr(data-label);
     font-weight: 600;
@@ -461,15 +796,27 @@ function getFilterCategories(tags: string[]): string[] {
       0 0 28px rgba(56, 189, 248, 0.1);
   }
 
-  .project-card:focus-visible {
+  .project-trigger {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: block;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .project-trigger:focus-visible {
     outline: 2px solid #38bdf8;
-    outline-offset: 2px;
+    outline-offset: -2px;
   }
 
   .project-thumb {
     position: relative;
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     background: #060a13;
   }
@@ -494,8 +841,8 @@ function getFilterCategories(tags: string[]): string[] {
     background: linear-gradient(
       to top,
       rgba(3, 6, 14, 0.92) 0%,
-      rgba(3, 6, 14, 0.52) 38%,
-      rgba(3, 6, 14, 0.08) 72%,
+      rgba(3, 6, 14, 0.5) 36%,
+      rgba(3, 6, 14, 0.06) 72%,
       transparent 100%
     );
     transition: opacity 0.35s ease;
@@ -550,7 +897,7 @@ function getFilterCategories(tags: string[]): string[] {
 
   .project-card:hover .project-tags-wrap,
   .project-card:focus-within .project-tags-wrap {
-    max-height: 140px;
+    max-height: 150px;
     opacity: 1;
     transform: translateY(0);
     margin-top: 10px;
@@ -581,9 +928,257 @@ function getFilterCategories(tags: string[]): string[] {
     letter-spacing: 0.01em;
   }
 
+  /* --- Shareable Project Gallery Overlay --- */
+  .work-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.24s ease;
+  }
+
+  .work-modal[hidden] {
+    display: none;
+  }
+
+  .work-modal.is-open {
+    opacity: 1;
+  }
+
+  .work-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 5, 11, 0.94);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .work-modal-shell {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(18px, 3vh, 32px) clamp(16px, 3.5vw, 44px);
+    gap: clamp(16px, 2.5vh, 26px);
+    overflow-y: auto;
+  }
+
+  .work-modal-topbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .work-modal-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-action-btn,
+  .modal-close-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .modal-action-btn {
+    height: 38px;
+    padding: 0 14px;
+  }
+
+  .modal-close-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+  }
+
+  .modal-action-btn:hover,
+  .modal-close-btn:hover {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: rgba(56, 189, 248, 0.45);
+    color: #ffffff;
+  }
+
+  .modal-action-btn:focus-visible,
+  .modal-close-btn:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+
+  .work-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(20px, 3vh, 32px);
+    width: 100%;
+    max-width: 1480px;
+    margin-inline: auto;
+  }
+
+  .modal-gallery-viewport {
+    --cell: clamp(175px, 24.5vh, 250px);
+    --gap: 14px;
+    order: 1;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.45) rgba(255, 255, 255, 0.06);
+  }
+
+  .modal-gallery-viewport:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 4px;
+    border-radius: 12px;
+  }
+
+  .modal-gallery-viewport::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .modal-gallery-viewport::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+  }
+
+  .modal-gallery-viewport::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.45);
+    border-radius: 999px;
+  }
+
+  .modal-gallery-track {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap);
+    height: calc(var(--cell) * 2 + var(--gap));
+    width: max-content;
+  }
+
+  :global(.bento-block) {
+    flex-shrink: 0;
+  }
+
+  :global(.bento-block-square) {
+    width: calc(var(--cell) * 2 + var(--gap));
+    height: 100%;
+  }
+
+  :global(.bento-block-tall) {
+    width: var(--cell);
+    height: 100%;
+  }
+
+  :global(.bento-block-top-wide),
+  :global(.bento-block-bottom-wide) {
+    display: grid;
+    grid-template-columns: repeat(2, var(--cell));
+    grid-template-rows: repeat(2, var(--cell));
+    gap: var(--gap);
+  }
+
+  :global(.bento-tile) {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #0b111e;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.bento-tile.tile-wide) {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  :global(.bento-tile.tile-wide-bottom) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  :global(.bento-tile img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .modal-info-row {
+    order: 2;
+    display: grid;
+    grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.3fr) minmax(240px, 1.1fr);
+    align-items: start;
+    gap: clamp(18px, 3vw, 40px);
+    padding-top: 4px;
+  }
+
+  .modal-title {
+    font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
+    font-size: clamp(1.85rem, 2.8vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .modal-desc {
+    font-family: var(--font-sans, "Plus Jakarta Sans", sans-serif);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: #94a3b8;
+    margin: 0;
+    max-width: 48ch;
+  }
+
+  .modal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  :global(.modal-tag) {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #cbd5e1;
+    font-size: 0.76rem;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
   @media (hover: none) {
     .project-tags-wrap {
-      max-height: 140px;
+      max-height: 150px;
       opacity: 1;
       transform: translateY(0);
       margin-top: 10px;
@@ -593,6 +1188,77 @@ function getFilterCategories(tags: string[]): string[] {
   @media (max-width: 1024px) {
     .showcase-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .modal-info-row {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .modal-info-tags-col {
+      grid-column: 1 / -1;
+    }
+
+    .modal-tags {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .work-modal-shell {
+      justify-content: flex-start;
+      padding: 16px 16px 32px;
+      gap: 14px;
+    }
+
+    .modal-info-row {
+      order: 1;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .modal-gallery-viewport {
+      order: 2;
+      overflow-x: visible;
+      overflow-y: visible;
+      padding-bottom: 0;
+    }
+
+    .modal-gallery-track {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: auto;
+      width: 100%;
+    }
+
+    :global(.bento-block-square) {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+    }
+
+    :global(.bento-block-tall) {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 3;
+    }
+
+    :global(.bento-block-top-wide),
+    :global(.bento-block-bottom-wide) {
+      width: 100%;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto;
+      gap: 12px;
+    }
+
+    :global(.bento-block-top-wide .bento-tile),
+    :global(.bento-block-bottom-wide .bento-tile) {
+      aspect-ratio: 1 / 1;
+    }
+
+    :global(.bento-block-top-wide .tile-wide),
+    :global(.bento-block-bottom-wide .tile-wide-bottom) {
+      aspect-ratio: 16 / 9;
     }
   }
 
@@ -628,7 +1294,8 @@ function getFilterCategories(tags: string[]): string[] {
     .project-card,
     .project-img,
     .project-tags-wrap,
-    .project-title {
+    .project-title,
+    .work-modal {
       transition: none !important;
       animation: none !important;
     }

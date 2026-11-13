@@ -4,6 +4,9 @@ import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
   adapter: vercel(),
+  security: {
+    checkOrigin: false
+  },
   devToolbar: {
     enabled: false
   },

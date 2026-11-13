@@ -1,71 +1,16 @@
 ---
-// CreativeRange.astro - Light Mode Section with Tilted Tiles Gallery
+// CreativeRange.astro - Light/Dark Mode Section with Tilted Tiles Gallery
 // Configuration: columns=15, perspective=900, rotateX=48, rotateY=0, rotateZ=0, planeWidth=210, parallax=false
+import { listProjects } from "../lib/portfolioDb";
+import type { PortfolioProject } from "../data/portfolioSeed";
 
-interface TileItem {
-  id: string;
-  image: string;
-  title: string;
-  category: "Tech" | "Fashion" | "Wellness" | "Brand" | "3D";
-}
-
-const allAssets: TileItem[] = [
-  { id: "ast-1", image: "/header_images/work-0.jpg", title: "Apex FinTech Core", category: "Tech" },
-  { id: "ast-2", image: "/work/1fce34a3758cff5e47cf0a25904b4854.jpg", title: "Aura Botanical Skin", category: "Wellness" },
-  { id: "ast-3", image: "/header_images/work-3.jpg", title: "Vogue Maison Capsule", category: "Fashion" },
-  { id: "ast-4", image: "/work/9e80968f8b616f415454cfd43eb454c8.jpg", title: "Solstice AI Assistant", category: "Tech" },
-  { id: "ast-5", image: "/header_images/work-7.jpg", title: "Luminary High Jewelry", category: "Fashion" },
-  { id: "ast-6", image: "/images/why-us/creative-talent.jpg", title: "Studio Form & Brand", category: "Brand" },
-  { id: "ast-7", image: "/header_images/work-11.jpg", title: "Seraph Mindful Routine", category: "Wellness" },
-  { id: "ast-8", image: "/work/0cb17cbee8ef36202bfb1b0e17338257.jpg", title: "Kinetics Form & Motion", category: "3D" },
-  { id: "ast-9", image: "/header_images/work-1.jpg", title: "Hyperion Cloud OS", category: "Tech" },
-  { id: "ast-10", image: "/work/664bbf117716eb69519b17e2f37bee2a.jpg", title: "Zenith Herbal Essence", category: "Wellness" },
-  { id: "ast-11", image: "/header_images/work-4.jpg", title: "Studio Noir Editorial", category: "Fashion" },
-  { id: "ast-12", image: "/header_images/work-8.jpg", title: "Chrono Kinetic Engine", category: "Tech" },
-  { id: "ast-13", image: "/images/why-us/our-technology.jpg", title: "Quantum Neural Stack", category: "Tech" },
-  { id: "ast-14", image: "/header_images/work-2.jpg", title: "Equinox Organic Ritual", category: "Wellness" },
-  { id: "ast-15", image: "/work/dcbe45c0e1ae80c24e20cf0d5abba272.jpg", title: "Synthetix Neural UI", category: "3D" },
-  { id: "ast-16", image: "/header_images/work-5.jpg", title: "Moderne Atelier Runway", category: "Fashion" },
-  { id: "ast-17", image: "/work/ade59a73aba7c39e38d6aa91565627bc.jpg", title: "Prism Spatial Sound", category: "3D" },
-  { id: "ast-18", image: "/header_images/work-9.jpg", title: "Nirvana Flow Tonic", category: "Wellness" },
-  { id: "ast-19", image: "/images/why-us/ai-excellence.jpg", title: "Cognitive Visuals", category: "Tech" },
-  { id: "ast-20", image: "/header_images/work-6.jpg", title: "Velvet Couture SS26", category: "Fashion" },
-  { id: "ast-21", image: "/header_images/work-10.jpg", title: "Quantico Crypto Vault", category: "Tech" },
-  { id: "ast-22", image: "/images/designed-to-keep-up/card-1-deadlines.jpg", title: "Pulse Velocity Tracker", category: "Tech" },
-  { id: "ast-23", image: "/header_images/work-12.jpg", title: "Vector 3D Topology", category: "3D" },
-  { id: "ast-24", image: "/images/designed-to-keep-up/card-2-talent.jpg", title: "Collective Design Studio", category: "Brand" },
-  { id: "ast-25", image: "/images/rethinking-creative-teams.jpg", title: "Rethink Creative Labs", category: "Brand" },
-  { id: "ast-26", image: "/images/designed-to-keep-up/card-3-plan.jpg", title: "Blueprint Architecture", category: "Tech" },
-];
-
-// Generate 15 distinct columns with 12 items per column (24 items total per track)
-// to guarantee zero empty gaps or missing cards at any point during continuous loop
-const totalColumns = 15;
-const tilesPerCol = 12;
-const speedPresets = [
-  "42s", "36s", "46s", "38s", "44s", 
-  "34s", "42s", "37s", "45s", "35s", 
-  "41s", "48s", "39s", "36s", "43s"
-];
-
-const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
-  const colItems: TileItem[] = [];
-  for (let i = 0; i < tilesPerCol; i++) {
-    const assetIdx = (colIdx * 3 + i * 7) % allAssets.length;
-    colItems.push(allAssets[assetIdx]);
-  }
-  return {
-    items: colItems,
-    reverse: colIdx % 2 === 1,
-    duration: speedPresets[colIdx % speedPresets.length]
-  };
-});
 interface Props {
   theme?: "light" | "dark";
   eyebrow?: string;
   title?: string;
   highlightTitle?: string;
   asHero?: boolean;
+  projects?: PortfolioProject[];
 }
 
 const {
@@ -74,7 +19,76 @@ const {
   title = "Tech, fashion, wellness,",
   highlightTitle = "everywhere in between.",
   asHero = false,
+  projects,
 } = Astro.props;
+
+interface TileItem {
+  id: string;
+  image: string;
+  title: string;
+}
+
+const cmsProjects = projects ?? (await listProjects({ includeHidden: false }));
+
+// Collect unique images from the Portfolio CMS (thumbnails + galleries)
+const seenImages = new Set<string>();
+const cmsAssets: TileItem[] = [];
+
+for (const project of cmsProjects) {
+  const candidates = [project.image, ...(project.gallery ?? [])];
+  for (const imgUrl of candidates) {
+    if (imgUrl && !seenImages.has(imgUrl)) {
+      seenImages.add(imgUrl);
+      cmsAssets.push({
+        id: `${project.id}-${cmsAssets.length}`,
+        image: imgUrl,
+        title: project.title,
+      });
+    }
+  }
+}
+
+// Fisher-Yates shuffle for random ordering on every render
+function shuffleArray<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+const pool = cmsAssets.length > 0
+  ? shuffleArray(cmsAssets)
+  : [{ id: "fallback-1", image: "/work-featured/sideline.jpg", title: "Sideline Podcast" }];
+
+const totalColumns = 15;
+const tilesPerCol = 12;
+const speedPresets = [
+  "42s", "36s", "46s", "38s", "44s",
+  "34s", "42s", "37s", "45s", "35s",
+  "41s", "48s", "39s", "36s", "43s",
+];
+
+// Build 15 columns with randomized CMS images
+let cursor = 0;
+let bag = shuffleArray(pool);
+
+const columns = Array.from({ length: totalColumns }).map((_, colIdx) => {
+  const colItems: TileItem[] = [];
+  for (let i = 0; i < tilesPerCol; i++) {
+    if (cursor >= bag.length) {
+      bag = shuffleArray(pool);
+      cursor = 0;
+    }
+    colItems.push(bag[cursor++]);
+  }
+  return {
+    items: colItems,
+    reverse: colIdx % 2 === 1,
+    duration: speedPresets[colIdx % speedPresets.length],
+  };
+});
 ---
 
 <section
@@ -122,7 +136,7 @@ const {
           <div class="tile-column-track">
             <!-- Set A -->
             {col.items.map((tile) => (
-              <figure class="tile-card" data-category={tile.category}>
+              <figure class="tile-card">
                 <div class="tile-image-wrap">
                   <img 
                     src={tile.image} 
@@ -137,7 +151,7 @@ const {
 
             <!-- Set B (exact clone of Set A for seamless -50% loop) -->
             {col.items.map((tile) => (
-              <figure class="tile-card" data-category={tile.category} aria-hidden="true">
+              <figure class="tile-card" aria-hidden="true">
                 <div class="tile-image-wrap">
                   <img 
                     src={tile.image} 
@@ -176,6 +190,48 @@ const {
       { threshold: 0.06, rootMargin: "0px 0px -40px 0px" }
     );
     observer.observe(section);
+
+    // On static pages (Home), refresh & randomize from live CMS Portfolio
+    if (section.dataset.hero !== "true") {
+      fetch("/api/projects")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (!data?.projects?.length) return;
+          const seen = new Set<string>();
+          const pool: { image: string; title: string }[] = [];
+          for (const p of data.projects) {
+            const list = [p.image, ...(p.gallery || [])];
+            for (const url of list) {
+              if (url && !seen.has(url)) {
+                seen.add(url);
+                pool.push({ image: url, title: p.title });
+              }
+            }
+          }
+          if (pool.length === 0) return;
+
+          for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+          }
+
+          let cursor = 0;
+          section.querySelectorAll<HTMLElement>(".tile-column-track").forEach((track) => {
+            const imgs = Array.from(track.querySelectorAll<HTMLImageElement>(".tile-img"));
+            const half = Math.floor(imgs.length / 2);
+            for (let i = 0; i < half; i++) {
+              const item = pool[cursor % pool.length];
+              cursor++;
+              imgs[i].src = item.image;
+              imgs[i].alt = item.title;
+              if (imgs[i + half]) {
+                imgs[i + half].src = item.image;
+              }
+            }
+          });
+        })
+        .catch(() => {});
+    }
   }
 
   if (document.readyState === "loading") {

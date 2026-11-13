@@ -867,23 +867,25 @@ const whyUsItems: WhyUsItem[] = [
       visibility 0s 0.22s;
   }
 
-  /* Extended invisible hover bridge to span the gap seamlessly */
+  /* Extended invisible hover bridge to span the gap below the capsule only */
   .mega-menu-wrapper::before {
     content: "";
     position: absolute;
-    top: -20px;
+    top: -4px;
     left: 0;
     right: 0;
-    height: 36px;
+    height: 18px;
     background: transparent;
-    pointer-events: auto;
+    pointer-events: none;
   }
 
-  /* Hover & Open States */
-  .nav-item-services:hover #services-mega-menu,
+  .nav-item.is-switching .mega-menu-wrapper {
+    transition: none !important;
+  }
+
+  /* Open States (JS .is-open + keyboard :focus-within) */
   .nav-item-services:focus-within #services-mega-menu,
   .nav-item-services.is-open #services-mega-menu,
-  .nav-item-why-us:hover #why-us-mega-menu,
   .nav-item-why-us:focus-within #why-us-mega-menu,
   .nav-item-why-us.is-open #why-us-mega-menu {
     opacity: 1;
@@ -894,6 +896,11 @@ const whyUsItems: WhyUsItem[] = [
       transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
       opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
       visibility 0s 0s;
+  }
+
+  .nav-item-services.is-open #services-mega-menu::before,
+  .nav-item-why-us.is-open #why-us-mega-menu::before {
+    pointer-events: auto;
   }
 
   .mega-menu-panel {
@@ -2212,33 +2219,57 @@ const whyUsItems: WhyUsItem[] = [
     menu: HTMLElement | null,
     onOpenOther?: () => void
   ) => {
-    if (!item || !trigger || !menu) return { open: () => {}, close: () => {} };
+    if (!item || !trigger || !menu) return { open: () => {}, close: (_instant?: boolean) => {} };
+
+    let closeTimer: number | undefined;
+
+    const cancelClose = () => {
+      if (closeTimer !== undefined) {
+        window.clearTimeout(closeTimer);
+        closeTimer = undefined;
+      }
+    };
 
     const openMenu = () => {
+      cancelClose();
       onOpenOther?.();
+      item.classList.remove('is-switching');
       item.classList.add('is-open');
       trigger.setAttribute('aria-expanded', 'true');
     };
 
-    const closeMenu = () => {
+    const closeMenu = (instant = false) => {
+      cancelClose();
+      if (instant) {
+        item.classList.add('is-switching');
+      }
       item.classList.remove('is-open');
       trigger.setAttribute('aria-expanded', 'false');
+      if (instant) {
+        void menu.offsetWidth;
+        item.classList.remove('is-switching');
+      }
+    };
+
+    const scheduleClose = () => {
+      cancelClose();
+      closeTimer = window.setTimeout(() => closeMenu(false), 75);
     };
 
     // Open immediately on mouseenter
-    item.addEventListener('mouseenter', openMenu);
-    menu.addEventListener('mouseenter', openMenu);
+    trigger.addEventListener('mouseenter', openMenu);
+    menu.addEventListener('mouseenter', cancelClose);
 
-    // Close immediately when pointer leaves without delay
+    // Schedule close on mouseleave so moving from trigger to panel is smooth
     item.addEventListener('mouseleave', (e) => {
       if (!menu.contains(e.relatedTarget as Node)) {
-        closeMenu();
+        scheduleClose();
       }
     });
 
     menu.addEventListener('mouseleave', (e) => {
       if (!item.contains(e.relatedTarget as Node)) {
-        closeMenu();
+        scheduleClose();
       }
     });
 
@@ -2256,22 +2287,22 @@ const whyUsItems: WhyUsItem[] = [
     // Close menu when a link inside is clicked
     menu.querySelectorAll('a').forEach((link) => {
       link.addEventListener('click', () => {
-        closeMenu();
+        closeMenu(true);
       });
     });
 
     return { open: openMenu, close: closeMenu };
   };
 
-  let closeServices: () => void = () => {};
-  let closeWhyUs: () => void = () => {};
+  let closeServices: (instant?: boolean) => void = () => {};
+  let closeWhyUs: (instant?: boolean) => void = () => {};
 
   if (servicesItem && servicesTrigger && servicesMegaMenu) {
     const sMenu = setupDesktopMenu(
       servicesItem as HTMLElement,
       servicesTrigger as HTMLElement,
       servicesMegaMenu as HTMLElement,
-      () => closeWhyUs()
+      () => closeWhyUs(true)
     );
     closeServices = sMenu.close;
   }
@@ -2281,10 +2312,18 @@ const whyUsItems: WhyUsItem[] = [
       whyUsItem as HTMLElement,
       whyUsTrigger as HTMLElement,
       whyUsMegaMenu as HTMLElement,
-      () => closeServices()
+      () => closeServices(true)
     );
     closeWhyUs = wMenu.close;
   }
+
+  // Close open mega-menus immediately when hovering non-dropdown navbar links
+  document.querySelectorAll('.nav-desktop .nav-item:not(.nav-item-services):not(.nav-item-why-us), .btn-cta-header').forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+      closeServices();
+      closeWhyUs();
+    });
+  });
 
   // Close menus when pressing Escape
   document.addEventListener('keydown', (e) => {

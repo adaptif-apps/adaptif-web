@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import CreativeRange from "../components/CreativeRange.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout title="Our Work — Adaptif">
+  <Header />
+  <main>
+    <CreativeRange
+      theme="dark"
+      asHero={true}
+      eyebrow="Our work"
+      title="Creative"
+      highlightTitle="that works."
+    />
+  </main>
+  <Footer />
+</Layout>

@@ -1063,20 +1063,15 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     addModuleBtn?.addEventListener("click", () => {
       if (!modulesGrid) return;
-      const idx = modulesGrid.querySelectorAll(".cf-module-card").length;
-      const card = document.createElement("article");
-      card.className = "cf-module-card";
-      card.innerHTML = `
-        <div class="cf-module-top">
-          <span class="cf-module-num">Module ${String(idx + 1).padStart(2, "0")}</span>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span class="cf-module-pill" contenteditable="true" spellcheck="false" data-edit-field="landingData.customModules.${idx}.tag">Module</span>
-            <button type="button" class="cf-module-del" aria-label="Remove module" title="Remove module">×</button>
-          </div>
-        </div>
-        <h3 class="cf-module-title" contenteditable="true" spellcheck="false" data-edit-field="landingData.customModules.${idx}.title">New Module Title</h3>
-        <p class="cf-module-body" contenteditable="true" spellcheck="false" data-edit-field="landingData.customModules.${idx}.body">Module summary...</p>
-      `;
+      const template = modulesGrid.querySelector<HTMLElement>(".cf-module-card");
+      if (!template) return;
+      const card = template.cloneNode(true) as HTMLElement;
+      const pill = card.querySelector<HTMLElement>(".cf-module-pill");
+      if (pill) pill.textContent = "Module";
+      const title = card.querySelector<HTMLElement>(".cf-module-title");
+      if (title) title.textContent = "New Module Title";
+      const body = card.querySelector<HTMLElement>(".cf-module-body");
+      if (body) body.textContent = "Module summary...";
       modulesGrid.appendChild(card);
       reindexModules();
     });

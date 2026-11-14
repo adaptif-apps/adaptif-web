@@ -148,7 +148,10 @@ const { initialSettings } = Astro.props;
     <footer class="gen-modal-foot">
       <button type="button" class="gen-btn-glass" id="btn-cancel-gen">Cancel</button>
       <button type="button" class="gen-btn-cyan" id="btn-run-generate">
-        ✨ Generate
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l1.9 5.8L20 10.7l-5.2 3.3L16.5 20 12 16.6 7.5 20l1.7-6-5.2-3.3 6.1-1.9L12 3z" />
+        </svg>
+        <span>Generate</span>
       </button>
     </footer>
   </div>
@@ -361,7 +364,7 @@ const { initialSettings } = Astro.props;
         }
       } finally {
         runBtn.disabled = false;
-        runBtn.textContent = "✨ Generate";
+        runBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.8L20 10.7l-5.2 3.3L16.5 20 12 16.6 7.5 20l1.7-6-5.2-3.3 6.1-1.9L12 3z" /></svg><span>Generate</span>`;
       }
     });
   })();
@@ -647,6 +650,7 @@ const { initialSettings } = Astro.props;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 7px;
     padding: 10px 20px;
     border-radius: 999px;
     border: none;

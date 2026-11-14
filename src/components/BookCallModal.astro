@@ -72,19 +72,33 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
         </div>
 
         <div class="bc-field bc-field--full">
-          <label for="bc-help-topic" class="bc-label">
+          <label for="bc-help-topic-trigger" class="bc-label">
             <span id="bc-help-label">{defaultBookCallConfig.helpLabel}</span>
           </label>
-          <div class="bc-select-wrap">
-            <select id="bc-help-topic" name="helpTopic" class="bc-select">
-              <option value="">{defaultBookCallConfig.helpPlaceholder}</option>
+          <div class="bc-dropdown" id="bc-dropdown-help" data-placeholder={defaultBookCallConfig.helpPlaceholder}>
+            <input type="hidden" id="bc-help-topic" name="helpTopic" value="" />
+            <button
+              type="button"
+              id="bc-help-topic-trigger"
+              class="bc-dropdown-trigger is-placeholder"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+            >
+              <span class="bc-dropdown-value">{defaultBookCallConfig.helpPlaceholder}</span>
+              <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <ul class="bc-dropdown-menu" role="listbox" hidden>
               {defaultBookCallConfig.helpOptions.map((opt) => (
-                <option value={opt}>{opt}</option>
+                <li class="bc-dropdown-option" role="option" aria-selected="false" data-value={opt} tabindex="-1">
+                  <span>{opt}</span>
+                  <svg class="bc-option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </li>
               ))}
-            </select>
-            <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="m6 9 6 6 6-6" />
-            </svg>
+            </ul>
           </div>
         </div>
 
@@ -142,36 +156,64 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
           </div>
 
           <div class="bc-field">
-            <label for="bc-timeline" class="bc-label">
+            <label for="bc-timeline-trigger" class="bc-label">
               <span id="bc-timeline-label">{defaultBookCallConfig.timelineLabel}</span>
             </label>
-            <div class="bc-select-wrap">
-              <select id="bc-timeline" name="timeline" class="bc-select">
-                <option value="">{defaultBookCallConfig.timelinePlaceholder}</option>
+            <div class="bc-dropdown" id="bc-dropdown-timeline" data-placeholder={defaultBookCallConfig.timelinePlaceholder}>
+              <input type="hidden" id="bc-timeline" name="timeline" value="" />
+              <button
+                type="button"
+                id="bc-timeline-trigger"
+                class="bc-dropdown-trigger is-placeholder"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+              >
+                <span class="bc-dropdown-value">{defaultBookCallConfig.timelinePlaceholder}</span>
+                <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              <ul class="bc-dropdown-menu" role="listbox" hidden>
                 {defaultBookCallConfig.timelineOptions.map((opt) => (
-                  <option value={opt}>{opt}</option>
+                  <li class="bc-dropdown-option" role="option" aria-selected="false" data-value={opt} tabindex="-1">
+                    <span>{opt}</span>
+                    <svg class="bc-option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </li>
                 ))}
-              </select>
-              <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+              </ul>
             </div>
           </div>
 
           <div class="bc-field">
-            <label for="bc-budget" class="bc-label">
+            <label for="bc-budget-trigger" class="bc-label">
               <span id="bc-budget-label">{defaultBookCallConfig.budgetLabel}</span>
             </label>
-            <div class="bc-select-wrap">
-              <select id="bc-budget" name="budgetRange" class="bc-select">
-                <option value="">{defaultBookCallConfig.budgetPlaceholder}</option>
+            <div class="bc-dropdown" id="bc-dropdown-budget" data-placeholder={defaultBookCallConfig.budgetPlaceholder}>
+              <input type="hidden" id="bc-budget" name="budgetRange" value="" />
+              <button
+                type="button"
+                id="bc-budget-trigger"
+                class="bc-dropdown-trigger is-placeholder"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+              >
+                <span class="bc-dropdown-value">{defaultBookCallConfig.budgetPlaceholder}</span>
+                <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+              <ul class="bc-dropdown-menu" role="listbox" hidden>
                 {defaultBookCallConfig.budgetOptions.map((opt) => (
-                  <option value={opt}>{opt}</option>
+                  <li class="bc-dropdown-option" role="option" aria-selected="false" data-value={opt} tabindex="-1">
+                    <span>{opt}</span>
+                    <svg class="bc-option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </li>
                 ))}
-              </select>
-              <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
+              </ul>
             </div>
           </div>
         </div>
@@ -239,13 +281,18 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
 
     const fullNameEl = document.getElementById("bc-full-name") as HTMLInputElement;
     const workEmailEl = document.getElementById("bc-work-email") as HTMLInputElement;
-    const helpTopicEl = document.getElementById("bc-help-topic") as HTMLSelectElement;
+    const helpTopicEl = document.getElementById("bc-help-topic") as HTMLInputElement;
 
     const projectGoalEl = document.getElementById("bc-project-goal") as HTMLInputElement;
     const referenceLinkEl = document.getElementById("bc-reference-link") as HTMLInputElement;
-    const timelineEl = document.getElementById("bc-timeline") as HTMLSelectElement;
-    const budgetEl = document.getElementById("bc-budget") as HTMLSelectElement;
+    const timelineEl = document.getElementById("bc-timeline") as HTMLInputElement;
+    const budgetEl = document.getElementById("bc-budget") as HTMLInputElement;
     const notesEl = document.getElementById("bc-notes") as HTMLTextAreaElement;
+
+    const helpDropdown = document.getElementById("bc-dropdown-help")!;
+    const timelineDropdown = document.getElementById("bc-dropdown-timeline")!;
+    const budgetDropdown = document.getElementById("bc-dropdown-budget")!;
+    const allDropdowns = [helpDropdown, timelineDropdown, budgetDropdown];
 
     const step1ErrorEl = document.getElementById("bc-step1-error")!;
     const step2ErrorEl = document.getElementById("bc-step2-error")!;
@@ -255,22 +302,100 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
     let lastFocusedTrigger: HTMLElement | null = null;
     let configLoaded = false;
 
-    function populateSelect(select: HTMLSelectElement, placeholder: string, options: string[]) {
-      const currentVal = select.value;
-      select.innerHTML = "";
-      const ph = document.createElement("option");
-      ph.value = "";
-      ph.textContent = placeholder;
-      select.appendChild(ph);
-      options.forEach((opt) => {
-        const el = document.createElement("option");
-        el.value = opt;
-        el.textContent = opt;
-        select.appendChild(el);
+    function closeAllDropdowns(except?: HTMLElement) {
+      allDropdowns.forEach((dd) => {
+        if (dd === except) return;
+        dd.classList.remove("is-open");
+        const trigger = dd.querySelector<HTMLButtonElement>(".bc-dropdown-trigger");
+        const menu = dd.querySelector<HTMLElement>(".bc-dropdown-menu");
+        if (trigger) trigger.setAttribute("aria-expanded", "false");
+        if (menu) menu.hidden = true;
       });
-      if (currentVal && options.includes(currentVal)) {
-        select.value = currentVal;
-      }
+    }
+
+    function setDropdownValue(dd: HTMLElement, value: string) {
+      const hiddenInput = dd.querySelector<HTMLInputElement>("input[type='hidden']");
+      const trigger = dd.querySelector<HTMLButtonElement>(".bc-dropdown-trigger");
+      const valueSpan = dd.querySelector<HTMLElement>(".bc-dropdown-value");
+      const placeholder = dd.dataset.placeholder || "";
+
+      if (hiddenInput) hiddenInput.value = value;
+      if (valueSpan) valueSpan.textContent = value || placeholder;
+      if (trigger) trigger.classList.toggle("is-placeholder", !value);
+
+      dd.querySelectorAll<HTMLElement>(".bc-dropdown-option").forEach((opt) => {
+        const selected = opt.dataset.value === value && value !== "";
+        opt.classList.toggle("is-selected", selected);
+        opt.setAttribute("aria-selected", selected ? "true" : "false");
+      });
+    }
+
+    function bindDropdown(dd: HTMLElement) {
+      const trigger = dd.querySelector<HTMLButtonElement>(".bc-dropdown-trigger");
+      const menu = dd.querySelector<HTMLElement>(".bc-dropdown-menu");
+      if (!trigger || !menu) return;
+
+      trigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const willOpen = !dd.classList.contains("is-open");
+        closeAllDropdowns(dd);
+        dd.classList.toggle("is-open", willOpen);
+        trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+        menu.hidden = !willOpen;
+      });
+
+      menu.addEventListener("click", (e) => {
+        const opt = (e.target as HTMLElement | null)?.closest<HTMLElement>(".bc-dropdown-option");
+        if (!opt) return;
+        e.stopPropagation();
+        setDropdownValue(dd, opt.dataset.value || "");
+        closeAllDropdowns();
+        trigger.focus();
+      });
+    }
+
+    allDropdowns.forEach(bindDropdown);
+
+    function populateDropdown(dd: HTMLElement, placeholder: string, options: string[]) {
+      dd.dataset.placeholder = placeholder;
+      const hiddenInput = dd.querySelector<HTMLInputElement>("input[type='hidden']");
+      const menu = dd.querySelector<HTMLElement>(".bc-dropdown-menu");
+      const currentVal = hiddenInput?.value || "";
+      if (!menu) return;
+
+      menu.innerHTML = "";
+      options.forEach((optText) => {
+        const li = document.createElement("li");
+        li.className = "bc-dropdown-option";
+        li.setAttribute("role", "option");
+        li.setAttribute("aria-selected", "false");
+        li.dataset.value = optText;
+        li.tabIndex = -1;
+
+        const span = document.createElement("span");
+        span.textContent = optText;
+
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "bc-option-check");
+        svg.setAttribute("width", "14");
+        svg.setAttribute("height", "14");
+        svg.setAttribute("viewBox", "0 0 24 24");
+        svg.setAttribute("fill", "none");
+        svg.setAttribute("stroke", "currentColor");
+        svg.setAttribute("stroke-width", "2.2");
+        svg.setAttribute("stroke-linecap", "round");
+        svg.setAttribute("stroke-linejoin", "round");
+        svg.setAttribute("aria-hidden", "true");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M20 6 9 17l-5-5");
+        svg.appendChild(path);
+
+        li.appendChild(span);
+        li.appendChild(svg);
+        menu.appendChild(li);
+      });
+
+      setDropdownValue(dd, options.includes(currentVal) ? currentVal : "");
     }
 
     function applyConfig(cfg: Record<string, any>) {
@@ -289,7 +414,7 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
       if (typeof cfg.emailPlaceholder === "string") workEmailEl.placeholder = cfg.emailPlaceholder;
       setText("bc-help-label", cfg.helpLabel);
       if (Array.isArray(cfg.helpOptions)) {
-        populateSelect(helpTopicEl, String(cfg.helpPlaceholder || "Select an option..."), cfg.helpOptions);
+        populateDropdown(helpDropdown, String(cfg.helpPlaceholder || "Select an option..."), cfg.helpOptions);
       }
       setText("bc-privacy-note", cfg.privacyNote);
       setText("bc-step1-cta", cfg.step1Cta);
@@ -303,11 +428,11 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
       if (typeof cfg.linkPlaceholder === "string") referenceLinkEl.placeholder = cfg.linkPlaceholder;
       setText("bc-timeline-label", cfg.timelineLabel);
       if (Array.isArray(cfg.timelineOptions)) {
-        populateSelect(timelineEl, String(cfg.timelinePlaceholder || "Select a timeline"), cfg.timelineOptions);
+        populateDropdown(timelineDropdown, String(cfg.timelinePlaceholder || "Select a timeline"), cfg.timelineOptions);
       }
       setText("bc-budget-label", cfg.budgetLabel);
       if (Array.isArray(cfg.budgetOptions)) {
-        populateSelect(budgetEl, String(cfg.budgetPlaceholder || "This helps us recommend the right approach"), cfg.budgetOptions);
+        populateDropdown(budgetDropdown, String(cfg.budgetPlaceholder || "This helps us recommend the right approach"), cfg.budgetOptions);
       }
       setText("bc-notes-label", cfg.notesLabel);
       if (typeof cfg.notesPlaceholder === "string") notesEl.placeholder = cfg.notesPlaceholder;
@@ -333,6 +458,7 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
     }
 
     function setStep(step: "1" | "2" | "success") {
+      closeAllDropdowns();
       card.dataset.step = step;
       formStep1.hidden = step !== "1";
       formStep2.hidden = step !== "2";
@@ -370,6 +496,10 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
+      if (!target.closest(".bc-dropdown")) {
+        closeAllDropdowns();
+      }
+
       const closer = target.closest<HTMLElement>("[data-close-book-call]");
       if (closer && (e.target === closer || closer.id === "book-call-close" || closer.closest("#bc-step-success"))) {
         e.preventDefault();
@@ -390,6 +520,11 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && !modal.hidden) {
+        if (allDropdowns.some((dd) => dd.classList.contains("is-open"))) {
+          e.preventDefault();
+          closeAllDropdowns();
+          return;
+        }
         closeBookCallModal();
       }
     });
@@ -444,6 +579,7 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
 
         formStep1.reset();
         formStep2.reset();
+        allDropdowns.forEach((dd) => setDropdownValue(dd, ""));
         setStep("success");
       } catch (err: any) {
         step2ErrorEl.textContent = err?.message || "Something went wrong. Please try again.";
@@ -622,7 +758,7 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
   }
 
   .bc-input,
-  .bc-select,
+  .bc-dropdown-trigger,
   .bc-textarea {
     width: 100%;
     font-family: var(--font-family-body);
@@ -642,26 +778,41 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
   }
 
   .bc-input:focus,
-  .bc-select:focus,
+  .bc-dropdown-trigger:focus-visible,
+  .bc-dropdown.is-open .bc-dropdown-trigger,
   .bc-textarea:focus {
     border-color: rgba(72, 200, 255, 0.6);
     background: rgba(20, 50, 100, 0.65);
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
   }
 
-  .bc-select-wrap {
+  .bc-dropdown {
     position: relative;
+    width: 100%;
   }
 
-  .bc-select {
-    appearance: none;
-    padding-right: 36px;
+  .bc-dropdown.is-open {
+    z-index: 30;
+  }
+
+  .bc-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    text-align: left;
     cursor: pointer;
+    padding-right: 36px;
   }
 
-  .bc-select option {
-    background: #0a1935;
-    color: #f8fafc;
+  .bc-dropdown-trigger.is-placeholder .bc-dropdown-value {
+    color: rgba(148, 163, 184, 0.68);
+  }
+
+  .bc-dropdown-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .bc-select-chevron {
@@ -670,7 +821,76 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    color: rgba(203, 213, 225, 0.65);
+    color: rgba(203, 213, 225, 0.72);
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .bc-dropdown.is-open .bc-select-chevron {
+    transform: translateY(-50%) rotate(180deg);
+    color: #48c8ff;
+  }
+
+  .bc-dropdown-menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 40;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    max-height: 230px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: linear-gradient(160deg, rgba(14, 34, 72, 0.98) 0%, rgba(7, 19, 44, 0.99) 100%);
+    border: 1px solid rgba(72, 200, 255, 0.26);
+    box-shadow:
+      0 18px 42px rgba(2, 6, 16, 0.78),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(72, 200, 255, 0.35) transparent;
+  }
+
+  .bc-dropdown-menu[hidden] {
+    display: none;
+  }
+
+  :global(.bc-dropdown-option) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  :global(.bc-dropdown-option:hover) {
+    background: rgba(56, 189, 248, 0.14);
+    color: #ffffff;
+  }
+
+  :global(.bc-dropdown-option.is-selected) {
+    background: rgba(56, 189, 248, 0.2);
+    color: #7dd3fc;
+    font-weight: 600;
+  }
+
+  :global(.bc-option-check) {
+    opacity: 0;
+    color: #48c8ff;
+    flex-shrink: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  :global(.bc-dropdown-option.is-selected .bc-option-check) {
+    opacity: 1;
   }
 
   .bc-textarea {

@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { createBookCallSubmission } from "../../../lib/bookCallDb";
+import { getActiveCampaignConfig, syncLeadToActiveCampaign } from "../../../lib/activeCampaignDb";
 
 export const prerender = false;
 
@@ -16,7 +17,7 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const result = await createBookCallSubmission({
+    const submission = {
       fullName,
       workEmail,
       helpTopic: String(body?.helpTopic ?? ""),
@@ -25,7 +26,19 @@ export const POST: APIRoute = async ({ request }) => {
       timeline: String(body?.timeline ?? ""),
       budgetRange: String(body?.budgetRange ?? ""),
       notes: String(body?.notes ?? ""),
-    });
+    };
+
+    const result = await createBookCallSubmission(submission);
+
+    // Sync to ActiveCampaign if enabled (non-blocking for lead capture)
+    try {
+      const acConfig = await getActiveCampaignConfig();
+      if (acConfig.enabled && acConfig.apiUrl && acConfig.apiKey) {
+        await syncLeadToActiveCampaign(submission, acConfig);
+      }
+    } catch (acErr) {
+      console.error("[book-call/submit] ActiveCampaign sync failed:", acErr);
+    }
 
     return new Response(JSON.stringify({ ok: true, id: result.id }), {
       status: 201,

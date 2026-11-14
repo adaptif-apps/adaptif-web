@@ -1,15 +1,31 @@
 ---
 import { listProjects } from "../lib/portfolioDb";
 import { getBookCallConfig } from "../lib/bookCallDb";
+import { getActiveCampaignConfig } from "../lib/activeCampaignDb";
 
 export const prerender = false;
 
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
 
-const [initialProjects, initialBookCallConfig] = await Promise.all([
+const [initialProjects, initialBookCallConfig, rawAcConfig] = await Promise.all([
   listProjects({ includeHidden: true }),
   getBookCallConfig(),
+  getActiveCampaignConfig(),
 ]);
+
+const initialAcState = {
+  enabled: rawAcConfig.enabled,
+  apiUrl: rawAcConfig.apiUrl,
+  hasApiKey: Boolean(rawAcConfig.apiKey),
+  listId: rawAcConfig.listId,
+  tagIds: rawAcConfig.tagIds,
+  tagFromHelpTopic: rawAcConfig.tagFromHelpTopic,
+  mapping: rawAcConfig.mapping,
+  cachedLists: rawAcConfig.cachedLists,
+  cachedTags: rawAcConfig.cachedTags,
+  cachedFields: rawAcConfig.cachedFields,
+  lastSyncedAt: rawAcConfig.lastSyncedAt,
+};
 
 const tagPresets = [
   "Branding",
@@ -61,6 +77,10 @@ const tagPresets = [
           <button type="button" class="nav-item" data-module-tab="book-call">
             <span>Book a Call Form</span>
             <span class="nav-count">2 steps</span>
+          </button>
+          <button type="button" class="nav-item" data-module-tab="activecampaign">
+            <span>ActiveCampaign</span>
+            <span class="nav-count" id="sidebar-ac-status">{initialAcState.enabled ? "On" : "Off"}</span>
           </button>
 
           <div class="nav-item is-disabled" aria-disabled="true">
@@ -423,13 +443,199 @@ const tagPresets = [
             </section>
           </form>
         </div>
+
+        <!-- ActiveCampaign Integration Module -->
+        <div id="module-activecampaign" hidden>
+          <header class="studio-header">
+            <div>
+              <p class="studio-eyebrow">Integrations</p>
+              <h1 class="studio-title">ActiveCampaign <span>Sync</span></h1>
+            </div>
+            <div class="studio-header-actions">
+              <button type="submit" form="ac-cms-form" class="btn-primary" id="btn-save-ac">
+                Save Integration
+              </button>
+            </div>
+          </header>
+
+          <form id="ac-cms-form" class="bc-cms-form">
+            <section class="bc-cms-card">
+              <div class="ac-card-head">
+                <div>
+                  <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">1. Connect Your Account</h2>
+                  <p class="field-hint" style="margin: 0;">
+                    Enter your ActiveCampaign Developer API URL &amp; Key, then fetch your Lists, Tags, and Custom Fields automatically.
+                  </p>
+                </div>
+                <label class="toggle-wrap">
+                  <input type="checkbox" id="ac-enabled" checked={initialAcState.enabled} />
+                  <span>Enable Sync</span>
+                </label>
+              </div>
+
+              <div class="bc-cms-grid" style="margin-top: 16px;">
+                <div class="form-field">
+                  <label for="ac-api-url">Account API URL</label>
+                  <input
+                    type="url"
+                    id="ac-api-url"
+                    value={initialAcState.apiUrl}
+                    placeholder="https://youraccount.api-us1.com"
+                  />
+                </div>
+                <div class="form-field">
+                  <label for="ac-api-key">API Key</label>
+                  <input
+                    type="password"
+                    id="ac-api-key"
+                    placeholder={initialAcState.hasApiKey ? "Saved (leave blank to keep current key)" : "Paste your ActiveCampaign API key..."}
+                    autocomplete="off"
+                  />
+                </div>
+              </div>
+
+              <div class="ac-sync-bar">
+                <button type="button" class="btn-secondary" id="btn-ac-sync-meta">
+                  Connect &amp; Fetch Fields
+                </button>
+                <span class="ac-sync-status" id="ac-sync-status">
+                  {initialAcState.cachedFields.length > 0 || initialAcState.cachedLists.length > 0
+                    ? `Synced • ${initialAcState.cachedLists.length} lists, ${initialAcState.cachedTags.length} tags, ${initialAcState.cachedFields.length} fields`
+                    : "Not synced yet"}
+                </span>
+              </div>
+            </section>
+
+            <section class="bc-cms-card">
+              <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">2. Visual Field Mapping</h2>
+              <p class="field-hint" style="margin: 0 0 16px;">
+                Match each Book a Call form field to its destination in ActiveCampaign.
+              </p>
+
+              <div class="ac-map-table">
+                <div class="ac-map-head">
+                  <span>Book a Call Field</span>
+                  <span>ActiveCampaign Destination</span>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>Work Email</strong>
+                    <span>Step 1 • Required</span>
+                  </div>
+                  <div class="ac-map-locked">Contact Email (Always synced)</div>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>Full Name</strong>
+                    <span>Step 1 • Required</span>
+                  </div>
+                  <select id="ac-map-fullname" class="ac-select">
+                    <option value="split">Split into First Name + Last Name</option>
+                    <option value="firstOnly">Send full text as First Name</option>
+                    <option value="ignore">Do not sync</option>
+                  </select>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>What would you like help with?</strong>
+                    <span>Step 1 • Dropdown</span>
+                  </div>
+                  <select id="ac-map-help" class="ac-select" data-ac-field-select></select>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>Main Goal of Project</strong>
+                    <span>Step 2 • Text</span>
+                  </div>
+                  <select id="ac-map-goal" class="ac-select" data-ac-field-select></select>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>Website / Reference Link</strong>
+                    <span>Step 2 • URL</span>
+                  </div>
+                  <select id="ac-map-link" class="ac-select" data-ac-field-select></select>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>Ideal Timeline</strong>
+                    <span>Step 2 • Dropdown</span>
+                  </div>
+                  <select id="ac-map-timeline" class="ac-select" data-ac-field-select></select>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>Budget Range</strong>
+                    <span>Step 2 • Dropdown</span>
+                  </div>
+                  <select id="ac-map-budget" class="ac-select" data-ac-field-select></select>
+                </div>
+
+                <div class="ac-map-row">
+                  <div class="ac-map-source">
+                    <strong>Additional Notes</strong>
+                    <span>Step 2 • Textarea</span>
+                  </div>
+                  <select id="ac-map-notes" class="ac-select" data-ac-field-select></select>
+                </div>
+              </div>
+            </section>
+
+            <section class="bc-cms-card">
+              <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">3. Lists, Tags &amp; Live Test</h2>
+              <p class="field-hint" style="margin: 0 0 16px;">
+                Choose which list and tags are applied automatically whenever someone submits Book a Call.
+              </p>
+
+              <div class="bc-cms-grid">
+                <div class="form-field">
+                  <label for="ac-list-id">Subscribe to List</label>
+                  <select id="ac-list-id" class="ac-select"></select>
+                </div>
+
+                <div class="form-field" style="justify-content: flex-end;">
+                  <label class="toggle-wrap" style="padding-bottom: 10px;">
+                    <input type="checkbox" id="ac-tag-help-topic" checked={initialAcState.tagFromHelpTopic} />
+                    <span>Also auto-tag with selected "Help Topic"</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-field" style="margin-top: 14px;">
+                <label>Apply Tags on Submit (click to toggle)</label>
+                <div class="ac-tags-chips" id="ac-tags-chips"></div>
+              </div>
+
+              <div class="ac-test-bar">
+                <input
+                  type="email"
+                  id="ac-test-email"
+                  class="ac-test-input"
+                  value="test-lead@adaptif.studio"
+                  placeholder="test-lead@yourdomain.com"
+                />
+                <button type="button" class="btn-secondary" id="btn-ac-test">
+                  Send Test Lead
+                </button>
+              </div>
+            </section>
+          </form>
+        </div>
       </main>
     </div>
 
     <div class="toast" id="studio-toast" role="status" aria-live="polite"></div>
 
-    <script define:vars={{ initialProjects }}>
+    <script define:vars={{ initialProjects, initialAcState }}>
       window.__INITIAL_PROJECTS__ = initialProjects;
+      window.__INITIAL_AC_STATE__ = initialAcState;
     </script>
 
     <script>
@@ -870,6 +1076,7 @@ const tagPresets = [
       moduleTabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           const target = tab.dataset.moduleTab;
+          const activeCampaignModule = document.getElementById("module-activecampaign");
           moduleTabs.forEach((t) => {
             const active = t.dataset.moduleTab === target;
             t.classList.toggle("is-active", active);
@@ -878,6 +1085,7 @@ const tagPresets = [
           });
           if (portfolioModule) portfolioModule.hidden = target !== "portfolio";
           if (bookCallModule) bookCallModule.hidden = target !== "book-call";
+          if (activeCampaignModule) activeCampaignModule.hidden = target !== "activecampaign";
         });
       });
 
@@ -948,6 +1156,203 @@ const tagPresets = [
           showToast(err?.message || "Failed to save form settings", true);
         } finally {
           if (bcSaveBtn) bcSaveBtn.disabled = false;
+        }
+      });
+
+      // ActiveCampaign Integration CMS
+      const acState = (window as any).__INITIAL_AC_STATE__ || {};
+      const acForm = document.getElementById("ac-cms-form") as HTMLFormElement | null;
+      const acEnabledEl = document.getElementById("ac-enabled") as HTMLInputElement | null;
+      const acApiUrlEl = document.getElementById("ac-api-url") as HTMLInputElement | null;
+      const acApiKeyEl = document.getElementById("ac-api-key") as HTMLInputElement | null;
+      const acSyncBtn = document.getElementById("btn-ac-sync-meta") as HTMLButtonElement | null;
+      const acSyncStatusEl = document.getElementById("ac-sync-status");
+      const acSidebarStatusEl = document.getElementById("sidebar-ac-status");
+      const acListSelectEl = document.getElementById("ac-list-id") as HTMLSelectElement | null;
+      const acTagChipsEl = document.getElementById("ac-tags-chips");
+      const acTagHelpTopicEl = document.getElementById("ac-tag-help-topic") as HTMLInputElement | null;
+      const acSaveBtn = document.getElementById("btn-save-ac") as HTMLButtonElement | null;
+      const acTestBtn = document.getElementById("btn-ac-test") as HTMLButtonElement | null;
+      const acTestEmailEl = document.getElementById("ac-test-email") as HTMLInputElement | null;
+
+      const acFullNameSelect = document.getElementById("ac-map-fullname") as HTMLSelectElement | null;
+      const acFieldMapIds: [string, keyof typeof acState.mapping][] = [
+        ["ac-map-help", "helpTopicFieldId"],
+        ["ac-map-goal", "projectGoalFieldId"],
+        ["ac-map-link", "referenceLinkFieldId"],
+        ["ac-map-timeline", "timelineFieldId"],
+        ["ac-map-budget", "budgetRangeFieldId"],
+        ["ac-map-notes", "notesFieldId"],
+      ];
+
+      let acSelectedTags = new Set<string>(Array.isArray(acState.tagIds) ? acState.tagIds : []);
+      let acLists: { id: string; name: string }[] = Array.isArray(acState.cachedLists) ? acState.cachedLists : [];
+      let acTags: { id: string; name: string }[] = Array.isArray(acState.cachedTags) ? acState.cachedTags : [];
+      let acFields: { id: string; title: string; perstag: string }[] = Array.isArray(acState.cachedFields) ? acState.cachedFields : [];
+
+      function renderAcControls(mappingOverride?: Record<string, string>, listOverride?: string) {
+        const mapping = mappingOverride || acState.mapping || {};
+        if (acFullNameSelect && mapping.fullNameMode) {
+          acFullNameSelect.value = mapping.fullNameMode;
+        }
+
+        acFieldMapIds.forEach(([elId, mapKey]) => {
+          const sel = document.getElementById(elId) as HTMLSelectElement | null;
+          if (!sel) return;
+          const prevVal = sel.value || String(mapping[mapKey] || "");
+          sel.innerHTML = "";
+          const noneOpt = document.createElement("option");
+          noneOpt.value = "";
+          noneOpt.textContent = "— Do not sync —";
+          sel.appendChild(noneOpt);
+          acFields.forEach((f) => {
+            const opt = document.createElement("option");
+            opt.value = f.id;
+            opt.textContent = f.perstag ? `${f.title} (%${f.perstag}%)` : f.title;
+            sel.appendChild(opt);
+          });
+          sel.value = prevVal;
+        });
+
+        if (acListSelectEl) {
+          const prevList = listOverride ?? (acListSelectEl.value || String(acState.listId || ""));
+          acListSelectEl.innerHTML = "";
+          const noneOpt = document.createElement("option");
+          noneOpt.value = "";
+          noneOpt.textContent = "— None —";
+          acListSelectEl.appendChild(noneOpt);
+          acLists.forEach((l) => {
+            const opt = document.createElement("option");
+            opt.value = l.id;
+            opt.textContent = l.name;
+            acListSelectEl.appendChild(opt);
+          });
+          acListSelectEl.value = prevList;
+        }
+
+        if (acTagChipsEl) {
+          acTagChipsEl.innerHTML = "";
+          if (acTags.length === 0) {
+            const hint = document.createElement("span");
+            hint.className = "field-hint";
+            hint.textContent = 'Click "Connect & Fetch Fields" above to load your ActiveCampaign tags.';
+            acTagChipsEl.appendChild(hint);
+          } else {
+            acTags.forEach((tag) => {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = `ac-tag-chip ${acSelectedTags.has(tag.id) ? "is-active" : ""}`;
+              btn.textContent = tag.name;
+              btn.addEventListener("click", () => {
+                if (acSelectedTags.has(tag.id)) acSelectedTags.delete(tag.id);
+                else acSelectedTags.add(tag.id);
+                btn.classList.toggle("is-active", acSelectedTags.has(tag.id));
+              });
+              acTagChipsEl.appendChild(btn);
+            });
+          }
+        }
+      }
+
+      renderAcControls(acState.mapping, acState.listId);
+
+      function collectAcPayload() {
+        const mapping: Record<string, string> = {
+          fullNameMode: acFullNameSelect?.value || "split",
+        };
+        acFieldMapIds.forEach(([elId, mapKey]) => {
+          const sel = document.getElementById(elId) as HTMLSelectElement | null;
+          mapping[String(mapKey)] = sel?.value || "";
+        });
+
+        return {
+          enabled: Boolean(acEnabledEl?.checked),
+          apiUrl: acApiUrlEl?.value.trim() || "",
+          apiKey: acApiKeyEl?.value.trim() || "",
+          listId: acListSelectEl?.value || "",
+          tagIds: Array.from(acSelectedTags),
+          tagFromHelpTopic: Boolean(acTagHelpTopicEl?.checked),
+          mapping,
+        };
+      }
+
+      acSyncBtn?.addEventListener("click", async () => {
+        acSyncBtn.disabled = true;
+        acSyncBtn.textContent = "Connecting...";
+        try {
+          const res = await fetch("/api/activecampaign/sync-meta", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              apiUrl: acApiUrlEl?.value.trim() || "",
+              apiKey: acApiKeyEl?.value.trim() || "",
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data?.error || "Connection failed");
+
+          acLists = data.lists || [];
+          acTags = data.tags || [];
+          acFields = data.fields || [];
+          renderAcControls();
+          if (acSyncStatusEl) {
+            acSyncStatusEl.textContent = `Connected • ${acLists.length} lists, ${acTags.length} tags, ${acFields.length} fields`;
+          }
+          showToast("ActiveCampaign fields synced!");
+        } catch (err: any) {
+          showToast(err?.message || "Failed to connect to ActiveCampaign", true);
+        } finally {
+          acSyncBtn.disabled = false;
+          acSyncBtn.textContent = "Connect & Fetch Fields";
+        }
+      });
+
+      acForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (acSaveBtn) acSaveBtn.disabled = true;
+        try {
+          const payload = collectAcPayload();
+          const res = await fetch("/api/activecampaign/config", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data?.error || "Failed to save ActiveCampaign settings");
+          if (acSidebarStatusEl) acSidebarStatusEl.textContent = payload.enabled ? "On" : "Off";
+          if (acApiKeyEl && payload.apiKey) {
+            acApiKeyEl.value = "";
+            acApiKeyEl.placeholder = "Saved (leave blank to keep current key)";
+          }
+          showToast("ActiveCampaign settings saved!");
+        } catch (err: any) {
+          showToast(err?.message || "Failed to save settings", true);
+        } finally {
+          if (acSaveBtn) acSaveBtn.disabled = false;
+        }
+      });
+
+      acTestBtn?.addEventListener("click", async () => {
+        acTestBtn.disabled = true;
+        acTestBtn.textContent = "Sending...";
+        try {
+          const payload = collectAcPayload();
+          const res = await fetch("/api/activecampaign/test", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...payload,
+              email: acTestEmailEl?.value.trim() || "test-lead@adaptif.studio",
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data?.error || "Test sync failed");
+          showToast(`Test lead synced (Contact #${data.contactId})`);
+        } catch (err: any) {
+          showToast(err?.message || "Test sync failed", true);
+        } finally {
+          acTestBtn.disabled = false;
+          acTestBtn.textContent = "Send Test Lead";
         }
       });
     </script>
@@ -1713,6 +2118,168 @@ const tagPresets = [
       @media (max-width: 720px) {
         .bc-cms-grid {
           grid-template-columns: 1fr;
+        }
+      }
+
+      .ac-card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .ac-sync-bar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      .ac-sync-status {
+        font-size: 0.8rem;
+        color: #94a3b8;
+      }
+
+      .ac-map-table {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .ac-map-head {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr;
+        gap: 16px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #7dd3fc;
+      }
+
+      .ac-map-row {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr;
+        gap: 16px;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .ac-map-row:last-child {
+        border-bottom: none;
+      }
+
+      .ac-map-source {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .ac-map-source strong {
+        font-size: 0.86rem;
+        font-weight: 600;
+        color: #f8fafc;
+      }
+
+      .ac-map-source span {
+        font-size: 0.74rem;
+        color: #94a3b8;
+      }
+
+      .ac-map-locked {
+        padding: 9px 12px;
+        border-radius: 8px;
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: #7dd3fc;
+        font-size: 0.82rem;
+        font-weight: 500;
+      }
+
+      .ac-select {
+        width: 100%;
+        padding: 9px 12px;
+        border-radius: 8px;
+        background: #060b16;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #f8fafc;
+        font-family: var(--font-sans);
+        font-size: 0.84rem;
+        outline: none;
+      }
+
+      .ac-select:focus {
+        border-color: rgba(56, 189, 248, 0.55);
+      }
+
+      .ac-tags-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      :global(.ac-tag-chip) {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.04);
+        color: #cbd5e1;
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      }
+
+      :global(.ac-tag-chip:hover) {
+        border-color: rgba(56, 189, 248, 0.4);
+        color: #ffffff;
+      }
+
+      :global(.ac-tag-chip.is-active) {
+        background: rgba(56, 189, 248, 0.18);
+        border-color: rgba(56, 189, 248, 0.55);
+        color: #7dd3fc;
+      }
+
+      .ac-test-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        flex-wrap: wrap;
+      }
+
+      .ac-test-input {
+        flex: 1;
+        min-width: 220px;
+        padding: 9px 12px;
+        border-radius: 8px;
+        background: #060b16;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #f8fafc;
+        font-family: var(--font-sans);
+        font-size: 0.84rem;
+      }
+
+      @media (max-width: 720px) {
+        .ac-map-head {
+          display: none;
+        }
+        .ac-map-row {
+          grid-template-columns: 1fr;
+          gap: 8px;
         }
       }
 

@@ -295,6 +295,17 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
             <h1 class="cf-title" {...ed("title")}>{item.title}</h1>
             <p class="cf-subtitle" {...ed("subtitle")}>{item.subtitle || item.description}</p>
 
+            <div class="cf-hero-signals">
+              <span class="cf-signal-item">
+                <span class="cf-signal-dot" aria-hidden="true"></span>
+                <span {...ed("landingData.heroSignal1")}>{(item.landingData as any)?.heroSignal1 || "100% Fidelity & Consistency"}</span>
+              </span>
+              <span class="cf-signal-item">
+                <span class="cf-signal-dot" aria-hidden="true"></span>
+                <span {...ed("landingData.heroSignal2")}>{(item.landingData as any)?.heroSignal2 || "Zero Hallucinations"}</span>
+              </span>
+            </div>
+
             <div class="cf-cta-row">
               {isUnlocked ? (
                 <>
@@ -1226,6 +1237,36 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     font-size: 1.06rem;
     line-height: 1.62;
     color: var(--text-secondary);
+  }
+
+  .cf-subtitle {
+    margin: 0 0 18px;
+  }
+
+  .cf-hero-signals {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .cf-signal-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #6ee7b7;
+  }
+
+  .cf-signal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.75);
+    flex-shrink: 0;
   }
 
   .cf-cta-row {

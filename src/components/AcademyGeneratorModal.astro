@@ -8,7 +8,7 @@ interface Props {
 const { initialSettings } = Astro.props;
 ---
 
-<section class="acd-glass-card acd-gen-card" id="acd-gen-card" aria-label="AI Curriculum Generator">
+<section class="acd-gen-flat" id="acd-gen-card" aria-label="AI Curriculum Generator">
   <div class="gen-card-inner">
     <header class="gen-modal-head">
       <div>
@@ -20,45 +20,6 @@ const { initialSettings } = Astro.props;
     </header>
 
     <div class="gen-modal-body">
-      <!-- Type Switcher + AI Engine Status -->
-      <div class="gen-top-row">
-        <div class="gen-type-pills" role="group" aria-label="Content type">
-          <button type="button" class="gen-pill is-active" data-gen-kind="course">Course (Paid + Tool)</button>
-          <button type="button" class="gen-pill" data-gen-kind="guide">Guide (Free Playbook)</button>
-        </div>
-
-        <button type="button" class="gen-ai-status-btn" id="btn-toggle-ai-cfg">
-          <span class:list={["gen-status-dot", { "is-ready": initialSettings.hasAiApiKey }]} id="gen-ai-dot"></span>
-          <span id="gen-ai-status-text">
-            {initialSettings.hasAiApiKey
-              ? `${initialSettings.aiProvider === "openai" ? "OpenAI" : "Gemini"} Ready`
-              : "Configure AI Key"}
-          </span>
-        </button>
-      </div>
-
-      <!-- Collapsible AI Provider Key Config -->
-      <div class="gen-ai-config-box" id="gen-ai-config-box" hidden={!initialSettings.hasAiApiKey ? false : true}>
-        <div class="gen-ai-grid">
-          <label class="gen-field">
-            <span>AI Provider</span>
-            <select id="gen-ai-provider" class="ac-select">
-              <option value="gemini" selected={initialSettings.aiProvider !== "openai"}>Google Gemini (2.5 Flash)</option>
-              <option value="openai" selected={initialSettings.aiProvider === "openai"}>OpenAI (GPT-4o Mini)</option>
-            </select>
-          </label>
-          <label class="gen-field">
-            <span>API Key</span>
-            <input
-              type="password"
-              id="gen-ai-key"
-              placeholder={initialSettings.hasAiApiKey ? "Saved (leave blank to keep)" : "Paste Gemini or OpenAI API key..."}
-            />
-          </label>
-          <button type="button" class="gen-btn-glass gen-save-key-btn" id="btn-save-ai-key">Save Key</button>
-        </div>
-      </div>
-
       <!-- 1. Drag & Drop Files -->
       <div class="gen-dropzone" id="gen-dropzone">
         <input
@@ -170,57 +131,17 @@ const { initialSettings } = Astro.props;
     const browseBtn = document.getElementById("btn-browse-files");
     const chipsEl = document.getElementById("gen-file-chips");
 
-    const aiCfgToggle = document.getElementById("btn-toggle-ai-cfg");
-    const aiCfgBox = document.getElementById("gen-ai-config-box");
-    const saveAiKeyBtn = document.getElementById("btn-save-ai-key") as HTMLButtonElement | null;
-    const aiDot = document.getElementById("gen-ai-dot");
-    const aiStatusText = document.getElementById("gen-ai-status-text");
-
     let currentKind: "course" | "guide" = "course";
     let attachedFiles: { name: string; mimeType: string; textContent?: string; base64Data?: string }[] = [];
 
     function setKind(kind: "course" | "guide") {
       currentKind = kind;
-      document.querySelectorAll<HTMLButtonElement>("[data-gen-kind]").forEach((b) => {
-        b.classList.toggle("is-active", b.dataset.genKind === kind);
-      });
       if (kindTitleEl) kindTitleEl.textContent = kind === "course" ? "Course" : "Guide";
       if (courseFieldsEl) courseFieldsEl.hidden = kind !== "course";
     }
 
-    document.querySelectorAll<HTMLButtonElement>("[data-gen-kind]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        setKind(btn.dataset.genKind === "guide" ? "guide" : "course");
-      });
-    });
-
     statusSel?.addEventListener("change", () => {
       if (publishAtWrap) publishAtWrap.hidden = statusSel.value !== "scheduled";
-    });
-
-    aiCfgToggle?.addEventListener("click", () => {
-      if (aiCfgBox) aiCfgBox.hidden = !aiCfgBox.hidden;
-    });
-
-    saveAiKeyBtn?.addEventListener("click", async () => {
-      const provider = (document.getElementById("gen-ai-provider") as HTMLSelectElement)?.value || "gemini";
-      const apiKey = (document.getElementById("gen-ai-key") as HTMLInputElement)?.value || "";
-      saveAiKeyBtn.disabled = true;
-      try {
-        const res = await fetch("/api/academy/settings", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ aiProvider: provider, aiApiKey: apiKey })
-        });
-        const data = await res.json();
-        if (res.ok && data?.settings?.hasAiApiKey) {
-          aiDot?.classList.add("is-ready");
-          if (aiStatusText) aiStatusText.textContent = `${provider === "openai" ? "OpenAI" : "Gemini"} Ready`;
-          if (aiCfgBox) aiCfgBox.hidden = true;
-        }
-      } finally {
-        saveAiKeyBtn.disabled = false;
-      }
     });
 
     function renderChips() {
@@ -373,34 +294,26 @@ const { initialSettings } = Astro.props;
     display: none !important;
   }
 
-  .acd-gen-card {
+  .acd-gen-flat {
     position: relative;
     z-index: 40;
-    border-radius: 20px;
-    border: 1px solid rgba(72, 200, 255, 0.22);
-    background:
-      radial-gradient(ellipse 65% 40% at 50% 0%, rgba(72, 200, 255, 0.1) 0%, transparent 70%),
-      rgba(11, 32, 54, 0.56);
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 20px 50px rgba(0, 0, 0, 0.4);
-    margin-bottom: 22px;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     overflow: visible;
   }
 
   .gen-card-inner {
     display: flex;
     flex-direction: column;
+    gap: 18px;
   }
 
   .gen-modal-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 26px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0;
   }
 
   .gen-kicker {
@@ -438,7 +351,7 @@ const { initialSettings } = Astro.props;
   }
 
   .gen-modal-body {
-    padding: 22px 26px;
+    padding: 0;
     display: grid;
     gap: 18px;
   }

@@ -17,23 +17,16 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title" id="acd-module-title">Courses &amp; <span>Guides</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-glass" id="btn-open-payment">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2" y="5" width="20" height="14" rx="2" />
-          <line x1="2" y1="10" x2="22" y2="10" />
-        </svg>
-        <span>Payment</span>
-      </button>
       <button type="button" class="acd-btn-cyan" id="btn-new-guide">+ New Guide</button>
       <button type="button" class="acd-btn-cyan" id="btn-new-course">+ New Course</button>
     </div>
   </header>
 
-  <!-- 1st Module: Inline AI Curriculum Generator -->
+  <!-- 1st Module: Flat AI Curriculum Generator -->
   <AcademyGeneratorModal initialSettings={initialSettings} />
 
   <!-- Full-Width Editor Card (selection happens in Sidebar Courses / Guides dropdowns) -->
-  <section class="acd-glass-card acd-editor-shell" aria-label="Course or Guide editor">
+  <section class="acd-glass-card acd-editor-shell" aria-label="Course or Guide settings">
     <div class="acd-empty-editor" id="acd-empty-editor">
       Select an item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
     </div>
@@ -81,11 +74,6 @@ const { initialItems, initialSettings } = Astro.props;
         </label>
 
         <label class="acd-field">
-          <span>Title</span>
-          <input type="text" id="acd-title" required />
-        </label>
-
-        <label class="acd-field">
           <span>Slug (URL)</span>
           <input type="text" id="acd-slug" required />
         </label>
@@ -94,27 +82,6 @@ const { initialItems, initialSettings } = Astro.props;
           <span>Category</span>
           <input type="text" id="acd-category" placeholder="AI Workflows" />
         </label>
-
-        <label class="acd-field acd-span-2">
-          <span>Subtitle (Hero)</span>
-          <input type="text" id="acd-subtitle" />
-        </label>
-
-        <label class="acd-field acd-span-2">
-          <span>Description</span>
-          <textarea id="acd-description" rows="3"></textarea>
-        </label>
-
-        <div class="acd-field acd-span-2">
-          <span>Cover Image URL</span>
-          <div class="acd-copy-row">
-            <input type="text" id="acd-cover-image" placeholder="/images/..." />
-            <label class="acd-btn-glass acd-upload-label">
-              Upload
-              <input type="file" id="acd-cover-file" accept="image/*" hidden />
-            </label>
-          </div>
-        </div>
       </div>
 
       <!-- Course-Specific Fields -->
@@ -198,67 +165,117 @@ const { initialItems, initialSettings } = Astro.props;
     </form>
   </section>
 
-  <!-- Payment & Stripe Access Control Popup Modal -->
-  <div
-    class="acd-modal-backdrop"
-    id="acd-payment-modal"
-    hidden
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="acd-payment-modal-title"
-  >
-    <div class="acd-modal-panel">
-      <div class="acd-prefs-head">
-        <div>
-          <span class="acd-section-kicker">Stripe &amp; Access Control</span>
-          <h2 class="acd-card-title" id="acd-payment-modal-title">Course Access Preferences</h2>
-          <p class="acd-card-sub">
-            Configure how paid courses unlock after checkout. Paste individual Stripe Payment Links on each course.
-          </p>
-        </div>
-        <button type="button" class="acd-modal-close" id="btn-close-payment-modal" aria-label="Close modal">×</button>
-      </div>
+</div>
 
-      <div class="acd-prefs-grid">
-        <label class="acd-field">
-          <span>Default Course Access Mode</span>
-          <select id="acd-default-access-mode" class="ac-select">
-            <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
-              Option A: Stripe Webhook + Secure Token (Recommended)
-            </option>
-            <option value="checkout_redirect" selected={initialSettings.defaultCourseAccessMode === "checkout_redirect"}>
-              Simple Checkout Redirect (?checkout=success)
-            </option>
-            <option value="open" selected={initialSettings.defaultCourseAccessMode === "open"}>
-              Open Access (No Gate)
-            </option>
-          </select>
-        </label>
+<!-- General Payment & Stripe Access Control Module (Left Sidebar: Payment) -->
+<div id="module-payment" hidden>
+  <header class="studio-header">
+    <div>
+      <p class="studio-eyebrow">Stripe &amp; Access Control</p>
+      <h1 class="studio-title">Payment <span>Settings</span></h1>
+    </div>
+    <div class="studio-header-actions">
+      <button type="button" class="acd-btn-cyan" id="btn-save-acd-settings">Save Preferences</button>
+    </div>
+  </header>
 
-        <label class="acd-field">
-          <span>Stripe Webhook Secret (whsec_...)</span>
-          <input
-            type="password"
-            id="acd-stripe-secret"
-            placeholder={initialSettings.hasStripeWebhookSecret ? "Saved (leave blank to keep)" : "whsec_..."}
-          />
-        </label>
-
-        <div class="acd-field">
-          <span>Stripe Webhook Endpoint</span>
-          <div class="acd-copy-row">
-            <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
-            <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="acd-modal-foot">
-        <button type="button" class="acd-btn-glass" id="btn-cancel-payment-modal">Close</button>
-        <button type="button" class="acd-btn-cyan" id="btn-save-acd-settings">Save Preferences</button>
+  <section class="acd-glass-card acd-prefs-card" aria-label="Course Access & Stripe Preferences">
+    <div class="acd-prefs-head">
+      <div>
+        <span class="acd-section-kicker">Global Course Checkout</span>
+        <h2 class="acd-card-title">Course Access Preferences</h2>
+        <p class="acd-card-sub">
+          Configure how paid courses unlock after checkout across all courses. Paste individual Stripe Payment Links on each course.
+        </p>
       </div>
     </div>
-  </div>
+
+    <div class="acd-prefs-grid">
+      <label class="acd-field">
+        <span>Default Course Access Mode</span>
+        <select id="acd-default-access-mode" class="ac-select">
+          <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
+            Option A: Stripe Webhook + Secure Token (Recommended)
+          </option>
+          <option value="checkout_redirect" selected={initialSettings.defaultCourseAccessMode === "checkout_redirect"}>
+            Simple Checkout Redirect (?checkout=success)
+          </option>
+          <option value="open" selected={initialSettings.defaultCourseAccessMode === "open"}>
+            Open Access (No Gate)
+          </option>
+        </select>
+      </label>
+
+      <label class="acd-field">
+        <span>Stripe Webhook Secret (whsec_...)</span>
+        <input
+          type="password"
+          id="acd-stripe-secret"
+          placeholder={initialSettings.hasStripeWebhookSecret ? "Saved (leave blank to keep)" : "whsec_..."}
+        />
+      </label>
+
+      <div class="acd-field">
+        <span>Stripe Webhook Endpoint</span>
+        <div class="acd-copy-row">
+          <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
+          <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- AI Engine Configuration Module (Left Sidebar: AI Engine) -->
+<div id="module-ai-config" hidden>
+  <header class="studio-header">
+    <div>
+      <p class="studio-eyebrow">Curriculum Generation</p>
+      <h1 class="studio-title">AI <span>Engine</span></h1>
+    </div>
+    <div class="studio-header-actions">
+      <button type="button" class="acd-btn-cyan" id="btn-save-ai-key">Save AI Configuration</button>
+    </div>
+  </header>
+
+  <section class="acd-glass-card acd-prefs-card" aria-label="AI Engine Configuration">
+    <div class="acd-prefs-head">
+      <div>
+        <span class="acd-section-kicker">Provider &amp; Credentials</span>
+        <h2 class="acd-card-title">AI Generator Model &amp; API Key</h2>
+        <p class="acd-card-sub">
+          Choose the LLM provider used to synthesize uploaded docs, links, and notes into Courses and Guides.
+        </p>
+      </div>
+      <div class="acd-ai-status-pill">
+        <span class:list={["acd-status-dot", { "is-ready": initialSettings.hasAiApiKey }]} id="gen-ai-dot"></span>
+        <span id="gen-ai-status-text">
+          {initialSettings.hasAiApiKey
+            ? `${initialSettings.aiProvider === "openai" ? "OpenAI" : "Gemini"} Ready`
+            : "Not Configured"}
+        </span>
+      </div>
+    </div>
+
+    <div class="acd-prefs-grid">
+      <label class="acd-field">
+        <span>AI Provider</span>
+        <select id="gen-ai-provider" class="ac-select">
+          <option value="gemini" selected={initialSettings.aiProvider !== "openai"}>Google Gemini (2.5 Flash)</option>
+          <option value="openai" selected={initialSettings.aiProvider === "openai"}>OpenAI (GPT-4o Mini)</option>
+        </select>
+      </label>
+
+      <label class="acd-field acd-span-2">
+        <span>API Key</span>
+        <input
+          type="password"
+          id="gen-ai-key"
+          placeholder={initialSettings.hasAiApiKey ? "Saved (leave blank to keep)" : "Paste Gemini or OpenAI API key..."}
+        />
+      </label>
+    </div>
+  </section>
 </div>
 
 <script define:vars={{ initialItems, initialSettings }}>
@@ -315,6 +332,8 @@ const { initialItems, initialSettings } = Astro.props;
       const bookCallModule = document.getElementById("module-book-call");
       const activeCampaignModule = document.getElementById("module-activecampaign");
       const academyModule = document.getElementById("module-academy");
+      const paymentModule = document.getElementById("module-payment");
+      const aiConfigModule = document.getElementById("module-ai-config");
 
       document.querySelectorAll<HTMLButtonElement>("[data-module-tab]").forEach((t) => {
         t.classList.remove("is-active");
@@ -324,6 +343,8 @@ const { initialItems, initialSettings } = Astro.props;
       if (portfolioModule) portfolioModule.hidden = true;
       if (bookCallModule) bookCallModule.hidden = true;
       if (activeCampaignModule) activeCampaignModule.hidden = true;
+      if (paymentModule) paymentModule.hidden = true;
+      if (aiConfigModule) aiConfigModule.hidden = true;
       if (academyModule) academyModule.hidden = false;
     }
 
@@ -526,18 +547,16 @@ const { initialItems, initialSettings } = Astro.props;
       el("acd-kind")!.value = item.kind;
       el("acd-status")!.value = item.status;
       el("acd-publish-at")!.value = item.publishAt ? item.publishAt.slice(0, 16) : "";
-      el("acd-title")!.value = item.title || "";
       el("acd-slug")!.value = item.slug || "";
       el("acd-category")!.value = item.category || "";
-      el("acd-subtitle")!.value = item.subtitle || "";
-      el("acd-description")!.value = item.description || "";
-      el("acd-cover-image")!.value = item.coverImage || "";
       el("acd-price-label")!.value = item.priceLabel || "";
       el("acd-access-mode")!.value = item.accessMode || "stripe_webhook";
       el("acd-stripe-url")!.value = item.stripeCheckoutUrl || "";
       el("acd-tool-name")!.value = item.toolName || "";
       el("acd-tool-type")!.value = item.toolType || "";
       el("acd-tool-url")!.value = item.toolUrl || "";
+
+      window.dispatchEvent(new CustomEvent("academy:kind-changed", { detail: { kind: item.kind } }));
 
       const vis = item.landingData?.funnelVisibility || {};
       document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
@@ -616,25 +635,6 @@ const { initialItems, initialSettings } = Astro.props;
     document.getElementById("btn-new-guide")?.addEventListener("click", () => createItem("guide"));
     document.getElementById("btn-new-course")?.addEventListener("click", () => createItem("course"));
 
-    const paymentModal = document.getElementById("acd-payment-modal");
-    const closePaymentModal = () => {
-      if (paymentModal) paymentModal.hidden = true;
-    };
-
-    document.getElementById("btn-open-payment")?.addEventListener("click", () => {
-      if (paymentModal) paymentModal.hidden = false;
-      const sel = document.getElementById("acd-default-access-mode") as HTMLSelectElement | null;
-      if (sel) {
-        w.__STUDIO_ENHANCE_SELECT__?.(sel);
-        w.__STUDIO_SYNC_SELECT__?.(sel);
-      }
-    });
-    document.getElementById("btn-close-payment-modal")?.addEventListener("click", closePaymentModal);
-    document.getElementById("btn-cancel-payment-modal")?.addEventListener("click", closePaymentModal);
-    paymentModal?.addEventListener("click", (e) => {
-      if (e.target === paymentModal) closePaymentModal();
-    });
-
     window.addEventListener("academy:item-generated", (e: any) => {
       const newItem = e?.detail?.item;
       if (!newItem) return;
@@ -675,12 +675,12 @@ const { initialItems, initialSettings } = Astro.props;
         kind: el("acd-kind")!.value,
         status: el("acd-status")!.value,
         publishAt: el("acd-publish-at")!.value ? new Date(el("acd-publish-at")!.value).toISOString() : null,
-        title: el("acd-title")!.value.trim(),
+        title: item.title,
         slug: el("acd-slug")!.value.trim(),
         category: el("acd-category")!.value.trim(),
-        subtitle: el("acd-subtitle")!.value.trim(),
-        description: el("acd-description")!.value.trim(),
-        coverImage: el("acd-cover-image")!.value.trim(),
+        subtitle: item.subtitle,
+        description: item.description,
+        coverImage: item.coverImage,
         priceLabel: el("acd-price-label")!.value.trim(),
         accessMode: el("acd-access-mode")!.value,
         stripeCheckoutUrl: el("acd-stripe-url")!.value.trim(),
@@ -724,20 +724,6 @@ const { initialItems, initialSettings } = Astro.props;
       }
     });
 
-    document.getElementById("acd-cover-file")?.addEventListener("change", async (e) => {
-      const input = e.target as HTMLInputElement;
-      const file = input.files?.[0];
-      if (!file) return;
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (res.ok && data.url) {
-        el("acd-cover-image")!.value = data.url;
-        showStudioToast("Cover image uploaded!");
-      }
-    });
-
     document.getElementById("btn-save-acd-settings")?.addEventListener("click", async () => {
       const mode = (document.getElementById("acd-default-access-mode") as HTMLSelectElement)?.value;
       const secret = (document.getElementById("acd-stripe-secret") as HTMLInputElement)?.value;
@@ -747,8 +733,35 @@ const { initialItems, initialSettings } = Astro.props;
         body: JSON.stringify({ defaultCourseAccessMode: mode, stripeWebhookSecret: secret })
       });
       if (res.ok) {
-        closePaymentModal();
         showStudioToast("Payment preferences saved!");
+      }
+    });
+
+    const saveAiKeyBtn = document.getElementById("btn-save-ai-key") as HTMLButtonElement | null;
+    saveAiKeyBtn?.addEventListener("click", async () => {
+      const provider = (document.getElementById("gen-ai-provider") as HTMLSelectElement)?.value || "gemini";
+      const apiKey = (document.getElementById("gen-ai-key") as HTMLInputElement)?.value || "";
+      const aiDot = document.getElementById("gen-ai-dot");
+      const aiStatusText = document.getElementById("gen-ai-status-text");
+      saveAiKeyBtn.disabled = true;
+      try {
+        const res = await fetch("/api/academy/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ aiProvider: provider, aiApiKey: apiKey })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          if (data?.settings?.hasAiApiKey) {
+            aiDot?.classList.add("is-ready");
+            if (aiStatusText) aiStatusText.textContent = `${provider === "openai" ? "OpenAI" : "Gemini"} Ready`;
+          }
+          showStudioToast("AI Engine configuration saved!");
+        } else {
+          showStudioToast(data?.error || "Failed to save AI configuration");
+        }
+      } finally {
+        saveAiKeyBtn.disabled = false;
       }
     });
 
@@ -1347,5 +1360,30 @@ const { initialItems, initialSettings } = Astro.props;
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+  }
+
+  .acd-ai-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .acd-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f59e0b;
+  }
+
+  .acd-status-dot.is-ready {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
   }
 </style>

@@ -84,7 +84,6 @@ const tagPresets = [
             <div class="nav-dropdown-items">
               <button type="button" class="nav-item is-active" data-module-tab="portfolio" aria-current="page">
                 <span>Portfolio</span>
-                <span class="nav-count" id="sidebar-project-count">{initialProjects.length}</span>
               </button>
             </div>
           </div>
@@ -99,7 +98,6 @@ const tagPresets = [
             <div class="nav-dropdown-items">
               <button type="button" class="nav-item" data-module-tab="book-call">
                 <span>Book a Call</span>
-                <span class="nav-count">2 steps</span>
               </button>
             </div>
           </div>
@@ -114,7 +112,6 @@ const tagPresets = [
             <div class="nav-dropdown-items">
               <button type="button" class="nav-item" data-module-tab="activecampaign">
                 <span>ActiveCampaign</span>
-                <span class="nav-count" id="sidebar-ac-status">{initialAcState.enabled ? "On" : "Off"}</span>
               </button>
             </div>
           </div>
@@ -122,9 +119,6 @@ const tagPresets = [
           <div class="nav-dropdown is-open" data-nav-group="courses">
             <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
               <span>Courses</span>
-              <span class="nav-count" id="sidebar-courses-count">
-                {initialAcademyItems.filter((i) => i.kind === "course").length}
-              </span>
               <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="m6 9 6 6 6-6" />
               </svg>
@@ -135,14 +129,28 @@ const tagPresets = [
           <div class="nav-dropdown is-open" data-nav-group="guides">
             <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
               <span>Guides</span>
-              <span class="nav-count" id="sidebar-guides-count">
-                {initialAcademyItems.filter((i) => i.kind === "guide").length}
-              </span>
               <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
             <div class="nav-dropdown-items" id="sidebar-guides-list"></div>
+          </div>
+
+          <div class="nav-dropdown is-open" data-nav-group="settings">
+            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
+              <span>Configuration</span>
+              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <div class="nav-dropdown-items">
+              <button type="button" class="nav-item" data-module-tab="payment">
+                <span>Payment</span>
+              </button>
+              <button type="button" class="nav-item" data-module-tab="ai-config">
+                <span>AI Engine</span>
+              </button>
+            </div>
           </div>
         </nav>
       </aside>
@@ -714,7 +722,7 @@ const tagPresets = [
       let draftGallery: string[] = [];
 
       const listEl = document.getElementById("brand-list")!;
-      const countEl = document.getElementById("sidebar-project-count")!;
+      const countEl = document.getElementById("sidebar-project-count");
       const searchEl = document.getElementById("brand-search") as HTMLInputElement;
       const formEl = document.getElementById("brand-editor-form") as HTMLFormElement;
       const emptyEl = document.getElementById("editor-empty")!;
@@ -919,7 +927,7 @@ const tagPresets = [
 
       function renderList() {
         const query = searchEl.value.trim().toLowerCase();
-        countEl.textContent = String(projects.length);
+        if (countEl) countEl.textContent = String(projects.length);
         listEl.innerHTML = "";
 
         const filtered = projects.filter((p) => p.title.toLowerCase().includes(query));
@@ -1142,6 +1150,8 @@ const tagPresets = [
           const target = tab.dataset.moduleTab;
           const activeCampaignModule = document.getElementById("module-activecampaign");
           const academyModule = document.getElementById("module-academy");
+          const paymentModule = document.getElementById("module-payment");
+          const aiConfigModule = document.getElementById("module-ai-config");
           moduleTabs.forEach((t) => {
             const active = t.dataset.moduleTab === target;
             t.classList.toggle("is-active", active);
@@ -1152,6 +1162,24 @@ const tagPresets = [
           if (bookCallModule) bookCallModule.hidden = target !== "book-call";
           if (activeCampaignModule) activeCampaignModule.hidden = target !== "activecampaign";
           if (academyModule) academyModule.hidden = target !== "academy";
+          if (paymentModule) paymentModule.hidden = target !== "payment";
+          if (aiConfigModule) aiConfigModule.hidden = target !== "ai-config";
+
+          const w = window as any;
+          if (target === "payment") {
+            const sel = document.getElementById("acd-default-access-mode") as HTMLSelectElement | null;
+            if (sel) {
+              w.__STUDIO_ENHANCE_SELECT__?.(sel);
+              w.__STUDIO_SYNC_SELECT__?.(sel);
+            }
+          }
+          if (target === "ai-config") {
+            const sel = document.getElementById("gen-ai-provider") as HTMLSelectElement | null;
+            if (sel) {
+              w.__STUDIO_ENHANCE_SELECT__?.(sel);
+              w.__STUDIO_SYNC_SELECT__?.(sel);
+            }
+          }
         });
       });
 
@@ -1681,18 +1709,18 @@ const tagPresets = [
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: #94a3b8;
+        color: #48C8FF;
         cursor: pointer;
         transition: color 0.15s ease, background-color 0.15s ease;
       }
 
       .nav-dropdown-trigger:hover {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.04);
+        color: #9ce1ff;
+        background: rgba(72, 200, 255, 0.08);
       }
 
       .nav-dropdown-chevron {
-        transition: transform 0.2s ease;
+        transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
         transform: rotate(-90deg);
       }
 
@@ -1701,14 +1729,26 @@ const tagPresets = [
       }
 
       .nav-dropdown-items {
-        display: none;
+        display: flex;
         flex-direction: column;
         gap: 4px;
         padding-left: 6px;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transform: translateY(-4px);
+        pointer-events: none;
+        transition:
+          max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.22s ease,
+          transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
       }
 
       .nav-dropdown.is-open .nav-dropdown-items {
-        display: flex;
+        max-height: 600px;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
       }
 
       .ac-form-picker {

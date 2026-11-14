@@ -325,6 +325,9 @@ export const POST: APIRoute = async ({ request }) => {
       : [];
     const files: UploadedFileInput[] = Array.isArray(body?.files) ? body.files : [];
     const manualNotes = String(body?.manualNotes ?? "").trim();
+    const scrapedImageUrls: string[] = Array.isArray(body?.scrapedImageUrls)
+      ? body.scrapedImageUrls.map(String).filter((u: string) => /^https?:\/\//i.test(u))
+      : [];
 
     const fileTexts = files
       .filter((f) => f.textContent && f.textContent.trim().length > 0)
@@ -407,20 +410,57 @@ export const POST: APIRoute = async ({ request }) => {
       emit("progress", { percent: 85, label: "Saving course & slides to database..." });
 
       const validLayouts: SlideLayout[] = ["cover", "split", "bullets", "grid", "quote", "cta"];
+      let splitImgIdx = 0;
       const slides: AcademySlide[] = Array.isArray(generated?.slides)
-        ? generated.slides.map((s: any, idx: number) => ({
-            id: `s-${idx + 1}`,
-            layout: validLayouts.includes(s?.layout) ? s.layout : "bullets",
-            eyebrow: String(s?.eyebrow ?? ""),
-            title: String(s?.title ?? `Slide ${idx + 1}`),
-            body: String(s?.body ?? ""),
-            bullets: Array.isArray(s?.bullets) ? s.bullets.map(String) : [],
-            callout: s?.callout ? String(s.callout) : undefined
-          }))
+        ? generated.slides.map((s: any, idx: number) => {
+            const layout = validLayouts.includes(s?.layout) ? s.layout : "bullets";
+            let slideImg = typeof s?.image === "string" && s.image.startsWith("http") ? s.image : undefined;
+            if (!slideImg && layout === "split" && scrapedImageUrls.length > 0) {
+              slideImg = scrapedImageUrls[splitImgIdx % scrapedImageUrls.length];
+              splitImgIdx++;
+            }
+            return {
+              id: `s-${idx + 1}`,
+              layout,
+              eyebrow: String(s?.eyebrow ?? ""),
+              title: String(s?.title ?? `Slide ${idx + 1}`),
+              body: String(s?.body ?? ""),
+              bullets: Array.isArray(s?.bullets) ? s.bullets.map(String) : [],
+              callout: s?.callout ? String(s.callout) : undefined,
+              ...(slideImg ? { image: slideImg } : {})
+            };
+          })
         : [];
 
       const status: AcademyStatus =
         body?.status === "published" || body?.status === "scheduled" ? body.status : "draft";
+
+      const funnelObj =
+        kind === "course" && generated?.landingData?.funnel && typeof generated.landingData.funnel === "object"
+          ? { ...generated.landingData.funnel }
+          : existingItem?.landingData?.funnel
+            ? { ...existingItem.landingData.funnel }
+            : undefined;
+
+      if (funnelObj && scrapedImageUrls.length > 0) {
+        if (funnelObj.visualComparison && !funnelObj.visualComparison.afterImage) {
+          funnelObj.visualComparison.afterImage = scrapedImageUrls[0];
+        }
+        if (funnelObj.systemShowcase && !funnelObj.systemShowcase.image) {
+          funnelObj.systemShowcase.image = scrapedImageUrls[1 % scrapedImageUrls.length];
+        }
+        if (funnelObj.outcomes && !funnelObj.outcomes.image) {
+          funnelObj.outcomes.image = scrapedImageUrls[2 % scrapedImageUrls.length];
+        }
+      }
+
+      const defaultCover =
+        kind === "course" ? "/images/why-us/our-technology.jpg" : "/images/why-us/ai-excellence.jpg";
+      const nextCoverImage =
+        scrapedImageUrls[0] ||
+        (existingItem?.coverImage && !existingItem.coverImage.startsWith("/images/why-us/")
+          ? existingItem.coverImage
+          : defaultCover);
 
       const nextLandingData = {
         heroBadge: String(generated?.landingData?.heroBadge || (kind === "course" ? "Pro Course" : "Free Guide")),
@@ -433,10 +473,7 @@ export const POST: APIRoute = async ({ request }) => {
           ? generated.landingData.faq.map((f: any) => ({ q: String(f?.q ?? ""), a: String(f?.a ?? "") }))
           : [],
         funnelVisibility: defaultFunnelVisibility(existingItem?.landingData?.funnelVisibility),
-        funnel:
-          kind === "course" && generated?.landingData?.funnel && typeof generated.landingData.funnel === "object"
-            ? generated.landingData.funnel
-            : existingItem?.landingData?.funnel
+        funnel: funnelObj
       };
 
       let item: AcademyItem | null = null;
@@ -450,6 +487,7 @@ export const POST: APIRoute = async ({ request }) => {
           subtitle: String(generated?.subtitle || existingItem.subtitle),
           description: String(generated?.description || existingItem.description),
           category: String(generated?.category || existingItem.category),
+          coverImage: nextCoverImage,
           status,
           publishAt: status === "scheduled" && body?.publishAt ? String(body.publishAt) : existingItem.publishAt,
           priceLabel: kind === "course" ? String(body?.priceLabel || existingItem.priceLabel || "$49") : "Free",
@@ -471,8 +509,7 @@ export const POST: APIRoute = async ({ request }) => {
           subtitle: String(generated?.subtitle ?? ""),
           description: String(generated?.description ?? ""),
           category: String(generated?.category ?? "AI Workflows"),
-          coverImage:
-            kind === "course" ? "/images/why-us/our-technology.jpg" : "/images/why-us/ai-excellence.jpg",
+          coverImage: nextCoverImage,
           status,
           publishAt: status === "scheduled" && body?.publishAt ? String(body.publishAt) : null,
           priceLabel: kind === "course" ? String(body?.priceLabel || "$49") : "Free",

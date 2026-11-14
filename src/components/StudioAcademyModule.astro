@@ -37,6 +37,9 @@ const { initialItems, initialSettings } = Astro.props;
           <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-content" class="acd-btn-cyan-outline">
             Edit Content ↗
           </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-slides" class="acd-btn-cyan-outline">
+            Edit PDF / Slides ↗
+          </a>
           <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="acd-btn-glass">
             Preview Landing ↗
           </a>
@@ -572,14 +575,19 @@ const { initialItems, initialSettings } = Astro.props;
 
       const baseFolder = item.kind === "course" ? "courses" : "guides";
       const editContentLink = document.getElementById("acd-edit-content") as HTMLAnchorElement | null;
+      const editSlidesLink = document.getElementById("acd-edit-slides") as HTMLAnchorElement | null;
       const landingPreview = document.getElementById("acd-preview-landing") as HTMLAnchorElement | null;
       const slidesPreview = document.getElementById("acd-preview-slides") as HTMLAnchorElement | null;
       if (editContentLink) {
         editContentLink.href = `/academy/${baseFolder}/${item.slug}?edit=1`;
         editContentLink.hidden = item.kind !== "course";
       }
+      if (editSlidesLink) {
+        editSlidesLink.href = `/academy/${baseFolder}/${item.slug}/slides?edit=1`;
+        editSlidesLink.hidden = item.kind !== "course";
+      }
       if (landingPreview) landingPreview.href = `/academy/${baseFolder}/${item.slug}`;
-      if (slidesPreview) slidesPreview.href = `/academy/${baseFolder}/${item.slug}/slides`;
+      if (slidesPreview) slidesPreview.href = `/academy/${baseFolder}/${item.slug}/slides?preview=1`;
 
       toggleKindAndStatusUI(item.kind);
     }

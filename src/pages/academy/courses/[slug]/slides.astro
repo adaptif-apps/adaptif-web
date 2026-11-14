@@ -32,7 +32,10 @@ if (!isUnlocked && token) {
   isUnlocked = await verifyAccessToken(item.id, token);
 }
 
-if (!isUnlocked) {
+const isPreview = Astro.url.searchParams.get("preview") === "1";
+const isEditMode = Astro.url.searchParams.get("edit") === "1";
+
+if (!isUnlocked && !isPreview && !isEditMode) {
   return Astro.redirect(`/academy/courses/${item.slug}`);
 }
 
@@ -53,5 +56,11 @@ const derivedItem = {
 ---
 
 <Layout title={`${item.title} — Course Deck | Adaptif Academy`} description={item.subtitle || item.description}>
-  <AcademySlideViewer item={derivedItem} backHref={`/academy/courses/${item.slug}`} autoPrint={autoPrint} />
+  <AcademySlideViewer
+    item={derivedItem}
+    backHref={`/academy/courses/${item.slug}`}
+    autoPrint={autoPrint}
+    isEditMode={isEditMode}
+    isPreview={isPreview}
+  />
 </Layout>

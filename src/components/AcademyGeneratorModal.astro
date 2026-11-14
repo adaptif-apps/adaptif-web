@@ -17,12 +17,12 @@ const { initialSettings } = Astro.props;
           type="file"
           id="gen-file-input"
           multiple
-          accept=".txt,.md,.csv,.tsv,.json,.doc,.docx,.pdf,.xlsx,.png,.jpg,.jpeg,.webp"
+          accept=".txt,.md,.csv,.tsv,.json,.doc,.docx,.ppt,.pptx,.pdf,.xlsx,.png,.jpg,.jpeg,.webp"
           hidden
         />
         <div class="gen-drop-icon" aria-hidden="true">↑</div>
         <p class="gen-drop-title">Drag &amp; drop files here, or <button type="button" class="gen-browse-link" id="btn-browse-files">browse</button></p>
-        <p class="gen-drop-sub">Supports Sheets (.csv/.xlsx), Docs (.txt/.md/.doc/.pdf), and Images (.png/.jpg/.webp)</p>
+        <p class="gen-drop-sub">Supports Slides (.pptx), Docs (.pdf/.docx/.txt/.md), Sheets (.csv/.xlsx), and Images (.png/.jpg/.webp) — scrapes embedded images automatically</p>
         <div class="gen-file-chips" id="gen-file-chips"></div>
       </div>
 
@@ -162,6 +162,8 @@ const { initialSettings } = Astro.props;
 </section>
 
 <script>
+  import JSZip from "jszip";
+
   (() => {
     const genCard = document.getElementById("acd-gen-card");
     const runBtn = document.getElementById("btn-run-generate") as HTMLButtonElement | null;
@@ -213,6 +215,7 @@ const { initialSettings } = Astro.props;
 
     let currentKind: "course" | "guide" = "course";
     let attachedFiles: { name: string; mimeType: string; textContent?: string; base64Data?: string }[] = [];
+    let scrapedImageFiles: File[] = [];
 
     function setKind(kind: "course" | "guide") {
       currentKind = kind;
@@ -294,12 +297,110 @@ const { initialSettings } = Astro.props;
       });
     }
 
+    function extractPdfJpegs(bytes: Uint8Array, baseName: string): File[] {
+      const found: File[] = [];
+      let i = 0;
+      while (i < bytes.length - 4 && found.length < 6) {
+        if (bytes[i] === 0xff && bytes[i + 1] === 0xd8 && bytes[i + 2] === 0xff) {
+          let j = i + 3;
+          while (j < bytes.length - 1) {
+            if (bytes[j] === 0xff && bytes[j + 1] === 0xd9) {
+              const slice = bytes.slice(i, j + 2);
+              if (slice.length > 4096) {
+                found.push(new File([slice], `${baseName}-img-${found.length + 1}.jpg`, { type: "image/jpeg" }));
+              }
+              i = j + 2;
+              break;
+            }
+            j++;
+          }
+          if (j >= bytes.length - 1) break;
+        } else {
+          i++;
+        }
+      }
+      return found;
+    }
+
+    function extractPdfText(bytes: Uint8Array): string {
+      const raw = new TextDecoder("latin1").decode(bytes);
+      const chunks: string[] = [];
+      const tjRe = /\(([^()\\]{3,160})\)\s*(?:Tj|'|")/g;
+      let m: RegExpExecArray | null;
+      while ((m = tjRe.exec(raw)) !== null && chunks.length < 400) {
+        const cleaned = m[1].replace(/[^\x20-\x7EÀ-ÿ]/g, " ").trim();
+        if (cleaned.length > 2) chunks.push(cleaned);
+      }
+      if (chunks.length > 10) return chunks.join(" ").slice(0, 15000);
+      return raw
+        .replace(/[^\x20-\x7E\n\r]/g, " ")
+        .replace(/\s{2,}/g, " ")
+        .slice(0, 15000);
+    }
+
     async function handleFiles(fileList: FileList | null) {
       if (!fileList) return;
       for (const file of Array.from(fileList)) {
+        const lower = file.name.toLowerCase();
         if (file.type.startsWith("image/")) {
           const { mimeType, base64Data } = await compressImageToBase64(file);
           attachedFiles.push({ name: file.name, mimeType, base64Data });
+          scrapedImageFiles.push(file);
+        } else if (lower.endsWith(".docx") || lower.endsWith(".pptx")) {
+          try {
+            const zip = await JSZip.loadAsync(file);
+            const xmlPaths = Object.keys(zip.files)
+              .filter((p) =>
+                lower.endsWith(".docx")
+                  ? p === "word/document.xml"
+                  : /^ppt\/slides\/slide\d+\.xml$/i.test(p)
+              )
+              .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+            const textParts: string[] = [];
+            for (const p of xmlPaths) {
+              const xml = await zip.files[p].async("string");
+              const plain = xml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+              if (plain) textParts.push(plain);
+            }
+            attachedFiles.push({
+              name: file.name,
+              mimeType: file.type || "application/octet-stream",
+              textContent: textParts.join("\n\n").slice(0, 15000)
+            });
+
+            const mediaPaths = Object.keys(zip.files).filter((p) =>
+              /^(word|ppt)\/media\/.+\.(png|jpe?g|webp|gif)$/i.test(p)
+            );
+            let count = 0;
+            for (const mp of mediaPaths) {
+              if (count >= 6) break;
+              const blob = await zip.files[mp].async("blob");
+              if (blob.size < 3072) continue;
+              const ext = mp.split(".").pop()?.toLowerCase() || "png";
+              const mime = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : `image/${ext}`;
+              const imgFile = new File([blob], `${file.name}-${mp.split("/").pop()}`, { type: mime });
+              scrapedImageFiles.push(imgFile);
+              const { mimeType, base64Data } = await compressImageToBase64(imgFile);
+              attachedFiles.push({ name: imgFile.name, mimeType, base64Data });
+              count++;
+            }
+          } catch {
+            const textContent = await file.text().catch(() => "");
+            attachedFiles.push({ name: file.name, mimeType: file.type || "text/plain", textContent: textContent.slice(0, 15000) });
+          }
+        } else if (lower.endsWith(".pdf") || file.type === "application/pdf") {
+          const buf = await file.arrayBuffer();
+          const bytes = new Uint8Array(buf);
+          const extractedText = extractPdfText(bytes);
+          attachedFiles.push({ name: file.name, mimeType: "application/pdf", textContent: extractedText });
+
+          const pdfImages = extractPdfJpegs(bytes, file.name.replace(/\.pdf$/i, ""));
+          for (const imgFile of pdfImages) {
+            scrapedImageFiles.push(imgFile);
+            const { mimeType, base64Data } = await compressImageToBase64(imgFile);
+            attachedFiles.push({ name: imgFile.name, mimeType, base64Data });
+          }
         } else {
           const textContent = await file.text().catch(() => "");
           attachedFiles.push({
@@ -386,10 +487,33 @@ const { initialSettings } = Astro.props;
       try {
         const useTargetId = selectedTarget?.id && enrichCheckbox?.checked ? selectedTarget.id : undefined;
 
+        const scrapedImageUrls: string[] = [];
+        if (scrapedImageFiles.length > 0) {
+          setProgress(10, `Uploading ${Math.min(4, scrapedImageFiles.length)} document image(s)...`);
+          const uploads = await Promise.all(
+            scrapedImageFiles.slice(0, 4).map(async (imgFile) => {
+              try {
+                const fd = new FormData();
+                fd.append("file", imgFile);
+                const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+                if (!upRes.ok) return null;
+                const upJson = await upRes.json();
+                return typeof upJson?.url === "string" ? upJson.url : null;
+              } catch {
+                return null;
+              }
+            })
+          );
+          for (const u of uploads) {
+            if (u) scrapedImageUrls.push(u);
+          }
+        }
+
         const payload = JSON.stringify({
           kind: currentKind,
           stream: true,
           targetItemId: useTargetId,
+          scrapedImageUrls,
           files: attachedFiles,
           links,
           manualNotes: val("gen-manual-notes"),
@@ -482,6 +606,7 @@ const { initialSettings } = Astro.props;
             new CustomEvent("academy:item-generated", { detail: { item: doneData.item, mode: doneData.mode } })
           );
           attachedFiles = [];
+          scrapedImageFiles = [];
           renderChips();
           window.setTimeout(() => {
             if (progressWrap) progressWrap.hidden = true;

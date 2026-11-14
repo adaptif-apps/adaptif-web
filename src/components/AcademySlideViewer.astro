@@ -5,9 +5,11 @@ interface Props {
   item: AcademyItem;
   backHref: string;
   autoPrint?: boolean;
+  isEditMode?: boolean;
+  isPreview?: boolean;
 }
 
-const { item, backHref, autoPrint = false } = Astro.props;
+const { item, backHref, autoPrint = false, isEditMode = false, isPreview = false } = Astro.props;
 const slides: AcademySlide[] =
   item.slides.length > 0
     ? item.slides
@@ -21,9 +23,19 @@ const slides: AcademySlide[] =
           bullets: item.landingData.takeaways.slice(0, 3)
         }
       ];
+const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string, string> =>
+  isEditMode
+    ? {
+        contenteditable: "true",
+        spellcheck: "false",
+        "data-slide-idx": String(slideIdx),
+        "data-slide-field": field,
+        ...(bulletIdx !== undefined ? { "data-bullet-idx": String(bulletIdx) } : {})
+      }
+    : {};
 ---
 
-<div class="viewer-shell" data-auto-print={autoPrint ? "true" : "false"}>
+<div class="viewer-shell" data-auto-print={autoPrint ? "true" : "false"} data-edit-mode={isEditMode ? "true" : "false"}>
   <!-- Top Controls (hidden in PDF print) -->
   <header class="viewer-topbar no-print">
     <div class="topbar-left">
@@ -47,6 +59,11 @@ const slides: AcademySlide[] =
         </a>
       )}
       <span class="slide-counter" id="slide-counter">1 / {slides.length}</span>
+      {(isPreview || isEditMode) && (
+        <a href={isEditMode ? "?preview=1" : "?edit=1"} class="btn-viewer-ghost">
+          {isEditMode ? "Exit Edit" : "Edit PDF / Slides"}
+        </a>
+      )}
       <button type="button" class="btn-viewer-ghost" id="btn-fullscreen" title="Fullscreen">
         Fullscreen
       </button>
@@ -71,39 +88,39 @@ const slides: AcademySlide[] =
         >
           <div class="slide-glow" aria-hidden="true"></div>
           <div class="slide-header-row">
-            <span class="slide-eyebrow">{slide.eyebrow || item.category}</span>
+            <span class="slide-eyebrow" {...ed(idx, "eyebrow")}>{slide.eyebrow || item.category}</span>
             <span class="slide-brand-mark">ADAPTIF ACADEMY</span>
           </div>
 
           <div class="slide-content-area">
             {slide.layout === "cover" ? (
               <div class="slide-cover-wrap">
-                <h2 class="slide-title is-cover">{slide.title}</h2>
-                {slide.body && <p class="slide-body is-cover">{slide.body}</p>}
+                <h2 class="slide-title is-cover" {...ed(idx, "title")}>{slide.title}</h2>
+                {(slide.body || isEditMode) && <p class="slide-body is-cover" {...ed(idx, "body")}>{slide.body}</p>}
                 {slide.bullets.length > 0 && (
                   <div class="slide-pills">
-                    {slide.bullets.map((b) => (
-                      <span class="slide-pill">{b}</span>
+                    {slide.bullets.map((b, bIdx) => (
+                      <span class="slide-pill" {...ed(idx, "bullet", bIdx)}>{b}</span>
                     ))}
                   </div>
                 )}
               </div>
             ) : slide.layout === "quote" ? (
               <div class="slide-quote-wrap">
-                <blockquote class="slide-quote">“{slide.title}”</blockquote>
-                {slide.body && <p class="slide-body">{slide.body}</p>}
+                <blockquote class="slide-quote" {...ed(idx, "title")}>{slide.title}</blockquote>
+                {(slide.body || isEditMode) && <p class="slide-body" {...ed(idx, "body")}>{slide.body}</p>}
               </div>
             ) : slide.layout === "grid" ? (
               <div class="slide-grid-wrap">
                 <div class="slide-head-block">
-                  <h2 class="slide-title">{slide.title}</h2>
-                  {slide.body && <p class="slide-body">{slide.body}</p>}
+                  <h2 class="slide-title" {...ed(idx, "title")}>{slide.title}</h2>
+                  {(slide.body || isEditMode) && <p class="slide-body" {...ed(idx, "body")}>{slide.body}</p>}
                 </div>
                 <div class="slide-cards-grid">
                   {slide.bullets.map((b, bIdx) => (
                     <div class="slide-mini-card">
                       <span class="mini-num">0{bIdx + 1}</span>
-                      <p class="mini-text">{b}</p>
+                      <p class="mini-text" {...ed(idx, "bullet", bIdx)}>{b}</p>
                     </div>
                   ))}
                 </div>
@@ -111,17 +128,17 @@ const slides: AcademySlide[] =
             ) : slide.layout === "split" ? (
               <div class="slide-split-wrap">
                 <div class="split-left">
-                  <h2 class="slide-title">{slide.title}</h2>
-                  {slide.body && <p class="slide-body">{slide.body}</p>}
-                  {slide.callout && <div class="slide-callout">{slide.callout}</div>}
+                  <h2 class="slide-title" {...ed(idx, "title")}>{slide.title}</h2>
+                  {(slide.body || isEditMode) && <p class="slide-body" {...ed(idx, "body")}>{slide.body}</p>}
+                  {(slide.callout || isEditMode) && <div class="slide-callout" {...ed(idx, "callout")}>{slide.callout}</div>}
                 </div>
                 <div class="split-right">
                   {slide.image ? (
                     <img src={slide.image} alt={slide.title} class="split-img" />
                   ) : (
                     <ul class="slide-bullet-list">
-                      {slide.bullets.map((b) => (
-                        <li>{b}</li>
+                      {slide.bullets.map((b, bIdx) => (
+                        <li {...ed(idx, "bullet", bIdx)}>{b}</li>
                       ))}
                     </ul>
                   )}
@@ -129,16 +146,16 @@ const slides: AcademySlide[] =
               </div>
             ) : (
               <div class="slide-bullets-wrap">
-                <h2 class="slide-title">{slide.title}</h2>
-                {slide.body && <p class="slide-body">{slide.body}</p>}
+                <h2 class="slide-title" {...ed(idx, "title")}>{slide.title}</h2>
+                {(slide.body || isEditMode) && <p class="slide-body" {...ed(idx, "body")}>{slide.body}</p>}
                 {slide.bullets.length > 0 && (
                   <ul class="slide-bullet-list">
-                    {slide.bullets.map((b) => (
-                      <li>{b}</li>
+                    {slide.bullets.map((b, bIdx) => (
+                      <li {...ed(idx, "bullet", bIdx)}>{b}</li>
                     ))}
                   </ul>
                 )}
-                {slide.callout && <div class="slide-callout">{slide.callout}</div>}
+                {(slide.callout || isEditMode) && <div class="slide-callout" {...ed(idx, "callout")}>{slide.callout}</div>}
               </div>
             )}
           </div>
@@ -255,6 +272,29 @@ const slides: AcademySlide[] =
       </article>
     ))}
   </section>
+
+  {isEditMode && (
+    <div class="slide-edit-bar no-print" id="slide-edit-bar">
+      <div class="slide-edit-info">
+        <span class="slide-edit-dot"></span>
+        <span>Slide &amp; PDF Edit Mode — Click any text on the slide to edit</span>
+      </div>
+      <div class="slide-edit-actions">
+        <span class="slide-edit-toast" id="slide-edit-toast" hidden>Saved!</span>
+        <button type="button" class="btn-download-pdf" id="btn-save-slides">
+          Save Slides / PDF
+        </button>
+      </div>
+    </div>
+  )}
+
+  {isEditMode && (
+    <script
+      type="application/json"
+      id="slide-edit-seed"
+      set:html={JSON.stringify({ id: item.id, slides })}
+    />
+  )}
 </div>
 
 <script>
@@ -300,6 +340,7 @@ const slides: AcademySlide[] =
   });
 
   document.addEventListener("keydown", (e) => {
+    if ((e.target as HTMLElement | null)?.isContentEditable) return;
     if (e.key === "ArrowRight" || e.key === " ") {
       e.preventDefault();
       showSlide(activeIndex + 1);
@@ -326,6 +367,82 @@ const slides: AcademySlide[] =
       setTimeout(() => window.print(), 350);
     });
   }
+
+  // Inline Slide & PDF Edit Mode (?edit=1)
+  (() => {
+    const seedEl = document.getElementById("slide-edit-seed");
+    if (!seedEl) return;
+    const seed = JSON.parse(seedEl.textContent || "{}");
+    const saveBtn = document.getElementById("btn-save-slides") as HTMLButtonElement | null;
+    const toastEl = document.getElementById("slide-edit-toast");
+
+    function showToast(msg: string) {
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.hidden = false;
+      window.setTimeout(() => {
+        if (toastEl) toastEl.hidden = true;
+      }, 2600);
+    }
+
+    function collectEditedSlides() {
+      const updated = JSON.parse(JSON.stringify(seed.slides || []));
+      document.querySelectorAll<HTMLElement>("[data-slide-idx][data-slide-field]").forEach((el) => {
+        const sIdx = Number(el.dataset.slideIdx);
+        const field = el.dataset.slideField || "";
+        const val = (el.textContent || "").trim();
+        if (!updated[sIdx]) return;
+
+        if (field === "bullet") {
+          const bIdx = Number(el.dataset.bulletIdx);
+          if (!Array.isArray(updated[sIdx].bullets)) updated[sIdx].bullets = [];
+          updated[sIdx].bullets[bIdx] = val;
+        } else {
+          updated[sIdx][field] = val;
+        }
+      });
+      return updated;
+    }
+
+    saveBtn?.addEventListener("click", async () => {
+      if (!saveBtn || !seed.id) return;
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+      try {
+        const updatedSlides = collectEditedSlides();
+        const res = await fetch(`/api/academy/items/${seed.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slides: updatedSlides })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Save failed");
+
+        seed.slides = updatedSlides;
+        updatedSlides.forEach((s: any, idx: number) => {
+          const stripTitle = document.querySelector<HTMLElement>(`[data-goto-slide="${idx}"] .strip-title`);
+          if (stripTitle) stripTitle.textContent = s.title || "";
+          const printCard = document.querySelectorAll<HTMLElement>(".print-deck .slide-card")[idx];
+          if (printCard) {
+            const pe = printCard.querySelector<HTMLElement>(".slide-eyebrow");
+            const pt = printCard.querySelector<HTMLElement>(".slide-title, .slide-quote");
+            const pb = printCard.querySelector<HTMLElement>(".slide-body");
+            const pc = printCard.querySelector<HTMLElement>(".slide-callout");
+            if (pe && s.eyebrow) pe.textContent = s.eyebrow;
+            if (pt) pt.textContent = s.title || "";
+            if (pb) pb.textContent = s.body || "";
+            if (pc) pc.textContent = s.callout || "";
+          }
+        });
+        showToast("Slides & PDF saved!");
+      } catch (err: any) {
+        showToast(err?.message || "Save failed");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save Slides / PDF";
+      }
+    });
+  })();
 </script>
 
 <style>
@@ -812,5 +929,71 @@ const slides: AcademySlide[] =
       page-break-after: auto;
       break-after: auto;
     }
+  }
+
+  /* Inline Slide & PDF Edit Mode */
+  .viewer-shell[data-edit-mode="true"] [contenteditable="true"] {
+    outline: 1px dashed rgba(72, 200, 255, 0.35);
+    outline-offset: 4px;
+    border-radius: 6px;
+    cursor: text;
+    transition: outline-color 0.2s ease, background 0.2s ease;
+  }
+
+  .viewer-shell[data-edit-mode="true"] [contenteditable="true"]:hover {
+    outline-color: rgba(72, 200, 255, 0.7);
+    background: rgba(72, 200, 255, 0.05);
+  }
+
+  .viewer-shell[data-edit-mode="true"] [contenteditable="true"]:focus {
+    outline: 2px solid #48c8ff;
+    background: rgba(72, 200, 255, 0.09);
+  }
+
+  .slide-edit-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 10px 14px 10px 18px;
+    border-radius: 999px;
+    background: rgba(5, 16, 30, 0.94);
+    border: 1px solid rgba(72, 200, 255, 0.4);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(14px);
+    max-width: min(740px, 94vw);
+  }
+
+  .slide-edit-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 0.8rem;
+    color: #d7e8f7;
+  }
+
+  .slide-edit-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #48c8ff;
+    box-shadow: 0 0 10px #48c8ff;
+  }
+
+  .slide-edit-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .slide-edit-toast {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4ade80;
   }
 </style>

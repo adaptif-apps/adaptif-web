@@ -52,28 +52,6 @@ const { initialItems, initialSettings } = Astro.props;
 
       <div class="acd-form-grid">
         <label class="acd-field">
-          <span>Type</span>
-          <select id="acd-kind" class="ac-select">
-            <option value="guide">Guide (Free + Lead Form)</option>
-            <option value="course">Course (Paid + Companion Tool)</option>
-          </select>
-        </label>
-
-        <label class="acd-field">
-          <span>Visibility Status</span>
-          <select id="acd-status" class="ac-select">
-            <option value="draft">Private (Draft)</option>
-            <option value="published">Public (Published)</option>
-            <option value="scheduled">Scheduled</option>
-          </select>
-        </label>
-
-        <label class="acd-field" id="acd-publish-at-wrap" hidden>
-          <span>Schedule Publish Date &amp; Time</span>
-          <input type="datetime-local" id="acd-publish-at" />
-        </label>
-
-        <label class="acd-field">
           <span>Slug (URL)</span>
           <input type="text" id="acd-slug" required />
         </label>
@@ -82,85 +60,6 @@ const { initialItems, initialSettings } = Astro.props;
           <span>Category</span>
           <input type="text" id="acd-category" placeholder="AI Workflows" />
         </label>
-      </div>
-
-      <!-- Course-Specific Fields -->
-      <div class="acd-subsection" id="acd-course-only">
-        <span class="acd-section-kicker">Monetization &amp; Companion Asset</span>
-        <h3 class="acd-sub-title">Course Pricing &amp; Companion Tool</h3>
-        <div class="acd-form-grid">
-          <label class="acd-field">
-            <span>Price (Display)</span>
-            <input type="text" id="acd-price-label" placeholder="$49" />
-          </label>
-
-          <label class="acd-field">
-            <span>Access Mode</span>
-            <select id="acd-access-mode" class="ac-select">
-              <option value="stripe_webhook">Stripe Webhook + Token (Option A)</option>
-              <option value="checkout_redirect">Checkout Redirect (?checkout=success)</option>
-              <option value="open">Open Access</option>
-            </select>
-          </label>
-
-          <label class="acd-field acd-span-2">
-            <span>Stripe Checkout Link</span>
-            <input type="url" id="acd-stripe-url" placeholder="https://buy.stripe.com/..." />
-          </label>
-
-          <label class="acd-field">
-            <span>Tool / Template Name (Optional)</span>
-            <input type="text" id="acd-tool-name" placeholder="Magnific Prompt Kit" />
-          </label>
-
-          <label class="acd-field">
-            <span>Tool Type</span>
-            <input type="text" id="acd-tool-type" placeholder="Template / Micro-App / Mockups" />
-          </label>
-
-          <label class="acd-field acd-span-2">
-            <span>Tool / Micro-App URL (Optional)</span>
-            <input type="url" id="acd-tool-url" placeholder="https://..." />
-          </label>
-        </div>
-
-        <div class="acd-funnel-visibility-wrap">
-          <div class="acd-funnel-vis-head">
-            <div>
-              <span class="acd-section-kicker">Landing Funnel Sections</span>
-              <h4 class="acd-funnel-vis-title">Show or Hide Funnel Blocks</h4>
-            </div>
-            <div class="acd-funnel-vis-actions">
-              <button type="button" class="acd-btn-mini" id="btn-funnel-all-on">All On</button>
-              <button type="button" class="acd-btn-mini" id="btn-funnel-minimal">Essential Only</button>
-            </div>
-          </div>
-
-          <div class="acd-funnel-grid" id="acd-funnel-toggles">
-            {FUNNEL_BLOCKS.map((block) => (
-              <label class="acd-funnel-toggle" data-funnel-key={block.key}>
-                <div class="acd-funnel-toggle-copy">
-                  <span class="acd-funnel-toggle-name">{block.label}</span>
-                  <span class="acd-funnel-toggle-desc">{block.desc}</span>
-                </div>
-                <input type="checkbox" class="acd-funnel-chk" data-funnel-key={block.key} checked />
-                <span class="acd-switch" aria-hidden="true"></span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <!-- Slide Deck Builder -->
-      <div class="acd-subsection">
-        <div class="acd-slides-head">
-          <div>
-            <span class="acd-section-kicker">Presentation &amp; Vector PDF</span>
-            <h3 class="acd-sub-title">Online Slides &amp; PDF Deck</h3>
-          </div>
-          <button type="button" class="acd-btn-glass" id="btn-add-slide">+ Add Slide</button>
-        </div>
-        <div id="acd-slides-container" class="acd-slides-list"></div>
       </div>
     </form>
   </section>
@@ -395,12 +294,8 @@ const { initialItems, initialSettings } = Astro.props;
       renderGroup(sidebarGuidesList, guides, "guide");
     }
 
-    function toggleKindAndStatusUI() {
-      const kind = el("acd-kind")?.value || "guide";
-      const status = el("acd-status")?.value || "draft";
-      if (courseOnlyEl) courseOnlyEl.hidden = kind !== "course";
+    function toggleKindAndStatusUI(kind: string = "course") {
       if (prefsSectionEl) prefsSectionEl.hidden = kind !== "course";
-      if (publishAtWrap) publishAtWrap.hidden = status !== "scheduled";
 
       const newGuideBtn = document.getElementById("btn-new-guide");
       const newCourseBtn = document.getElementById("btn-new-course");
@@ -418,121 +313,6 @@ const { initialItems, initialSettings } = Astro.props;
       }
     }
 
-    el("acd-kind")?.addEventListener("change", toggleKindAndStatusUI);
-    el("acd-status")?.addEventListener("change", toggleKindAndStatusUI);
-
-    function renderSlides(slides: any[]) {
-      if (!slidesContainer) return;
-      slidesContainer.innerHTML = slides
-        .map(
-          (s, idx) => `
-          <div class="acd-slide-card" data-slide-idx="${idx}">
-            <div class="acd-slide-card-head">
-              <strong class="acd-slide-label">Slide ${idx + 1}</strong>
-              <div class="acd-slide-card-btns">
-                <button type="button" class="acd-btn-glass btn-sm" data-slide-up="${idx}">↑</button>
-                <button type="button" class="acd-btn-glass btn-sm" data-slide-down="${idx}">↓</button>
-                <button type="button" class="acd-btn-danger btn-sm" data-slide-del="${idx}">Remove</button>
-              </div>
-            </div>
-            <div class="acd-form-grid">
-              <label class="acd-field">
-                <span>Layout</span>
-                <select class="ac-select" data-slide-field="layout">
-                  ${["cover", "split", "bullets", "grid", "quote", "cta"]
-                    .map((l) => `<option value="${l}" ${s.layout === l ? "selected" : ""}>${l}</option>`)
-                    .join("")}
-                </select>
-              </label>
-              <label class="acd-field">
-                <span>Eyebrow</span>
-                <input type="text" data-slide-field="eyebrow" value="${escapeHtml(s.eyebrow || "")}" />
-              </label>
-              <label class="acd-field acd-span-2">
-                <span>Slide Title</span>
-                <input type="text" data-slide-field="title" value="${escapeHtml(s.title || "")}" />
-              </label>
-              <label class="acd-field acd-span-2">
-                <span>Body Text</span>
-                <textarea rows="2" data-slide-field="body">${escapeHtml(s.body || "")}</textarea>
-              </label>
-              <label class="acd-field acd-span-2">
-                <span>Bullets / Grid Items (one per line)</span>
-                <textarea rows="3" data-slide-field="bullets">${escapeHtml((s.bullets || []).join("\n"))}</textarea>
-              </label>
-              <label class="acd-field acd-span-2">
-                <span>Callout Note (optional)</span>
-                <input type="text" data-slide-field="callout" value="${escapeHtml(s.callout || "")}" />
-              </label>
-            </div>
-          </div>
-        `
-        )
-        .join("");
-
-      slidesContainer.querySelectorAll<HTMLSelectElement>("select.ac-select").forEach((sel) => {
-        w.__STUDIO_ENHANCE_SELECT__?.(sel);
-        w.__STUDIO_SYNC_SELECT__?.(sel);
-      });
-
-      slidesContainer.querySelectorAll<HTMLButtonElement>("[data-slide-del]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const item = items.find((i) => i.id === selectedId);
-          if (!item) return;
-          const idx = Number(btn.dataset.slideDel);
-          item.slides = collectSlidesFromDOM();
-          item.slides.splice(idx, 1);
-          renderSlides(item.slides);
-        });
-      });
-
-      slidesContainer.querySelectorAll<HTMLButtonElement>("[data-slide-up]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const item = items.find((i) => i.id === selectedId);
-          if (!item) return;
-          const idx = Number(btn.dataset.slideUp);
-          item.slides = collectSlidesFromDOM();
-          if (idx > 0) {
-            [item.slides[idx - 1], item.slides[idx]] = [item.slides[idx], item.slides[idx - 1]];
-            renderSlides(item.slides);
-          }
-        });
-      });
-
-      slidesContainer.querySelectorAll<HTMLButtonElement>("[data-slide-down]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const item = items.find((i) => i.id === selectedId);
-          if (!item) return;
-          const idx = Number(btn.dataset.slideDown);
-          item.slides = collectSlidesFromDOM();
-          if (idx < item.slides.length - 1) {
-            [item.slides[idx + 1], item.slides[idx]] = [item.slides[idx], item.slides[idx + 1]];
-            renderSlides(item.slides);
-          }
-        });
-      });
-    }
-
-    function collectSlidesFromDOM() {
-      if (!slidesContainer) return [];
-      return Array.from(slidesContainer.querySelectorAll<HTMLElement>(".acd-slide-card")).map((card, i) => {
-        const getF = (name: string) =>
-          (card.querySelector(`[data-slide-field="${name}"]`) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)?.value ?? "";
-        return {
-          id: `s-${i + 1}`,
-          layout: getF("layout") || "bullets",
-          eyebrow: getF("eyebrow").trim(),
-          title: getF("title").trim(),
-          body: getF("body").trim(),
-          bullets: getF("bullets")
-            .split("\n")
-            .map((x) => x.trim())
-            .filter(Boolean),
-          callout: getF("callout").trim() || undefined
-        };
-      });
-    }
-
     function renderEditor() {
       const item = items.find((i) => i.id === selectedId);
       if (!item || !formEl || !emptyEl) {
@@ -544,25 +324,10 @@ const { initialItems, initialSettings } = Astro.props;
       emptyEl.hidden = true;
       formEl.hidden = false;
 
-      el("acd-kind")!.value = item.kind;
-      el("acd-status")!.value = item.status;
-      el("acd-publish-at")!.value = item.publishAt ? item.publishAt.slice(0, 16) : "";
       el("acd-slug")!.value = item.slug || "";
       el("acd-category")!.value = item.category || "";
-      el("acd-price-label")!.value = item.priceLabel || "";
-      el("acd-access-mode")!.value = item.accessMode || "stripe_webhook";
-      el("acd-stripe-url")!.value = item.stripeCheckoutUrl || "";
-      el("acd-tool-name")!.value = item.toolName || "";
-      el("acd-tool-type")!.value = item.toolType || "";
-      el("acd-tool-url")!.value = item.toolUrl || "";
 
       window.dispatchEvent(new CustomEvent("academy:kind-changed", { detail: { kind: item.kind } }));
-
-      const vis = item.landingData?.funnelVisibility || {};
-      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
-        const key = chk.dataset.funnelKey || "";
-        chk.checked = (vis as Record<string, boolean>)[key] !== false;
-      });
 
       const baseFolder = item.kind === "course" ? "courses" : "guides";
       const editContentLink = document.getElementById("acd-edit-content") as HTMLAnchorElement | null;
@@ -575,32 +340,8 @@ const { initialItems, initialSettings } = Astro.props;
       if (landingPreview) landingPreview.href = `/academy/${baseFolder}/${item.slug}`;
       if (slidesPreview) slidesPreview.href = `/academy/${baseFolder}/${item.slug}/slides`;
 
-      toggleKindAndStatusUI();
-      renderSlides(item.slides || []);
-
-      ["acd-kind", "acd-status", "acd-access-mode", "acd-default-access-mode"].forEach((id) => {
-        const sel = document.getElementById(id) as HTMLSelectElement | null;
-        if (sel) {
-          w.__STUDIO_ENHANCE_SELECT__?.(sel);
-          w.__STUDIO_SYNC_SELECT__?.(sel);
-        }
-      });
+      toggleKindAndStatusUI(item.kind);
     }
-
-    document.getElementById("btn-add-slide")?.addEventListener("click", () => {
-      const item = items.find((i) => i.id === selectedId);
-      if (!item) return;
-      item.slides = collectSlidesFromDOM();
-      item.slides.push({
-        id: `s-${item.slides.length + 1}`,
-        layout: "bullets",
-        eyebrow: `0${item.slides.length + 1} · Section`,
-        title: "New Slide Title",
-        body: "",
-        bullets: ["Key point 1", "Key point 2"]
-      });
-      renderSlides(item.slides);
-    });
 
     async function createItem(kind: "guide" | "course") {
       const res = await fetch("/api/academy/items", {
@@ -645,53 +386,30 @@ const { initialItems, initialSettings } = Astro.props;
       showStudioToast(`AI generated ${newItem.kind}: ${newItem.title}`);
     });
 
-    document.getElementById("btn-funnel-all-on")?.addEventListener("click", () => {
-      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
-        chk.checked = true;
-      });
-    });
-
-    document.getElementById("btn-funnel-minimal")?.addEventListener("click", () => {
-      const essential = new Set(["valueStrip", "toolSpotlight", "curriculum", "deliverables", "closingCta", "faq"]);
-      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
-        chk.checked = essential.has(chk.dataset.funnelKey || "");
-      });
-    });
-
     formEl?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!selectedId) return;
       const item = items.find((i) => i.id === selectedId);
       if (!item) return;
 
-      const funnelVisibility: Record<string, boolean> = {};
-      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
-        if (chk.dataset.funnelKey) {
-          funnelVisibility[chk.dataset.funnelKey] = chk.checked;
-        }
-      });
-
       const payload = {
-        kind: el("acd-kind")!.value,
-        status: el("acd-status")!.value,
-        publishAt: el("acd-publish-at")!.value ? new Date(el("acd-publish-at")!.value).toISOString() : null,
+        kind: item.kind,
+        status: item.status,
+        publishAt: item.publishAt,
         title: item.title,
         slug: el("acd-slug")!.value.trim(),
         category: el("acd-category")!.value.trim(),
         subtitle: item.subtitle,
         description: item.description,
         coverImage: item.coverImage,
-        priceLabel: el("acd-price-label")!.value.trim(),
-        accessMode: el("acd-access-mode")!.value,
-        stripeCheckoutUrl: el("acd-stripe-url")!.value.trim(),
-        toolName: el("acd-tool-name")!.value.trim(),
-        toolType: el("acd-tool-type")!.value.trim(),
-        toolUrl: el("acd-tool-url")!.value.trim(),
-        landingData: {
-          ...(item.landingData || {}),
-          funnelVisibility
-        },
-        slides: collectSlidesFromDOM()
+        priceLabel: item.priceLabel,
+        accessMode: item.accessMode,
+        stripeCheckoutUrl: item.stripeCheckoutUrl,
+        toolName: item.toolName,
+        toolType: item.toolType,
+        toolUrl: item.toolUrl,
+        landingData: item.landingData || {},
+        slides: item.slides || []
       };
 
       const res = await fetch(`/api/academy/items/${selectedId}`, {

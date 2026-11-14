@@ -2,6 +2,7 @@
 import Layout from "../../../../layouts/Layout.astro";
 import AcademySlideViewer from "../../../../components/AcademySlideViewer.astro";
 import {
+  buildSlidesFromLanding,
   getAcademyItemBySlug,
   getAcademySettings,
   verifyAccessToken
@@ -45,8 +46,9 @@ if (queryToken) {
 }
 
 const autoPrint = Astro.url.searchParams.get("print") === "1";
+const derivedItem = { ...item, slides: buildSlidesFromLanding(item) };
 ---
 
 <Layout title={`${item.title} — Course Deck | Adaptif Academy`} description={item.subtitle || item.description}>
-  <AcademySlideViewer item={item} backHref={`/academy/courses/${item.slug}`} autoPrint={autoPrint} />
+  <AcademySlideViewer item={derivedItem} backHref={`/academy/courses/${item.slug}`} autoPrint={autoPrint} />
 </Layout>

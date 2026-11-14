@@ -3,6 +3,7 @@ import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
 import {
+  FUNNEL_BLOCKS,
   defaultFunnelVisibility,
   getAcademyItemBySlug,
   getAcademySettings,
@@ -344,8 +345,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     </section>
 
     <!-- 2. VALUE STRIP -->
-    {vis.valueStrip && valueStrip.length > 0 && (
-      <section class="cf-value-strip is-visible">
+    {(vis.valueStrip || isEditMode) && valueStrip.length > 0 && (
+      <section class="cf-value-strip is-visible" data-funnel-block="valueStrip" hidden={!vis.valueStrip}>
         <div class="cf-container">
           <div class="cf-strip-bar">
             {valueStrip.map((label, idx) => (
@@ -362,8 +363,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 3. BEFORE / AFTER GRID -->
-    {vis.beforeAfter && (
-      <section class="cf-section is-visible">
+    {(vis.beforeAfter || isEditMode) && (
+      <section class="cf-section is-visible" data-funnel-block="beforeAfter" hidden={!vis.beforeAfter}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.beforeAfter.eyebrow")}>{beforeAfter.eyebrow}</span>
@@ -392,8 +393,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 4. VISUAL SPLIT COMPARISON -->
-    {vis.visualComparison && (
-      <section class="cf-section is-visible">
+    {(vis.visualComparison || isEditMode) && (
+      <section class="cf-section is-visible" data-funnel-block="visualComparison" hidden={!vis.visualComparison}>
         <div class="cf-container">
           <div class="cf-split-proof">
             <div class="cf-split-copy">
@@ -417,8 +418,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 5. CORE METHOD PILLARS -->
-    {vis.pillars && pillars.items.length > 0 && (
-      <section class="cf-section is-visible">
+    {(vis.pillars || isEditMode) && pillars.items.length > 0 && (
+      <section class="cf-section is-visible" data-funnel-block="pillars" hidden={!vis.pillars}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.pillars.eyebrow")}>{pillars.eyebrow}</span>
@@ -440,8 +441,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 6. SYSTEM / WORKFLOW SHOWCASE -->
-    {vis.systemShowcase && (
-      <section class="cf-section is-visible">
+    {(vis.systemShowcase || isEditMode) && (
+      <section class="cf-section is-visible" data-funnel-block="systemShowcase" hidden={!vis.systemShowcase}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.systemShowcase.eyebrow")}>{systemShowcase.eyebrow}</span>
@@ -471,8 +472,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 7. INTERACTIVE TABBED EXPLORER -->
-    {vis.explorer && explorer.tabs.length > 0 && (
-      <section class="cf-section is-visible">
+    {(vis.explorer || isEditMode) && explorer.tabs.length > 0 && (
+      <section class="cf-section is-visible" data-funnel-block="explorer" hidden={!vis.explorer}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.explorer.eyebrow")}>{explorer.eyebrow}</span>
@@ -521,8 +522,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 8. COMPANION TOOL SPOTLIGHT -->
-    {vis.toolSpotlight && (item.toolName || item.toolUrl) && (
-      <section class="cf-section is-visible">
+    {(vis.toolSpotlight || isEditMode) && (item.toolName || item.toolUrl) && (
+      <section class="cf-section is-visible" data-funnel-block="toolSpotlight" hidden={!vis.toolSpotlight}>
         <div class="cf-container">
           <div class="tool-spotlight-card">
             <div>
@@ -545,8 +546,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 9. CURRICULUM MICRO-GRID -->
-    {vis.curriculum && curriculum.modules.length > 0 && (
-      <section class="cf-section is-visible">
+    {(vis.curriculum || isEditMode) && curriculum.modules.length > 0 && (
+      <section class="cf-section is-visible" data-funnel-block="curriculum" hidden={!vis.curriculum}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.curriculum.eyebrow")}>{curriculum.eyebrow}</span>
@@ -570,8 +571,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 10. TARGET OUTCOMES SPLIT -->
-    {vis.outcomes && outcomes.bullets.length > 0 && (
-      <section class="cf-section is-visible">
+    {(vis.outcomes || isEditMode) && outcomes.bullets.length > 0 && (
+      <section class="cf-section is-visible" data-funnel-block="outcomes" hidden={!vis.outcomes}>
         <div class="cf-container">
           <div class="cf-outcomes-split">
             <div class="cf-outcomes-copy">
@@ -606,8 +607,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 11. DELIVERABLES 4-CARD GRID -->
-    {vis.deliverables && deliverables.items.length > 0 && (
-      <section class="cf-section is-visible">
+    {(vis.deliverables || isEditMode) && deliverables.items.length > 0 && (
+      <section class="cf-section is-visible" data-funnel-block="deliverables" hidden={!vis.deliverables}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.deliverables.eyebrow")}>{deliverables.eyebrow}</span>
@@ -627,8 +628,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 12. CLOSING CONVERSION BANNER -->
-    {vis.closingCta && (
-      <section class="cf-section is-visible" id="course-enroll">
+    {(vis.closingCta || isEditMode) && (
+      <section class="cf-section is-visible" id="course-enroll" data-funnel-block="closingCta" hidden={!vis.closingCta}>
         <div class="cf-container">
           <div class="cf-closing-card">
             <div class="cf-closing-visual">
@@ -681,8 +682,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     )}
 
     <!-- 13. FAQ ACCORDION -->
-    {vis.faq && item.landingData.faq.length > 0 && (
-      <section class="cf-section is-visible">
+    {(vis.faq || isEditMode) && item.landingData.faq.length > 0 && (
+      <section class="cf-section is-visible" data-funnel-block="faq" hidden={!vis.faq}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow">Questions &amp; Answers</span>
@@ -706,12 +707,46 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
 
   {isEditMode && (
     <>
+      <div class="cf-blocks-drawer" id="cf-blocks-drawer" hidden>
+        <div class="cf-blocks-drawer-head">
+          <div>
+            <span class="cf-blocks-eyebrow">LANDING FUNNEL SECTIONS</span>
+            <h3>Show or Hide Funnel Blocks</h3>
+          </div>
+          <div class="cf-blocks-quick">
+            <button type="button" class="cf-edit-btn-glass" id="cf-blocks-all-on">All On</button>
+            <button type="button" class="cf-edit-btn-glass" id="cf-blocks-minimal">Essential Only</button>
+            <button type="button" class="cf-edit-btn-glass" id="cf-blocks-close" aria-label="Close">✕</button>
+          </div>
+        </div>
+        <div class="cf-blocks-grid">
+          {FUNNEL_BLOCKS.map((block) => (
+            <label class="cf-block-row">
+              <div class="cf-block-meta">
+                <strong>{block.label}</strong>
+                <span>{block.hint}</span>
+              </div>
+              <span class="cf-block-switch">
+                <input
+                  type="checkbox"
+                  class="cf-block-chk"
+                  data-funnel-key={block.key}
+                  checked={vis[block.key] !== false}
+                />
+                <span class="cf-block-slider"></span>
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
       <div class="cf-edit-bar" id="cf-edit-bar">
         <div class="cf-edit-status">
           <span class="cf-edit-dot"></span>
           <span>Edit Mode · Click any text or image to edit</span>
         </div>
         <div class="cf-edit-actions">
+          <button type="button" class="cf-edit-btn-glass" id="cf-toggle-blocks">Funnel Blocks</button>
           <a href="/studio-adaptif-9x4k" class="cf-edit-btn-glass">← Preferences</a>
           <a href={`/academy/courses/${item.slug}`} class="cf-edit-btn-glass">Exit Edit Mode</a>
           <button type="button" class="cf-edit-btn-cyan" id="cf-save-front-edits">Save Changes</button>
@@ -890,11 +925,62 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       activeImgField = null;
     });
 
+    const toggleBlocksBtn = document.getElementById("cf-toggle-blocks");
+    const blocksDrawer = document.getElementById("cf-blocks-drawer");
+    const blocksCloseBtn = document.getElementById("cf-blocks-close");
+    const blocksAllOnBtn = document.getElementById("cf-blocks-all-on");
+    const blocksMinimalBtn = document.getElementById("cf-blocks-minimal");
+
+    function syncBlockVisibilityFromCheckboxes() {
+      const funnelVisibility: Record<string, boolean> = {};
+      document.querySelectorAll<HTMLInputElement>(".cf-block-chk").forEach((chk) => {
+        const key = chk.dataset.funnelKey || "";
+        if (!key) return;
+        funnelVisibility[key] = chk.checked;
+        const sec = document.querySelector<HTMLElement>(`[data-funnel-block="${key}"]`);
+        if (sec) sec.hidden = !chk.checked;
+      });
+      seed.landingData = {
+        ...(seed.landingData || {}),
+        funnelVisibility
+      };
+    }
+
+    toggleBlocksBtn?.addEventListener("click", () => {
+      if (!blocksDrawer) return;
+      blocksDrawer.hidden = !blocksDrawer.hidden;
+    });
+
+    blocksCloseBtn?.addEventListener("click", () => {
+      if (blocksDrawer) blocksDrawer.hidden = true;
+    });
+
+    document.querySelectorAll<HTMLInputElement>(".cf-block-chk").forEach((chk) => {
+      chk.addEventListener("change", syncBlockVisibilityFromCheckboxes);
+    });
+
+    blocksAllOnBtn?.addEventListener("click", () => {
+      document.querySelectorAll<HTMLInputElement>(".cf-block-chk").forEach((chk) => {
+        chk.checked = true;
+      });
+      syncBlockVisibilityFromCheckboxes();
+    });
+
+    blocksMinimalBtn?.addEventListener("click", () => {
+      const essential = new Set(["valueStrip", "toolSpotlight", "curriculum", "deliverables", "closingCta", "faq"]);
+      document.querySelectorAll<HTMLInputElement>(".cf-block-chk").forEach((chk) => {
+        chk.checked = essential.has(chk.dataset.funnelKey || "");
+      });
+      syncBlockVisibilityFromCheckboxes();
+    });
+
     saveBtn?.addEventListener("click", async () => {
       if (!saveBtn) return;
       saveBtn.disabled = true;
       const prevLabel = saveBtn.textContent;
       saveBtn.textContent = "Saving...";
+
+      syncBlockVisibilityFromCheckboxes();
 
       document.querySelectorAll<HTMLElement>("[data-edit-field]").forEach((node) => {
         const path = node.dataset.editField;
@@ -1955,9 +2041,144 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
     color: #03121e;
   }
 
+  [data-funnel-block][hidden],
+  .cf-blocks-drawer[hidden],
   .cf-img-modal-backdrop[hidden],
   .cf-edit-toast[hidden] {
     display: none !important;
+  }
+
+  .cf-edit-bar {
+    width: min(940px, 95vw);
+  }
+
+  .cf-blocks-drawer {
+    position: fixed;
+    bottom: 84px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 310;
+    width: min(940px, 95vw);
+    max-height: min(68vh, 520px);
+    overflow-y: auto;
+    padding: 20px 22px;
+    border-radius: 22px;
+    background: rgba(5, 16, 30, 0.94);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.78);
+  }
+
+  .cf-blocks-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .cf-blocks-eyebrow {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    color: #48c8ff;
+    margin-bottom: 4px;
+  }
+
+  .cf-blocks-drawer-head h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .cf-blocks-quick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cf-blocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+  }
+
+  .cf-block-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+  }
+
+  .cf-block-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .cf-block-meta strong {
+    font-size: 0.82rem;
+    font-weight: 650;
+    color: #f8fafc;
+  }
+
+  .cf-block-meta span {
+    font-size: 0.72rem;
+    color: rgba(203, 213, 225, 0.72);
+    line-height: 1.3;
+  }
+
+  .cf-block-switch {
+    position: relative;
+    flex: 0 0 auto;
+    width: 38px;
+    height: 22px;
+  }
+
+  .cf-block-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .cf-block-slider {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.25);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    transition: background 0.18s ease, border-color 0.18s ease;
+  }
+
+  .cf-block-slider::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    transition: transform 0.18s ease, background 0.18s ease;
+  }
+
+  .cf-block-switch input:checked + .cf-block-slider {
+    background: rgba(72, 200, 255, 0.28);
+    border-color: #48c8ff;
+  }
+
+  .cf-block-switch input:checked + .cf-block-slider::before {
+    transform: translateX(16px);
+    background: #48c8ff;
   }
 
   .cf-img-modal-backdrop {

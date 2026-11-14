@@ -848,3 +848,129 @@ export async function verifyAccessToken(itemId: string, token: string | null | u
   `;
   return rows.length > 0;
 }
+
+export function buildSlidesFromLanding(item: AcademyItem): AcademySlide[] {
+  const vis = defaultFunnelVisibility(item.landingData.funnelVisibility);
+  const f = item.landingData.funnel || {};
+  const coverImg = item.coverImage || "/images/why-us/our-technology.jpg";
+  const slides: AcademySlide[] = [];
+
+  const valueStrip =
+    Array.isArray(f.valueStrip) && f.valueStrip.length > 0
+      ? f.valueStrip
+      : item.landingData.takeaways.slice(0, 4);
+
+  slides.push({
+    id: "landing-cover",
+    layout: "cover",
+    eyebrow: item.landingData.heroBadge || "Adaptif Academy · Course",
+    title: item.title,
+    body: item.subtitle || item.description,
+    bullets: vis.valueStrip ? valueStrip.slice(0, 4) : []
+  });
+
+  if (vis.beforeAfter && f.beforeAfter) {
+    const ba = f.beforeAfter;
+    const bullets: string[] = [];
+    (ba.beforeItems || []).slice(0, 2).forEach((b) => bullets.push(`Before: ${b.title} — ${b.body}`));
+    (ba.afterItems || []).slice(0, 2).forEach((a) => bullets.push(`After: ${a.title} — ${a.body}`));
+    slides.push({
+      id: "landing-before-after",
+      layout: "bullets",
+      eyebrow: ba.eyebrow || "The Execution Gap",
+      title: ba.title || "Before vs. After",
+      body: ba.subtitle || "",
+      bullets
+    });
+  }
+
+  if (vis.visualComparison && f.visualComparison) {
+    const vc = f.visualComparison;
+    slides.push({
+      id: "landing-visual-comparison",
+      layout: "split",
+      eyebrow: vc.eyebrow || "Side-by-Side Impact",
+      title: vc.title || "Built for real-world output",
+      body: vc.body || "",
+      bullets: [
+        `${vc.beforeLabel || "Without System"} → ${vc.afterLabel || "With This System"}`
+      ],
+      image: vc.image || coverImg
+    });
+  }
+
+  if (vis.pillars && f.pillars?.items?.length) {
+    slides.push({
+      id: "landing-pillars",
+      layout: "grid",
+      eyebrow: f.pillars.eyebrow || "Core Architecture",
+      title: f.pillars.title || "Core Pillars",
+      body: f.pillars.subtitle || "",
+      bullets: f.pillars.items.slice(0, 6).map((p) => `${p.title}: ${p.body}`)
+    });
+  }
+
+  if (vis.systemShowcase && f.systemShowcase) {
+    const sc = f.systemShowcase;
+    slides.push({
+      id: "landing-system-showcase",
+      layout: "split",
+      eyebrow: sc.eyebrow || "Complete Workflow",
+      title: sc.title || "How every piece connects",
+      body: sc.subtitle || "",
+      bullets: sc.caption ? [sc.caption] : [],
+      image: sc.image || coverImg
+    });
+  }
+
+  if (vis.explorer && f.explorer?.tabs?.length) {
+    f.explorer.tabs.forEach((tab, idx) => {
+      slides.push({
+        id: `landing-explorer-${idx + 1}`,
+        layout: "split",
+        eyebrow: `${f.explorer?.eyebrow || "System"} · ${tab.label}`,
+        title: tab.title,
+        body: tab.body,
+        bullets: (tab.specs || []).slice(0, 4).map((s) => `${s.label}: ${s.value}`),
+        image: tab.image || coverImg
+      });
+    });
+  }
+
+  if (vis.curriculum && f.curriculum?.modules?.length) {
+    slides.push({
+      id: "landing-curriculum",
+      layout: "grid",
+      eyebrow: f.curriculum.eyebrow || "Curriculum",
+      title: f.curriculum.title || "Course Modules",
+      body: f.curriculum.subtitle || "",
+      bullets: f.curriculum.modules.slice(0, 6).map((m) => `${m.tag} · ${m.title}`)
+    });
+  }
+
+  if (vis.outcomes && f.outcomes?.bullets?.length) {
+    slides.push({
+      id: "landing-outcomes",
+      layout: "split",
+      eyebrow: f.outcomes.eyebrow || "Target Outcomes",
+      title: f.outcomes.title || "What you will ship",
+      body: f.outcomes.subtitle || "",
+      bullets: f.outcomes.bullets.slice(0, 4).map((b) => `${b.title}: ${b.body}`),
+      image: f.outcomes.image || coverImg
+    });
+  }
+
+  if (vis.closingCta && f.closingCta) {
+    slides.push({
+      id: "landing-closing",
+      layout: "cta",
+      eyebrow: f.closingCta.eyebrow || "Next Step",
+      title: f.closingCta.title || item.title,
+      body: f.closingCta.body || "",
+      bullets: (f.closingCta.checklist || []).slice(0, 4)
+    });
+  }
+
+  // Fallback to existing slides if no funnel blocks produced extra slides
+  return slides.length > 1 ? slides : item.slides;
+}

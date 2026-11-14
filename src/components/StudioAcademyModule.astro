@@ -667,14 +667,15 @@ const { initialItems, initialSettings } = Astro.props;
       uploadCustomPdfBtn.disabled = true;
       uploadCustomPdfBtn.textContent = "Uploading PDF...";
       try {
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("folder", "academy-pdfs");
-        const upRes = await fetch("/api/upload", { method: "POST", body: fd });
-        const upData = await upRes.json();
-        if (!upRes.ok || !upData?.url) throw new Error(upData?.error || "PDF upload failed");
+        const { upload } = await import("@vercel/blob/client");
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const blob = await upload(`academy-pdfs/${Date.now()}-${safeName}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/blob-upload"
+        });
+        if (!blob?.url) throw new Error("PDF upload failed");
 
-        const nextLandingData = { ...(item.landingData || {}), customPdfUrl: upData.url };
+        const nextLandingData = { ...(item.landingData || {}), customPdfUrl: blob.url };
         const patchRes = await fetch(`/api/academy/items/${selectedId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

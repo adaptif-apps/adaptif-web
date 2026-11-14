@@ -1151,6 +1151,12 @@ const tagPresets = [
       moduleTabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           const target = tab.dataset.moduleTab;
+          if (target) {
+            try {
+              localStorage.setItem("adaptif_studio_tab", target);
+              history.replaceState(null, "", `#${target}`);
+            } catch {}
+          }
           const activeCampaignModule = document.getElementById("module-activecampaign");
           const academyModule = document.getElementById("module-academy");
           const generalInfoModule = document.getElementById("module-general-info");
@@ -1190,6 +1196,16 @@ const tagPresets = [
           }
         });
       });
+
+      // Restore last active tab on reload
+      try {
+        const hashTab = window.location.hash.replace(/^#/, "");
+        const savedTab = hashTab || localStorage.getItem("adaptif_studio_tab") || "";
+        if (savedTab && savedTab !== "portfolio") {
+          const targetBtn = document.querySelector<HTMLButtonElement>(`[data-module-tab="${savedTab}"]`);
+          targetBtn?.click();
+        }
+      } catch {}
 
       // Book a Call Form CMS save
       const bcCmsForm = document.getElementById("book-call-cms-form") as HTMLFormElement | null;

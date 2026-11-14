@@ -16,7 +16,7 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title" id="acd-module-title">Courses &amp; <span>Guides</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-glass" id="btn-new-guide">+ New Guide</button>
+      <button type="button" class="acd-btn-cyan" id="btn-new-guide">+ New Guide</button>
       <button type="button" class="acd-btn-cyan" id="btn-new-course">+ New Course</button>
     </div>
   </header>
@@ -327,12 +327,8 @@ const { initialItems, initialSettings } = Astro.props;
           })
           .join("");
 
-        const addLabel = kind === "course" ? "+ New Course" : "+ New Guide";
         container.innerHTML =
-          listHtml +
-          `<button type="button" class="nav-item nav-acd-add" data-sidebar-new-kind="${kind}">
-            <span>${addLabel}</span>
-          </button>`;
+          listHtml || `<div class="nav-acd-empty">No ${kind}s yet</div>`;
 
         container.querySelectorAll<HTMLButtonElement>("[data-sidebar-academy-id]").forEach((btn) => {
           btn.addEventListener("click", () => {
@@ -340,14 +336,6 @@ const { initialItems, initialSettings } = Astro.props;
             activateAcademyModule();
             renderSidebarLists();
             renderEditor();
-          });
-        });
-
-        container.querySelectorAll<HTMLButtonElement>("[data-sidebar-new-kind]").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const k = btn.dataset.sidebarNewKind === "course" ? "course" : "guide";
-            activateAcademyModule();
-            createItem(k);
           });
         });
       };
@@ -362,6 +350,11 @@ const { initialItems, initialSettings } = Astro.props;
       if (courseOnlyEl) courseOnlyEl.hidden = kind !== "course";
       if (prefsSectionEl) prefsSectionEl.hidden = kind !== "course";
       if (publishAtWrap) publishAtWrap.hidden = status !== "scheduled";
+
+      const newGuideBtn = document.getElementById("btn-new-guide");
+      const newCourseBtn = document.getElementById("btn-new-course");
+      if (newGuideBtn) newGuideBtn.hidden = kind !== "guide";
+      if (newCourseBtn) newCourseBtn.hidden = kind !== "course";
 
       if (titleHeaderEl && eyebrowHeaderEl) {
         if (kind === "course") {
@@ -846,6 +839,30 @@ const { initialItems, initialSettings } = Astro.props;
     cursor: pointer;
   }
 
+  .acd-btn-cyan[hidden],
+  .acd-btn-glass[hidden],
+  .acd-field[hidden],
+  .acd-subsection[hidden],
+  .acd-glass-card[hidden] {
+    display: none !important;
+  }
+
+  #module-academy .studio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  #acd-module-title :global(span) {
+    font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-brand-cyan, #48c8ff);
+  }
+
   .acd-upload-label {
     cursor: pointer;
   }
@@ -932,7 +949,30 @@ const { initialItems, initialSettings } = Astro.props;
 
   /* Sidebar Academy Item Styling */
   :global(.nav-academy-item) {
-    justify-content: flex-start !important;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #94a3b8;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+
+  :global(.nav-academy-item:hover) {
+    background: rgba(72, 200, 255, 0.08);
+    color: #f8fafc;
+  }
+
+  :global(.nav-academy-item.is-active) {
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.35);
+    color: #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 
   :global(.nav-acd-label) {

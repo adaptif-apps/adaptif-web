@@ -13,7 +13,51 @@ import DedicatedTeamOutcomes from "../components/DedicatedTeamOutcomes.astro";
 import DedicatedTeamServices from "../components/DedicatedTeamServices.astro";
 import PricingHero from "../components/PricingHero.astro";
 import ComparisonTable from "../components/ComparisonTable.astro";
+import FaqSection from "../components/FaqSection.astro";
 import Footer from "../components/Footer.astro";
+
+const dedicatedTeamFaqs = [
+  {
+    question: "What roles are included in my subscription?",
+    answer:
+      "Your team includes a creative director, brand designer, motion designer, web designer, content strategist and production lead, all coordinated for you from day one.",
+  },
+  {
+    question: "How quickly can we start after subscribing?",
+    answer:
+      "Same day. We set up your brand workspace, sync your assets and brief your team. You can submit your first request within hours of signing up.",
+  },
+  {
+    question: "Can I run multiple disciplines at once?",
+    answer:
+      "Yes. With the Full Stack plan you have multiple active request slots, so design, web and marketing can all move in parallel at the same time.",
+  },
+  {
+    question: "What's the difference between Creative and Full Stack?",
+    answer:
+      "Creative is one active stream at a time, ideal for focused brands. Full Stack opens multiple parallel streams and adds web dev, AI production and performance marketing.",
+  },
+  {
+    question: "Can I have direct communication with my creative team?",
+    answer:
+      "Yes. You'll work with your team directly through Slack, Figma, Notion or whatever tools you already use, no account managers in the way, no ticket queues.",
+  },
+  {
+    question: "Can I scale my team up or down?",
+    answer:
+      "Absolutely. Upgrade from Creative to Full Stack anytime, or step back down when your workload shifts, without any hiring, firing or renegotiation.",
+  },
+  {
+    question: "Do I own everything my team creates?",
+    answer:
+      "Completely. All files, source assets and deliverables transfer to you from day one. No licensing arrangements, no intellectual property clauses.",
+  },
+  {
+    question: "Can I really pause or cancel anytime?",
+    answer:
+      "Yes, pause from your dashboard and any remaining days roll over when you return. Cancel at any point, no questions asked and no penalty.",
+  },
+];
 ---
 
 <Layout
@@ -41,6 +85,7 @@ import Footer from "../components/Footer.astro";
       sectionId="dedicated-team-pricing"
     />
     <ComparisonTable />
+    <FaqSection faqs={dedicatedTeamFaqs} />
   </main>
   <Footer />
 </Layout>

@@ -1,5 +1,14 @@
 ---
-const faqs = [
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  faqs?: FaqItem[];
+}
+
+const defaultFaqs: FaqItem[] = [
   {
     question: "What is the minimum commitment?",
     answer:
@@ -51,6 +60,8 @@ const faqs = [
       "Your subscription covers the services listed in your plan, including ongoing creative production and support within your active capacity. If a request falls outside the scope of your plan or requires a larger custom engagement, we’ll flag it early and recommend the best next step.",
   },
 ];
+
+const { faqs = defaultFaqs } = Astro.props;
 ---
 
 <section class="faq-section" id="faqs" data-theme="dark">

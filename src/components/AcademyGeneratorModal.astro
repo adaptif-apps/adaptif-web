@@ -394,13 +394,6 @@ const { initialSettings } = Astro.props;
           const bytes = new Uint8Array(buf);
           const extractedText = extractPdfText(bytes);
           attachedFiles.push({ name: file.name, mimeType: "application/pdf", textContent: extractedText });
-
-          const pdfImages = extractPdfJpegs(bytes, file.name.replace(/\.pdf$/i, ""));
-          for (const imgFile of pdfImages) {
-            scrapedImageFiles.push(imgFile);
-            const { mimeType, base64Data } = await compressImageToBase64(imgFile);
-            attachedFiles.push({ name: imgFile.name, mimeType, base64Data });
-          }
         } else {
           const textContent = await file.text().catch(() => "");
           attachedFiles.push({

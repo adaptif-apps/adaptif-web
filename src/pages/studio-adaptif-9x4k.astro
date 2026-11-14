@@ -1825,14 +1825,15 @@ const tagPresets = [
         min-width: 0;
       }
 
-      .studio-header {
+      :global(.studio-header) {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
         gap: 16px;
+        margin-bottom: 26px;
       }
 
-      .studio-eyebrow {
+      :global(.studio-eyebrow) {
         margin: 0 0 6px;
         font-size: 0.82rem;
         text-transform: uppercase;
@@ -1841,7 +1842,7 @@ const tagPresets = [
         font-weight: 700;
       }
 
-      .studio-title {
+      :global(.studio-title) {
         margin: 0;
         font-family: var(--font-serif);
         font-size: 2.2rem;
@@ -1849,7 +1850,7 @@ const tagPresets = [
         line-height: 1.05;
       }
 
-      .studio-title span {
+      :global(.studio-title span) {
         font-style: italic;
         color: var(--cyan);
       }

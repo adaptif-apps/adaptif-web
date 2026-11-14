@@ -2,6 +2,7 @@
 import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
+import FaqSection from "../../../components/FaqSection.astro";
 import {
   FUNNEL_BLOCKS,
   defaultFunnelVisibility,
@@ -698,25 +699,12 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 13. FAQ ACCORDION -->
     {(vis.faq || isEditMode) && item.landingData.faq.length > 0 && (
-      <section class="cf-section is-visible" data-funnel-block="faq" hidden={!vis.faq}>
-        <div class="cf-container">
-          <div class="cf-section-head">
-            <span class="section-eyebrow">Questions &amp; Answers</span>
-            <h2 class="section-title">Frequently Asked Questions</h2>
-          </div>
-          <div class="faq-list">
-            {item.landingData.faq.map((entry, idx) => (
-              <details class="faq-card" open={idx === 0 || isEditMode}>
-                <summary>
-                  <span {...ed(`landingData.faq.${idx}.q`)}>{entry.q}</span>
-                  <span class="faq-plus" aria-hidden="true">+</span>
-                </summary>
-                <p {...ed(`landingData.faq.${idx}.a`)}>{entry.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FaqSection
+        faqs={item.landingData.faq.map((entry) => ({ question: entry.q, answer: entry.a }))}
+        editable={isEditMode}
+        hidden={!vis.faq}
+        dataFunnelBlock="faq"
+      />
     )}
   </main>
 
@@ -1869,45 +1857,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     gap: 12px;
   }
 
-  /* FAQ */
-  .faq-list {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .faq-card {
-    padding: 18px 20px;
-    border-radius: 16px;
-    background: rgba(11, 32, 54, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .faq-card summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text-primary);
-    list-style: none;
-  }
-
-  .faq-plus {
-    color: var(--cyan-primary);
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
-  .faq-card p {
-    margin: 12px 0 0;
-    font-size: 0.88rem;
-    line-height: 1.55;
-    color: var(--text-secondary);
-  }
-
-  @media (max-width: 960px) {
+    @media (max-width: 960px) {
     .cf-hero-grid,
     .cf-split-proof,
     .cf-explorer-panel,
@@ -1916,8 +1866,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     .cf-ba-grid,
     .cf-pillars-grid,
     .curriculum-grid,
-    .cf-deliverables-grid,
-    .faq-list {
+    .cf-deliverables-grid {
       grid-template-columns: 1fr;
     }
 

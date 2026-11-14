@@ -6,6 +6,9 @@ export interface FaqItem {
 
 interface Props {
   faqs?: FaqItem[];
+  editable?: boolean;
+  hidden?: boolean;
+  dataFunnelBlock?: string;
 }
 
 const defaultFaqs: FaqItem[] = [
@@ -61,10 +64,16 @@ const defaultFaqs: FaqItem[] = [
   },
 ];
 
-const { faqs = defaultFaqs } = Astro.props;
+const { faqs = defaultFaqs, editable = false, hidden = false, dataFunnelBlock } = Astro.props;
 ---
 
-<section class="faq-section" id="faqs" data-theme="dark">
+<section
+  class="faq-section"
+  id="faqs"
+  data-theme="dark"
+  data-funnel-block={dataFunnelBlock}
+  hidden={hidden}
+>
   <div class="faq-ambient-glow" aria-hidden="true"></div>
 
   <div class="faq-container">
@@ -78,7 +87,7 @@ const { faqs = defaultFaqs } = Astro.props;
     <div class="faq-list" role="list">
       {
         faqs.map((item, idx) => {
-          const isOpen = idx === 0;
+          const isOpen = editable ? true : idx === 0;
           const panelId = `faq-panel-${idx}`;
           const triggerId = `faq-trigger-${idx}`;
           return (
@@ -94,7 +103,12 @@ const { faqs = defaultFaqs } = Astro.props;
                 aria-expanded={isOpen ? "true" : "false"}
                 aria-controls={panelId}
               >
-                <span class="faq-question">{item.question}</span>
+                <span
+                  class="faq-question"
+                  {...(editable ? { contenteditable: "true", "data-edit-field": `landingData.faq.${idx}.q` } : {})}
+                >
+                  {item.question}
+                </span>
                 <span class="faq-icon" aria-hidden="true">
                   <svg
                     width="16"
@@ -118,7 +132,12 @@ const { faqs = defaultFaqs } = Astro.props;
                 aria-labelledby={triggerId}
               >
                 <div class="faq-panel-inner">
-                  <p class="faq-answer">{item.answer}</p>
+                  <p
+                    class="faq-answer"
+                    {...(editable ? { contenteditable: "true", "data-edit-field": `landingData.faq.${idx}.a` } : {})}
+                  >
+                    {item.answer}
+                  </p>
                 </div>
               </div>
             </article>
@@ -157,7 +176,10 @@ const { faqs = defaultFaqs } = Astro.props;
       if (btn.dataset.bound === "true") return;
       btn.dataset.bound = "true";
 
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        if ((e.target as HTMLElement | null)?.closest("[contenteditable='true']")) {
+          return;
+        }
         const parent = btn.closest(".faq-item");
         if (!parent) return;
 
@@ -183,6 +205,10 @@ const { faqs = defaultFaqs } = Astro.props;
 </script>
 
 <style>
+  .faq-section[hidden] {
+    display: none !important;
+  }
+
   .faq-section {
     position: relative;
     width: 100%;

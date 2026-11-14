@@ -1278,15 +1278,16 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     addExplorerTabBtn?.addEventListener("click", () => {
       if (!explorerTabsEl || !explorerPanelsEl) return;
+      const templateTab = explorerTabsEl.querySelector<HTMLButtonElement>(".cf-tab-btn:not(.cf-tab-add)");
       const templatePanel = explorerPanelsEl.querySelector<HTMLElement>(".cf-explorer-panel");
-      if (!templatePanel) return;
+      if (!templateTab || !templatePanel) return;
       const newIdx = explorerTabsEl.querySelectorAll(".cf-tab-btn:not(.cf-tab-add)").length;
 
-      const newTab = document.createElement("button");
-      newTab.type = "button";
-      newTab.className = "cf-tab-btn";
+      const newTab = templateTab.cloneNode(true) as HTMLButtonElement;
+      newTab.classList.remove("is-active");
       newTab.dataset.tabIndex = String(newIdx);
-      newTab.innerHTML = `<span contenteditable="true" spellcheck="false" data-edit-field="landingData.funnel.explorer.tabs.${newIdx}.label">New Tag</span><span class="cf-tab-del" title="Remove tag" aria-label="Remove tag">×</span>`;
+      const labelSpan = newTab.querySelector<HTMLElement>("[data-edit-field]");
+      if (labelSpan) labelSpan.textContent = "New Tag";
       explorerTabsEl.insertBefore(newTab, addExplorerTabBtn);
 
       const newPanel = templatePanel.cloneNode(true) as HTMLElement;

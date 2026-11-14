@@ -1,0 +1,389 @@
+---
+// DedicatedTeamServices.astro - Organized overview of creative & digital capabilities
+import { dedicatedTeamServices } from "../data/dedicatedTeamServices";
+
+interface Props {
+  ctaHref?: string;
+}
+
+const { ctaHref = "/pricing#compare-plans" } = Astro.props;
+---
+
+<section
+  class="dt-services"
+  id="services-overview"
+  aria-labelledby="dt-services-heading"
+>
+  <div class="container dt-services__container">
+    <!-- Section Header -->
+    <header class="dt-services__header">
+      <div class="dt-services__header-copy">
+        <span class="dt-services__eyebrow">EVERY SERVICE YOUR BRAND NEEDS</span>
+
+        <h2 id="dt-services-heading" class="dt-services__title">
+          World-class craft,
+          <span class="title-highlight dt-services__title-accent">built for every stage</span>
+        </h2>
+
+        <p class="dt-services__subtitle">
+          From brand foundations to web builds and AI-assisted production—organized so you can quickly request what your roadmap requires. Service availability varies by plan.
+        </p>
+      </div>
+
+      <div class="dt-services__header-action">
+        <a href={ctaHref} class="dt-services__link-btn">
+          <span>Compare services by plan</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- 6-Category Structured Matrix -->
+    <div class="dt-services__grid">
+      {dedicatedTeamServices.map((category, idx) => (
+        <article
+          class="dt-srv-card reveal-srv"
+          style={`--srv-delay: ${idx * 65}ms;`}
+          aria-labelledby={`srv-cat-${category.id}`}
+        >
+          <header class="dt-srv-card__head">
+            <span class="dt-srv-card__icon" aria-hidden="true">
+              {category.icon === "design" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                  <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                  <path d="M2 2l7.586 7.586" />
+                </svg>
+              )}
+              {category.icon === "branding" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" />
+                  <circle cx="12" cy="12" r="2.5" />
+                </svg>
+              )}
+              {category.icon === "web" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="16" rx="2.5" />
+                  <path d="M3 9.5h18" />
+                  <path d="M9 14.5l2 2 4-4" />
+                </svg>
+              )}
+              {category.icon === "production" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="5" width="18" height="14" rx="2.5" />
+                  <polygon points="10 9.5 15 12 10 14.5 10 9.5" />
+                </svg>
+              )}
+              {category.icon === "marketing" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 17l6-6 4 4 7-7" />
+                  <path d="M14 8h6v6" />
+                </svg>
+              )}
+              {category.icon === "ai" && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+                  <path d="M12 7l1.8 3.2L17 12l-3.2 1.8L12 17l-1.8-3.2L7 12l3.2-1.8L12 7z" />
+                </svg>
+              )}
+            </span>
+
+            <div class="dt-srv-card__titles">
+              <h3 id={`srv-cat-${category.id}`} class="dt-srv-card__name">
+                {category.name}
+              </h3>
+              <span class="dt-srv-card__focus">{category.focus}</span>
+            </div>
+          </header>
+
+          <ul class="dt-srv-card__list">
+            {category.services.map((service) => (
+              <li class="dt-srv-card__item">
+                <span class="dt-srv-card__bullet" aria-hidden="true"></span>
+                <span>{service}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const initDedicatedTeamServices = () => {
+    const items = document.querySelectorAll("#services-overview .reveal-srv");
+    if (!items.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -30px 0px" }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  };
+
+  initDedicatedTeamServices();
+  document.addEventListener("astro:page-load", initDedicatedTeamServices);
+</script>
+
+<style>
+  .dt-services {
+    position: relative;
+    padding: clamp(72px, 10vw, 128px) 0;
+    background: var(--color-void, #010307);
+  }
+
+  .dt-services__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .dt-services__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+
+  .dt-services__header-copy {
+    max-width: 660px;
+  }
+
+  .dt-services__eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+    margin-bottom: 14px;
+  }
+
+  .dt-services__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.4rem, 4.3vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: var(--font-letter-spacing-display, -0.04em);
+    font-weight: 400;
+    color: var(--color-text-white, #ffffff);
+    margin-bottom: 16px;
+    text-wrap: balance;
+  }
+
+  .dt-services__title-accent {
+    font-style: italic;
+  }
+
+  .dt-services__subtitle {
+    font-size: clamp(0.98rem, 1.1vw, 1.12rem);
+    line-height: 1.6;
+    letter-spacing: -0.015em;
+    color: var(--color-text-secondary, #94a3b8);
+    max-width: 580px;
+    margin: 0;
+  }
+
+  .dt-services__link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: var(--radius-pill);
+    background: rgba(10, 20, 48, 0.55);
+    border: 1px solid rgba(72, 200, 255, 0.32);
+    color: #e2e8f0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition:
+      transform var(--duration-fast) var(--ease-spring),
+      border-color var(--duration-fast) ease,
+      background var(--duration-fast) ease,
+      color var(--duration-fast) ease;
+  }
+
+  .dt-services__link-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(72, 200, 255, 0.72);
+    background: rgba(14, 28, 66, 0.78);
+    color: #ffffff;
+  }
+
+  .dt-services__link-btn:focus-visible {
+    outline: 2px solid var(--color-brand-cyan, #48C8FF);
+    outline-offset: 4px;
+  }
+
+  .dt-services__link-btn svg {
+    color: var(--color-brand-cyan, #48C8FF);
+    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .dt-services__link-btn:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* Grid */
+  .dt-services__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .dt-srv-card {
+    padding: clamp(22px, 2.8vw, 30px);
+    border-radius: 20px;
+    background: rgba(6, 13, 30, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 14px 34px -16px rgba(0, 0, 0, 0.75);
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .dt-srv-card:hover {
+    border-color: rgba(72, 200, 255, 0.3);
+    background: rgba(8, 18, 40, 0.84);
+  }
+
+  .dt-srv-card__head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 18px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-srv-card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-brand-cyan, #48C8FF);
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    flex-shrink: 0;
+  }
+
+  .dt-srv-card__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .dt-srv-card__name {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.38rem, 1.8vw, 1.68rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .dt-srv-card__focus {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    letter-spacing: 0.01em;
+  }
+
+  .dt-srv-card__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+  }
+
+  .dt-srv-card__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    color: #cbd5e1;
+  }
+
+  .dt-srv-card__bullet {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-brand-cyan, #48C8FF);
+    opacity: 0.75;
+    flex-shrink: 0;
+  }
+
+  /* Reveal animation */
+  .reveal-srv {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s ease var(--srv-delay, 0ms),
+      transform 0.5s var(--ease-spring) var(--srv-delay, 0ms),
+      border-color 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .reveal-srv.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-srv {
+      opacity: 1;
+      transform: none;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+
+    .dt-services__link-btn,
+    .dt-services__link-btn svg {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .dt-services__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .dt-services__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

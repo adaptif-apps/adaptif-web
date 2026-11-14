@@ -33,7 +33,8 @@ const isUnlocked =
   (await verifyAccessToken(item.id, queryToken || cookieToken));
 
 const vis = defaultFunnelVisibility(item.landingData.funnelVisibility);
-const pdfModules = buildSlidesFromLanding(item);
+const pdfModules =
+  Array.isArray(item.slides) && item.slides.length > 0 ? item.slides : buildSlidesFromLanding(item);
 const f = item.landingData.funnel || {};
 const coverImg = item.coverImage || "/images/why-us/our-technology.jpg";
 const isEditMode = Astro.url.searchParams.get("edit") === "1";

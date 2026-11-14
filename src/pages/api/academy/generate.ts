@@ -209,11 +209,14 @@ Return ONLY valid JSON matching this exact schema:
 }
 
 Rules:
+- Separate the two outputs cleanly:
+  1) "landingData" is conversion-focused sales funnel copy for the public landing page.
+  2) "slides" is the ACTUAL COURSE HANDBOOK / PLAYBOOK delivered to buyers (tactical, instructional, step-by-step execution—NOT sales copy).
 - First slide MUST use layout "cover".
-- Last slide MUST use layout "cta".
+- Last slide MUST use layout "cta" (next-step implementation / launch checklist).
 - Middle slides should alternate between "bullets", "grid", "split", and "quote" for visual rhythm.
-- ${isCourse ? "Generate 7 to 9 detailed, actionable slides, and 9 to 12 curriculum modules in funnel.curriculum.modules." : "Generate 5 to 6 clear, high-level slides."}
-- Keep text punchy so every 16:9 slide fits cleanly without overflowing.`;
+- ${isCourse ? "Generate 10 to 14 deep, instructional slides covering the full methodology, parameters, prompts/templates, workflows, and checklists from the source material, plus 9 to 12 curriculum modules in funnel.curriculum.modules." : "Generate 5 to 6 clear, actionable slides."}
+- Keep each slide punchy and well-structured so every 16:9 slide and vector PDF page fits cleanly without overflowing.`;
 }
 
 async function callGemini(

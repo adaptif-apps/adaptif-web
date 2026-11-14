@@ -46,7 +46,10 @@ if (queryToken) {
 }
 
 const autoPrint = Astro.url.searchParams.get("print") === "1";
-const derivedItem = { ...item, slides: buildSlidesFromLanding(item) };
+const derivedItem = {
+  ...item,
+  slides: Array.isArray(item.slides) && item.slides.length > 0 ? item.slides : buildSlidesFromLanding(item)
+};
 ---
 
 <Layout title={`${item.title} — Course Deck | Adaptif Academy`} description={item.subtitle || item.description}>

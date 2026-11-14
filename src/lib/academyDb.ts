@@ -92,6 +92,8 @@ export interface CourseFunnelData {
     beforeLabel: string;
     afterLabel: string;
     image: string;
+    beforeImage?: string;
+    afterImage?: string;
   };
   pillars: {
     eyebrow: string;

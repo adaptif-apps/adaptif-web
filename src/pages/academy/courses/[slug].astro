@@ -90,7 +90,9 @@ const visualComparison = {
     "See how structured guardrails transform raw inputs into cohesive, client-ready results.",
   beforeLabel: f.visualComparison?.beforeLabel || "Ad-Hoc Approach",
   afterLabel: f.visualComparison?.afterLabel || "With This System",
-  image: f.visualComparison?.image || coverImg
+  image: f.visualComparison?.image || coverImg,
+  beforeImage: f.visualComparison?.beforeImage || f.visualComparison?.image || coverImg,
+  afterImage: f.visualComparison?.afterImage || f.visualComparison?.image || coverImg
 };
 
 const pillars = {
@@ -469,10 +471,20 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
               <h2 class="section-title" {...ed("landingData.funnel.visualComparison.title")}>{visualComparison.title}</h2>
               <p class="section-copy" {...ed("landingData.funnel.visualComparison.body")}>{visualComparison.body}</p>
             </div>
-            <div class="cf-split-visual">
-              <img src={visualComparison.image} alt={visualComparison.title} {...edImg("landingData.funnel.visualComparison.image")} />
+            <div class="cf-split-visual cf-ba-slider" id="cf-ba-slider" style="--ba-pos: 50%;">
+              <img class="cf-ba-img cf-ba-after" src={visualComparison.afterImage} alt={visualComparison.afterLabel} {...edImg("landingData.funnel.visualComparison.afterImage")} />
+              <div class="cf-ba-before-layer">
+                <img class="cf-ba-img cf-ba-before" src={visualComparison.beforeImage} alt={visualComparison.beforeLabel} {...edImg("landingData.funnel.visualComparison.beforeImage")} />
+              </div>
+              <div class="cf-ba-handle" aria-hidden="true">
+                <span class="cf-ba-line"></span>
+                <span class="cf-ba-knob">↔</span>
+              </div>
               {isEditMode && (
-                <button type="button" class="cf-img-edit-btn" data-target-img="landingData.funnel.visualComparison.image">Change Image</button>
+                <div class="cf-ba-edit-actions">
+                  <button type="button" class="cf-img-edit-btn" data-target-img="landingData.funnel.visualComparison.beforeImage">Change Before</button>
+                  <button type="button" class="cf-img-edit-btn" data-target-img="landingData.funnel.visualComparison.afterImage">Change After</button>
+                </div>
               )}
               <div class="cf-split-badges">
                 <span class="cf-badge-dark" {...ed("landingData.funnel.visualComparison.beforeLabel")}>{visualComparison.beforeLabel}</span>
@@ -1160,6 +1172,32 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       } catch {}
     });
 
+    const baSlider = document.getElementById("cf-ba-slider");
+    if (baSlider) {
+      let dragging = false;
+      const updatePos = (clientX: number) => {
+        const rect = baSlider.getBoundingClientRect();
+        const pct = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+        baSlider.style.setProperty("--ba-pos", `${pct}%`);
+      };
+      baSlider.addEventListener("pointerdown", (e) => {
+        if ((e.target as HTMLElement)?.closest("button, [contenteditable]")) return;
+        dragging = true;
+        baSlider.setPointerCapture?.(e.pointerId);
+        updatePos(e.clientX);
+      });
+      baSlider.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        updatePos(e.clientX);
+      });
+      baSlider.addEventListener("pointerup", () => {
+        dragging = false;
+      });
+      baSlider.addEventListener("pointercancel", () => {
+        dragging = false;
+      });
+    }
+
     const modulesGrid = document.getElementById("cf-modules-grid");
     const addModuleBtn = document.getElementById("btn-add-custom-module");
 
@@ -1579,8 +1617,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     aspect-ratio: 1 / 1;
     border-radius: 14px;
     overflow: hidden;
-    background: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(6, 13, 26, 0.85);
+    border: 1px solid rgba(156, 225, 255, 0.14);
   }
 
   .cf-flow-media img {

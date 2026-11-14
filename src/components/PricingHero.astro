@@ -1,5 +1,22 @@
 ---
-// PricingHero.astro - Adaptif Luminous Obsidian Glass Pricing Hero
+// PricingHero.astro - Adaptif Luminous Obsidian Glass Pricing Hero / Section
+import UnderwaterLightRays from "./UnderwaterLightRays.astro";
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  highlightTitle?: string;
+  asSection?: boolean;
+  sectionId?: string;
+}
+
+const {
+  eyebrow = "FLEXIBLE PLANS",
+  title = "Your full-time creative team,",
+  highlightTitle = "for one hire.",
+  asSection = false,
+  sectionId = "pricing-hero",
+} = Astro.props;
 import UnderwaterLightRays from "./UnderwaterLightRays.astro";
 
 interface PlanFeature {
@@ -148,7 +165,11 @@ const fullStackFeatures: PlanFeature[] = [
 ];
 ---
 
-<section class="pricing-hero" id="pricing-hero">
+<section
+  class:list={["pricing-hero", { "pricing-hero--section": asSection }]}
+  id={sectionId}
+  data-pricing-root
+>
   <!-- Volumetric Underwater Light Rays Atmosphere -->
   <div class="pricing-bg" aria-hidden="true">
     <div class="pricing-rays-layer">
@@ -161,15 +182,26 @@ const fullStackFeatures: PlanFeature[] = [
     <div class="pricing-grid">
       <!-- Left Column: Introduction -->
       <div class="pricing-intro">
-        <div class="pricing-eyebrow-pill">
-          <span class="eyebrow-dot" aria-hidden="true"></span>
-          <span>FLEXIBLE PLANS</span>
-        </div>
+        {asSection ? (
+          <span class="pricing-section-eyebrow">{eyebrow}</span>
+        ) : (
+          <div class="pricing-eyebrow-pill">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            <span>{eyebrow}</span>
+          </div>
+        )}
 
-        <h1 class="pricing-title">
-          Your full-time creative team,
-          <span class="title-highlight pricing-title-italic">for one hire.</span>
-        </h1>
+        {asSection ? (
+          <h2 class="pricing-title">
+            {title}
+            <span class="title-highlight pricing-title-italic">{highlightTitle}</span>
+          </h2>
+        ) : (
+          <h1 class="pricing-title">
+            {title}
+            <span class="title-highlight pricing-title-italic">{highlightTitle}</span>
+          </h1>
+        )}
 
         <p class="pricing-copy">
           From brand identity and social content to web, AI visuals, and copywriting, one Adaptif subscription gives you a dedicated creative team that delivers work in 1–2 days, every day.
@@ -469,9 +501,9 @@ const fullStackFeatures: PlanFeature[] = [
 
 <script>
   function setupPricingHero() {
-    const root = document.getElementById("pricing-hero");
-    if (!root || root.dataset.initialized === "true") return;
-    root.dataset.initialized = "true";
+    document.querySelectorAll<HTMLElement>("[data-pricing-root]").forEach((root) => {
+      if (root.dataset.initialized === "true") return;
+      root.dataset.initialized = "true";
 
     const toggle = root.querySelector<HTMLElement>(".billing-toggle");
     const slider = root.querySelector<HTMLElement>(".billing-slider");
@@ -603,6 +635,7 @@ const fullStackFeatures: PlanFeature[] = [
         detail.setAttribute("aria-hidden", isOpen ? "true" : "false");
       });
     });
+    });
   }
 
   if (document.readyState === "loading") {
@@ -623,6 +656,23 @@ const fullStackFeatures: PlanFeature[] = [
     align-items: flex-start;
     background-color: var(--color-void);
     overflow: hidden;
+  }
+
+  .pricing-hero--section {
+    min-height: auto;
+    padding-top: clamp(72px, 10vw, 128px);
+    padding-bottom: clamp(72px, 10vw, 128px);
+  }
+
+  .pricing-section-eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+    margin-bottom: 16px;
   }
 
   /* ========================================================================

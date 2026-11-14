@@ -100,7 +100,7 @@ const { initialItems, initialSettings } = Astro.props;
 
       <div class="acd-editor-footer">
         <button type="button" class="acd-btn-danger" id="btn-delete-acd-item">Delete</button>
-        <button type="submit" class="acd-btn-cyan" id="btn-save-acd-item">Save Changes</button>
+        <button type="submit" class="acd-btn-cyan" id="btn-save-acd-item" disabled>Save Changes</button>
       </div>
     </form>
     </div>
@@ -682,6 +682,13 @@ const { initialItems, initialSettings } = Astro.props;
     document.getElementById("btn-new-guide")?.addEventListener("click", () => createItem("guide"));
     document.getElementById("btn-new-course")?.addEventListener("click", () => createItem("course"));
 
+    let isDirty = false;
+    function setDirty(dirty: boolean) {
+      isDirty = dirty;
+      const saveBtn = document.getElementById("btn-save-acd-item") as HTMLButtonElement | null;
+      if (saveBtn) saveBtn.disabled = !dirty;
+    }
+
     let pendingCustomPdfUrl: string | null | undefined = undefined;
     const customPdfInput = document.getElementById("acd-custom-pdf-input") as HTMLInputElement | null;
     const uploadCustomPdfBtn = document.getElementById("btn-upload-custom-pdf") as HTMLButtonElement | null;
@@ -707,6 +714,7 @@ const { initialItems, initialSettings } = Astro.props;
         if (!blob?.url) throw new Error("PDF upload failed");
 
         pendingCustomPdfUrl = blob.url;
+        setDirty(true);
         renderEditor();
         showStudioToast("PDF uploaded — click Save Changes to apply!");
       } catch (err: any) {
@@ -720,6 +728,7 @@ const { initialItems, initialSettings } = Astro.props;
     removeCustomPdfBtn?.addEventListener("click", () => {
       if (!selectedId) return;
       pendingCustomPdfUrl = null;
+      setDirty(true);
       renderEditor();
       showStudioToast("PDF marked for removal — click Save Changes to apply");
     });
@@ -735,13 +744,21 @@ const { initialItems, initialSettings } = Astro.props;
         items.unshift(newItem);
       }
       selectedId = newItem.id;
+      setDirty(mode === "updated");
       renderSidebarLists();
       renderEditor();
       showStudioToast(
         mode === "updated"
-          ? `Complemented & updated ${newItem.kind}: ${newItem.title}`
+          ? `Generated updates for ${newItem.title} — click Save Changes to apply!`
           : `AI generated ${newItem.kind}: ${newItem.title}`
       );
+    });
+
+    document.getElementById("acd-editor-form")?.addEventListener("input", () => setDirty(true));
+    document.getElementById("acd-editor-form")?.addEventListener("change", () => setDirty(true));
+    ["gen-price", "gen-stripe-url", "gen-tool-name", "gen-tool-type", "gen-tool-url", "gen-status", "gen-publish-at"].forEach((id) => {
+      document.getElementById(id)?.addEventListener("input", () => setDirty(true));
+      document.getElementById(id)?.addEventListener("change", () => setDirty(true));
     });
 
     formEl?.addEventListener("submit", async (e) => {
@@ -790,6 +807,7 @@ const { initialItems, initialSettings } = Astro.props;
       const data = await res.json();
       if (res.ok && data.item) {
         pendingCustomPdfUrl = undefined;
+        setDirty(false);
         const idx = items.findIndex((i) => i.id === selectedId);
         if (idx !== -1) items[idx] = data.item;
         renderSidebarLists();

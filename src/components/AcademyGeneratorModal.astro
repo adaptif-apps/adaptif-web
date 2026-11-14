@@ -523,7 +523,8 @@ const { initialSettings } = Astro.props;
           toolType: val("gen-tool-type"),
           toolUrl: val("gen-tool-url"),
           status: val("gen-status"),
-          publishAt: val("gen-publish-at") ? new Date(val("gen-publish-at")).toISOString() : null
+          publishAt: val("gen-publish-at") ? new Date(val("gen-publish-at")).toISOString() : null,
+          skipSave: true
         });
 
         if (payload.length > 4_200_000) {

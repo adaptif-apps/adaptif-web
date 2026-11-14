@@ -481,7 +481,7 @@ export const POST: APIRoute = async ({ request }) => {
 
       if (existingItem) {
         mode = "updated";
-        item = await updateAcademyItem(existingItem.id, {
+        const patchPayload = {
           kind,
           title: String(generated?.title || existingItem.title),
           subtitle: String(generated?.subtitle || existingItem.subtitle),
@@ -498,7 +498,12 @@ export const POST: APIRoute = async ({ request }) => {
           toolUrl: kind === "course" ? String(body?.toolUrl ?? existingItem.toolUrl ?? "") : "",
           landingData: nextLandingData,
           slides: slides.length > 0 ? slides : existingItem.slides
-        });
+        };
+        if (body?.skipSave) {
+          item = { ...existingItem, ...patchPayload };
+        } else {
+          item = await updateAcademyItem(existingItem.id, patchPayload);
+        }
       }
 
       if (!item) {

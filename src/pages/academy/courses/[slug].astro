@@ -601,7 +601,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
             </p>
           </div>
 
-          <div class="cf-modules-grid">
+          <div class="cf-modules-grid" id="cf-modules-grid">
             {(item.landingData?.customPdfUrl?.trim()
               ? (item.landingData?.customModules?.length
                   ? item.landingData.customModules
@@ -621,7 +621,12 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
                 <article class="cf-module-card">
                   <div class="cf-module-top">
                     <span class="cf-module-num">Module {String(idx + 1).padStart(2, "0")}</span>
-                    <span class="cf-module-pill" {...(isCustomPdf ? ed(`landingData.customModules.${idx}.tag`) : {})}>{mod.tag}</span>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                      <span class="cf-module-pill" {...(isCustomPdf ? ed(`landingData.customModules.${idx}.tag`) : {})}>{mod.tag}</span>
+                      {isCustomPdf && isEditMode && (
+                        <button type="button" class="cf-module-del" aria-label="Remove module" title="Remove module">×</button>
+                      )}
+                    </div>
                   </div>
                   <h3 class="cf-module-title" {...(isCustomPdf ? ed(`landingData.customModules.${idx}.title`) : {})}>{mod.title}</h3>
                   {(mod.body || (isCustomPdf && isEditMode)) && (
@@ -631,6 +636,11 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
               );
             })}
           </div>
+          {Boolean(item.landingData?.customPdfUrl?.trim()) && isEditMode && (
+            <div style="display:flex;justify-content:center;margin-top:20px;">
+              <button type="button" class="cf-add-module-btn" id="btn-add-custom-module">+ Add Module</button>
+            </div>
+          )}
         </div>
       </section>
     )}
@@ -1033,6 +1043,51 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       saveBtn.textContent = "Saving...";
 
       syncBlockVisibilityFromCheckboxes();
+
+      const modulesGrid = document.getElementById("cf-modules-grid");
+      const addModuleBtn = document.getElementById("btn-add-custom-module");
+
+      function reindexModules() {
+        if (!modulesGrid) return;
+        const cards = Array.from(modulesGrid.querySelectorAll<HTMLElement>(".cf-module-card"));
+        cards.forEach((card, idx) => {
+          const num = card.querySelector(".cf-module-num");
+          if (num) num.textContent = `Module ${String(idx + 1).padStart(2, "0")}`;
+          const pill = card.querySelector<HTMLElement>(".cf-module-pill");
+          if (pill) pill.dataset.editField = `landingData.customModules.${idx}.tag`;
+          const title = card.querySelector<HTMLElement>(".cf-module-title");
+          if (title) title.dataset.editField = `landingData.customModules.${idx}.title`;
+          const body = card.querySelector<HTMLElement>(".cf-module-body");
+          if (body) body.dataset.editField = `landingData.customModules.${idx}.body`;
+        });
+      }
+
+      modulesGrid?.addEventListener("click", (e) => {
+        const delBtn = (e.target as HTMLElement)?.closest(".cf-module-del");
+        if (!delBtn) return;
+        delBtn.closest(".cf-module-card")?.remove();
+        reindexModules();
+      });
+
+      addModuleBtn?.addEventListener("click", () => {
+        if (!modulesGrid) return;
+        const idx = modulesGrid.querySelectorAll(".cf-module-card").length;
+        const card = document.createElement("article");
+        card.className = "cf-module-card";
+        card.innerHTML = `
+          <div class="cf-module-top">
+            <span class="cf-module-num">Module ${String(idx + 1).padStart(2, "0")}</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="cf-module-pill" contenteditable="true" spellcheck="false" data-edit-field="landingData.customModules.${idx}.tag">Module</span>
+              <button type="button" class="cf-module-del" aria-label="Remove module" title="Remove module">×</button>
+            </div>
+          </div>
+          <h3 class="cf-module-title" contenteditable="true" spellcheck="false" data-edit-field="landingData.customModules.${idx}.title">New Module Title</h3>
+          <p class="cf-module-body" contenteditable="true" spellcheck="false" data-edit-field="landingData.customModules.${idx}.body">Module summary...</p>
+        `;
+        modulesGrid.appendChild(card);
+        reindexModules();
+      });
 
       document.querySelectorAll<HTMLElement>("[data-edit-field]").forEach((node) => {
         const path = node.dataset.editField;

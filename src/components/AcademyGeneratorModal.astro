@@ -1,0 +1,693 @@
+---
+import type { AcademySettings } from "../lib/academyDb";
+
+interface Props {
+  initialSettings: AcademySettings;
+}
+
+const { initialSettings } = Astro.props;
+---
+
+<div class="gen-modal-backdrop" id="acd-gen-modal" hidden role="dialog" aria-modal="true" aria-labelledby="gen-modal-title">
+  <div class="gen-modal-panel">
+    <header class="gen-modal-head">
+      <div>
+        <span class="gen-kicker">AI Curriculum Engine</span>
+        <h2 class="gen-title" id="gen-modal-title">
+          Generate <span class="gen-title-italic" id="gen-title-kind">Course</span>
+        </h2>
+      </div>
+      <button type="button" class="gen-close-btn" id="btn-close-gen-modal" aria-label="Close modal">×</button>
+    </header>
+
+    <div class="gen-modal-body">
+      <!-- Type Switcher + AI Engine Status -->
+      <div class="gen-top-row">
+        <div class="gen-type-pills" role="group" aria-label="Content type">
+          <button type="button" class="gen-pill is-active" data-gen-kind="course">Course (Paid + Tool)</button>
+          <button type="button" class="gen-pill" data-gen-kind="guide">Guide (Free Playbook)</button>
+        </div>
+
+        <button type="button" class="gen-ai-status-btn" id="btn-toggle-ai-cfg">
+          <span class:list={["gen-status-dot", { "is-ready": initialSettings.hasAiApiKey }]} id="gen-ai-dot"></span>
+          <span id="gen-ai-status-text">
+            {initialSettings.hasAiApiKey
+              ? `${initialSettings.aiProvider === "openai" ? "OpenAI" : "Gemini"} Ready`
+              : "Configure AI Key"}
+          </span>
+        </button>
+      </div>
+
+      <!-- Collapsible AI Provider Key Config -->
+      <div class="gen-ai-config-box" id="gen-ai-config-box" hidden={!initialSettings.hasAiApiKey ? false : true}>
+        <div class="gen-ai-grid">
+          <label class="gen-field">
+            <span>AI Provider</span>
+            <select id="gen-ai-provider" class="ac-select">
+              <option value="gemini" selected={initialSettings.aiProvider !== "openai"}>Google Gemini (2.5 Flash)</option>
+              <option value="openai" selected={initialSettings.aiProvider === "openai"}>OpenAI (GPT-4o Mini)</option>
+            </select>
+          </label>
+          <label class="gen-field">
+            <span>API Key</span>
+            <input
+              type="password"
+              id="gen-ai-key"
+              placeholder={initialSettings.hasAiApiKey ? "Saved (leave blank to keep)" : "Paste Gemini or OpenAI API key..."}
+            />
+          </label>
+          <button type="button" class="gen-btn-glass gen-save-key-btn" id="btn-save-ai-key">Save Key</button>
+        </div>
+      </div>
+
+      <!-- 1. Drag & Drop Files -->
+      <div class="gen-dropzone" id="gen-dropzone">
+        <input
+          type="file"
+          id="gen-file-input"
+          multiple
+          accept=".txt,.md,.csv,.tsv,.json,.doc,.docx,.pdf,.xlsx,.png,.jpg,.jpeg,.webp"
+          hidden
+        />
+        <div class="gen-drop-icon" aria-hidden="true">↑</div>
+        <p class="gen-drop-title">Drag &amp; drop files here, or <button type="button" class="gen-browse-link" id="btn-browse-files">browse</button></p>
+        <p class="gen-drop-sub">Supports Sheets (.csv/.xlsx), Docs (.txt/.md/.doc/.pdf), and Images (.png/.jpg/.webp)</p>
+        <div class="gen-file-chips" id="gen-file-chips"></div>
+      </div>
+
+      <!-- 2. Informative Links + 3. Manual Info -->
+      <div class="gen-two-col">
+        <label class="gen-field">
+          <span>Informative Links (YouTube videos, articles, docs — one per line)</span>
+          <textarea
+            id="gen-links"
+            rows="4"
+            placeholder="https://www.youtube.com/watch?v=...&#10;https://..."
+          ></textarea>
+        </label>
+
+        <label class="gen-field">
+          <span>Manual Information &amp; Notes</span>
+          <textarea
+            id="gen-manual-notes"
+            rows="4"
+            placeholder="Describe the core angle, target audience, frameworks, or key steps you want synthesized..."
+          ></textarea>
+        </label>
+      </div>
+
+      <!-- 4. Course Pricing & Optional Micro-App (hidden for Guides) -->
+      <div class="gen-course-box" id="gen-course-fields">
+        <div class="gen-three-col">
+          <label class="gen-field">
+            <span>Course Price</span>
+            <input type="text" id="gen-price" placeholder="$49" value="$49" />
+          </label>
+          <label class="gen-field gen-span-2">
+            <span>Stripe Checkout Link</span>
+            <input type="url" id="gen-stripe-url" placeholder="https://buy.stripe.com/..." />
+          </label>
+        </div>
+
+        <div class="gen-three-col" style="margin-top: 12px;">
+          <label class="gen-field">
+            <span>Tool / Template Name (Optional)</span>
+            <input type="text" id="gen-tool-name" placeholder="Magnific Preset Pack" />
+          </label>
+          <label class="gen-field">
+            <span>Tool Type (Optional)</span>
+            <input type="text" id="gen-tool-type" placeholder="Template / Micro-App / Mockups" />
+          </label>
+          <label class="gen-field">
+            <span>Tool / Micro-App URL (Optional)</span>
+            <input type="url" id="gen-tool-url" placeholder="https://..." />
+          </label>
+        </div>
+      </div>
+
+      <!-- 5. Visibility & Scheduling -->
+      <div class="gen-two-col">
+        <label class="gen-field">
+          <span>Publishing Status</span>
+          <select id="gen-status" class="ac-select">
+            <option value="draft">Private (Draft — review before publishing)</option>
+            <option value="published">Public (Publish immediately)</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+        </label>
+
+        <label class="gen-field" id="gen-publish-at-wrap" hidden>
+          <span>Publish Date &amp; Time</span>
+          <input type="datetime-local" id="gen-publish-at" />
+        </label>
+      </div>
+
+      <p class="gen-error" id="gen-error" hidden></p>
+    </div>
+
+    <footer class="gen-modal-foot">
+      <button type="button" class="gen-btn-glass" id="btn-cancel-gen">Cancel</button>
+      <button type="button" class="gen-btn-cyan" id="btn-run-generate">
+        ✨ Generate
+      </button>
+    </footer>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const modal = document.getElementById("acd-gen-modal");
+    const closeBtn = document.getElementById("btn-close-gen-modal");
+    const cancelBtn = document.getElementById("btn-cancel-gen");
+    const runBtn = document.getElementById("btn-run-generate") as HTMLButtonElement | null;
+    const kindTitleEl = document.getElementById("gen-title-kind");
+    const courseFieldsEl = document.getElementById("gen-course-fields");
+    const statusSel = document.getElementById("gen-status") as HTMLSelectElement | null;
+    const publishAtWrap = document.getElementById("gen-publish-at-wrap");
+    const errorEl = document.getElementById("gen-error");
+
+    const dropzone = document.getElementById("gen-dropzone");
+    const fileInput = document.getElementById("gen-file-input") as HTMLInputElement | null;
+    const browseBtn = document.getElementById("btn-browse-files");
+    const chipsEl = document.getElementById("gen-file-chips");
+
+    const aiCfgToggle = document.getElementById("btn-toggle-ai-cfg");
+    const aiCfgBox = document.getElementById("gen-ai-config-box");
+    const saveAiKeyBtn = document.getElementById("btn-save-ai-key") as HTMLButtonElement | null;
+    const aiDot = document.getElementById("gen-ai-dot");
+    const aiStatusText = document.getElementById("gen-ai-status-text");
+
+    let currentKind: "course" | "guide" = "course";
+    let attachedFiles: { name: string; mimeType: string; textContent?: string; base64Data?: string }[] = [];
+
+    function setKind(kind: "course" | "guide") {
+      currentKind = kind;
+      document.querySelectorAll<HTMLButtonElement>("[data-gen-kind]").forEach((b) => {
+        b.classList.toggle("is-active", b.dataset.genKind === kind);
+      });
+      if (kindTitleEl) kindTitleEl.textContent = kind === "course" ? "Course" : "Guide";
+      if (courseFieldsEl) courseFieldsEl.hidden = kind !== "course";
+    }
+
+    document.querySelectorAll<HTMLButtonElement>("[data-gen-kind]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setKind(btn.dataset.genKind === "guide" ? "guide" : "course");
+      });
+    });
+
+    statusSel?.addEventListener("change", () => {
+      if (publishAtWrap) publishAtWrap.hidden = statusSel.value !== "scheduled";
+    });
+
+    aiCfgToggle?.addEventListener("click", () => {
+      if (aiCfgBox) aiCfgBox.hidden = !aiCfgBox.hidden;
+    });
+
+    saveAiKeyBtn?.addEventListener("click", async () => {
+      const provider = (document.getElementById("gen-ai-provider") as HTMLSelectElement)?.value || "gemini";
+      const apiKey = (document.getElementById("gen-ai-key") as HTMLInputElement)?.value || "";
+      saveAiKeyBtn.disabled = true;
+      try {
+        const res = await fetch("/api/academy/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ aiProvider: provider, aiApiKey: apiKey })
+        });
+        const data = await res.json();
+        if (res.ok && data?.settings?.hasAiApiKey) {
+          aiDot?.classList.add("is-ready");
+          if (aiStatusText) aiStatusText.textContent = `${provider === "openai" ? "OpenAI" : "Gemini"} Ready`;
+          if (aiCfgBox) aiCfgBox.hidden = true;
+        }
+      } finally {
+        saveAiKeyBtn.disabled = false;
+      }
+    });
+
+    function renderChips() {
+      if (!chipsEl) return;
+      chipsEl.innerHTML = attachedFiles
+        .map(
+          (f, i) => `
+          <span class="gen-chip">
+            <span>${f.name}</span>
+            <button type="button" data-remove-file="${i}" aria-label="Remove file">×</button>
+          </span>
+        `
+        )
+        .join("");
+
+      chipsEl.querySelectorAll<HTMLButtonElement>("[data-remove-file]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          attachedFiles.splice(Number(btn.dataset.removeFile), 1);
+          renderChips();
+        });
+      });
+    }
+
+    async function handleFiles(fileList: FileList | null) {
+      if (!fileList) return;
+      for (const file of Array.from(fileList)) {
+        if (file.type.startsWith("image/")) {
+          const base64Data = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const res = String(reader.result || "");
+              resolve(res.split(",")[1] || "");
+            };
+            reader.readAsDataURL(file);
+          });
+          attachedFiles.push({ name: file.name, mimeType: file.type, base64Data });
+        } else {
+          const textContent = await file.text().catch(() => "");
+          attachedFiles.push({
+            name: file.name,
+            mimeType: file.type || "text/plain",
+            textContent: textContent.slice(0, 15000)
+          });
+        }
+      }
+      renderChips();
+    }
+
+    browseBtn?.addEventListener("click", () => fileInput?.click());
+    fileInput?.addEventListener("change", () => {
+      handleFiles(fileInput.files);
+      fileInput.value = "";
+    });
+
+    dropzone?.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropzone.classList.add("is-dragover");
+    });
+    dropzone?.addEventListener("dragleave", () => dropzone.classList.remove("is-dragover"));
+    dropzone?.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("is-dragover");
+      handleFiles(e.dataTransfer?.files || null);
+    });
+
+    function closeModal() {
+      if (modal) modal.hidden = true;
+    }
+
+    closeBtn?.addEventListener("click", closeModal);
+    cancelBtn?.addEventListener("click", closeModal);
+    modal?.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    window.addEventListener("academy:open-generator", (e: any) => {
+      const requestedKind = e?.detail?.kind === "guide" ? "guide" : "course";
+      setKind(requestedKind);
+      if (errorEl) errorEl.hidden = true;
+      if (modal) modal.hidden = false;
+      const w = window as any;
+      ["gen-ai-provider", "gen-status"].forEach((id) => {
+        const sel = document.getElementById(id) as HTMLSelectElement | null;
+        if (sel) {
+          w.__STUDIO_ENHANCE_SELECT__?.(sel);
+          w.__STUDIO_SYNC_SELECT__?.(sel);
+        }
+      });
+    });
+
+    runBtn?.addEventListener("click", async () => {
+      if (!runBtn) return;
+      if (errorEl) errorEl.hidden = true;
+      runBtn.disabled = true;
+      runBtn.textContent = "Synthesizing & Building...";
+
+      const val = (id: string) =>
+        (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)?.value.trim() || "";
+
+      const links = val("gen-links")
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
+
+      try {
+        const res = await fetch("/api/academy/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kind: currentKind,
+            files: attachedFiles,
+            links,
+            manualNotes: val("gen-manual-notes"),
+            priceLabel: val("gen-price"),
+            stripeCheckoutUrl: val("gen-stripe-url"),
+            toolName: val("gen-tool-name"),
+            toolType: val("gen-tool-type"),
+            toolUrl: val("gen-tool-url"),
+            status: val("gen-status"),
+            publishAt: val("gen-publish-at") ? new Date(val("gen-publish-at")).toISOString() : null
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data?.error || "Generation failed");
+        }
+
+        window.dispatchEvent(new CustomEvent("academy:item-generated", { detail: { item: data.item } }));
+        attachedFiles = [];
+        renderChips();
+        closeModal();
+      } catch (err: any) {
+        if (errorEl) {
+          errorEl.textContent = err?.message || "Something went wrong.";
+          errorEl.hidden = false;
+        }
+      } finally {
+        runBtn.disabled = false;
+        runBtn.textContent = "✨ Generate";
+      }
+    });
+  })();
+</script>
+
+<style>
+  .gen-modal-backdrop[hidden],
+  .gen-course-box[hidden],
+  .gen-ai-config-box[hidden],
+  .gen-field[hidden] {
+    display: none !important;
+  }
+
+  .gen-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(1, 3, 7, 0.82);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .gen-modal-panel {
+    width: min(860px, 100%);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 24px;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      #04091a;
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    box-shadow:
+      inset 0 1px 1.5px rgba(255, 255, 255, 0.22),
+      0 32px 80px rgba(0, 0, 0, 0.9);
+    overflow: hidden;
+  }
+
+  .gen-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 26px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .gen-kicker {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #48C8FF;
+    margin-bottom: 4px;
+  }
+
+  .gen-title {
+    margin: 0;
+    font-size: 1.45rem;
+    color: #ffffff;
+  }
+
+  .gen-title-italic {
+    font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
+    font-style: italic;
+    font-weight: 400;
+    color: #48C8FF;
+  }
+
+  .gen-close-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    color: #cbd5e1;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  .gen-modal-body {
+    padding: 22px 26px;
+    overflow-y: auto;
+    display: grid;
+    gap: 18px;
+  }
+
+  .gen-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .gen-type-pills {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .gen-pill {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .gen-pill.is-active {
+    background: rgba(72, 200, 255, 0.16);
+    color: #ffffff;
+  }
+
+  .gen-ai-status-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: #e2e8f0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .gen-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fbbf24;
+  }
+
+  .gen-status-dot.is-ready {
+    background: #34d399;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.65);
+  }
+
+  .gen-ai-config-box,
+  .gen-course-box {
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(8, 18, 44, 0.6);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+  }
+
+  .gen-ai-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .gen-dropzone {
+    border: 1.5px dashed rgba(72, 200, 255, 0.38);
+    border-radius: 16px;
+    padding: 22px;
+    text-align: center;
+    background: rgba(8, 18, 44, 0.38);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .gen-dropzone.is-dragover {
+    border-color: #48C8FF;
+    background: rgba(72, 200, 255, 0.1);
+  }
+
+  .gen-drop-icon {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background: rgba(72, 200, 255, 0.12);
+    color: #48C8FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .gen-drop-title {
+    margin: 0 0 4px;
+    font-size: 0.92rem;
+    color: #f8fafc;
+  }
+
+  .gen-browse-link {
+    background: none;
+    border: none;
+    color: #48C8FF;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  .gen-drop-sub {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .gen-file-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  :global(.gen-chip) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(72, 200, 255, 0.14);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    color: #e0f2fe;
+    font-size: 0.76rem;
+  }
+
+  :global(.gen-chip button) {
+    background: none;
+    border: none;
+    color: #7dd3fc;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+  }
+
+  .gen-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .gen-three-col {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .gen-span-2 {
+    grid-column: span 2;
+  }
+
+  .gen-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+
+  .gen-error {
+    margin: 0;
+    color: #fca5a5;
+    font-size: 0.84rem;
+  }
+
+  .gen-modal-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 26px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 5, 14, 0.7);
+  }
+
+  .gen-btn-cyan {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: none;
+    background:
+      radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 70%),
+      linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
+    color: #031528;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(72, 200, 255, 0.28);
+  }
+
+  .gen-btn-glass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.05);
+    color: #f8fafc;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .gen-btn-glass:hover {
+    border-color: rgba(72, 200, 255, 0.45);
+    background: rgba(72, 200, 255, 0.08);
+  }
+
+  @media (max-width: 760px) {
+    .gen-two-col,
+    .gen-three-col,
+    .gen-ai-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gen-span-2 {
+      grid-column: span 1;
+    }
+  }
+</style>

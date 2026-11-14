@@ -52,6 +52,8 @@ export interface AcademyItem {
 export interface AcademySettings {
   defaultCourseAccessMode: CourseAccessMode;
   hasStripeWebhookSecret: boolean;
+  aiProvider: "gemini" | "openai";
+  hasAiApiKey: boolean;
 }
 
 function getDatabaseUrl(): string | undefined {
@@ -300,8 +302,20 @@ export async function ensureAcademySchema(): Promise<void> {
         id INTEGER PRIMARY KEY DEFAULT 1,
         default_course_access_mode TEXT NOT NULL DEFAULT 'stripe_webhook',
         stripe_webhook_secret TEXT NOT NULL DEFAULT '',
+        ai_provider TEXT NOT NULL DEFAULT 'gemini',
+        ai_api_key TEXT NOT NULL DEFAULT '',
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
+    `;
+
+    await sql`
+      ALTER TABLE academy_settings
+      ADD COLUMN IF NOT EXISTS ai_provider TEXT NOT NULL DEFAULT 'gemini'
+    `;
+
+    await sql`
+      ALTER TABLE academy_settings
+      ADD COLUMN IF NOT EXISTS ai_api_key TEXT NOT NULL DEFAULT ''
     `;
 
     await sql`
@@ -583,16 +597,36 @@ export async function deleteAcademyItem(id: string): Promise<boolean> {
 export async function getAcademySettings(): Promise<AcademySettings> {
   await ensureAcademySchema();
   const sql = getSql();
-  const rows = await sql`SELECT default_course_access_mode, stripe_webhook_secret FROM academy_settings WHERE id = 1 LIMIT 1`;
+  const rows = await sql`
+    SELECT default_course_access_mode, stripe_webhook_secret, ai_provider, ai_api_key
+    FROM academy_settings WHERE id = 1 LIMIT 1
+  `;
   const row = rows[0] ?? {};
   const mode =
     row.default_course_access_mode === "checkout_redirect" || row.default_course_access_mode === "open"
       ? row.default_course_access_mode
       : "stripe_webhook";
+  const envKey = process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY || "";
   return {
     defaultCourseAccessMode: mode,
-    hasStripeWebhookSecret: Boolean(row.stripe_webhook_secret)
+    hasStripeWebhookSecret: Boolean(row.stripe_webhook_secret),
+    aiProvider: row.ai_provider === "openai" ? "openai" : "gemini",
+    hasAiApiKey: Boolean(row.ai_api_key || envKey)
   };
+}
+
+export async function getAcademyAiCredentials(): Promise<{ provider: "gemini" | "openai"; apiKey: string }> {
+  await ensureAcademySchema();
+  const sql = getSql();
+  const rows = await sql`SELECT ai_provider, ai_api_key FROM academy_settings WHERE id = 1 LIMIT 1`;
+  const row = rows[0] ?? {};
+  const provider: "gemini" | "openai" = row.ai_provider === "openai" ? "openai" : "gemini";
+  const dbKey = String(row.ai_api_key ?? "").trim();
+  const envKey =
+    provider === "openai"
+      ? process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY || ""
+      : process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY || "";
+  return { provider, apiKey: dbKey || envKey };
 }
 
 export async function getAcademyWebhookSecret(): Promise<string> {
@@ -605,25 +639,35 @@ export async function getAcademyWebhookSecret(): Promise<string> {
 export async function saveAcademySettings(input: {
   defaultCourseAccessMode?: CourseAccessMode;
   stripeWebhookSecret?: string;
+  aiProvider?: "gemini" | "openai";
+  aiApiKey?: string;
 }): Promise<AcademySettings> {
   await ensureAcademySchema();
   const sql = getSql();
   const current = await getAcademySettings();
   const nextMode = input.defaultCourseAccessMode ?? current.defaultCourseAccessMode;
+  const nextProvider = input.aiProvider ?? current.aiProvider;
+
+  await sql`
+    UPDATE academy_settings
+    SET default_course_access_mode = ${nextMode},
+        ai_provider = ${nextProvider},
+        updated_at = NOW()
+    WHERE id = 1
+  `;
 
   if (input.stripeWebhookSecret !== undefined && input.stripeWebhookSecret.trim() !== "") {
     await sql`
       UPDATE academy_settings
-      SET default_course_access_mode = ${nextMode},
-          stripe_webhook_secret = ${input.stripeWebhookSecret.trim()},
-          updated_at = NOW()
+      SET stripe_webhook_secret = ${input.stripeWebhookSecret.trim()}
       WHERE id = 1
     `;
-  } else {
+  }
+
+  if (input.aiApiKey !== undefined && input.aiApiKey.trim() !== "") {
     await sql`
       UPDATE academy_settings
-      SET default_course_access_mode = ${nextMode},
-          updated_at = NOW()
+      SET ai_api_key = ${input.aiApiKey.trim()}
       WHERE id = 1
     `;
   }

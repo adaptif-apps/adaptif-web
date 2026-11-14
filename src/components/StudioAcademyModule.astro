@@ -1,5 +1,6 @@
 ---
 import type { AcademyItem, AcademySettings } from "../lib/academyDb";
+import AcademyGeneratorModal from "./AcademyGeneratorModal.astro";
 
 interface Props {
   initialItems: AcademyItem[];
@@ -16,6 +17,7 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title" id="acd-module-title">Courses &amp; <span>Guides</span></h1>
     </div>
     <div class="studio-header-actions">
+      <button type="button" class="acd-btn-glass acd-btn-ai" id="btn-open-generator">✨ AI Generator</button>
       <button type="button" class="acd-btn-cyan" id="btn-new-guide">+ New Guide</button>
       <button type="button" class="acd-btn-cyan" id="btn-new-course">+ New Course</button>
     </div>
@@ -37,7 +39,7 @@ const { initialItems, initialSettings } = Astro.props;
     <div class="acd-prefs-grid">
       <label class="acd-field">
         <span>Default Course Access Mode</span>
-        <select id="acd-default-access-mode">
+        <select id="acd-default-access-mode" class="ac-select">
           <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
             Option A: Stripe Webhook + Secure Token (Recommended)
           </option>
@@ -94,7 +96,7 @@ const { initialItems, initialSettings } = Astro.props;
       <div class="acd-form-grid">
         <label class="acd-field">
           <span>Type</span>
-          <select id="acd-kind">
+          <select id="acd-kind" class="ac-select">
             <option value="guide">Guide (Free + Lead Form)</option>
             <option value="course">Course (Paid + Companion Tool)</option>
           </select>
@@ -102,7 +104,7 @@ const { initialItems, initialSettings } = Astro.props;
 
         <label class="acd-field">
           <span>Visibility Status</span>
-          <select id="acd-status">
+          <select id="acd-status" class="ac-select">
             <option value="draft">Private (Draft)</option>
             <option value="published">Public (Published)</option>
             <option value="scheduled">Scheduled</option>
@@ -163,7 +165,7 @@ const { initialItems, initialSettings } = Astro.props;
 
           <label class="acd-field">
             <span>Access Mode</span>
-            <select id="acd-access-mode">
+            <select id="acd-access-mode" class="ac-select">
               <option value="stripe_webhook">Stripe Webhook + Token (Option A)</option>
               <option value="checkout_redirect">Checkout Redirect (?checkout=success)</option>
               <option value="open">Open Access</option>
@@ -229,6 +231,8 @@ const { initialItems, initialSettings } = Astro.props;
       </div>
     </form>
   </section>
+
+  <AcademyGeneratorModal initialSettings={initialSettings} />
 </div>
 
 <script define:vars={{ initialItems, initialSettings }}>
@@ -387,7 +391,7 @@ const { initialItems, initialSettings } = Astro.props;
             <div class="acd-form-grid">
               <label class="acd-field">
                 <span>Layout</span>
-                <select data-slide-field="layout">
+                <select class="ac-select" data-slide-field="layout">
                   ${["cover", "split", "bullets", "grid", "quote", "cta"]
                     .map((l) => `<option value="${l}" ${s.layout === l ? "selected" : ""}>${l}</option>`)
                     .join("")}
@@ -418,6 +422,11 @@ const { initialItems, initialSettings } = Astro.props;
         `
         )
         .join("");
+
+      slidesContainer.querySelectorAll<HTMLSelectElement>("select.ac-select").forEach((sel) => {
+        w.__STUDIO_ENHANCE_SELECT__?.(sel);
+        w.__STUDIO_SYNC_SELECT__?.(sel);
+      });
 
       slidesContainer.querySelectorAll<HTMLButtonElement>("[data-slide-del]").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -516,6 +525,14 @@ const { initialItems, initialSettings } = Astro.props;
 
       toggleKindAndStatusUI();
       renderSlides(item.slides || []);
+
+      ["acd-kind", "acd-status", "acd-access-mode", "acd-default-access-mode"].forEach((id) => {
+        const sel = document.getElementById(id) as HTMLSelectElement | null;
+        if (sel) {
+          w.__STUDIO_ENHANCE_SELECT__?.(sel);
+          w.__STUDIO_SYNC_SELECT__?.(sel);
+        }
+      });
     }
 
     document.getElementById("btn-add-slide")?.addEventListener("click", () => {
@@ -565,6 +582,21 @@ const { initialItems, initialSettings } = Astro.props;
 
     document.getElementById("btn-new-guide")?.addEventListener("click", () => createItem("guide"));
     document.getElementById("btn-new-course")?.addEventListener("click", () => createItem("course"));
+
+    document.getElementById("btn-open-generator")?.addEventListener("click", () => {
+      const currentKind = el("acd-kind")?.value === "guide" ? "guide" : "course";
+      window.dispatchEvent(new CustomEvent("academy:open-generator", { detail: { kind: currentKind } }));
+    });
+
+    window.addEventListener("academy:item-generated", (e: any) => {
+      const newItem = e?.detail?.item;
+      if (!newItem) return;
+      items.unshift(newItem);
+      selectedId = newItem.id;
+      renderSidebarLists();
+      renderEditor();
+      showStudioToast(`AI generated ${newItem.kind}: ${newItem.title}`);
+    });
 
     formEl?.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -746,27 +778,6 @@ const { initialItems, initialSettings } = Astro.props;
     font-size: 0.78rem;
     font-weight: 500;
     color: var(--color-text-secondary, #94a3b8);
-  }
-
-  .acd-field input,
-  .acd-field select,
-  .acd-field textarea {
-    padding: 10px 13px;
-    border-radius: 11px;
-    border: var(--border-subtle, 1px solid rgba(255, 255, 255, 0.12));
-    background: rgba(1, 3, 7, 0.78);
-    color: var(--color-text-primary, #f8fafc);
-    font-size: 0.88rem;
-    font-family: inherit;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .acd-field input:focus,
-  .acd-field select:focus,
-  .acd-field textarea:focus {
-    outline: none;
-    border-color: rgba(72, 200, 255, 0.55);
-    box-shadow: 0 0 0 3px rgba(72, 200, 255, 0.14);
   }
 
   .acd-copy-row {

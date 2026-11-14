@@ -1378,6 +1378,9 @@ const tagPresets = [
         enhanceStudioSelect(el as HTMLSelectElement);
       });
 
+      (window as any).__STUDIO_ENHANCE_SELECT__ = enhanceStudioSelect;
+      (window as any).__STUDIO_SYNC_SELECT__ = syncStudioDropdown;
+
       function renderAcControls(mappingOverride?: Record<string, string>, listOverride?: string) {
         const mapping = mappingOverride || acState.mapping || {};
         if (acFullNameSelect && mapping.fullNameMode) {
@@ -1561,7 +1564,10 @@ const tagPresets = [
         --font-serif: "Instrument Serif", Georgia, serif;
       }
 
-      * {
+      *,
+      :global(.studio-main *),
+      :global(.studio-main *::before),
+      :global(.studio-main *::after) {
         box-sizing: border-box;
       }
 
@@ -1824,12 +1830,13 @@ const tagPresets = [
       }
 
       .panel-search,
-      input[type="text"],
-      input[type="url"],
-      input[type="password"],
-      input[type="email"],
-      input[type="search"],
-      textarea {
+      :global(.studio-main input[type="text"]),
+      :global(.studio-main input[type="url"]),
+      :global(.studio-main input[type="password"]),
+      :global(.studio-main input[type="email"]),
+      :global(.studio-main input[type="search"]),
+      :global(.studio-main input[type="datetime-local"]),
+      :global(.studio-main textarea) {
         width: 100%;
         background: rgba(18, 44, 88, 0.45);
         border: 1px solid rgba(72, 200, 255, 0.18);
@@ -1843,18 +1850,19 @@ const tagPresets = [
       }
 
       .panel-search::placeholder,
-      input::placeholder,
-      textarea::placeholder {
+      :global(.studio-main input::placeholder),
+      :global(.studio-main textarea::placeholder) {
         color: #64748b;
       }
 
       .panel-search:focus,
-      input[type="text"]:focus,
-      input[type="url"]:focus,
-      input[type="password"]:focus,
-      input[type="email"]:focus,
-      input[type="search"]:focus,
-      textarea:focus {
+      :global(.studio-main input[type="text"]:focus),
+      :global(.studio-main input[type="url"]:focus),
+      :global(.studio-main input[type="password"]:focus),
+      :global(.studio-main input[type="email"]:focus),
+      :global(.studio-main input[type="search"]:focus),
+      :global(.studio-main input[type="datetime-local"]:focus),
+      :global(.studio-main textarea:focus) {
         border-color: rgba(72, 200, 255, 0.55);
         background: rgba(18, 44, 88, 0.65);
         box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
@@ -2458,7 +2466,7 @@ const tagPresets = [
         font-weight: 500;
       }
 
-      select.ac-select.is-enhanced-native {
+      :global(select.ac-select.is-enhanced-native) {
         display: none;
       }
 

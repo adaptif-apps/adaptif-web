@@ -31,7 +31,12 @@ export const PUT: APIRoute = async ({ request }) => {
     const settings = await saveAcademySettings({
       defaultCourseAccessMode: mode,
       stripeWebhookSecret:
-        typeof body?.stripeWebhookSecret === "string" ? body.stripeWebhookSecret : undefined
+        typeof body?.stripeWebhookSecret === "string" ? body.stripeWebhookSecret : undefined,
+      aiProvider:
+        body?.aiProvider === "openai" || body?.aiProvider === "gemini"
+          ? body.aiProvider
+          : undefined,
+      aiApiKey: typeof body?.aiApiKey === "string" ? body.aiApiKey : undefined
     });
 
     return new Response(JSON.stringify({ settings }), {

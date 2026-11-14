@@ -250,6 +250,23 @@ img, svg {
   --btn-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+/* Global Section Eyebrow System (canonical Home eyebrow typography) */
+.adaptif-eyebrow {
+  display: inline-block;
+  font-family: var(--font-family-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brand-cyan, #48c8ff);
+}
+
+[data-theme="light"] .adaptif-eyebrow,
+.adaptif-eyebrow--light {
+  color: #0284c7;
+}
+
 /* Global Rectangular Tag System (consistent with Pricing Hero badges) */
 .adaptif-tag {
   display: inline-flex;

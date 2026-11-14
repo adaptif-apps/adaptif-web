@@ -186,14 +186,7 @@ const fullStackFeatures: PlanFeature[] = [
     <div class="pricing-grid">
       <!-- Left Column: Introduction -->
       <div class="pricing-intro">
-        {asSection ? (
-          <span class="pricing-section-eyebrow">{eyebrow}</span>
-        ) : (
-          <div class="pricing-eyebrow-pill">
-            <span class="eyebrow-dot" aria-hidden="true"></span>
-            <span>{eyebrow}</span>
-          </div>
-        )}
+        <span class="adaptif-eyebrow pricing-eyebrow">{eyebrow}</span>
 
         {asSection ? (
           <h2 class="pricing-title">
@@ -668,15 +661,8 @@ const fullStackFeatures: PlanFeature[] = [
     padding-bottom: clamp(72px, 10vw, 128px);
   }
 
-  .pricing-section-eyebrow {
-    display: inline-block;
-    font-family: var(--font-family-body);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-brand-cyan, #48C8FF);
-    margin-bottom: 16px;
+  .pricing-eyebrow {
+    margin-bottom: 18px;
   }
 
   /* ========================================================================
@@ -721,34 +707,6 @@ const fullStackFeatures: PlanFeature[] = [
   .pricing-intro {
     max-width: 470px;
     padding-top: clamp(72px, 10vh, 118px);
-  }
-
-  .pricing-eyebrow-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border-radius: var(--radius-pill);
-    background: rgba(8, 18, 44, 0.65);
-    border: 1px solid rgba(72, 200, 255, 0.28);
-    backdrop-filter: var(--glass-blur-sm);
-    -webkit-backdrop-filter: var(--glass-blur-sm);
-    font-family: var(--font-family-body);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-brand-cyan);
-    margin-bottom: 22px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  }
-
-  .eyebrow-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-brand-cyan);
-    box-shadow: 0 0 10px var(--color-brand-cyan);
   }
 
   .pricing-title {
@@ -1302,7 +1260,7 @@ const fullStackFeatures: PlanFeature[] = [
     }
   }
 
-  .pricing-eyebrow-pill {
+  .pricing-eyebrow {
     animation: fadeInDown 0.8s var(--ease-spring) 0.08s backwards;
   }
 

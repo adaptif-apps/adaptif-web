@@ -59,10 +59,7 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   <div class="container compare-container">
     <!-- Section Header + Essential Differences Synthesis -->
     <header class="compare-header">
-      <div class="compare-eyebrow">
-        <span class="compare-eyebrow__dot" aria-hidden="true"></span>
-        <span>PLAN COMPARISON</span>
-      </div>
+      <span class="adaptif-eyebrow">PLAN COMPARISON</span>
       <h2 id="compare-plans-heading" class="compare-title">
         Compare our <span class="title-highlight">plans</span>
       </h2>
@@ -426,28 +423,6 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     flex-direction: column;
     align-items: center;
     gap: 1.15rem;
-  }
-
-  .compare-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    padding: 0.4rem 0.95rem;
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    color: var(--color-brand-cyan);
-  }
-
-  .compare-eyebrow__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-brand-cyan);
-    box-shadow: 0 0 10px var(--color-brand-cyan);
   }
 
   .compare-title {

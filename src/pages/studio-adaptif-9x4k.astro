@@ -144,6 +144,9 @@ const tagPresets = [
               </svg>
             </button>
             <div class="nav-dropdown-items">
+              <button type="button" class="nav-item" data-module-tab="general-info">
+                <span>General Info</span>
+              </button>
               <button type="button" class="nav-item" data-module-tab="payment">
                 <span>Payment</span>
               </button>
@@ -1150,6 +1153,7 @@ const tagPresets = [
           const target = tab.dataset.moduleTab;
           const activeCampaignModule = document.getElementById("module-activecampaign");
           const academyModule = document.getElementById("module-academy");
+          const generalInfoModule = document.getElementById("module-general-info");
           const paymentModule = document.getElementById("module-payment");
           const aiConfigModule = document.getElementById("module-ai-config");
           moduleTabs.forEach((t) => {
@@ -1162,10 +1166,14 @@ const tagPresets = [
           if (bookCallModule) bookCallModule.hidden = target !== "book-call";
           if (activeCampaignModule) activeCampaignModule.hidden = target !== "activecampaign";
           if (academyModule) academyModule.hidden = target !== "academy";
+          if (generalInfoModule) generalInfoModule.hidden = target !== "general-info";
           if (paymentModule) paymentModule.hidden = target !== "payment";
           if (aiConfigModule) aiConfigModule.hidden = target !== "ai-config";
 
           const w = window as any;
+          if (target === "general-info") {
+            window.dispatchEvent(new CustomEvent("academy:refresh-general-info"));
+          }
           if (target === "payment") {
             const sel = document.getElementById("acd-default-access-mode") as HTMLSelectElement | null;
             if (sel) {

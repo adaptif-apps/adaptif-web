@@ -52,12 +52,28 @@ const { initialItems, initialSettings } = Astro.props;
 
       <div class="acd-form-grid">
         <label class="acd-field">
-          <span>Slug (URL)</span>
+          <span class="acd-label-row">
+            Slug (URL)
+            <span class="acd-tip-wrap">
+              <button type="button" class="acd-tip-btn" aria-label="Slug info">?</button>
+              <span class="acd-tip-box" role="tooltip">
+                Public URL path for this item (e.g. <code>/academy/courses/my-course</code>). Also used in your Stripe redirect URL.
+              </span>
+            </span>
+          </span>
           <input type="text" id="acd-slug" required />
         </label>
 
         <label class="acd-field">
-          <span>Category</span>
+          <span class="acd-label-row">
+            Category
+            <span class="acd-tip-wrap">
+              <button type="button" class="acd-tip-btn" aria-label="Category info">?</button>
+              <span class="acd-tip-box" role="tooltip">
+                Topic badge shown in the Academy catalog, course hero breadcrumb, and slide deck cover.
+              </span>
+            </span>
+          </span>
           <input type="text" id="acd-category" placeholder="AI Workflows" />
         </label>
       </div>
@@ -91,7 +107,15 @@ const { initialItems, initialSettings } = Astro.props;
 
     <div class="acd-prefs-grid">
       <label class="acd-field">
-        <span>Default Course Access Mode</span>
+        <span class="acd-label-row">
+          Default Course Access Mode
+          <span class="acd-tip-wrap">
+            <button type="button" class="acd-tip-btn" aria-label="Access mode info">?</button>
+            <span class="acd-tip-box" role="tooltip">
+              Controls how all paid courses unlock: <strong>Stripe Webhook</strong> verifies payment tokens &amp; sends backup email; <strong>Checkout Redirect</strong> unlocks via <code>?checkout=success</code>; <strong>Open</strong> disables the paywall.
+            </span>
+          </span>
+        </span>
         <select id="acd-default-access-mode" class="ac-select">
           <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
             Option A: Stripe Webhook + Secure Token (Recommended)
@@ -106,7 +130,15 @@ const { initialItems, initialSettings } = Astro.props;
       </label>
 
       <label class="acd-field">
-        <span>Stripe Webhook Secret (whsec_...)</span>
+        <span class="acd-label-row">
+          Stripe Webhook Secret (whsec_...)
+          <span class="acd-tip-wrap">
+            <button type="button" class="acd-tip-btn" aria-label="Webhook secret info">?</button>
+            <span class="acd-tip-box" role="tooltip">
+              Found in Stripe Dashboard → Developers → Webhooks → Signing secret. Required to verify <code>checkout.session.completed</code> events before emailing course access.
+            </span>
+          </span>
+        </span>
         <input
           type="password"
           id="acd-stripe-secret"
@@ -115,7 +147,15 @@ const { initialItems, initialSettings } = Astro.props;
       </label>
 
       <div class="acd-field">
-        <span>Stripe Webhook Endpoint</span>
+        <span class="acd-label-row">
+          Stripe Webhook Endpoint
+          <span class="acd-tip-wrap">
+            <button type="button" class="acd-tip-btn" aria-label="Webhook endpoint info">?</button>
+            <span class="acd-tip-box" role="tooltip">
+              Paste this URL in Stripe → Developers → Webhooks and enable the <code>checkout.session.completed</code> event.
+            </span>
+          </span>
+        </span>
         <div class="acd-copy-row">
           <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
           <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
@@ -158,7 +198,15 @@ const { initialItems, initialSettings } = Astro.props;
 
     <div class="acd-prefs-grid">
       <label class="acd-field">
-        <span>AI Provider</span>
+        <span class="acd-label-row">
+          AI Provider
+          <span class="acd-tip-wrap">
+            <button type="button" class="acd-tip-btn" aria-label="AI Provider info">?</button>
+            <span class="acd-tip-box" role="tooltip">
+              Select the LLM engine used by the AI Curriculum Generator to synthesize docs, links, and notes into full course funnels.
+            </span>
+          </span>
+        </span>
         <select id="gen-ai-provider" class="ac-select">
           <option value="gemini" selected={initialSettings.aiProvider !== "openai"}>Google Gemini (2.5 Flash)</option>
           <option value="openai" selected={initialSettings.aiProvider === "openai"}>OpenAI (GPT-4o Mini)</option>
@@ -166,7 +214,15 @@ const { initialItems, initialSettings } = Astro.props;
       </label>
 
       <label class="acd-field acd-span-2">
-        <span>API Key</span>
+        <span class="acd-label-row">
+          API Key
+          <span class="acd-tip-wrap">
+            <button type="button" class="acd-tip-btn" aria-label="API Key info">?</button>
+            <span class="acd-tip-box" role="tooltip">
+              Stored encrypted in Postgres. Leave blank when saving if you want to keep your existing saved key.
+            </span>
+          </span>
+        </span>
         <input
           type="password"
           id="gen-ai-key"
@@ -175,6 +231,145 @@ const { initialItems, initialSettings } = Astro.props;
       </label>
     </div>
   </section>
+</div>
+
+<!-- General Info / System Overview Module (Left Sidebar: General Info) -->
+<div id="module-general-info" hidden>
+  <header class="studio-header">
+    <div>
+      <p class="studio-eyebrow">System Overview</p>
+      <h1 class="studio-title">General <span>Info</span></h1>
+    </div>
+    <div class="studio-header-actions">
+      <button type="button" class="acd-btn-glass" id="btn-refresh-general-info">Refresh Status</button>
+    </div>
+  </header>
+
+  <div class="gi-grid">
+    <!-- Card 1: Stripe & Checkout Flow -->
+    <section class="acd-glass-card gi-card">
+      <div class="gi-card-head">
+        <div>
+          <span class="acd-section-kicker">Payments &amp; Delivery</span>
+          <h2 class="acd-card-title">Stripe Checkout &amp; Webhook</h2>
+        </div>
+        <span class="gi-badge" id="gi-stripe-badge">Checking...</span>
+      </div>
+      <div class="gi-rows">
+        <div class="gi-row">
+          <span>Active Access Mode</span>
+          <strong id="gi-access-mode">{initialSettings.defaultCourseAccessMode}</strong>
+        </div>
+        <div class="gi-row">
+          <span>Webhook Secret (whsec_)</span>
+          <strong id="gi-webhook-secret-status">{initialSettings.hasStripeWebhookSecret ? "Configured" : "Not set"}</strong>
+        </div>
+        <div class="gi-row-col">
+          <span>Stripe Webhook Endpoint</span>
+          <div class="acd-copy-row">
+            <input type="text" id="gi-webhook-url" readonly value="/api/academy/stripe-webhook" />
+            <button type="button" class="acd-btn-glass" id="gi-copy-webhook">Copy</button>
+          </div>
+        </div>
+        <div class="gi-row-col">
+          <span>Stripe Redirect URL Pattern (After Payment)</span>
+          <div class="acd-copy-row">
+            <input type="text" id="gi-redirect-pattern" readonly value="/academy/courses/<slug>/slides?checkout=success" />
+            <button type="button" class="acd-btn-glass" id="gi-copy-redirect">Copy</button>
+          </div>
+        </div>
+      </div>
+      <div class="gi-card-foot">
+        <button type="button" class="acd-btn-cyan-outline" data-jump-tab="payment">Configure Payment →</button>
+      </div>
+    </section>
+
+    <!-- Card 2: Email Delivery (Resend.com) -->
+    <section class="acd-glass-card gi-card">
+      <div class="gi-card-head">
+        <div>
+          <span class="acd-section-kicker">Automated Backup Email</span>
+          <h2 class="acd-card-title">Resend.com Delivery</h2>
+        </div>
+        <span class="gi-badge" id="gi-resend-badge">Checking...</span>
+      </div>
+      <div class="gi-rows">
+        <div class="gi-row">
+          <span>RESEND_API_KEY (Vercel)</span>
+          <strong id="gi-resend-status">Checking...</strong>
+        </div>
+        <div class="gi-row">
+          <span>Sender (ACADEMY_FROM_EMAIL)</span>
+          <strong id="gi-from-email">—</strong>
+        </div>
+      </div>
+      <p class="gi-note">
+        When a customer completes a Stripe Payment Link, the webhook sends a backup email with their direct Slides &amp; PDF link.
+      </p>
+      <div class="gi-checklist">
+        <span>1. Create an API key at <a href="https://resend.com" target="_blank" rel="noopener noreferrer">resend.com</a></span>
+        <span>2. Add <code>RESEND_API_KEY</code> &amp; <code>ACADEMY_FROM_EMAIL</code> in Vercel → Settings → Environment Variables</span>
+      </div>
+    </section>
+
+    <!-- Card 3: AI Curriculum Engine -->
+    <section class="acd-glass-card gi-card">
+      <div class="gi-card-head">
+        <div>
+          <span class="acd-section-kicker">Content Synthesis</span>
+          <h2 class="acd-card-title">AI Curriculum Engine</h2>
+        </div>
+        <span class="gi-badge" id="gi-ai-badge">
+          {initialSettings.hasAiApiKey ? "Ready" : "Key Missing"}
+        </span>
+      </div>
+      <div class="gi-rows">
+        <div class="gi-row">
+          <span>Active Provider</span>
+          <strong id="gi-ai-provider">{initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}</strong>
+        </div>
+        <div class="gi-row">
+          <span>API Key Status</span>
+          <strong id="gi-ai-key-status">{initialSettings.hasAiApiKey ? "Saved in Postgres" : "Not Configured"}</strong>
+        </div>
+        <div class="gi-row">
+          <span>Catalog Items</span>
+          <strong id="gi-catalog-counts">—</strong>
+        </div>
+      </div>
+      <div class="gi-card-foot">
+        <button type="button" class="acd-btn-cyan-outline" data-jump-tab="ai-config">Configure AI Engine →</button>
+      </div>
+    </section>
+
+    <!-- Card 4: Hosting & Database (Vercel + Postgres) -->
+    <section class="acd-glass-card gi-card">
+      <div class="gi-card-head">
+        <div>
+          <span class="acd-section-kicker">Infrastructure</span>
+          <h2 class="acd-card-title">Vercel &amp; Postgres</h2>
+        </div>
+        <span class="gi-badge is-ok" id="gi-infra-badge">Checking...</span>
+      </div>
+      <div class="gi-rows">
+        <div class="gi-row">
+          <span>Runtime Environment</span>
+          <strong id="gi-vercel-env">—</strong>
+        </div>
+        <div class="gi-row">
+          <span>Postgres Database</span>
+          <strong id="gi-postgres-status">Checking...</strong>
+        </div>
+        <div class="gi-row">
+          <span>Active Origin</span>
+          <strong id="gi-origin">—</strong>
+        </div>
+      </div>
+      <p class="gi-note">
+        All courses, guides, frontend edits, funnel block visibility, and Stripe settings persist in Postgres and deploy via Vercel.
+      </p>
+    </section>
+  </div>
 </div>
 
 <script define:vars={{ initialItems, initialSettings }}>
@@ -490,6 +685,112 @@ const { initialItems, initialSettings } = Astro.props;
       }
     });
 
+    async function refreshGeneralInfo() {
+      const origin = window.location.origin;
+      const giWebhookInput = document.getElementById("gi-webhook-url") as HTMLInputElement | null;
+      const giRedirectInput = document.getElementById("gi-redirect-pattern") as HTMLInputElement | null;
+      const giOriginEl = document.getElementById("gi-origin");
+      const giCatalogEl = document.getElementById("gi-catalog-counts");
+
+      if (giWebhookInput) giWebhookInput.value = `${origin}/api/academy/stripe-webhook`;
+      if (giRedirectInput) giRedirectInput.value = `${origin}/academy/courses/<slug>/slides?checkout=success`;
+      if (giOriginEl) giOriginEl.textContent = origin;
+
+      const courseCount = items.filter((i) => i.kind === "course").length;
+      const guideCount = items.filter((i) => i.kind === "guide").length;
+      if (giCatalogEl) giCatalogEl.textContent = `${courseCount} Courses · ${guideCount} Guides`;
+
+      try {
+        const res = await fetch("/api/academy/settings");
+        if (!res.ok) return;
+        const { settings, system } = await res.json();
+
+        const modeLabels: Record<string, string> = {
+          stripe_webhook: "Stripe Webhook + Token",
+          checkout_redirect: "Checkout Redirect (?checkout=success)",
+          open: "Open Access (No Gate)"
+        };
+
+        const modeEl = document.getElementById("gi-access-mode");
+        const whSecretEl = document.getElementById("gi-webhook-secret-status");
+        const stripeBadge = document.getElementById("gi-stripe-badge");
+        if (modeEl) modeEl.textContent = modeLabels[settings?.defaultCourseAccessMode] || settings?.defaultCourseAccessMode || "—";
+        if (whSecretEl) whSecretEl.textContent = settings?.hasStripeWebhookSecret ? "Configured ✓" : "Not set";
+        if (stripeBadge) {
+          const ok = Boolean(settings?.hasStripeWebhookSecret);
+          stripeBadge.textContent = ok ? "Webhook Ready" : "Secret Needed";
+          stripeBadge.className = `gi-badge ${ok ? "is-ok" : "is-warn"}`;
+        }
+
+        const resendBadge = document.getElementById("gi-resend-badge");
+        const resendStatus = document.getElementById("gi-resend-status");
+        const fromEmailEl = document.getElementById("gi-from-email");
+        if (resendStatus) resendStatus.textContent = system?.hasResendKey ? "Configured ✓" : "Missing in Vercel";
+        if (fromEmailEl) fromEmailEl.textContent = system?.fromEmail || "—";
+        if (resendBadge) {
+          const ok = Boolean(system?.hasResendKey);
+          resendBadge.textContent = ok ? "Ready" : "Key Missing";
+          resendBadge.className = `gi-badge ${ok ? "is-ok" : "is-warn"}`;
+        }
+
+        const aiBadge = document.getElementById("gi-ai-badge");
+        const aiProvEl = document.getElementById("gi-ai-provider");
+        const aiKeyEl = document.getElementById("gi-ai-key-status");
+        if (aiProvEl) aiProvEl.textContent = settings?.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)";
+        if (aiKeyEl) aiKeyEl.textContent = settings?.hasAiApiKey ? "Saved in Postgres ✓" : "Not Configured";
+        if (aiBadge) {
+          const ok = Boolean(settings?.hasAiApiKey);
+          aiBadge.textContent = ok ? "Ready" : "Key Missing";
+          aiBadge.className = `gi-badge ${ok ? "is-ok" : "is-warn"}`;
+        }
+
+        const infraBadge = document.getElementById("gi-infra-badge");
+        const vercelEnvEl = document.getElementById("gi-vercel-env");
+        const pgEl = document.getElementById("gi-postgres-status");
+        if (vercelEnvEl) vercelEnvEl.textContent = system?.isVercel ? `Vercel (${system.vercelEnv})` : "Local Dev";
+        if (pgEl) pgEl.textContent = system?.hasPostgres ? "Connected ✓" : "Not Detected";
+        if (infraBadge) {
+          const ok = Boolean(system?.hasPostgres);
+          infraBadge.textContent = ok ? "Online" : "Check DB";
+          infraBadge.className = `gi-badge ${ok ? "is-ok" : "is-warn"}`;
+        }
+      } catch {
+        // silent fallback
+      }
+    }
+
+    document.getElementById("btn-refresh-general-info")?.addEventListener("click", () => {
+      refreshGeneralInfo();
+      showStudioToast("System status refreshed");
+    });
+
+    document.getElementById("gi-copy-webhook")?.addEventListener("click", () => {
+      const inp = document.getElementById("gi-webhook-url") as HTMLInputElement | null;
+      if (!inp) return;
+      navigator.clipboard?.writeText(inp.value);
+      showStudioToast("Copied Webhook URL!");
+    });
+
+    document.getElementById("gi-copy-redirect")?.addEventListener("click", () => {
+      const inp = document.getElementById("gi-redirect-pattern") as HTMLInputElement | null;
+      if (!inp) return;
+      navigator.clipboard?.writeText(inp.value);
+      showStudioToast("Copied Redirect URL pattern!");
+    });
+
+    document.querySelectorAll<HTMLButtonElement>("[data-jump-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.jumpTab;
+        if (!target) return;
+        const tab = document.querySelector<HTMLButtonElement>(`[data-module-tab="${target}"]`);
+        tab?.click();
+      });
+    });
+
+    window.addEventListener("academy:refresh-general-info", () => {
+      refreshGeneralInfo();
+    });
+
     // Clear active state on Academy sidebar items when switching back to other Studio modules
     document.querySelectorAll<HTMLButtonElement>("[data-module-tab]").forEach((tab) => {
       tab.addEventListener("click", () => {
@@ -499,6 +800,7 @@ const { initialItems, initialSettings } = Astro.props;
 
     renderSidebarLists();
     renderEditor();
+    refreshGeneralInfo();
   })();
 </script>
 
@@ -1103,5 +1405,203 @@ const { initialItems, initialSettings } = Astro.props;
   .acd-status-dot.is-ready {
     background: #10b981;
     box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  }
+
+  .gi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .gi-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .gi-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .gi-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .gi-badge {
+    flex-shrink: 0;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    background: rgba(148, 163, 184, 0.1);
+    color: #cbd5e1;
+  }
+
+  .gi-badge.is-ok {
+    border-color: rgba(16, 185, 129, 0.45);
+    background: rgba(16, 185, 129, 0.14);
+    color: #6ee7b7;
+  }
+
+  .gi-badge.is-warn {
+    border-color: rgba(245, 158, 11, 0.45);
+    background: rgba(245, 158, 11, 0.14);
+    color: #fcd34d;
+  }
+
+  .gi-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .gi-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 0.82rem;
+  }
+
+  .gi-row span {
+    color: rgba(203, 213, 225, 0.78);
+  }
+
+  .gi-row strong {
+    color: #f8fafc;
+    font-weight: 650;
+    text-align: right;
+    word-break: break-all;
+  }
+
+  .gi-row-col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: rgba(203, 213, 225, 0.78);
+  }
+
+  .gi-note {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: rgba(203, 213, 225, 0.74);
+  }
+
+  .gi-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(72, 200, 255, 0.06);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    font-size: 0.78rem;
+    color: #cbd5e1;
+  }
+
+  .gi-checklist a {
+    color: #48c8ff;
+    text-decoration: underline;
+  }
+
+  .gi-checklist code {
+    color: #48c8ff;
+    font-size: 0.74rem;
+  }
+
+  .gi-card-foot {
+    margin-top: auto;
+    padding-top: 4px;
+  }
+</style>
+
+<style is:global>
+  .acd-label-row {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .acd-tip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .acd-tip-btn {
+    appearance: none;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 1px solid rgba(72, 200, 255, 0.42);
+    background: rgba(72, 200, 255, 0.12);
+    color: #48c8ff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+
+  .acd-tip-btn:hover,
+  .acd-tip-btn:focus-visible {
+    background: rgba(72, 200, 255, 0.26);
+    outline: none;
+    transform: scale(1.06);
+  }
+
+  .acd-tip-box {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 9px);
+    transform: translateX(-50%) translateY(4px);
+    width: 260px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(5, 16, 32, 0.97);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(72, 200, 255, 0.36);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75);
+    color: #e2e8f0;
+    font-size: 0.74rem;
+    font-weight: 450;
+    line-height: 1.45;
+    text-transform: none;
+    letter-spacing: 0;
+    white-space: normal;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+    z-index: 220;
+  }
+
+  .acd-tip-box code {
+    color: #48c8ff;
+    font-size: 0.71rem;
+  }
+
+  .acd-tip-wrap:hover .acd-tip-box,
+  .acd-tip-wrap:focus-within .acd-tip-box {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
   }
 </style>

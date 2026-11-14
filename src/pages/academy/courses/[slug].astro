@@ -245,10 +245,25 @@ const closingCta = {
   image: f.closingCta?.image || coverImg
 };
 
+function withStripeClientRef(rawUrl: string, courseId: string): string {
+  const trimmed = (rawUrl || "").trim();
+  if (!trimmed) return "";
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.hostname.includes("stripe.com") && !parsed.searchParams.has("client_reference_id")) {
+      parsed.searchParams.set("client_reference_id", courseId);
+    }
+    return parsed.toString();
+  } catch {
+    return trimmed;
+  }
+}
+
+const checkoutHref = withStripeClientRef(item.stripeCheckoutUrl, item.id);
 const primaryCtaHref = isUnlocked
   ? `/academy/courses/${item.slug}/slides`
-  : item.stripeCheckoutUrl || "#course-enroll";
-const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
+  : checkoutHref || "#course-enroll";
+const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 ---
 
 <Layout title={`${item.title} — Course | Adaptif Academy`} description={item.subtitle || item.description}>
@@ -662,9 +677,9 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
                       Download PDF
                     </a>
                   </>
-                ) : item.stripeCheckoutUrl ? (
+                ) : checkoutHref ? (
                   <a
-                    href={item.stripeCheckoutUrl}
+                    href={checkoutHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     class="btn-primary-cyan"

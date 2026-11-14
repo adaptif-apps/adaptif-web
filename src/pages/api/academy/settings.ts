@@ -6,7 +6,23 @@ export const prerender = false;
 export const GET: APIRoute = async () => {
   try {
     const settings = await getAcademySettings();
-    return new Response(JSON.stringify({ settings }), {
+    const system = {
+      hasResendKey: Boolean(
+        (import.meta.env.RESEND_API_KEY as string | undefined) || process.env.RESEND_API_KEY
+      ),
+      fromEmail:
+        (import.meta.env.ACADEMY_FROM_EMAIL as string | undefined) ||
+        process.env.ACADEMY_FROM_EMAIL ||
+        "Adaptif Academy <onboarding@resend.dev>",
+      hasPostgres: Boolean(
+        (import.meta.env.POSTGRES_URL as string | undefined) ||
+          process.env.POSTGRES_URL ||
+          process.env.DATABASE_URL
+      ),
+      isVercel: Boolean(process.env.VERCEL),
+      vercelEnv: process.env.VERCEL_ENV || "local"
+    };
+    return new Response(JSON.stringify({ settings, system }), {
       status: 200,
       headers: { "Content-Type": "application/json" }
     });

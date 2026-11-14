@@ -60,18 +60,42 @@ const { initialSettings } = Astro.props;
       <div class="gen-course-box" id="gen-course-fields">
         <div class="gen-three-col">
           <label class="gen-field">
-            <span>Course Price</span>
+            <span class="acd-label-row">
+              Course Price
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="Course Price info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Display price shown on the course hero, badges, and Buy Course CTA button (e.g. <code>$49</code>).
+                </span>
+              </span>
+            </span>
             <input type="text" id="gen-price" placeholder="$49" value="$49" />
           </label>
           <label class="gen-field gen-span-2">
-            <span>Stripe Checkout Link</span>
+            <span class="acd-label-row">
+              Stripe Checkout Link
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="Stripe Checkout Link info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Paste your Stripe Payment Link URL. In Stripe → After payment, set Redirect URL to <code>/academy/courses/&lt;slug&gt;/slides?checkout=success</code>.
+                </span>
+              </span>
+            </span>
             <input type="url" id="gen-stripe-url" placeholder="https://buy.stripe.com/..." />
           </label>
         </div>
 
         <div class="gen-three-col" style="margin-top: 12px;">
           <label class="gen-field">
-            <span>Tool / Template Name (Optional)</span>
+            <span class="acd-label-row">
+              Tool / Template Name (Optional)
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="Tool Name info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Optional companion asset included with the course (unlocked after purchase &amp; linked in the buyer email).
+                </span>
+              </span>
+            </span>
             <input type="text" id="gen-tool-name" placeholder="Magnific Preset Pack" />
           </label>
           <label class="gen-field">
@@ -79,7 +103,15 @@ const { initialSettings } = Astro.props;
             <input type="text" id="gen-tool-type" placeholder="Template / Micro-App / Mockups" />
           </label>
           <label class="gen-field">
-            <span>Tool / Micro-App URL (Optional)</span>
+            <span class="acd-label-row">
+              Tool / Micro-App URL (Optional)
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="Tool URL info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Destination URL for the included template or micro-app. Only visible to unlocked buyers.
+                </span>
+              </span>
+            </span>
             <input type="url" id="gen-tool-url" placeholder="https://..." />
           </label>
         </div>
@@ -88,7 +120,15 @@ const { initialSettings } = Astro.props;
       <!-- 5. Visibility & Scheduling -->
       <div class="gen-two-col">
         <label class="gen-field">
-          <span>Publishing Status</span>
+          <span class="acd-label-row">
+            Publishing Status
+            <span class="acd-tip-wrap">
+              <button type="button" class="acd-tip-btn" aria-label="Publishing Status info">?</button>
+              <span class="acd-tip-box" role="tooltip">
+                <strong>Private (Draft)</strong> hides the course from the public catalog while you edit; <strong>Public</strong> publishes immediately.
+              </span>
+            </span>
+          </span>
           <select id="gen-status" class="ac-select">
             <option value="draft">Private (Draft — review before publishing)</option>
             <option value="published">Public (Publish immediately)</option>

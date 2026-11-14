@@ -519,6 +519,11 @@ const { initialItems, initialSettings } = Astro.props;
         container.querySelectorAll<HTMLButtonElement>("[data-sidebar-academy-id]").forEach((btn) => {
           btn.addEventListener("click", () => {
             selectedId = btn.dataset.sidebarAcademyId || null;
+            try {
+              localStorage.setItem("adaptif_studio_tab", "academy");
+              if (selectedId) localStorage.setItem("adaptif_studio_academy_id", selectedId);
+              history.replaceState(null, "", "#academy");
+            } catch {}
             activateAcademyModule();
             renderSidebarLists();
             renderEditor();

@@ -528,6 +528,7 @@ const { initialItems, initialSettings } = Astro.props;
       if (!item || !formEl || !emptyEl) {
         if (formEl) formEl.hidden = true;
         if (emptyEl) emptyEl.hidden = false;
+        window.dispatchEvent(new CustomEvent("academy:selection-changed", { detail: { item: null } }));
         return;
       }
 
@@ -563,6 +564,11 @@ const { initialItems, initialSettings } = Astro.props;
       }
 
       window.dispatchEvent(new CustomEvent("academy:kind-changed", { detail: { kind: item.kind } }));
+      window.dispatchEvent(
+        new CustomEvent("academy:selection-changed", {
+          detail: { item: { id: item.id, kind: item.kind, title: item.title } }
+        })
+      );
 
       const baseFolder = item.kind === "course" ? "courses" : "guides";
       const editContentLink = document.getElementById("acd-edit-content") as HTMLAnchorElement | null;
@@ -613,12 +619,22 @@ const { initialItems, initialSettings } = Astro.props;
 
     window.addEventListener("academy:item-generated", (e: any) => {
       const newItem = e?.detail?.item;
+      const mode = e?.detail?.mode;
       if (!newItem) return;
-      items.unshift(newItem);
+      const existingIdx = items.findIndex((i) => i.id === newItem.id);
+      if (existingIdx !== -1) {
+        items[existingIdx] = newItem;
+      } else {
+        items.unshift(newItem);
+      }
       selectedId = newItem.id;
       renderSidebarLists();
       renderEditor();
-      showStudioToast(`AI generated ${newItem.kind}: ${newItem.title}`);
+      showStudioToast(
+        mode === "updated"
+          ? `Complemented & updated ${newItem.kind}: ${newItem.title}`
+          : `AI generated ${newItem.kind}: ${newItem.title}`
+      );
     });
 
     formEl?.addEventListener("submit", async (e) => {

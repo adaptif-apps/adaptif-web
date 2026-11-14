@@ -134,9 +134,23 @@ const { initialSettings } = Astro.props;
       </div>
 
       <p class="gen-error" id="gen-error" hidden></p>
+
+      <div class="gen-progress-wrap" id="gen-progress-wrap" hidden>
+        <div class="gen-progress-head">
+          <span id="gen-progress-label">Preparing...</span>
+          <strong id="gen-progress-pct">0%</strong>
+        </div>
+        <div class="gen-progress-track">
+          <div class="gen-progress-fill" id="gen-progress-fill"></div>
+        </div>
+      </div>
     </div>
 
     <footer class="gen-modal-foot">
+      <label class="gen-target-toggle" id="gen-target-wrap" hidden>
+        <input type="checkbox" id="gen-enrich-selected" checked />
+        <span>Complement &amp; update: <strong id="gen-target-title"></strong></span>
+      </label>
       <button type="button" class="gen-btn-cyan" id="btn-run-generate">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3l1.9 5.8L20 10.7l-5.2 3.3L16.5 20 12 16.6 7.5 20l1.7-6-5.2-3.3 6.1-1.9L12 3z" />
@@ -158,6 +172,41 @@ const { initialSettings } = Astro.props;
     const errorEl = document.getElementById("gen-error");
 
     const dropzone = document.getElementById("gen-dropzone");
+    const targetWrap = document.getElementById("gen-target-wrap");
+    const targetTitleEl = document.getElementById("gen-target-title");
+    const enrichCheckbox = document.getElementById("gen-enrich-selected") as HTMLInputElement | null;
+    const progressWrap = document.getElementById("gen-progress-wrap");
+    const progressLabel = document.getElementById("gen-progress-label");
+    const progressPct = document.getElementById("gen-progress-pct");
+    const progressFill = document.getElementById("gen-progress-fill") as HTMLElement | null;
+
+    let selectedTarget: { id: string; kind: string; title: string } | null = null;
+    let currentPercent = 0;
+    let smoothTimer: number | null = null;
+
+    function setProgress(percent: number, label?: string) {
+      currentPercent = Math.max(0, Math.min(100, Math.round(percent)));
+      if (progressWrap) progressWrap.hidden = false;
+      if (progressPct) progressPct.textContent = `${currentPercent}%`;
+      if (progressFill) progressFill.style.width = `${currentPercent}%`;
+      if (label && progressLabel) progressLabel.textContent = label;
+    }
+
+    function startSmoothTick(maxPct: number) {
+      if (smoothTimer) window.clearInterval(smoothTimer);
+      smoothTimer = window.setInterval(() => {
+        if (currentPercent < maxPct) {
+          setProgress(currentPercent + 1);
+        }
+      }, 450);
+    }
+
+    function stopSmoothTick() {
+      if (smoothTimer) {
+        window.clearInterval(smoothTimer);
+        smoothTimer = null;
+      }
+    }
     const fileInput = document.getElementById("gen-file-input") as HTMLInputElement | null;
     const browseBtn = document.getElementById("btn-browse-files");
     const chipsEl = document.getElementById("gen-file-chips");
@@ -306,11 +355,25 @@ const { initialSettings } = Astro.props;
       setKind(requestedKind);
     });
 
+    window.addEventListener("academy:selection-changed", (e: any) => {
+      const item = e?.detail?.item || null;
+      selectedTarget = item;
+      if (targetWrap && targetTitleEl) {
+        if (item?.id) {
+          targetTitleEl.textContent = item.title || "Selected item";
+          targetWrap.hidden = false;
+        } else {
+          targetWrap.hidden = true;
+        }
+      }
+    });
+
     runBtn?.addEventListener("click", async () => {
       if (!runBtn) return;
       if (errorEl) errorEl.hidden = true;
       runBtn.disabled = true;
-      runBtn.textContent = "Synthesizing & Building...";
+      runBtn.textContent = "Synthesizing 0%...";
+      setProgress(6, "Preparing source materials...");
 
       const val = (id: string) =>
         (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)?.value.trim() || "";
@@ -321,8 +384,12 @@ const { initialSettings } = Astro.props;
         .filter(Boolean);
 
       try {
+        const useTargetId = selectedTarget?.id && enrichCheckbox?.checked ? selectedTarget.id : undefined;
+
         const payload = JSON.stringify({
           kind: currentKind,
+          stream: true,
+          targetItemId: useTargetId,
           files: attachedFiles,
           links,
           manualNotes: val("gen-manual-notes"),
@@ -344,24 +411,85 @@ const { initialSettings } = Astro.props;
           headers: { "Content-Type": "application/json" },
           body: payload
         });
-        const rawText = await res.text();
-        let data: any = null;
-        try {
-          data = rawText ? JSON.parse(rawText) : null;
-        } catch {
-          if (res.status === 413 || /Request Entity Too Large/i.test(rawText)) {
-            throw new Error("The uploaded file(s) exceed the server 4.5 MB limit. Please use a smaller image or fewer files.");
+
+        const contentType = res.headers.get("content-type") || "";
+
+        if (!res.ok || !contentType.includes("text/event-stream") || !res.body) {
+          const rawText = await res.text();
+          let data: any = null;
+          try {
+            data = rawText ? JSON.parse(rawText) : null;
+          } catch {
+            if (res.status === 413 || /Request Entity Too Large/i.test(rawText)) {
+              throw new Error("The uploaded file(s) exceed the server 4.5 MB limit. Please use a smaller image or fewer files.");
+            }
+            throw new Error(`Server returned an unexpected response (${res.status}).`);
           }
-          throw new Error(`Server returned an unexpected response (${res.status}).`);
-        }
-        if (!res.ok) {
-          throw new Error(data?.error || `Generation failed (${res.status})`);
+          if (!res.ok) {
+            throw new Error(data?.error || `Generation failed (${res.status})`);
+          }
+          setProgress(100, "Complete!");
+          window.dispatchEvent(new CustomEvent("academy:item-generated", { detail: { item: data.item, mode: data.mode } }));
+          attachedFiles = [];
+          renderChips();
+          return;
         }
 
-        window.dispatchEvent(new CustomEvent("academy:item-generated", { detail: { item: data.item } }));
-        attachedFiles = [];
-        renderChips();
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let doneData: any = null;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          const chunks = buffer.split("\n\n");
+          buffer = chunks.pop() || "";
+
+          for (const chunk of chunks) {
+            const eventMatch = chunk.match(/^event:\s*(.+)$/m);
+            const dataMatch = chunk.match(/^data:\s*(.+)$/m);
+            if (!dataMatch) continue;
+
+            const evtName = eventMatch ? eventMatch[1].trim() : "message";
+            const parsed = JSON.parse(dataMatch[1]);
+
+            if (evtName === "progress") {
+              const pct = Number(parsed.percent || 0);
+              setProgress(Math.max(currentPercent, pct), parsed.label);
+              if (runBtn) runBtn.textContent = `Synthesizing ${Math.max(currentPercent, pct)}%...`;
+              if (pct >= 40 && pct < 85) {
+                startSmoothTick(82);
+              } else {
+                stopSmoothTick();
+              }
+            } else if (evtName === "error") {
+              stopSmoothTick();
+              throw new Error(parsed.error || "AI generation failed");
+            } else if (evtName === "done") {
+              stopSmoothTick();
+              doneData = parsed;
+              setProgress(100, "Complete!");
+              if (runBtn) runBtn.textContent = "Complete (100%)";
+            }
+          }
+        }
+
+        if (doneData?.item) {
+          window.dispatchEvent(
+            new CustomEvent("academy:item-generated", { detail: { item: doneData.item, mode: doneData.mode } })
+          );
+          attachedFiles = [];
+          renderChips();
+          window.setTimeout(() => {
+            if (progressWrap) progressWrap.hidden = true;
+          }, 1800);
+        }
       } catch (err: any) {
+        stopSmoothTick();
+        if (progressWrap) progressWrap.hidden = true;
         if (errorEl) {
           errorEl.textContent = err?.message || "Something went wrong.";
           errorEl.hidden = false;
@@ -622,13 +750,91 @@ const { initialSettings } = Astro.props;
     font-size: 0.84rem;
   }
 
+  .gen-progress-wrap {
+    margin-top: 6px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    background: rgba(8, 22, 38, 0.72);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .gen-progress-wrap[hidden] {
+    display: none;
+  }
+
+  .gen-progress-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary, #9db2c9);
+  }
+
+  .gen-progress-head strong {
+    color: var(--cyan-primary, #48c8ff);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gen-progress-track {
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+
+  .gen-progress-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #7dd3fc);
+    box-shadow: 0 0 12px rgba(72, 200, 255, 0.45);
+    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
   .gen-modal-foot {
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
     padding: 16px 26px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: rgba(2, 5, 14, 0.7);
+  }
+
+  .gen-target-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #9db2c9);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .gen-target-toggle[hidden] {
+    display: none;
+  }
+
+  .gen-target-toggle input[type="checkbox"] {
+    accent-color: #48c8ff;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+  }
+
+  .gen-target-toggle strong {
+    color: #e6f4ff;
+    font-weight: 600;
+  }
+
+  .gen-modal-foot .gen-btn-cyan {
+    margin-left: auto;
   }
 
   .gen-btn-cyan {

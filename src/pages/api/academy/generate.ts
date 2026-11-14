@@ -3,6 +3,9 @@ import {
   createAcademyItem,
   defaultFunnelVisibility,
   getAcademyAiCredentials,
+  getAcademyItemById,
+  updateAcademyItem,
+  type AcademyItem,
   type AcademyKind,
   type AcademySlide,
   type AcademyStatus,
@@ -301,6 +304,8 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
     const kind: AcademyKind = body?.kind === "course" ? "course" : "guide";
+    const wantStream = body?.stream === true;
+    const targetItemId = typeof body?.targetItemId === "string" ? body.targetItemId.trim() : "";
     const { provider, apiKey } = await getAcademyAiCredentials();
 
     if (!apiKey) {
@@ -318,77 +323,103 @@ export const POST: APIRoute = async ({ request }) => {
     const files: UploadedFileInput[] = Array.isArray(body?.files) ? body.files : [];
     const manualNotes = String(body?.manualNotes ?? "").trim();
 
-    const linkContexts = await Promise.all(
-      links.slice(0, 6).map(async (link) => {
-        if (link.includes("youtube.com") || link.includes("youtu.be")) {
-          return fetchYoutubeContext(link);
-        }
-        return fetchWebContext(link);
-      })
-    );
-
     const fileTexts = files
       .filter((f) => f.textContent && f.textContent.trim().length > 0)
       .map((f) => `File (${f.name}):\n${f.textContent!.slice(0, 12000)}`);
     const images = files.filter((f) => f.mimeType?.startsWith("image/") && f.base64Data);
 
-    const combinedSource = [
-      manualNotes ? `Manual Notes / Brief:\n${manualNotes}` : "",
-      ...linkContexts,
-      ...fileTexts,
-      kind === "course" && body?.toolName
-        ? `Included Companion Tool: ${body.toolName} (${body.toolType || "Template"}) ${body.toolUrl || ""}`
-        : ""
-    ]
-      .filter(Boolean)
-      .join("\n\n---\n\n");
+    const existingItem: AcademyItem | null = targetItemId ? await getAcademyItemById(targetItemId) : null;
 
-    if (!combinedSource && images.length === 0) {
+    if (links.length === 0 && fileTexts.length === 0 && images.length === 0 && !manualNotes && !existingItem) {
       return new Response(
         JSON.stringify({ error: "Please provide at least one file, link, image, or manual note." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    const systemPrompt = buildSystemPrompt(kind);
-    const generated =
-      provider === "openai"
-        ? await callOpenAI(apiKey, systemPrompt, combinedSource, images)
-        : await callGemini(apiKey, systemPrompt, combinedSource, images);
+    const runSynthesis = async (emit: (event: string, data: any) => void) => {
+      emit("progress", { percent: 15, label: "Processing uploaded files & images..." });
 
-    const validLayouts: SlideLayout[] = ["cover", "split", "bullets", "grid", "quote", "cta"];
-    const slides: AcademySlide[] = Array.isArray(generated?.slides)
-      ? generated.slides.map((s: any, idx: number) => ({
-          id: `s-${idx + 1}`,
-          layout: validLayouts.includes(s?.layout) ? s.layout : "bullets",
-          eyebrow: String(s?.eyebrow ?? ""),
-          title: String(s?.title ?? `Slide ${idx + 1}`),
-          body: String(s?.body ?? ""),
-          bullets: Array.isArray(s?.bullets) ? s.bullets.map(String) : [],
-          callout: s?.callout ? String(s.callout) : undefined
-        }))
-      : [];
+      const linkContexts =
+        links.length > 0
+          ? (emit("progress", { percent: 28, label: "Fetching links & transcripts..." }),
+            await Promise.all(
+              links.slice(0, 6).map(async (link) => {
+                if (link.includes("youtube.com") || link.includes("youtu.be")) {
+                  return fetchYoutubeContext(link);
+                }
+                return fetchWebContext(link);
+              })
+            ))
+          : [];
 
-    const status: AcademyStatus =
-      body?.status === "published" || body?.status === "scheduled" ? body.status : "draft";
+      const existingContext = existingItem
+        ? `EXISTING ${existingItem.kind.toUpperCase()} CONTENT TO COMPLEMENT & ENRICH (keep accurate concepts/structure and merge & upgrade with the new source materials below):\n` +
+          JSON.stringify({
+            title: existingItem.title,
+            subtitle: existingItem.subtitle,
+            description: existingItem.description,
+            category: existingItem.category,
+            landingData: {
+              heroBadge: existingItem.landingData?.heroBadge,
+              readTime: existingItem.landingData?.readTime,
+              audience: existingItem.landingData?.audience,
+              takeaways: existingItem.landingData?.takeaways,
+              faq: existingItem.landingData?.faq,
+              funnel: existingItem.landingData?.funnel
+            },
+            slides: existingItem.slides
+          }).slice(0, 18000)
+        : "";
 
-    const item = await createAcademyItem({
-      kind,
-      title: String(generated?.title || (kind === "course" ? "Generated Course" : "Generated Guide")),
-      subtitle: String(generated?.subtitle ?? ""),
-      description: String(generated?.description ?? ""),
-      category: String(generated?.category ?? "AI Workflows"),
-      coverImage:
-        kind === "course" ? "/images/why-us/our-technology.jpg" : "/images/why-us/ai-excellence.jpg",
-      status,
-      publishAt: status === "scheduled" && body?.publishAt ? String(body.publishAt) : null,
-      priceLabel: kind === "course" ? String(body?.priceLabel || "$49") : "Free",
-      stripeCheckoutUrl: kind === "course" ? String(body?.stripeCheckoutUrl || "") : "",
-      accessMode: kind === "course" ? "stripe_webhook" : "open",
-      toolName: kind === "course" ? String(body?.toolName || "") : "",
-      toolType: kind === "course" ? String(body?.toolType || "") : "",
-      toolUrl: kind === "course" ? String(body?.toolUrl || "") : "",
-      landingData: {
+      const combinedSource = [
+        existingContext,
+        manualNotes ? `Manual Notes / Brief:\n${manualNotes}` : "",
+        ...linkContexts,
+        ...fileTexts,
+        kind === "course" && body?.toolName
+          ? `Included Companion Tool: ${body.toolName} (${body.toolType || "Template"}) ${body.toolUrl || ""}`
+          : ""
+      ]
+        .filter(Boolean)
+        .join("\n\n---\n\n");
+
+      if (!combinedSource && images.length === 0) {
+        throw new Error("Please provide at least one file, link, image, or manual note.");
+      }
+
+      emit("progress", {
+        percent: 45,
+        label: existingItem
+          ? `Enriching "${existingItem.title}" with ${provider === "openai" ? "OpenAI" : "Gemini"}...`
+          : `Synthesizing curriculum with ${provider === "openai" ? "OpenAI" : "Gemini"}...`
+      });
+
+      const systemPrompt = buildSystemPrompt(kind);
+      const generated =
+        provider === "openai"
+          ? await callOpenAI(apiKey, systemPrompt, combinedSource, images)
+          : await callGemini(apiKey, systemPrompt, combinedSource, images);
+
+      emit("progress", { percent: 85, label: "Saving course & slides to database..." });
+
+      const validLayouts: SlideLayout[] = ["cover", "split", "bullets", "grid", "quote", "cta"];
+      const slides: AcademySlide[] = Array.isArray(generated?.slides)
+        ? generated.slides.map((s: any, idx: number) => ({
+            id: `s-${idx + 1}`,
+            layout: validLayouts.includes(s?.layout) ? s.layout : "bullets",
+            eyebrow: String(s?.eyebrow ?? ""),
+            title: String(s?.title ?? `Slide ${idx + 1}`),
+            body: String(s?.body ?? ""),
+            bullets: Array.isArray(s?.bullets) ? s.bullets.map(String) : [],
+            callout: s?.callout ? String(s.callout) : undefined
+          }))
+        : [];
+
+      const status: AcademyStatus =
+        body?.status === "published" || body?.status === "scheduled" ? body.status : "draft";
+
+      const nextLandingData = {
         heroBadge: String(generated?.landingData?.heroBadge || (kind === "course" ? "Pro Course" : "Free Guide")),
         readTime: String(generated?.landingData?.readTime || `${slides.length} slides`),
         audience: String(generated?.landingData?.audience || ""),
@@ -398,17 +429,93 @@ export const POST: APIRoute = async ({ request }) => {
         faq: Array.isArray(generated?.landingData?.faq)
           ? generated.landingData.faq.map((f: any) => ({ q: String(f?.q ?? ""), a: String(f?.a ?? "") }))
           : [],
-        funnelVisibility: defaultFunnelVisibility(),
+        funnelVisibility: defaultFunnelVisibility(existingItem?.landingData?.funnelVisibility),
         funnel:
           kind === "course" && generated?.landingData?.funnel && typeof generated.landingData.funnel === "object"
             ? generated.landingData.funnel
-            : undefined
-      },
-      slides
-    });
+            : existingItem?.landingData?.funnel
+      };
 
-    return new Response(JSON.stringify({ item }), {
-      status: 201,
+      let item: AcademyItem | null = null;
+      let mode: "created" | "updated" = "created";
+
+      if (existingItem) {
+        mode = "updated";
+        item = await updateAcademyItem(existingItem.id, {
+          kind,
+          title: String(generated?.title || existingItem.title),
+          subtitle: String(generated?.subtitle || existingItem.subtitle),
+          description: String(generated?.description || existingItem.description),
+          category: String(generated?.category || existingItem.category),
+          status,
+          publishAt: status === "scheduled" && body?.publishAt ? String(body.publishAt) : existingItem.publishAt,
+          priceLabel: kind === "course" ? String(body?.priceLabel || existingItem.priceLabel || "$49") : "Free",
+          stripeCheckoutUrl:
+            kind === "course" ? String(body?.stripeCheckoutUrl ?? existingItem.stripeCheckoutUrl ?? "") : "",
+          toolName: kind === "course" ? String(body?.toolName ?? existingItem.toolName ?? "") : "",
+          toolType: kind === "course" ? String(body?.toolType ?? existingItem.toolType ?? "") : "",
+          toolUrl: kind === "course" ? String(body?.toolUrl ?? existingItem.toolUrl ?? "") : "",
+          landingData: nextLandingData,
+          slides: slides.length > 0 ? slides : existingItem.slides
+        });
+      }
+
+      if (!item) {
+        mode = "created";
+        item = await createAcademyItem({
+          kind,
+          title: String(generated?.title || (kind === "course" ? "Generated Course" : "Generated Guide")),
+          subtitle: String(generated?.subtitle ?? ""),
+          description: String(generated?.description ?? ""),
+          category: String(generated?.category ?? "AI Workflows"),
+          coverImage:
+            kind === "course" ? "/images/why-us/our-technology.jpg" : "/images/why-us/ai-excellence.jpg",
+          status,
+          publishAt: status === "scheduled" && body?.publishAt ? String(body.publishAt) : null,
+          priceLabel: kind === "course" ? String(body?.priceLabel || "$49") : "Free",
+          stripeCheckoutUrl: kind === "course" ? String(body?.stripeCheckoutUrl || "") : "",
+          accessMode: kind === "course" ? "stripe_webhook" : "open",
+          toolName: kind === "course" ? String(body?.toolName || "") : "",
+          toolType: kind === "course" ? String(body?.toolType || "") : "",
+          toolUrl: kind === "course" ? String(body?.toolUrl || "") : "",
+          landingData: nextLandingData,
+          slides
+        });
+      }
+
+      emit("done", { percent: 100, item, mode });
+      return { item, mode };
+    };
+
+    if (wantStream) {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        async start(controller) {
+          const emit = (event: string, data: any) => {
+            controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+          };
+          try {
+            await runSynthesis(emit);
+          } catch (err: any) {
+            emit("error", { error: err?.message || "AI generation failed" });
+          } finally {
+            controller.close();
+          }
+        }
+      });
+
+      return new Response(stream, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/event-stream; charset=utf-8",
+          "Cache-Control": "no-cache, no-transform"
+        }
+      });
+    }
+
+    const result = await runSynthesis(() => {});
+    return new Response(JSON.stringify(result), {
+      status: result.mode === "updated" ? 200 : 201,
       headers: { "Content-Type": "application/json" }
     });
   } catch (err: any) {

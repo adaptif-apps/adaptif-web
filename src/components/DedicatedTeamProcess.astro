@@ -97,7 +97,6 @@ const cycleSteps: ProcessStep[] = [
 
       <!-- Bridge Arrow (01 -> Cycle) -->
       <div class="dt-proc__bridge" aria-hidden="true">
-        <span class="dt-proc__bridge-line"></span>
         <span class="dt-proc__bridge-arrow">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
             <path d="M4 10h12m0 0-4-4m4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
@@ -318,15 +317,6 @@ const cycleSteps: ProcessStep[] = [
     position: relative;
   }
 
-  .dt-proc__bridge-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(50% + 19px);
-    height: 1px;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.14), rgba(72, 200, 255, 0.45));
-  }
-
   .dt-proc__bridge-arrow {
     position: relative;
     z-index: 1;
@@ -544,15 +534,6 @@ const cycleSteps: ProcessStep[] = [
     .dt-proc__bridge {
       padding-top: 0;
       height: 32px;
-    }
-
-    .dt-proc__bridge-line {
-      width: 1px;
-      height: 100%;
-      left: 50%;
-      top: 0;
-      right: auto;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(72, 200, 255, 0.45));
     }
 
     .dt-proc__bridge-arrow {

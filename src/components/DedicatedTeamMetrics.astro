@@ -1,0 +1,207 @@
+---
+// DedicatedTeamMetrics.astro - Concise typographic metrics pause
+import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
+---
+
+<section
+  class="dt-metrics"
+  id="team-metrics"
+  aria-label="Adaptif track record and delivery metrics"
+>
+  <div class="container dt-metrics__container">
+    <div class="dt-metrics__band">
+      <div class="dt-metrics__intro">
+        <span class="dt-metrics__eyebrow">BY THE NUMBERS</span>
+      </div>
+
+      <dl class="dt-metrics__grid">
+        {dedicatedTeamMetrics.map((metric, idx) => (
+          <div
+            class="dt-metric reveal-metric"
+            style={`--metric-delay: ${idx * 70}ms;`}
+          >
+            <dt class="dt-metric__label">{metric.label}</dt>
+            <dd class="dt-metric__value" aria-label={`${metric.value}${metric.unit} ${metric.label}`}>
+              <span class="dt-metric__num">{metric.value}</span><span class="dt-metric__unit">{metric.unit}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initDedicatedTeamMetrics = () => {
+    const items = document.querySelectorAll("#team-metrics .reveal-metric");
+    if (!items.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  };
+
+  initDedicatedTeamMetrics();
+  document.addEventListener("astro:page-load", initDedicatedTeamMetrics);
+</script>
+
+<style>
+  .dt-metrics {
+    position: relative;
+    padding: clamp(56px, 8vw, 96px) 0;
+    background: var(--color-void, #010307);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .dt-metrics__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dt-metrics__band {
+    padding: clamp(28px, 4vw, 46px) clamp(24px, 4vw, 48px);
+    border-radius: 24px;
+    background: linear-gradient(
+      180deg,
+      rgba(8, 18, 42, 0.56) 0%,
+      rgba(4, 9, 24, 0.72) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 20px 50px -22px rgba(0, 0, 0, 0.78);
+  }
+
+  .dt-metrics__intro {
+    margin-bottom: clamp(20px, 3vw, 30px);
+  }
+
+  .dt-metrics__eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+  }
+
+  .dt-metrics__grid {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px 0;
+  }
+
+  .dt-metric {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-right: clamp(16px, 2.5vw, 32px);
+    user-select: text;
+  }
+
+  .dt-metric + .dt-metric {
+    padding-left: clamp(16px, 2.5vw, 32px);
+    border-left: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .dt-metric__value {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.9rem, 4.4vw, 4.25rem);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+    font-weight: 400;
+    color: #ffffff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dt-metric__unit {
+    color: var(--color-brand-cyan, #48C8FF);
+    font-style: italic;
+    padding-left: 0.03em;
+  }
+
+  .dt-metric__label {
+    font-size: 0.94rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: #cbd5e1;
+    font-weight: 400;
+  }
+
+  /* Subtle one-time reveal */
+  .reveal-metric {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.45s ease var(--metric-delay, 0ms),
+      transform 0.45s var(--ease-spring) var(--metric-delay, 0ms);
+  }
+
+  .reveal-metric.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-metric {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .dt-metrics__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px 0;
+    }
+
+    .dt-metric:nth-child(odd) {
+      padding-left: 0;
+      border-left: none;
+    }
+
+    .dt-metric:nth-child(even) {
+      padding-right: 0;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .dt-metrics__grid {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    .dt-metric,
+    .dt-metric + .dt-metric {
+      padding-left: 0;
+      padding-right: 0;
+      border-left: none;
+    }
+
+    .dt-metric + .dt-metric {
+      padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+</style>

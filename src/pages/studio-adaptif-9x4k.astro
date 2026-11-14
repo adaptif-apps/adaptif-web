@@ -69,31 +69,49 @@ const tagPresets = [
         </div>
 
         <nav class="studio-nav" aria-label="Preferences modules">
-          <div class="nav-group-label">CMS Modules</div>
-          <button type="button" class="nav-item is-active" data-module-tab="portfolio" aria-current="page">
-            <span>Portfolio</span>
-            <span class="nav-count" id="sidebar-project-count">{initialProjects.length}</span>
-          </button>
-          <button type="button" class="nav-item" data-module-tab="book-call">
-            <span>Book a Call Form</span>
-            <span class="nav-count">2 steps</span>
-          </button>
-          <button type="button" class="nav-item" data-module-tab="activecampaign">
-            <span>ActiveCampaign</span>
-            <span class="nav-count" id="sidebar-ac-status">{initialAcState.enabled ? "On" : "Off"}</span>
-          </button>
+          <div class="nav-dropdown is-open" data-nav-group="cms">
+            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
+              <span>CMS</span>
+              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <div class="nav-dropdown-items">
+              <button type="button" class="nav-item is-active" data-module-tab="portfolio" aria-current="page">
+                <span>Portfolio</span>
+                <span class="nav-count" id="sidebar-project-count">{initialProjects.length}</span>
+              </button>
+            </div>
+          </div>
 
-          <div class="nav-item is-disabled" aria-disabled="true">
-            <span>Blog &amp; Guides</span>
-            <span class="soon-pill">Soon</span>
+          <div class="nav-dropdown is-open" data-nav-group="forms">
+            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
+              <span>Forms</span>
+              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <div class="nav-dropdown-items">
+              <button type="button" class="nav-item" data-module-tab="book-call">
+                <span>Book a Call</span>
+                <span class="nav-count">2 steps</span>
+              </button>
+            </div>
           </div>
-          <div class="nav-item is-disabled" aria-disabled="true">
-            <span>Courses</span>
-            <span class="soon-pill">Soon</span>
-          </div>
-          <div class="nav-item is-disabled" aria-disabled="true">
-            <span>Plugins &amp; Site</span>
-            <span class="soon-pill">Soon</span>
+
+          <div class="nav-dropdown is-open" data-nav-group="integrations">
+            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
+              <span>Integrations</span>
+              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <div class="nav-dropdown-items">
+              <button type="button" class="nav-item" data-module-tab="activecampaign">
+                <span>ActiveCampaign</span>
+                <span class="nav-count" id="sidebar-ac-status">{initialAcState.enabled ? "On" : "Off"}</span>
+              </button>
+            </div>
           </div>
         </nav>
 
@@ -507,12 +525,22 @@ const tagPresets = [
             </section>
 
             <section class="bc-cms-card">
-              <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">2. Visual Field Mapping</h2>
-              <p class="field-hint" style="margin: 0 0 16px;">
-                Match each Book a Call form field to its destination in ActiveCampaign.
-              </p>
+              <div class="ac-card-head" style="margin-bottom: 16px;">
+                <div>
+                  <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">2. Visual Field Mapping</h2>
+                  <p class="field-hint" style="margin: 0;">
+                    Select which site form you want to map and match each field to its destination in ActiveCampaign.
+                  </p>
+                </div>
+                <div class="ac-form-picker">
+                  <label for="ac-form-selector" class="ac-form-picker-label">Form to map</label>
+                  <select id="ac-form-selector" class="ac-select">
+                    <option value="book-call">Book a Call</option>
+                  </select>
+                </div>
+              </div>
 
-              <div class="ac-map-table">
+              <div class="ac-map-table" data-ac-form-panel="book-call">
                 <div class="ac-map-head">
                   <span>Book a Call Field</span>
                   <span>ActiveCampaign Destination</span>
@@ -1068,7 +1096,18 @@ const tagPresets = [
       renderList();
       loadEditor(projects[0] ?? null, false);
 
-      // Module tab switching (Portfolio <-> Book a Call Form)
+      // Sidebar dropdown groups
+      document.querySelectorAll<HTMLButtonElement>(".nav-dropdown-trigger").forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const group = trigger.closest<HTMLElement>(".nav-dropdown");
+          if (!group) return;
+          const willOpen = !group.classList.contains("is-open");
+          group.classList.toggle("is-open", willOpen);
+          trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+        });
+      });
+
+      // Module tab switching (Portfolio <-> Book a Call <-> ActiveCampaign)
       const moduleTabs = document.querySelectorAll<HTMLButtonElement>("[data-module-tab]");
       const portfolioModule = document.getElementById("module-portfolio");
       const bookCallModule = document.getElementById("module-book-call");
@@ -1174,6 +1213,14 @@ const tagPresets = [
       const acSaveBtn = document.getElementById("btn-save-ac") as HTMLButtonElement | null;
       const acTestBtn = document.getElementById("btn-ac-test") as HTMLButtonElement | null;
       const acTestEmailEl = document.getElementById("ac-test-email") as HTMLInputElement | null;
+      const acFormSelector = document.getElementById("ac-form-selector") as HTMLSelectElement | null;
+
+      acFormSelector?.addEventListener("change", () => {
+        const selectedForm = acFormSelector.value;
+        document.querySelectorAll<HTMLElement>("[data-ac-form-panel]").forEach((panel) => {
+          panel.hidden = panel.dataset.acFormPanel !== selectedForm;
+        });
+      });
 
       const acFullNameSelect = document.getElementById("ac-map-fullname") as HTMLSelectElement | null;
       const acFieldMapIds: [string, keyof typeof acState.mapping][] = [
@@ -1455,6 +1502,72 @@ const tagPresets = [
         letter-spacing: 0.08em;
         color: #64748b;
         padding: 0 10px 6px;
+      }
+
+      .nav-dropdown {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+
+      .nav-dropdown-trigger {
+        appearance: none;
+        border: none;
+        background: transparent;
+        width: 100%;
+        padding: 7px 10px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        cursor: pointer;
+        transition: color 0.15s ease, background-color 0.15s ease;
+      }
+
+      .nav-dropdown-trigger:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .nav-dropdown-chevron {
+        transition: transform 0.2s ease;
+        transform: rotate(-90deg);
+      }
+
+      .nav-dropdown.is-open .nav-dropdown-chevron {
+        transform: rotate(0deg);
+      }
+
+      .nav-dropdown-items {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        padding-left: 6px;
+      }
+
+      .nav-dropdown.is-open .nav-dropdown-items {
+        display: flex;
+      }
+
+      .ac-form-picker {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 240px;
+      }
+
+      .ac-form-picker-label {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: #94a3b8;
+        white-space: nowrap;
       }
 
       .nav-item {

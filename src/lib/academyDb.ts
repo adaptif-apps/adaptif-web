@@ -155,6 +155,9 @@ export interface AcademyLandingData {
   funnel?: Partial<CourseFunnelData>;
   customPdfUrl?: string;
   customModules?: { tag: string; title: string; body: string }[];
+  heroSignal1?: string;
+  heroSignal2?: string;
+  heroGallery?: { label: string; image: string }[];
 }
 
 export interface AcademyItem {
@@ -551,6 +554,14 @@ function mapItem(row: Record<string, any>): AcademyItem {
             tag: String(m?.tag ?? "Module"),
             title: String(m?.title ?? ""),
             body: String(m?.body ?? "")
+          }))
+        : undefined,
+      heroSignal1: typeof landingRaw.heroSignal1 === "string" ? landingRaw.heroSignal1 : undefined,
+      heroSignal2: typeof landingRaw.heroSignal2 === "string" ? landingRaw.heroSignal2 : undefined,
+      heroGallery: Array.isArray(landingRaw.heroGallery)
+        ? landingRaw.heroGallery.map((g: any) => ({
+            label: String(g?.label ?? "VIEW"),
+            image: String(g?.image ?? "")
           }))
         : undefined
     },

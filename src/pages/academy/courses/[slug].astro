@@ -345,29 +345,66 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
             )}
           </div>
 
-          <div class="cf-hero-card">
-            <div class="cf-hero-card-media">
-              <img src={coverImg} alt={item.title} {...edImg("coverImage")} />
-              {isEditMode && (
-                <button type="button" class="cf-img-edit-btn" data-target-img="coverImage">Change Image</button>
-              )}
-              <span class="cf-hero-card-tag">{item.category}</span>
-            </div>
-            <div class="cf-hero-card-body">
-              <div class="cf-hero-card-row">
-                <span class="cf-hc-label">Format</span>
-                <span class="cf-hc-val">Online Slides + Vector PDF</span>
+          <div class="cf-flow-gallery-wrap" id="cf-flow-gallery">
+            <!-- Left & Right Animated Flow Connector Lines -->
+            <svg class="cf-flow-svg cf-flow-svg-left" viewBox="0 0 110 260" fill="none" aria-hidden="true">
+              <path class="cf-flow-path cf-flow-path-1" d="M 0 36 H 42 C 58 36 62 50 62 66 V 148 C 62 164 66 176 82 176 H 110" />
+              <path class="cf-flow-path cf-flow-path-2" d="M 0 74 H 28 C 44 74 48 88 48 104 V 202 C 48 218 52 228 68 228 H 110" />
+            </svg>
+            <svg class="cf-flow-svg cf-flow-svg-right" viewBox="0 0 110 260" fill="none" aria-hidden="true">
+              <path class="cf-flow-path cf-flow-path-3" d="M 0 34 H 38 C 54 34 58 46 58 62 V 146 C 58 162 62 174 78 174 H 110" />
+              <path class="cf-flow-path cf-flow-path-4" d="M 0 72 H 24 C 40 72 44 86 44 102 V 198 C 44 214 48 226 64 226 H 110" />
+            </svg>
+
+            <div class="cf-flow-card">
+              <!-- Node Ports (Left Bottom & Right Top) -->
+              <span class="cf-flow-port cf-port-l1" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              </span>
+              <span class="cf-flow-port cf-port-l2" aria-hidden="true">T</span>
+              <span class="cf-flow-port cf-port-r1" aria-hidden="true">T</span>
+              <span class="cf-flow-port cf-port-r2" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              </span>
+
+              <div class="cf-flow-media">
+                <img
+                  id="cf-flow-active-img"
+                  src={(item.landingData?.heroGallery?.[0]?.image || coverImg)}
+                  alt={item.title}
+                />
+                {isEditMode && (
+                  <button type="button" class="cf-img-edit-btn" id="btn-change-flow-img">
+                    Change Tag Image
+                  </button>
+                )}
               </div>
-              {item.toolName && (
-                <div class="cf-hero-card-row">
-                  <span class="cf-hc-label">Included Tool</span>
-                  <span class="cf-hc-val cf-cyan">{item.toolName}</span>
-                </div>
-              )}
-              <div class="cf-hero-card-row">
-                <span class="cf-hc-label">Price</span>
-                <span class="cf-hc-val">{item.priceLabel || "Included"}</span>
+
+              <div class="cf-flow-tags" id="cf-flow-tags">
+                {(item.landingData?.heroGallery?.length
+                  ? item.landingData.heroGallery
+                  : ["FRONT VIEW", "SIDE VIEW", "BACK VIEW", "THREE-QUARTER", "TOP", "CLOSE-UP", "HERO", "LIFESTYLE", "EDITORIAL"].map((label) => ({ label, image: coverImg }))
+                ).map((tagItem, idx) => (
+                  <button
+                    type="button"
+                    class:list={["cf-flow-tag", { "is-active": idx === 0 }]}
+                    data-tag-idx={idx}
+                    data-tag-image={tagItem.image || coverImg}
+                  >
+                    <span
+                      class="cf-flow-tag-label"
+                      {...(isEditMode ? { contenteditable: "true", spellcheck: "false" } : {})}
+                    >{tagItem.label}</span>
+                    {isEditMode && (
+                      <span class="cf-flow-tag-del" title="Remove tag" aria-label="Remove tag">×</span>
+                    )}
+                  </button>
+                ))}
+                {isEditMode && (
+                  <button type="button" class="cf-flow-tag cf-flow-tag-add" id="btn-add-flow-tag">+ Tag</button>
+                )}
               </div>
+              {isEditMode && <input type="file" id="cf-flow-img-input" accept="image/*" hidden />}
             </div>
           </div>
         </div>
@@ -1047,6 +1084,82 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       syncBlockVisibilityFromCheckboxes();
     });
 
+    // Hero Flow Micro Gallery interactive tag switcher & Edit Mode support
+    const flowTagsEl = document.getElementById("cf-flow-tags");
+    const flowActiveImg = document.getElementById("cf-flow-active-img") as HTMLImageElement | null;
+    const changeFlowImgBtn = document.getElementById("btn-change-flow-img");
+    const flowImgInput = document.getElementById("cf-flow-img-input") as HTMLInputElement | null;
+    const addFlowTagBtn = document.getElementById("btn-add-flow-tag");
+
+    function selectFlowTag(btn: HTMLElement) {
+      if (!flowTagsEl) return;
+      flowTagsEl.querySelectorAll(".cf-flow-tag:not(.cf-flow-tag-add)").forEach((t) => t.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      const nextSrc = btn.getAttribute("data-tag-image");
+      if (flowActiveImg && nextSrc && flowActiveImg.getAttribute("src") !== nextSrc) {
+        flowActiveImg.style.opacity = "0.25";
+        setTimeout(() => {
+          if (flowActiveImg) {
+            flowActiveImg.src = nextSrc;
+            flowActiveImg.style.opacity = "1";
+          }
+        }, 120);
+      }
+    }
+
+    flowTagsEl?.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const del = target.closest(".cf-flow-tag-del");
+      if (del) {
+        e.stopPropagation();
+        const tagBtn = del.closest(".cf-flow-tag") as HTMLElement | null;
+        if (!tagBtn) return;
+        const wasActive = tagBtn.classList.contains("is-active");
+        tagBtn.remove();
+        if (wasActive) {
+          const first = flowTagsEl.querySelector<HTMLElement>(".cf-flow-tag:not(.cf-flow-tag-add)");
+          if (first) selectFlowTag(first);
+        }
+        return;
+      }
+      const tagBtn = target.closest<HTMLElement>(".cf-flow-tag:not(.cf-flow-tag-add)");
+      if (tagBtn) {
+        selectFlowTag(tagBtn);
+      }
+    });
+
+    addFlowTagBtn?.addEventListener("click", () => {
+      if (!flowTagsEl) return;
+      const activeSrc = flowActiveImg?.getAttribute("src") || "";
+      const newBtn = document.createElement("button");
+      newBtn.type = "button";
+      newBtn.className = "cf-flow-tag";
+      newBtn.setAttribute("data-tag-image", activeSrc);
+      newBtn.innerHTML = `<span class="cf-flow-tag-label" contenteditable="true" spellcheck="false">NEW VIEW</span><span class="cf-flow-tag-del" title="Remove tag" aria-label="Remove tag">×</span>`;
+      flowTagsEl.insertBefore(newBtn, addFlowTagBtn);
+      selectFlowTag(newBtn);
+    });
+
+    changeFlowImgBtn?.addEventListener("click", () => flowImgInput?.click());
+    flowImgInput?.addEventListener("change", async () => {
+      const file = flowImgInput.files?.[0];
+      flowImgInput.value = "";
+      if (!file) return;
+      const activeTag = flowTagsEl?.querySelector<HTMLElement>(".cf-flow-tag.is-active:not(.cf-flow-tag-add)");
+      if (!activeTag) return;
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "academy");
+      try {
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (res.ok && data?.url) {
+          activeTag.setAttribute("data-tag-image", data.url);
+          if (flowActiveImg) flowActiveImg.src = data.url;
+        }
+      } catch {}
+    });
+
     const modulesGrid = document.getElementById("cf-modules-grid");
     const addModuleBtn = document.getElementById("btn-add-custom-module");
 
@@ -1106,6 +1219,16 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
         if (!path) return;
         setByPath(seed, path, img.getAttribute("src") || "");
       });
+
+      if (flowTagsEl) {
+        const galleryArr = Array.from(
+          flowTagsEl.querySelectorAll<HTMLElement>(".cf-flow-tag:not(.cf-flow-tag-add)")
+        ).map((btn) => ({
+          label: btn.querySelector(".cf-flow-tag-label")?.textContent?.trim() || "VIEW",
+          image: btn.getAttribute("data-tag-image") || ""
+        }));
+        setByPath(seed, "landingData.heroGallery", galleryArr);
+      }
 
       try {
         const res = await fetch(`/api/academy/items/${seed.id}`, {
@@ -1339,6 +1462,172 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     transform: translateY(-2px);
     border-color: rgba(72, 200, 255, 0.45);
     background: rgba(72, 200, 255, 0.08);
+  }
+
+  .cf-flow-gallery-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 28px;
+  }
+
+  .cf-flow-svg {
+    position: absolute;
+    width: 96px;
+    height: 240px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .cf-flow-svg-left {
+    left: -58px;
+    bottom: 26px;
+  }
+
+  .cf-flow-svg-right {
+    right: -58px;
+    top: 26px;
+  }
+
+  .cf-flow-path {
+    stroke: rgba(72, 200, 255, 0.55);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 420;
+    stroke-dashoffset: 420;
+    animation: cfFlowDraw 1.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .cf-flow-path-2,
+  .cf-flow-path-4 {
+    animation-delay: 0.18s;
+    stroke: rgba(72, 200, 255, 0.4);
+  }
+
+  @keyframes cfFlowDraw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes cfCardReveal {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .cf-flow-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 410px;
+    padding: 16px;
+    border-radius: 22px;
+    background: rgba(11, 21, 40, 0.88);
+    border: 1.5px solid rgba(72, 200, 255, 0.72);
+    box-shadow: 0 0 34px rgba(72, 200, 255, 0.22), inset 0 0 24px rgba(72, 200, 255, 0.06);
+    backdrop-filter: blur(14px);
+    animation: cfCardReveal 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .cf-flow-port {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0d1a30;
+    border: 1.5px solid rgba(72, 200, 255, 0.75);
+    box-shadow: 0 0 12px rgba(72, 200, 255, 0.35);
+    color: #9ce1ff;
+    font-size: 0.76rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .cf-port-l1 { left: -14px; bottom: 86px; }
+  .cf-port-l2 { left: -14px; bottom: 44px; }
+  .cf-port-r1 { right: -14px; top: 44px; }
+  .cf-port-r2 { right: -14px; top: 86px; }
+
+  .cf-flow-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cf-flow-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.18s ease;
+  }
+
+  .cf-flow-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .cf-flow-tag,
+  :global(.cf-flow-tag) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #cbd5e1;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .cf-flow-tag:hover,
+  :global(.cf-flow-tag:hover) {
+    background: rgba(72, 200, 255, 0.12);
+    border-color: rgba(72, 200, 255, 0.45);
+    color: #ffffff;
+  }
+
+  .cf-flow-tag.is-active,
+  :global(.cf-flow-tag.is-active) {
+    background: rgba(72, 200, 255, 0.18);
+    border-color: #48c8ff;
+    color: #ffffff;
+    box-shadow: 0 0 14px rgba(72, 200, 255, 0.3);
+  }
+
+  .cf-flow-tag-del,
+  :global(.cf-flow-tag-del) {
+    color: #fca5a5;
+    font-size: 0.85rem;
+    line-height: 1;
+    margin-left: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .cf-flow-svg { display: none; }
+    .cf-flow-gallery-wrap { padding: 8px 0; }
   }
 
   .cf-hero-card {

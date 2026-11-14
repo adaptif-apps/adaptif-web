@@ -317,7 +317,7 @@ const whyUsItems: WhyUsItem[] = [
                   <span class="mega-footer-dot" aria-hidden="true"></span>
                   <span>A unified creative engine combining world-class designers, AI velocity, and proprietary tech.</span>
                 </div>
-                <a href="#dedicated-team" class="mega-footer-link">
+                <a href="/dedicated-team" class="mega-footer-link">
                   <span>Meet your dedicated team</span>
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -335,7 +335,13 @@ const whyUsItems: WhyUsItem[] = [
             aria-current={isActiveRoute("/pricing") ? "page" : undefined}
           >Pricing</a>
         </li>
-        <li><a href="#dedicated-team" class="nav-link">Dedicated Team</a></li>
+        <li>
+          <a
+            href="/dedicated-team"
+            class:list={["nav-link", { "is-active": isActiveRoute("/dedicated-team") }]}
+            aria-current={isActiveRoute("/dedicated-team") ? "page" : undefined}
+          >Dedicated Team</a>
+        </li>
       </ul>
     </nav>
 
@@ -499,7 +505,13 @@ const whyUsItems: WhyUsItem[] = [
               aria-current={isActiveRoute("/pricing") ? "page" : undefined}
             >Pricing</a>
           </li>
-          <li><a href="#dedicated-team" class="mobile-nav-link">Dedicated Team</a></li>
+          <li>
+            <a
+              href="/dedicated-team"
+              class:list={["mobile-nav-link", { "is-active": isActiveRoute("/dedicated-team") }]}
+              aria-current={isActiveRoute("/dedicated-team") ? "page" : undefined}
+            >Dedicated Team</a>
+          </li>
         </ul>
 
         <div class="mobile-drawer-footer">

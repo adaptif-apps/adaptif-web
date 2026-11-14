@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import DedicatedTeamHero from "../components/DedicatedTeamHero.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="Dedicated Team — Adaptif"
+  description="Skip the hiring process. Get a complete creative department, designers, strategists, producers, ready to ship on day one."
+>
+  <Header />
+  <main>
+    <DedicatedTeamHero />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+</style>

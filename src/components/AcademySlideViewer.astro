@@ -86,13 +86,13 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
         <nav class="viewer-strip" id="custom-pdf-strip" aria-label="Page selector"></nav>
       </aside>
       <main class="viewer-stage">
-        <button type="button" class="nav-arrow nav-prev" id="pdf-prev" aria-label="Previous page" disabled>
+        <button type="button" class="stage-nav stage-prev" id="pdf-prev" aria-label="Previous page" disabled>
           ←
         </button>
         <div class="slides-stage" id="custom-pdf-stage" data-custom-pdf-url={customPdfUrl} style="width:100%;max-width:960px;display:flex;justify-content:center;align-items:center;">
           <div class="pdf-loading-state" id="custom-pdf-loading">Loading PDF pages…</div>
         </div>
-        <button type="button" class="nav-arrow nav-next" id="pdf-next" aria-label="Next page">
+        <button type="button" class="stage-nav stage-next" id="pdf-next" aria-label="Next page">
           →
         </button>
       </main>

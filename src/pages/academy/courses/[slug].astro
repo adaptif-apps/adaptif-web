@@ -875,27 +875,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
         </div>
       </div>
 
-      <div class="cf-img-modal-backdrop" id="cf-img-modal" hidden role="dialog" aria-modal="true">
-        <div class="cf-img-modal-card">
-          <h3>Update Image</h3>
-          <p class="cf-img-modal-sub">Upload a new image or paste an image URL below.</p>
-          <label class="cf-img-field">
-            <span>Image URL</span>
-            <input type="text" id="cf-img-url-input" placeholder="/images/..." />
-          </label>
-          <div class="cf-img-upload-row">
-            <label class="cf-edit-btn-glass cf-upload-btn">
-              Upload File
-              <input type="file" id="cf-img-file-input" accept="image/*" hidden />
-            </label>
-            <span class="cf-img-upload-status" id="cf-img-upload-status"></span>
-          </div>
-          <div class="cf-img-modal-actions">
-            <button type="button" class="cf-edit-btn-glass" id="cf-img-cancel">Cancel</button>
-            <button type="button" class="cf-edit-btn-cyan" id="cf-img-apply">Apply Image</button>
-          </div>
-        </div>
-      </div>
+      <input type="file" id="cf-img-file-input" accept="image/*" hidden />
 
       <div class="cf-edit-toast" id="cf-edit-toast" hidden>Changes saved!</div>
 
@@ -950,10 +930,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     if (!seedEl) return;
 
     const seed = JSON.parse(seedEl.textContent || "{}");
-    const imgModal = document.getElementById("cf-img-modal");
-    const imgUrlInput = document.getElementById("cf-img-url-input") as HTMLInputElement | null;
     const imgFileInput = document.getElementById("cf-img-file-input") as HTMLInputElement | null;
-    const imgUploadStatus = document.getElementById("cf-img-upload-status");
     const saveBtn = document.getElementById("cf-save-front-edits") as HTMLButtonElement | null;
     const toastEl = document.getElementById("cf-edit-toast");
 
@@ -988,63 +965,42 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       el.addEventListener("click", (e) => e.stopPropagation());
     });
 
-    // Image edit triggers
-    document.querySelectorAll<HTMLButtonElement>(".cf-img-edit-btn").forEach((btn) => {
+    // Image edit triggers: open system file picker directly without popup
+    document.querySelectorAll<HTMLButtonElement>(".cf-img-edit-btn[data-target-img]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
         const field = btn.dataset.targetImg || "";
-        const imgEl = document.querySelector<HTMLImageElement>(`[data-edit-image="${field}"]`);
+        if (!field) return;
         activeImgField = field;
-        if (imgUrlInput) imgUrlInput.value = imgEl?.getAttribute("src") || "";
-        if (imgUploadStatus) imgUploadStatus.textContent = "";
-        if (imgModal) imgModal.hidden = false;
+        imgFileInput?.click();
       });
     });
 
     imgFileInput?.addEventListener("change", async () => {
       const file = imgFileInput.files?.[0];
-      if (!file) return;
-      if (imgUploadStatus) imgUploadStatus.textContent = "Uploading...";
+      imgFileInput.value = "";
+      if (!file || !activeImgField) return;
+      const targetField = activeImgField;
+      activeImgField = null;
+      showToast("Uploading image...");
       const fd = new FormData();
       fd.append("file", file);
+      fd.append("folder", "academy");
       try {
         const res = await fetch("/api/upload", { method: "POST", body: fd });
         const data = await res.json();
-        if (res.ok && data.url && imgUrlInput) {
-          imgUrlInput.value = data.url;
-          if (imgUploadStatus) imgUploadStatus.textContent = "Uploaded!";
+        if (res.ok && data.url) {
+          const imgEl = document.querySelector<HTMLImageElement>(`[data-edit-image="${targetField}"]`);
+          if (imgEl) imgEl.src = data.url;
+          setByPath(seed, targetField, data.url);
+          showToast("Image uploaded! Click Save Changes to persist.");
         } else {
-          if (imgUploadStatus) imgUploadStatus.textContent = data?.error || "Upload failed";
+          showToast(data?.error || "Upload failed");
         }
       } catch {
-        if (imgUploadStatus) imgUploadStatus.textContent = "Upload failed";
+        showToast("Upload failed");
       }
-      imgFileInput.value = "";
-    });
-
-    document.getElementById("cf-img-cancel")?.addEventListener("click", () => {
-      if (imgModal) imgModal.hidden = true;
-      activeImgField = null;
-    });
-
-    imgModal?.addEventListener("click", (e) => {
-      if (e.target === imgModal) {
-        imgModal.hidden = true;
-        activeImgField = null;
-      }
-    });
-
-    document.getElementById("cf-img-apply")?.addEventListener("click", () => {
-      if (!activeImgField || !imgUrlInput) return;
-      const newUrl = imgUrlInput.value.trim();
-      if (newUrl) {
-        const imgEl = document.querySelector<HTMLImageElement>(`[data-edit-image="${activeImgField}"]`);
-        if (imgEl) imgEl.src = newUrl;
-        setByPath(seed, activeImgField, newUrl);
-      }
-      if (imgModal) imgModal.hidden = true;
-      activeImgField = null;
     });
 
     const toggleBlocksBtn = document.getElementById("cf-toggle-blocks");
@@ -1159,6 +1115,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       if (!file) return;
       const activeTag = flowTagsEl?.querySelector<HTMLElement>(".cf-flow-tag.is-active:not(.cf-flow-tag-add)");
       if (!activeTag) return;
+      showToast("Uploading image...");
       const fd = new FormData();
       fd.append("file", file);
       fd.append("folder", "academy");
@@ -1168,8 +1125,13 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
         if (res.ok && data?.url) {
           activeTag.setAttribute("data-tag-image", data.url);
           if (flowActiveImg) flowActiveImg.src = data.url;
+          showToast("Tag image updated! Click Save Changes to persist.");
+        } else {
+          showToast(data?.error || "Upload failed");
         }
-      } catch {}
+      } catch {
+        showToast("Upload failed");
+      }
     });
 
     const baSlider = document.getElementById("cf-ba-slider");

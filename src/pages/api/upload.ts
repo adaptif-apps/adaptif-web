@@ -88,7 +88,7 @@ export const POST: APIRoute = async ({ request }) => {
     );
 
     return new Response(
-      JSON.stringify({ url: blob.url, format: "webp", size: webpBuffer.length }),
+      JSON.stringify({ url: blob.url, format: ext, size: uploadBuffer.length }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },

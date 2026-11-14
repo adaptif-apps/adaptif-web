@@ -1,0 +1,397 @@
+---
+// DedicatedTeamOutcomes.astro - Brand outcomes with context, differentiated indicators, and verbatim quotes
+import { brandOutcomes } from "../data/brandOutcomes";
+
+interface Props {
+  ctaHref?: string;
+}
+
+const { ctaHref = "#contact" } = Astro.props;
+---
+
+<section
+  class="dt-outcomes"
+  id="brand-outcomes"
+  aria-labelledby="dt-outcomes-heading"
+>
+  <div class="container dt-outcomes__container">
+    <!-- Section Header -->
+    <header class="dt-outcomes__header">
+      <span class="dt-outcomes__eyebrow">BRAND OUTCOMES</span>
+
+      <h2 id="dt-outcomes-heading" class="dt-outcomes__title">
+        How our team helped brands
+        <span class="title-highlight dt-outcomes__title-accent">grow faster</span>
+      </h2>
+    </header>
+
+    <!-- Case Studies -->
+    <div class="dt-outcomes__cases">
+      {brandOutcomes.map((item, idx) => (
+        <article
+          class="dt-case reveal-outcome"
+          style={`--outcome-delay: ${idx * 90}ms;`}
+          aria-labelledby={`case-title-${item.id}`}
+        >
+          <!-- Case Context & Indicators -->
+          <div class="dt-case__main">
+            <div class="dt-case__meta">
+              <span class="dt-case__category">{item.category}</span>
+            </div>
+
+            <h3 id={`case-title-${item.id}`} class="dt-case__headline">
+              {item.headline}
+            </h3>
+
+            <!-- Differentiated Indicators: Metrics vs Milestones/Plan -->
+            <div class="dt-case__indicators" role="list" aria-label={`${item.brand} highlights`}>
+              {item.indicators.map((ind) => (
+                <div
+                  class:list={[
+                    "dt-ind",
+                    `dt-ind--${ind.kind}`,
+                  ]}
+                  role="listitem"
+                >
+                  {ind.kind !== "metric" && (
+                    <span class="dt-ind__type">
+                      {ind.kind === "milestone" ? "Milestone" : "Service tier"}
+                    </span>
+                  )}
+                  <span class="dt-ind__value">{ind.value}</span>
+                  <span class="dt-ind__label">{ind.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Attributed Testimonial -->
+          <figure class="dt-case__quote-box">
+            <blockquote class="dt-case__quote">
+              “{item.quote}”
+            </blockquote>
+            <figcaption class="dt-case__attribution">
+              <span class="dt-case__author">{item.author}</span>
+              <span class="dt-case__role">{item.role}</span>
+            </figcaption>
+          </figure>
+        </article>
+      ))}
+    </div>
+
+    <!-- Closing Conversion Bar -->
+    <div class="dt-outcomes__closing">
+      <p class="dt-outcomes__closing-text">
+        Inspired by these outcomes? Let’s build your team.
+      </p>
+      <a href={ctaHref} class="adaptif-btn dt-outcomes__cta">
+        <span>Get Started</span>
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path
+            d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initDedicatedTeamOutcomes = () => {
+    const items = document.querySelectorAll("#brand-outcomes .reveal-outcome");
+    if (!items.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -30px 0px" }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  };
+
+  initDedicatedTeamOutcomes();
+  document.addEventListener("astro:page-load", initDedicatedTeamOutcomes);
+</script>
+
+<style>
+  .dt-outcomes {
+    position: relative;
+    padding: clamp(80px, 11vw, 136px) 0;
+    background: var(--color-void, #010307);
+  }
+
+  .dt-outcomes__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .dt-outcomes__header {
+    max-width: 680px;
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+
+  .dt-outcomes__eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+    margin-bottom: 14px;
+  }
+
+  .dt-outcomes__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.4rem, 4.3vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: var(--font-letter-spacing-display, -0.04em);
+    font-weight: 400;
+    color: var(--color-text-white, #ffffff);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .dt-outcomes__title-accent {
+    font-style: italic;
+  }
+
+  /* Cases List */
+  .dt-outcomes__cases {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .dt-case {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+    gap: clamp(28px, 4vw, 52px);
+    padding: clamp(26px, 3.6vw, 42px);
+    border-radius: 24px;
+    background: linear-gradient(
+      165deg,
+      rgba(9, 20, 46, 0.72) 0%,
+      rgba(4, 9, 24, 0.82) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 20px 50px -20px rgba(0, 0, 0, 0.8);
+    align-items: stretch;
+  }
+
+  .dt-case__main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dt-case__meta {
+    margin-bottom: 14px;
+  }
+
+  .dt-case__category {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--color-brand-cyan, #48C8FF);
+  }
+
+  .dt-case__headline {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.6rem, 2.5vw, 2.25rem);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    color: #ffffff;
+    margin: 0 0 26px;
+    text-wrap: balance;
+  }
+
+  /* Indicators */
+  .dt-case__indicators {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 28px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-ind {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dt-ind__type {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+  }
+
+  .dt-ind__value {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.65rem, 2.3vw, 2.15rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+  }
+
+  .dt-ind--metric .dt-ind__value {
+    color: var(--color-brand-cyan, #48C8FF);
+  }
+
+  .dt-ind--milestone .dt-ind__value,
+  .dt-ind--plan .dt-ind__value {
+    font-family: var(--font-family-body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #f8fafc;
+    margin-top: 2px;
+  }
+
+  .dt-ind__label {
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: #94a3b8;
+  }
+
+  /* Quote Box */
+  .dt-case__quote-box {
+    margin: 0;
+    padding: clamp(22px, 2.8vw, 30px);
+    border-radius: 18px;
+    background: rgba(2, 6, 16, 0.56);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .dt-case__quote {
+    margin: 0;
+    font-size: clamp(0.98rem, 1.15vw, 1.08rem);
+    line-height: 1.65;
+    color: #e2e8f0;
+    font-weight: 400;
+  }
+
+  .dt-case__attribution {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .dt-case__author {
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .dt-case__role {
+    font-size: 0.84rem;
+    color: #94a3b8;
+  }
+
+  /* Closing Conversion Bar */
+  .dt-outcomes__closing {
+    margin-top: clamp(36px, 5vw, 56px);
+    padding-top: clamp(28px, 4vw, 40px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .dt-outcomes__closing-text {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.5rem, 2.4vw, 2.15rem);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    margin: 0;
+  }
+
+  .dt-outcomes__cta {
+    padding: 14px 30px;
+  }
+
+  .dt-outcomes__cta:focus-visible {
+    outline: 2px solid var(--color-brand-cyan, #48C8FF);
+    outline-offset: 4px;
+  }
+
+  /* Reveal animation */
+  .reveal-outcome {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.55s ease var(--outcome-delay, 0ms),
+      transform 0.55s var(--ease-spring) var(--outcome-delay, 0ms);
+  }
+
+  .reveal-outcome.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-outcome {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .dt-case {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .dt-outcomes__closing {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .dt-outcomes__cta {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

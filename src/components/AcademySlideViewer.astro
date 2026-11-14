@@ -1011,6 +1011,18 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     gap: 7px;
   }
 
+  .viewer-shell:fullscreen .viewer-sidebar {
+    display: none;
+  }
+
+  .viewer-shell:fullscreen #custom-pdf-stage {
+    max-width: 92vw !important;
+  }
+
+  .viewer-shell:fullscreen .pdf-page-sheet canvas {
+    max-height: calc(100vh - 96px) !important;
+  }
+
   .strip-btn,
   :global(#custom-pdf-strip .strip-btn) {
     display: flex;
@@ -1091,7 +1103,19 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
       overflow-x: auto;
     }
 
-    .strip-btn,
+    .viewer-shell:fullscreen .viewer-sidebar {
+    display: none;
+  }
+
+  .viewer-shell:fullscreen #custom-pdf-stage {
+    max-width: 92vw !important;
+  }
+
+  .viewer-shell:fullscreen .pdf-page-sheet canvas {
+    max-height: calc(100vh - 96px) !important;
+  }
+
+  .strip-btn,
   :global(#custom-pdf-strip .strip-btn) {
       width: auto;
       white-space: nowrap;

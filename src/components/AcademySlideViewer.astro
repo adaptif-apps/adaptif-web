@@ -374,6 +374,14 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
 
         prevBtn?.addEventListener("click", () => showPage(currentPage - 1));
         nextBtn?.addEventListener("click", () => showPage(currentPage + 1));
+        document.getElementById("btn-fullscreen")?.addEventListener("click", () => {
+          const shell = document.querySelector(".viewer-shell");
+          if (!document.fullscreenElement && shell) {
+            shell.requestFullscreen?.().catch(() => {});
+          } else {
+            document.exitFullscreen?.().catch(() => {});
+          }
+        });
         document.addEventListener("keydown", (e) => {
           if (e.key === "ArrowLeft") showPage(currentPage - 1);
           if (e.key === "ArrowRight") showPage(currentPage + 1);

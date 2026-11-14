@@ -1,0 +1,389 @@
+---
+// DedicatedTeamExperience.astro - Why Adaptif works: 6 day-to-day operational benefits
+interface BenefitItem {
+  number: string;
+  title: string;
+  description: string;
+  cueLabel: string;
+  cueSteps?: string[];
+  featured?: boolean;
+}
+
+const benefits: BenefitItem[] = [
+  {
+    number: "01",
+    title: "A simpler start",
+    description:
+      "Share your brand guidelines, assets, and priorities during a guided onboarding, then submit your first creative request into the queue—without spending weeks setting up vendor contracts.",
+    cueLabel: "Onboarding flow",
+    cueSteps: ["Brand context", "First brief", "Active queue"],
+    featured: true,
+  },
+  {
+    number: "02",
+    title: "Senior-level talent",
+    description:
+      "Work with experienced creatives who take the time to understand your brand voice and visual standards, applying the right discipline to each brief instead of stretching one generalist across every format.",
+    cueLabel: "Creative judgment",
+    cueSteps: ["Brand alignment", "Right specialist", "Craft review"],
+    featured: true,
+  },
+  {
+    number: "03",
+    title: "Fits your workflow",
+    description:
+      "Keep briefs, brand context, feedback, and final files organized in one place. Collaborate through shared tools and structured review cycles without adopting complex software or extra overhead.",
+    cueLabel: "Centralized context & feedback",
+  },
+  {
+    number: "04",
+    title: "Capacity that fits your needs",
+    description:
+      "Choose a plan tier sized for your workload—with clear active-ticket limits and defined service scope—and adjust between billing cycles as your creative pipeline expands or slows down.",
+    cueLabel: "Scoped to your active-ticket tier",
+  },
+  {
+    number: "05",
+    title: "Clear progress. Consistent delivery.",
+    description:
+      "Prioritize your request queue, track what is in progress, and see what comes next at a glance. Active deliverables move through predictable 1–2 day turnaround cycles so your team can plan with clarity.",
+    cueLabel: "Prioritized queue · 1–2 day cycles",
+  },
+  {
+    number: "06",
+    title: "AI-enhanced production",
+    description:
+      "When helpful, AI supports early ideation, concept exploration, and format variations—always paired with human creative direction and review, alongside dedicated AI production services on eligible plans.",
+    cueLabel: "Human direction + AI acceleration",
+  },
+];
+
+const featuredBenefits = benefits.filter((b) => b.featured);
+const operationalBenefits = benefits.filter((b) => !b.featured);
+---
+
+<section
+  class="dt-exp"
+  id="why-adaptif-works"
+  aria-labelledby="dt-exp-heading"
+>
+  <div class="container dt-exp__container">
+    <!-- Section Header -->
+    <header class="dt-exp__header">
+      <div class="dt-exp__eyebrow">
+        <span class="dt-exp__dot" aria-hidden="true"></span>
+        <span>Why Adaptif works</span>
+      </div>
+
+      <h2 id="dt-exp-heading" class="dt-exp__title">
+        Work better.
+        <span class="title-highlight dt-exp__title-accent">Create faster.</span>
+      </h2>
+
+      <p class="dt-exp__subtitle">
+        Designed for day-to-day momentum—combining organized execution, experienced creative judgment, and practical technology so your team moves forward with less friction.
+      </p>
+    </header>
+
+    <!-- Editorial Layout: 2 Featured Foundation Blocks + 2x2 Operational Matrix -->
+    <div class="dt-exp__layout">
+      <!-- Top Row: Foundation (Starting & Talent) -->
+      <div class="dt-exp__featured-row">
+        {featuredBenefits.map((item, idx) => (
+          <article
+            class="dt-exp__card dt-exp__card--featured reveal-exp"
+            style={`--exp-delay: ${idx * 80}ms;`}
+          >
+            <div class="dt-exp__card-top">
+              <span class="dt-exp__num">{item.number}</span>
+              <span class="dt-exp__cue">{item.cueLabel}</span>
+            </div>
+
+            <h3 class="dt-exp__card-title">{item.title}</h3>
+            <p class="dt-exp__card-copy">{item.description}</p>
+
+            {item.cueSteps && (
+              <div class="dt-exp__steps" aria-hidden="true">
+                {item.cueSteps.map((step, sIdx) => (
+                  <>
+                    <span class="dt-exp__step-pill">{step}</span>
+                    {sIdx < item.cueSteps!.length - 1 && (
+                      <span class="dt-exp__step-arrow">→</span>
+                    )}
+                  </>
+                ))}
+              </div>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <!-- Bottom Grid: Day-to-Day Execution (2x2) -->
+      <div class="dt-exp__grid">
+        {operationalBenefits.map((item, idx) => (
+          <article
+            class="dt-exp__card reveal-exp"
+            style={`--exp-delay: ${(idx + 2) * 70}ms;`}
+          >
+            <div class="dt-exp__card-top">
+              <span class="dt-exp__num">{item.number}</span>
+              <span class="dt-exp__cue">{item.cueLabel}</span>
+            </div>
+
+            <h3 class="dt-exp__card-title">{item.title}</h3>
+            <p class="dt-exp__card-copy">{item.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initDedicatedTeamExperience = () => {
+    const items = document.querySelectorAll("#why-adaptif-works .reveal-exp");
+    if (!items.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -30px 0px" }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  };
+
+  initDedicatedTeamExperience();
+  document.addEventListener("astro:page-load", initDedicatedTeamExperience);
+</script>
+
+<style>
+  .dt-exp {
+    position: relative;
+    padding: clamp(72px, 10vw, 128px) 0;
+    background: var(--color-void, #010307);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .dt-exp__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .dt-exp__header {
+    max-width: 680px;
+    margin-bottom: clamp(36px, 5vw, 56px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dt-exp__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: rgba(8, 18, 44, 0.65);
+    border: 1px solid rgba(72, 200, 255, 0.25);
+    margin-bottom: 18px;
+  }
+
+  .dt-exp__eyebrow span:last-child {
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: #cbd5e1;
+  }
+
+  .dt-exp__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-brand-cyan, #48C8FF);
+    flex-shrink: 0;
+  }
+
+  .dt-exp__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.4rem, 4.3vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: var(--font-letter-spacing-display, -0.04em);
+    font-weight: 400;
+    color: var(--color-text-white, #ffffff);
+    margin-bottom: 16px;
+    text-wrap: balance;
+  }
+
+  .dt-exp__title-accent {
+    font-style: italic;
+  }
+
+  .dt-exp__subtitle {
+    font-size: clamp(0.98rem, 1.1vw, 1.12rem);
+    line-height: 1.6;
+    letter-spacing: -0.015em;
+    color: var(--color-text-secondary, #94a3b8);
+    max-width: 580px;
+    margin: 0;
+  }
+
+  /* Layout */
+  .dt-exp__layout {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .dt-exp__featured-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .dt-exp__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .dt-exp__card {
+    padding: clamp(24px, 3vw, 34px);
+    border-radius: 20px;
+    background: rgba(6, 13, 30, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 14px 34px -16px rgba(0, 0, 0, 0.75);
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .dt-exp__card--featured {
+    background: linear-gradient(
+      160deg,
+      rgba(10, 22, 50, 0.78) 0%,
+      rgba(5, 11, 26, 0.76) 100%
+    );
+    border-color: rgba(72, 200, 255, 0.18);
+  }
+
+  .dt-exp__card:hover {
+    border-color: rgba(72, 200, 255, 0.32);
+    background: rgba(8, 18, 40, 0.84);
+  }
+
+  .dt-exp__card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .dt-exp__num {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--color-brand-cyan, #48C8FF);
+  }
+
+  .dt-exp__cue {
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: #94a3b8;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-exp__card-title {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.45rem, 2.05vw, 1.85rem);
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    color: #ffffff;
+    margin-bottom: 10px;
+  }
+
+  .dt-exp__card-copy {
+    font-size: 0.96rem;
+    line-height: 1.62;
+    color: #cbd5e1;
+    margin: 0;
+  }
+
+  .dt-exp__steps {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-exp__step-pill {
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    padding: 4px 11px;
+    border-radius: var(--radius-pill);
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+  }
+
+  .dt-exp__step-arrow {
+    font-size: 0.78rem;
+    color: var(--color-brand-cyan, #48C8FF);
+    opacity: 0.75;
+  }
+
+  /* Reveal animation */
+  .reveal-exp {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s ease var(--exp-delay, 0ms),
+      transform 0.5s var(--ease-spring) var(--exp-delay, 0ms),
+      border-color 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .reveal-exp.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-exp {
+      opacity: 1;
+      transform: none;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .dt-exp__featured-row,
+    .dt-exp__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

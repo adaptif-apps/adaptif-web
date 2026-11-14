@@ -924,6 +924,62 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     });
   });
 
+  // Hero Flow Micro Gallery interactive tag switcher (public + edit mode)
+  const publicFlowTagsEl = document.getElementById("cf-flow-tags");
+  const publicFlowActiveImg = document.getElementById("cf-flow-active-img") as HTMLImageElement | null;
+
+  function selectFlowTag(btn: HTMLElement) {
+    if (!publicFlowTagsEl) return;
+    publicFlowTagsEl.querySelectorAll(".cf-flow-tag:not(.cf-flow-tag-add)").forEach((t) => t.classList.remove("is-active"));
+    btn.classList.add("is-active");
+    const nextSrc = btn.getAttribute("data-tag-image");
+    if (publicFlowActiveImg && nextSrc && publicFlowActiveImg.getAttribute("src") !== nextSrc) {
+      publicFlowActiveImg.style.opacity = "0.25";
+      setTimeout(() => {
+        if (publicFlowActiveImg) {
+          publicFlowActiveImg.src = nextSrc;
+          publicFlowActiveImg.style.opacity = "1";
+        }
+      }, 120);
+    }
+  }
+
+  publicFlowTagsEl?.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (target.closest(".cf-flow-tag-del")) return;
+    const tagBtn = target.closest<HTMLElement>(".cf-flow-tag:not(.cf-flow-tag-add)");
+    if (tagBtn) {
+      selectFlowTag(tagBtn);
+    }
+  });
+
+  // Before/After draggable slider (public + edit mode)
+  const baSlider = document.getElementById("cf-ba-slider");
+  if (baSlider) {
+    let dragging = false;
+    const updatePos = (clientX: number) => {
+      const rect = baSlider.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
+      baSlider.style.setProperty("--ba-pos", `${pct}%`);
+    };
+    baSlider.addEventListener("pointerdown", (e) => {
+      if ((e.target as HTMLElement)?.closest("button, [contenteditable]")) return;
+      dragging = true;
+      baSlider.setPointerCapture?.(e.pointerId);
+      updatePos(e.clientX);
+    });
+    baSlider.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      updatePos(e.clientX);
+    });
+    baSlider.addEventListener("pointerup", () => {
+      dragging = false;
+    });
+    baSlider.addEventListener("pointercancel", () => {
+      dragging = false;
+    });
+  }
+
   // Frontend Edit Mode (?edit=1)
   (() => {
     const seedEl = document.getElementById("cf-edit-seed");
@@ -1052,28 +1108,12 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       syncBlockVisibilityFromCheckboxes();
     });
 
-    // Hero Flow Micro Gallery interactive tag switcher & Edit Mode support
+    // Hero Flow Micro Gallery Edit Mode support
     const flowTagsEl = document.getElementById("cf-flow-tags");
     const flowActiveImg = document.getElementById("cf-flow-active-img") as HTMLImageElement | null;
     const changeFlowImgBtn = document.getElementById("btn-change-flow-img");
     const flowImgInput = document.getElementById("cf-flow-img-input") as HTMLInputElement | null;
     const addFlowTagBtn = document.getElementById("btn-add-flow-tag");
-
-    function selectFlowTag(btn: HTMLElement) {
-      if (!flowTagsEl) return;
-      flowTagsEl.querySelectorAll(".cf-flow-tag:not(.cf-flow-tag-add)").forEach((t) => t.classList.remove("is-active"));
-      btn.classList.add("is-active");
-      const nextSrc = btn.getAttribute("data-tag-image");
-      if (flowActiveImg && nextSrc && flowActiveImg.getAttribute("src") !== nextSrc) {
-        flowActiveImg.style.opacity = "0.25";
-        setTimeout(() => {
-          if (flowActiveImg) {
-            flowActiveImg.src = nextSrc;
-            flowActiveImg.style.opacity = "1";
-          }
-        }, 120);
-      }
-    }
 
     flowTagsEl?.addEventListener("click", (e) => {
       const target = e.target as HTMLElement;
@@ -1088,11 +1128,6 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
           const first = flowTagsEl.querySelector<HTMLElement>(".cf-flow-tag:not(.cf-flow-tag-add)");
           if (first) selectFlowTag(first);
         }
-        return;
-      }
-      const tagBtn = target.closest<HTMLElement>(".cf-flow-tag:not(.cf-flow-tag-add)");
-      if (tagBtn) {
-        selectFlowTag(tagBtn);
       }
     });
 
@@ -1133,32 +1168,6 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
         showToast("Upload failed");
       }
     });
-
-    const baSlider = document.getElementById("cf-ba-slider");
-    if (baSlider) {
-      let dragging = false;
-      const updatePos = (clientX: number) => {
-        const rect = baSlider.getBoundingClientRect();
-        const pct = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
-        baSlider.style.setProperty("--ba-pos", `${pct}%`);
-      };
-      baSlider.addEventListener("pointerdown", (e) => {
-        if ((e.target as HTMLElement)?.closest("button, [contenteditable]")) return;
-        dragging = true;
-        baSlider.setPointerCapture?.(e.pointerId);
-        updatePos(e.clientX);
-      });
-      baSlider.addEventListener("pointermove", (e) => {
-        if (!dragging) return;
-        updatePos(e.clientX);
-      });
-      baSlider.addEventListener("pointerup", () => {
-        dragging = false;
-      });
-      baSlider.addEventListener("pointercancel", () => {
-        dragging = false;
-      });
-    }
 
     const modulesGrid = document.getElementById("cf-modules-grid");
     const addModuleBtn = document.getElementById("btn-add-custom-module");

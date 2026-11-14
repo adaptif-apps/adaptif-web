@@ -59,11 +59,6 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
         </a>
       )}
       <span class="slide-counter" id="slide-counter">1 / {slides.length}</span>
-      {(isPreview || isEditMode) && (
-        <a href={isEditMode ? "?preview=1" : "?edit=1"} class="btn-viewer-ghost">
-          {isEditMode ? "Exit Edit" : "Edit PDF / Slides"}
-        </a>
-      )}
       <button type="button" class="btn-viewer-ghost" id="btn-fullscreen" title="Fullscreen">
         Fullscreen
       </button>
@@ -73,8 +68,29 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     </div>
   </header>
 
-  <!-- Interactive Web Stage (hidden in PDF print) -->
-  <main class="viewer-stage no-print" id="viewer-stage">
+  <div class="viewer-workspace no-print">
+    <!-- Left Slide Index Sidebar (hidden in PDF print) -->
+    <aside class="viewer-sidebar" aria-label="Slide index">
+      <div class="sidebar-head">
+        <span class="sidebar-label">SLIDES INDEX</span>
+        <span class="sidebar-count">{slides.length}</span>
+      </div>
+      <nav class="viewer-strip" aria-label="Slide selector">
+        {slides.map((slide, idx) => (
+          <button
+            type="button"
+            class:list={["strip-btn", { "is-active": idx === 0 }]}
+            data-goto-slide={idx}
+          >
+            <span class="strip-num">{String(idx + 1).padStart(2, "0")}</span>
+            <span class="strip-title">{slide.title}</span>
+          </button>
+        ))}
+      </nav>
+    </aside>
+
+    <!-- Interactive Web Stage (hidden in PDF print) -->
+    <main class="viewer-stage" id="viewer-stage">
     <button type="button" class="stage-nav stage-prev" id="btn-prev" aria-label="Previous slide">
       ←
     </button>
@@ -172,20 +188,7 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
       →
     </button>
   </main>
-
-  <!-- Bottom Slide Strip (hidden in PDF print) -->
-  <nav class="viewer-strip no-print" aria-label="Slide selector">
-    {slides.map((slide, idx) => (
-      <button
-        type="button"
-        class:list={["strip-btn", { "is-active": idx === 0 }]}
-        data-goto-slide={idx}
-      >
-        <span class="strip-num">{idx + 1}</span>
-        <span class="strip-title">{slide.title}</span>
-      </button>
-    ))}
-  </nav>
+  </div>
 
   <!-- Print-Only Exact 16:9 Vector PDF Deck -->
   <section class="print-deck" aria-hidden="true">
@@ -808,27 +811,71 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     color: #ffffff;
   }
 
+  .viewer-workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .viewer-sidebar {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(3, 8, 20, 0.92);
+    max-height: calc(100vh - 68px);
+    overflow-y: auto;
+    padding: 16px 14px 20px;
+    gap: 10px;
+  }
+
+  .sidebar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 6px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .sidebar-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #48C8FF;
+  }
+
+  .sidebar-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+
   .viewer-strip {
     display: flex;
-    gap: 10px;
-    padding: 14px 24px 20px;
-    overflow-x: auto;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(2, 5, 14, 0.95);
+    flex-direction: column;
+    gap: 7px;
   }
 
   .strip-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     color: #94a3b8;
     font-size: 0.8rem;
+    line-height: 1.35;
     cursor: pointer;
-    white-space: nowrap;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+
+  .strip-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
   }
 
   .strip-btn.is-active {
@@ -840,6 +887,14 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
   .strip-num {
     font-weight: 700;
     color: #48C8FF;
+    flex-shrink: 0;
+  }
+
+  .strip-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .print-deck {
@@ -847,6 +902,28 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
   }
 
   @media (max-width: 900px) {
+    .viewer-workspace {
+      grid-template-columns: 1fr;
+    }
+
+    .viewer-sidebar {
+      order: 2;
+      max-height: none;
+      border-right: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .viewer-strip {
+      flex-direction: row;
+      overflow-x: auto;
+    }
+
+    .strip-btn {
+      width: auto;
+      white-space: nowrap;
+      align-items: center;
+    }
+
     .viewer-topbar {
       flex-direction: column;
       align-items: stretch;

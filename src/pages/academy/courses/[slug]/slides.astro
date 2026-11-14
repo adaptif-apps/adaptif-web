@@ -1,0 +1,52 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import AcademySlideViewer from "../../../../components/AcademySlideViewer.astro";
+import {
+  getAcademyItemBySlug,
+  getAcademySettings,
+  verifyAccessToken
+} from "../../../../lib/academyDb";
+
+export const prerender = false;
+
+const slug = Astro.params.slug || "";
+const item = await getAcademyItemBySlug(slug, "course", false);
+
+if (!item) {
+  return Astro.redirect("/academy/courses");
+}
+
+const settings = await getAcademySettings();
+const effectiveAccessMode = item.accessMode || settings.defaultCourseAccessMode;
+
+const queryToken = Astro.url.searchParams.get("access");
+const cookieToken = Astro.cookies.get(`adaptif_academy_${item.slug}`)?.value;
+const token = queryToken || cookieToken || "";
+
+let isUnlocked = effectiveAccessMode === "open";
+if (!isUnlocked && effectiveAccessMode === "checkout_redirect" && Astro.url.searchParams.get("checkout") === "success") {
+  isUnlocked = true;
+}
+if (!isUnlocked && token) {
+  isUnlocked = await verifyAccessToken(item.id, token);
+}
+
+if (!isUnlocked) {
+  return Astro.redirect(`/academy/courses/${item.slug}`);
+}
+
+if (queryToken) {
+  Astro.cookies.set(`adaptif_academy_${item.slug}`, queryToken, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 30
+  });
+}
+
+const autoPrint = Astro.url.searchParams.get("print") === "1";
+---
+
+<Layout title={`${item.title} — Course Deck | Adaptif Academy`} description={item.subtitle || item.description}>
+  <AcademySlideViewer item={item} backHref={`/academy/courses/${item.slug}`} autoPrint={autoPrint} />
+</Layout>

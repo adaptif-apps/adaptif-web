@@ -2,15 +2,19 @@
 import { listProjects } from "../lib/portfolioDb";
 import { getBookCallConfig } from "../lib/bookCallDb";
 import { getActiveCampaignConfig } from "../lib/activeCampaignDb";
+import { listAcademyItems, getAcademySettings } from "../lib/academyDb";
+import StudioAcademyModule from "../components/StudioAcademyModule.astro";
 
 export const prerender = false;
 
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
 
-const [initialProjects, initialBookCallConfig, rawAcConfig] = await Promise.all([
+const [initialProjects, initialBookCallConfig, rawAcConfig, initialAcademyItems, initialAcademySettings] = await Promise.all([
   listProjects({ includeHidden: true }),
   getBookCallConfig(),
   getActiveCampaignConfig(),
+  listAcademyItems({ includeUnpublished: true }),
+  getAcademySettings(),
 ]);
 
 const initialAcState = {
@@ -113,6 +117,11 @@ const tagPresets = [
               </button>
             </div>
           </div>
+
+          <button type="button" class="nav-item" data-module-tab="academy">
+            <span>Courses &amp; Guides</span>
+            <span class="nav-count">{initialAcademyItems.length}</span>
+          </button>
         </nav>
       </aside>
 
@@ -645,6 +654,11 @@ const tagPresets = [
             </section>
           </form>
         </div>
+
+        <StudioAcademyModule
+          initialItems={initialAcademyItems}
+          initialSettings={initialAcademySettings}
+        />
       </main>
     </div>
 
@@ -1105,6 +1119,7 @@ const tagPresets = [
         tab.addEventListener("click", () => {
           const target = tab.dataset.moduleTab;
           const activeCampaignModule = document.getElementById("module-activecampaign");
+          const academyModule = document.getElementById("module-academy");
           moduleTabs.forEach((t) => {
             const active = t.dataset.moduleTab === target;
             t.classList.toggle("is-active", active);
@@ -1114,6 +1129,7 @@ const tagPresets = [
           if (portfolioModule) portfolioModule.hidden = target !== "portfolio";
           if (bookCallModule) bookCallModule.hidden = target !== "book-call";
           if (activeCampaignModule) activeCampaignModule.hidden = target !== "activecampaign";
+          if (academyModule) academyModule.hidden = target !== "academy";
         });
       });
 

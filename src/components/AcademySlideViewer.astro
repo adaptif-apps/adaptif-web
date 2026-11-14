@@ -1,0 +1,816 @@
+---
+import type { AcademyItem, AcademySlide } from "../lib/academyDb";
+
+interface Props {
+  item: AcademyItem;
+  backHref: string;
+  autoPrint?: boolean;
+}
+
+const { item, backHref, autoPrint = false } = Astro.props;
+const slides: AcademySlide[] =
+  item.slides.length > 0
+    ? item.slides
+    : [
+        {
+          id: "fallback-1",
+          layout: "cover",
+          eyebrow: item.kind === "course" ? "Adaptif Course" : "Adaptif Guide",
+          title: item.title,
+          body: item.subtitle || item.description,
+          bullets: item.landingData.takeaways.slice(0, 3)
+        }
+      ];
+---
+
+<div class="viewer-shell" data-auto-print={autoPrint ? "true" : "false"}>
+  <!-- Top Controls (hidden in PDF print) -->
+  <header class="viewer-topbar no-print">
+    <div class="topbar-left">
+      <a href={backHref} class="topbar-back">
+        <span aria-hidden="true">←</span>
+        <span>Back</span>
+      </a>
+      <div class="topbar-meta">
+        <span class:list={["topbar-badge", { "is-course": item.kind === "course" }]}>
+          {item.kind === "course" ? "Course" : "Guide"}
+        </span>
+        <h1 class="topbar-title">{item.title}</h1>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      {item.kind === "course" && item.toolUrl && (
+        <a href={item.toolUrl} target="_blank" rel="noopener noreferrer" class="btn-tool-link">
+          <span>{item.toolName || "Open Companion Tool"}</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      )}
+      <span class="slide-counter" id="slide-counter">1 / {slides.length}</span>
+      <button type="button" class="btn-viewer-ghost" id="btn-fullscreen" title="Fullscreen">
+        Fullscreen
+      </button>
+      <button type="button" class="btn-download-pdf" id="btn-download-pdf">
+        Download PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Web Stage (hidden in PDF print) -->
+  <main class="viewer-stage no-print" id="viewer-stage">
+    <button type="button" class="stage-nav stage-prev" id="btn-prev" aria-label="Previous slide">
+      ←
+    </button>
+
+    <div class="stage-viewport">
+      {slides.map((slide, idx) => (
+        <article
+          class:list={["slide-card", `layout-${slide.layout}`, { "is-active": idx === 0 }]}
+          data-slide-index={idx}
+          aria-hidden={idx === 0 ? "false" : "true"}
+        >
+          <div class="slide-glow" aria-hidden="true"></div>
+          <div class="slide-header-row">
+            <span class="slide-eyebrow">{slide.eyebrow || item.category}</span>
+            <span class="slide-brand-mark">ADAPTIF ACADEMY</span>
+          </div>
+
+          <div class="slide-content-area">
+            {slide.layout === "cover" ? (
+              <div class="slide-cover-wrap">
+                <h2 class="slide-title is-cover">{slide.title}</h2>
+                {slide.body && <p class="slide-body is-cover">{slide.body}</p>}
+                {slide.bullets.length > 0 && (
+                  <div class="slide-pills">
+                    {slide.bullets.map((b) => (
+                      <span class="slide-pill">{b}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : slide.layout === "quote" ? (
+              <div class="slide-quote-wrap">
+                <blockquote class="slide-quote">“{slide.title}”</blockquote>
+                {slide.body && <p class="slide-body">{slide.body}</p>}
+              </div>
+            ) : slide.layout === "grid" ? (
+              <div class="slide-grid-wrap">
+                <div class="slide-head-block">
+                  <h2 class="slide-title">{slide.title}</h2>
+                  {slide.body && <p class="slide-body">{slide.body}</p>}
+                </div>
+                <div class="slide-cards-grid">
+                  {slide.bullets.map((b, bIdx) => (
+                    <div class="slide-mini-card">
+                      <span class="mini-num">0{bIdx + 1}</span>
+                      <p class="mini-text">{b}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : slide.layout === "split" ? (
+              <div class="slide-split-wrap">
+                <div class="split-left">
+                  <h2 class="slide-title">{slide.title}</h2>
+                  {slide.body && <p class="slide-body">{slide.body}</p>}
+                  {slide.callout && <div class="slide-callout">{slide.callout}</div>}
+                </div>
+                <div class="split-right">
+                  {slide.image ? (
+                    <img src={slide.image} alt={slide.title} class="split-img" />
+                  ) : (
+                    <ul class="slide-bullet-list">
+                      {slide.bullets.map((b) => (
+                        <li>{b}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div class="slide-bullets-wrap">
+                <h2 class="slide-title">{slide.title}</h2>
+                {slide.body && <p class="slide-body">{slide.body}</p>}
+                {slide.bullets.length > 0 && (
+                  <ul class="slide-bullet-list">
+                    {slide.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                {slide.callout && <div class="slide-callout">{slide.callout}</div>}
+              </div>
+            )}
+          </div>
+
+          <footer class="slide-footer-row">
+            <span>{item.title}</span>
+            <span>Slide {idx + 1} of {slides.length}</span>
+          </footer>
+        </article>
+      ))}
+    </div>
+
+    <button type="button" class="stage-nav stage-next" id="btn-next" aria-label="Next slide">
+      →
+    </button>
+  </main>
+
+  <!-- Bottom Slide Strip (hidden in PDF print) -->
+  <nav class="viewer-strip no-print" aria-label="Slide selector">
+    {slides.map((slide, idx) => (
+      <button
+        type="button"
+        class:list={["strip-btn", { "is-active": idx === 0 }]}
+        data-goto-slide={idx}
+      >
+        <span class="strip-num">{idx + 1}</span>
+        <span class="strip-title">{slide.title}</span>
+      </button>
+    ))}
+  </nav>
+
+  <!-- Print-Only Exact 16:9 Vector PDF Deck -->
+  <section class="print-deck" aria-hidden="true">
+    {slides.map((slide, idx) => (
+      <article class:list={["slide-card", "is-print-page", `layout-${slide.layout}`]}>
+        <div class="slide-glow"></div>
+        <div class="slide-header-row">
+          <span class="slide-eyebrow">{slide.eyebrow || item.category}</span>
+          <span class="slide-brand-mark">ADAPTIF ACADEMY</span>
+        </div>
+
+        <div class="slide-content-area">
+          {slide.layout === "cover" ? (
+            <div class="slide-cover-wrap">
+              <h2 class="slide-title is-cover">{slide.title}</h2>
+              {slide.body && <p class="slide-body is-cover">{slide.body}</p>}
+              {slide.bullets.length > 0 && (
+                <div class="slide-pills">
+                  {slide.bullets.map((b) => (
+                    <span class="slide-pill">{b}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : slide.layout === "quote" ? (
+            <div class="slide-quote-wrap">
+              <blockquote class="slide-quote">“{slide.title}”</blockquote>
+              {slide.body && <p class="slide-body">{slide.body}</p>}
+            </div>
+          ) : slide.layout === "grid" ? (
+            <div class="slide-grid-wrap">
+              <div class="slide-head-block">
+                <h2 class="slide-title">{slide.title}</h2>
+                {slide.body && <p class="slide-body">{slide.body}</p>}
+              </div>
+              <div class="slide-cards-grid">
+                {slide.bullets.map((b, bIdx) => (
+                  <div class="slide-mini-card">
+                    <span class="mini-num">0{bIdx + 1}</span>
+                    <p class="mini-text">{b}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : slide.layout === "split" ? (
+            <div class="slide-split-wrap">
+              <div class="split-left">
+                <h2 class="slide-title">{slide.title}</h2>
+                {slide.body && <p class="slide-body">{slide.body}</p>}
+                {slide.callout && <div class="slide-callout">{slide.callout}</div>}
+              </div>
+              <div class="split-right">
+                {slide.image ? (
+                  <img src={slide.image} alt={slide.title} class="split-img" />
+                ) : (
+                  <ul class="slide-bullet-list">
+                    {slide.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div class="slide-bullets-wrap">
+              <h2 class="slide-title">{slide.title}</h2>
+              {slide.body && <p class="slide-body">{slide.body}</p>}
+              {slide.bullets.length > 0 && (
+                <ul class="slide-bullet-list">
+                  {slide.bullets.map((b) => (
+                    <li>{b}</li>
+                  ))}
+                </ul>
+              )}
+              {slide.callout && <div class="slide-callout">{slide.callout}</div>}
+            </div>
+          )}
+        </div>
+
+        <footer class="slide-footer-row">
+          <span>{item.title}</span>
+          <span>Slide {idx + 1} of {slides.length}</span>
+        </footer>
+      </article>
+    ))}
+  </section>
+</div>
+
+<script>
+  const shell = document.querySelector<HTMLElement>(".viewer-shell");
+  const slideCards = Array.from(document.querySelectorAll<HTMLElement>(".stage-viewport .slide-card"));
+  const stripBtns = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-goto-slide]"));
+  const counterEl = document.getElementById("slide-counter");
+  const prevBtn = document.getElementById("btn-prev");
+  const nextBtn = document.getElementById("btn-next");
+  const pdfBtn = document.getElementById("btn-download-pdf");
+  const fsBtn = document.getElementById("btn-fullscreen");
+  const stageEl = document.getElementById("viewer-stage");
+
+  let activeIndex = 0;
+
+  function showSlide(index: number) {
+    if (slideCards.length === 0) return;
+    activeIndex = (index + slideCards.length) % slideCards.length;
+
+    slideCards.forEach((card, i) => {
+      const isCurrent = i === activeIndex;
+      card.classList.toggle("is-active", isCurrent);
+      card.setAttribute("aria-hidden", String(!isCurrent));
+    });
+
+    stripBtns.forEach((btn, i) => {
+      btn.classList.toggle("is-active", i === activeIndex);
+    });
+
+    if (counterEl) {
+      counterEl.textContent = `${activeIndex + 1} / ${slideCards.length}`;
+    }
+  }
+
+  prevBtn?.addEventListener("click", () => showSlide(activeIndex - 1));
+  nextBtn?.addEventListener("click", () => showSlide(activeIndex + 1));
+
+  stripBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.gotoSlide ?? 0);
+      showSlide(idx);
+    });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === " ") {
+      e.preventDefault();
+      showSlide(activeIndex + 1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      showSlide(activeIndex - 1);
+    }
+  });
+
+  pdfBtn?.addEventListener("click", () => {
+    window.print();
+  });
+
+  fsBtn?.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      stageEl?.requestFullscreen?.().catch(() => {});
+    } else {
+      document.exitFullscreen?.().catch(() => {});
+    }
+  });
+
+  if (shell?.dataset.autoPrint === "true") {
+    window.addEventListener("load", () => {
+      setTimeout(() => window.print(), 350);
+    });
+  }
+</script>
+
+<style>
+  .viewer-shell {
+    min-height: 100vh;
+    background: #010307;
+    color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .viewer-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(4, 9, 26, 0.88);
+    backdrop-filter: blur(18px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .topbar-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .topbar-back:hover {
+    border-color: rgba(72, 200, 255, 0.4);
+    color: #ffffff;
+  }
+
+  .topbar-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .topbar-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    white-space: nowrap;
+  }
+
+  .topbar-badge.is-course {
+    color: #7dd3fc;
+    background: rgba(72, 200, 255, 0.12);
+    border-color: rgba(72, 200, 255, 0.32);
+  }
+
+  .topbar-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f8fafc;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .slide-counter {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
+    padding: 0 6px;
+  }
+
+  .btn-viewer-ghost,
+  .btn-tool-link {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #e2e8f0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .btn-tool-link {
+    border-color: rgba(72, 200, 255, 0.35);
+    color: #7dd3fc;
+  }
+
+  .btn-download-pdf {
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(180deg, #56d3ff 0%, #0aa3f8 100%);
+    color: #031528;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .viewer-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 28px 24px;
+    background: radial-gradient(ellipse 60% 50% at 50% 45%, rgba(72, 200, 255, 0.08) 0%, transparent 70%);
+  }
+
+  .stage-nav {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(8, 18, 44, 0.72);
+    color: #f8fafc;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stage-nav:hover {
+    border-color: #48C8FF;
+    color: #48C8FF;
+  }
+
+  .stage-viewport {
+    position: relative;
+    width: min(1080px, 100%);
+    aspect-ratio: 16 / 9;
+  }
+
+  .slide-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    padding: 40px 52px 32px;
+    background: #030716;
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    box-shadow:
+      inset 0 1px 1.5px rgba(255, 255, 255, 0.2),
+      0 28px 70px -12px rgba(0, 2, 8, 0.95);
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .slide-card.is-active {
+    display: flex;
+  }
+
+  .slide-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 65% 45% at 50% 0%, rgba(72, 200, 255, 0.16) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 40% at 90% 90%, rgba(43, 127, 255, 0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .slide-header-row,
+  .slide-footer-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+  }
+
+  .slide-eyebrow {
+    color: #48C8FF;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .slide-brand-mark {
+    color: #64748b;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    font-size: 0.7rem;
+  }
+
+  .slide-footer-row {
+    color: #64748b;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+  }
+
+  .slide-content-area {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px 0;
+  }
+
+  .slide-title {
+    margin: 0 0 14px;
+    font-size: clamp(1.6rem, 2.8vw, 2.5rem);
+    font-weight: 600;
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+  }
+
+  .slide-title.is-cover {
+    font-size: clamp(2rem, 3.6vw, 3.1rem);
+    max-width: 18ch;
+  }
+
+  .slide-body {
+    margin: 0 0 22px;
+    font-size: clamp(0.95rem, 1.35vw, 1.15rem);
+    line-height: 1.55;
+    color: #94a3b8;
+    max-width: 62ch;
+  }
+
+  .slide-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .slide-pill {
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    color: #bae6fd;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .slide-bullet-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+  }
+
+  .slide-bullet-list li {
+    position: relative;
+    padding-left: 22px;
+    font-size: clamp(0.92rem, 1.25vw, 1.08rem);
+    line-height: 1.5;
+    color: #e2e8f0;
+  }
+
+  .slide-bullet-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #48C8FF;
+  }
+
+  .slide-callout {
+    margin-top: 20px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: rgba(72, 200, 255, 0.08);
+    border-left: 3px solid #48C8FF;
+    color: #bae6fd;
+    font-size: 0.94rem;
+  }
+
+  .slide-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .slide-mini-card {
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: rgba(8, 18, 44, 0.72);
+    border: 1px solid rgba(72, 200, 255, 0.18);
+  }
+
+  .mini-num {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #48C8FF;
+    margin-bottom: 6px;
+  }
+
+  .mini-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: #e2e8f0;
+  }
+
+  .slide-split-wrap {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .split-img {
+    width: 100%;
+    max-height: 310px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid rgba(72, 200, 255, 0.25);
+  }
+
+  .slide-quote {
+    margin: 0 0 18px;
+    font-family: "Instrument Serif", Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.9rem, 3.4vw, 3rem);
+    line-height: 1.15;
+    color: #ffffff;
+  }
+
+  .viewer-strip {
+    display: flex;
+    gap: 10px;
+    padding: 14px 24px 20px;
+    overflow-x: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(2, 5, 14, 0.95);
+  }
+
+  .strip-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .strip-btn.is-active {
+    background: rgba(72, 200, 255, 0.12);
+    border-color: rgba(72, 200, 255, 0.45);
+    color: #ffffff;
+  }
+
+  .strip-num {
+    font-weight: 700;
+    color: #48C8FF;
+  }
+
+  .print-deck {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .viewer-topbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .topbar-right {
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .stage-viewport {
+      aspect-ratio: auto;
+      min-height: 420px;
+    }
+
+    .slide-card {
+      padding: 24px 22px;
+      height: auto;
+      min-height: 420px;
+    }
+
+    .slide-split-wrap,
+    .slide-cards-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .stage-nav {
+      display: none;
+    }
+  }
+
+  /* ==========================================================================
+     EXACT 16:9 VECTOR PDF EXPORT (Figma-style selectable text)
+     ========================================================================== */
+  @media print {
+    @page {
+      size: 13.333in 7.5in;
+      margin: 0;
+    }
+
+    :global(html),
+    :global(body) {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #030716 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+
+    .viewer-shell {
+      min-height: 0;
+      display: block;
+      background: #030716 !important;
+    }
+
+    .print-deck {
+      display: block !important;
+    }
+
+    .slide-card.is-print-page {
+      display: flex !important;
+      width: 13.333in !important;
+      height: 7.5in !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0.6in 0.75in 0.45in !important;
+      page-break-after: always;
+      break-after: page;
+      background: #030716 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .slide-card.is-print-page:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+  }
+</style>

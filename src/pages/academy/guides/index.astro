@@ -2,6 +2,11 @@
 import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
+import { listAcademyItems } from "../../../lib/academyDb";
+
+export const prerender = false;
+
+const guides = await listAcademyItems({ kind: "guide", includeUnpublished: false });
 ---
 
 <Layout
@@ -26,17 +31,43 @@ import Footer from "../../../components/Footer.astro";
           Tactical frameworks and practical workflows published weekly. Explore online in our slide viewer or download the full PDF.
         </p>
 
-        <div class="catalog-empty-card">
-          <div class="empty-pill">Catalog Initializing</div>
-          <h2 class="empty-title">New Guides launching soon</h2>
-          <p class="empty-desc">
-            Our weekly playbooks are being prepared in the Adaptif Studio. Check back shortly or explore our paid deep-dive courses.
-          </p>
-          <div class="empty-actions">
-            <a href="/academy/courses" class="btn-secondary">Explore Courses</a>
-            <a href="/academy" class="btn-ghost">Back to Academy</a>
+        {guides.length > 0 ? (
+          <div class="catalog-grid">
+            {guides.map((guide) => (
+              <a href={`/academy/guides/${guide.slug}`} class="catalog-card">
+                {guide.coverImage && (
+                  <div class="card-media">
+                    <img src={guide.coverImage} alt={guide.title} loading="lazy" />
+                  </div>
+                )}
+                <div class="card-body">
+                  <div class="card-meta">
+                    <span class="badge-free">Free</span>
+                    <span>{guide.category}</span>
+                  </div>
+                  <h2 class="card-title">{guide.title}</h2>
+                  <p class="card-desc">{guide.subtitle || guide.description}</p>
+                  <div class="card-footer">
+                    <span>{guide.slides.length} slides · PDF</span>
+                    <span class="card-link">Read Guide →</span>
+                  </div>
+                </div>
+              </a>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div class="catalog-empty-card">
+            <div class="empty-pill">Catalog Initializing</div>
+            <h2 class="empty-title">New Guides launching soon</h2>
+            <p class="empty-desc">
+              Our weekly playbooks are being prepared in the Adaptif Studio. Check back shortly or explore our paid deep-dive courses.
+            </p>
+            <div class="empty-actions">
+              <a href="/academy/courses" class="btn-secondary">Explore Courses</a>
+              <a href="/academy" class="btn-ghost">Back to Academy</a>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   </main>
@@ -59,7 +90,7 @@ import Footer from "../../../components/Footer.astro";
   }
 
   .catalog-container {
-    max-width: 1040px;
+    max-width: 1120px;
     margin: 0 auto;
     text-align: center;
   }
@@ -122,6 +153,94 @@ import Footer from "../../../components/Footer.astro";
     margin: 0 auto 56px;
   }
 
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 24px;
+    text-align: left;
+  }
+
+  .catalog-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(8, 18, 44, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    box-shadow: var(--shadow-bevel-card);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .catalog-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .card-media img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-body {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+  }
+
+  .badge-free {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .card-desc {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  .card-link {
+    color: var(--color-brand-cyan);
+    font-weight: 600;
+  }
+
   .catalog-empty-card {
     max-width: 640px;
     margin: 0 auto;
@@ -174,7 +293,6 @@ import Footer from "../../../components/Footer.astro";
     font-size: 0.88rem;
     font-weight: 600;
     text-decoration: none;
-    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
   }
 
   .btn-secondary {
@@ -186,11 +304,6 @@ import Footer from "../../../components/Footer.astro";
     color: var(--color-text-primary);
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.14);
-  }
-
-  .btn-secondary:hover,
-  .btn-ghost:hover {
-    transform: translateY(-2px);
   }
 
   @media (max-width: 768px) {

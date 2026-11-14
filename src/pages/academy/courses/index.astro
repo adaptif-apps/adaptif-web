@@ -2,6 +2,11 @@
 import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
+import { listAcademyItems } from "../../../lib/academyDb";
+
+export const prerender = false;
+
+const courses = await listAcademyItems({ kind: "course", includeUnpublished: false });
 ---
 
 <Layout
@@ -26,17 +31,46 @@ import Footer from "../../../components/Footer.astro";
           In-depth systems with online slide decks, printable PDFs, and included templates, mockups, or micro-apps.
         </p>
 
-        <div class="catalog-empty-card">
-          <div class="empty-pill">Catalog Initializing</div>
-          <h2 class="empty-title">New Courses launching soon</h2>
-          <p class="empty-desc">
-            Our structured courses and companion tools are being prepared in the Adaptif Studio. Check back shortly or browse our free guides.
-          </p>
-          <div class="empty-actions">
-            <a href="/academy/guides" class="btn-secondary">Browse Free Guides</a>
-            <a href="/academy" class="btn-ghost">Back to Academy</a>
+        {courses.length > 0 ? (
+          <div class="catalog-grid">
+            {courses.map((course) => (
+              <a href={`/academy/courses/${course.slug}`} class="catalog-card">
+                {course.coverImage && (
+                  <div class="card-media">
+                    <img src={course.coverImage} alt={course.title} loading="lazy" />
+                  </div>
+                )}
+                <div class="card-body">
+                  <div class="card-meta">
+                    <span class="badge-pro">{course.priceLabel || "Pro"}</span>
+                    <span>{course.category}</span>
+                  </div>
+                  <h2 class="card-title">{course.title}</h2>
+                  <p class="card-desc">{course.subtitle || course.description}</p>
+                  {course.toolName && (
+                    <div class="tool-pill">+ Includes: {course.toolName}</div>
+                  )}
+                  <div class="card-footer">
+                    <span>{course.slides.length} slides · PDF + Tool</span>
+                    <span class="card-link">View Course →</span>
+                  </div>
+                </div>
+              </a>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div class="catalog-empty-card">
+            <div class="empty-pill">Catalog Initializing</div>
+            <h2 class="empty-title">New Courses launching soon</h2>
+            <p class="empty-desc">
+              Our structured courses and companion tools are being prepared in the Adaptif Studio. Check back shortly or browse our free guides.
+            </p>
+            <div class="empty-actions">
+              <a href="/academy/guides" class="btn-secondary">Browse Free Guides</a>
+              <a href="/academy" class="btn-ghost">Back to Academy</a>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   </main>
@@ -59,7 +93,7 @@ import Footer from "../../../components/Footer.astro";
   }
 
   .catalog-container {
-    max-width: 1040px;
+    max-width: 1120px;
     margin: 0 auto;
     text-align: center;
   }
@@ -122,6 +156,104 @@ import Footer from "../../../components/Footer.astro";
     margin: 0 auto 56px;
   }
 
+  .catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 24px;
+    text-align: left;
+  }
+
+  .catalog-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(8, 18, 44, 0.62);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    text-decoration: none;
+    box-shadow: var(--shadow-bevel-card);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .catalog-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.5);
+  }
+
+  .card-media img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-body {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+  }
+
+  .badge-pro {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #7dd3fc;
+    background: rgba(72, 200, 255, 0.14);
+    border: 1px solid rgba(72, 200, 255, 0.34);
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .card-desc {
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .tool-pill {
+    font-size: 0.78rem;
+    color: #bae6fd;
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    padding: 5px 10px;
+    border-radius: 8px;
+    width: fit-content;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  .card-link {
+    color: var(--color-brand-cyan);
+    font-weight: 600;
+  }
+
   .catalog-empty-card {
     max-width: 640px;
     margin: 0 auto;
@@ -174,7 +306,6 @@ import Footer from "../../../components/Footer.astro";
     font-size: 0.88rem;
     font-weight: 600;
     text-decoration: none;
-    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
   }
 
   .btn-secondary {
@@ -186,11 +317,6 @@ import Footer from "../../../components/Footer.astro";
     color: var(--color-text-primary);
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.14);
-  }
-
-  .btn-secondary:hover,
-  .btn-ghost:hover {
-    transform: translateY(-2px);
   }
 
   @media (max-width: 768px) {

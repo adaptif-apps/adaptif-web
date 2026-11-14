@@ -1,0 +1,528 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/Header.astro";
+import Footer from "../../../components/Footer.astro";
+import {
+  getAcademyItemBySlug,
+  getAcademySettings,
+  verifyAccessToken
+} from "../../../lib/academyDb";
+
+export const prerender = false;
+
+const slug = Astro.params.slug || "";
+const item = await getAcademyItemBySlug(slug, "course", false);
+
+if (!item) {
+  return Astro.redirect("/academy/courses");
+}
+
+const settings = await getAcademySettings();
+const effectiveAccessMode = item.accessMode || settings.defaultCourseAccessMode;
+
+const cookieToken = Astro.cookies.get(`adaptif_academy_${item.slug}`)?.value;
+const queryToken = Astro.url.searchParams.get("access");
+const isUnlocked =
+  effectiveAccessMode === "open" ||
+  (effectiveAccessMode === "checkout_redirect" && Astro.url.searchParams.get("checkout") === "success") ||
+  (await verifyAccessToken(item.id, queryToken || cookieToken));
+---
+
+<Layout title={`${item.title} — Course | Adaptif Academy`} description={item.subtitle || item.description}>
+  <Header />
+  <main class="course-landing">
+    <section class="course-hero is-visible">
+      <div class="course-container">
+        <div class="course-breadcrumb">
+          <a href="/academy">Academy</a>
+          <span>/</span>
+          <a href="/academy/courses">Courses</a>
+          <span>/</span>
+          <span>{item.category}</span>
+        </div>
+
+        <div class="course-hero-grid">
+          <div class="course-hero-copy">
+            <div class="course-badges">
+              <span class="badge-pro">{item.landingData.heroBadge || "Pro Course"}</span>
+              {item.priceLabel && <span class="badge-price">{item.priceLabel}</span>}
+              {item.landingData.readTime && <span class="badge-meta">{item.landingData.readTime}</span>}
+            </div>
+
+            <h1 class="course-title">{item.title}</h1>
+            <p class="course-subtitle">{item.subtitle || item.description}</p>
+
+            <div class="course-cta-row">
+              {isUnlocked ? (
+                <>
+                  <a href={`/academy/courses/${item.slug}/slides`} class="btn-primary-cyan">
+                    Open Course Slides
+                  </a>
+                  <a href={`/academy/courses/${item.slug}/slides?print=1`} class="btn-outline-glass">
+                    Download PDF
+                  </a>
+                </>
+              ) : item.stripeCheckoutUrl ? (
+                <a
+                  href={item.stripeCheckoutUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn-primary-cyan"
+                >
+                  Buy Course {item.priceLabel ? `— ${item.priceLabel}` : ""} ↗
+                </a>
+              ) : (
+                <a href="#course-enroll" class="btn-primary-cyan">
+                  Get Course Access
+                </a>
+              )}
+              {item.toolUrl && isUnlocked && (
+                <a href={item.toolUrl} target="_blank" rel="noopener noreferrer" class="btn-tool-pill">
+                  Launch {item.toolName || "Companion Tool"} ↗
+                </a>
+              )}
+            </div>
+          </div>
+
+          {item.coverImage && (
+            <div class="course-cover-frame">
+              <img src={item.coverImage} alt={item.title} class="course-cover-img" />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+
+    <!-- Companion Tool / Template Spotlight -->
+    {(item.toolName || item.toolUrl) && (
+      <section class="course-section is-visible">
+        <div class="course-container">
+          <div class="tool-spotlight-card">
+            <div>
+              <span class="section-eyebrow">Included With This Course</span>
+              <h2 class="tool-title">{item.toolName || "Companion Tool & Template"}</h2>
+              <p class="tool-desc">
+                {item.toolType ? `${item.toolType} · ` : ""}Ready-to-use asset built specifically to apply the workflows in this course immediately.
+              </p>
+            </div>
+            {isUnlocked && item.toolUrl ? (
+              <a href={item.toolUrl} target="_blank" rel="noopener noreferrer" class="btn-primary-cyan">
+                Open {item.toolType || "Tool"} ↗
+              </a>
+            ) : (
+              <span class="tool-locked-pill">Included upon purchase</span>
+            )}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Specific Curriculum & Deliverables -->
+    <section class="course-section is-visible">
+      <div class="course-container">
+        <div class="course-details-grid">
+          <div class="detail-card">
+            <span class="section-eyebrow">System Breakdown</span>
+            <h2 class="section-title">What you will build</h2>
+            <p class="section-copy">{item.description}</p>
+            {item.landingData.audience && (
+              <p class="audience-note">
+                <strong>Built for:</strong> {item.landingData.audience}
+              </p>
+            )}
+          </div>
+
+          <div class="detail-card">
+            <span class="section-eyebrow">What’s Inside</span>
+            <ul class="takeaways-list">
+              {(item.landingData.takeaways.length > 0
+                ? item.landingData.takeaways
+                : ["Full online slide deck", "Vector PDF handbook", "Included templates & workflow"]
+              ).map((point) => (
+                <li>{point}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {item.slides.length > 0 && (
+      <section class="course-section is-visible">
+        <div class="course-container">
+          <span class="section-eyebrow">Deck Curriculum</span>
+          <h2 class="section-title">{item.slides.length} focused slides + downloadable PDF</h2>
+          <div class="curriculum-grid">
+            {item.slides.map((slide, idx) => (
+              <div class="curriculum-card">
+                <span class="curr-num">0{idx + 1}</span>
+                <h3 class="curr-title">{slide.title}</h3>
+                {slide.body && <p class="curr-body">{slide.body}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Bottom Purchase / Access Card -->
+    <section class="course-enroll-section is-visible" id="course-enroll">
+      <div class="course-container">
+        <div class="enroll-card">
+          <div>
+            <span class="badge-pro">{isUnlocked ? "Unlocked" : item.priceLabel || "Pro Course"}</span>
+            <h2 class="enroll-title">
+              {isUnlocked ? "You have full access" : `Get instant access to ${item.title}`}
+            </h2>
+            <p class="enroll-desc">
+              {isUnlocked
+                ? "Read the interactive slide deck online, export the vector PDF, or launch your companion tool."
+                : "One-time purchase. Instant access to the online slide deck, downloadable PDF, and included companion tool."}
+            </p>
+          </div>
+          <div class="enroll-actions">
+            {isUnlocked ? (
+              <>
+                <a href={`/academy/courses/${item.slug}/slides`} class="btn-primary-cyan">
+                  Open Course Slides
+                </a>
+                <a href={`/academy/courses/${item.slug}/slides?print=1`} class="btn-outline-glass">
+                  Download PDF
+                </a>
+              </>
+            ) : item.stripeCheckoutUrl ? (
+              <a
+                href={item.stripeCheckoutUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-primary-cyan"
+              >
+                Checkout with Stripe {item.priceLabel ? `(${item.priceLabel})` : ""} ↗
+              </a>
+            ) : (
+              <span class="tool-locked-pill">Stripe checkout link pending</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .course-landing {
+    position: relative;
+    z-index: 1;
+  }
+
+  .course-container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .course-hero {
+    padding: 150px 24px 72px;
+    background: radial-gradient(ellipse 65% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%);
+  }
+
+  .course-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    margin-bottom: 24px;
+  }
+
+  .course-breadcrumb a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .course-hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 36px;
+    align-items: center;
+  }
+
+  .course-badges {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .badge-pro,
+  .badge-price {
+    display: inline-flex;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .badge-pro {
+    color: #7dd3fc;
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.32);
+  }
+
+  .badge-price {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .badge-meta {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+  }
+
+  .course-title {
+    margin: 0 0 16px;
+    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+  }
+
+  .course-subtitle {
+    margin: 0 0 28px;
+    font-size: 1.08rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .course-cta-row,
+  .enroll-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-primary-cyan,
+  .btn-outline-glass,
+  .btn-tool-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .btn-primary-cyan {
+    color: #031528;
+    background: linear-gradient(180deg, #56d3ff 0%, #0aa3f8 100%);
+  }
+
+  .btn-outline-glass,
+  .btn-tool-pill {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .course-cover-frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(72, 200, 255, 0.26);
+    background: rgba(8, 18, 44, 0.6);
+    box-shadow: var(--shadow-bevel-card);
+  }
+
+  .course-cover-img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+  }
+
+  .course-section {
+    padding: 36px 24px;
+  }
+
+  .tool-spotlight-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px 32px;
+    border-radius: 20px;
+    background:
+      radial-gradient(ellipse 70% 60% at 100% 50%, rgba(72, 200, 255, 0.12) 0%, transparent 70%),
+      rgba(8, 18, 44, 0.72);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+  }
+
+  .tool-title {
+    margin: 0 0 6px;
+    font-size: 1.4rem;
+    color: #ffffff;
+  }
+
+  .tool-desc {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .tool-locked-pill {
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    white-space: nowrap;
+  }
+
+  .course-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .detail-card {
+    padding: 28px;
+    border-radius: 20px;
+    background: rgba(8, 18, 44, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .section-eyebrow {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan);
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    margin: 0 0 14px;
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .section-copy,
+  .audience-note {
+    margin: 0 0 14px;
+    font-size: 0.96rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .takeaways-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+  }
+
+  .takeaways-list li {
+    position: relative;
+    padding-left: 20px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .takeaways-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #48C8FF;
+    font-weight: 700;
+  }
+
+  .curriculum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .curriculum-card {
+    padding: 20px;
+    border-radius: 16px;
+    background: rgba(4, 9, 26, 0.72);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+  }
+
+  .curr-num {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #48C8FF;
+    margin-bottom: 8px;
+  }
+
+  .curr-title {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .curr-body {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .course-enroll-section {
+    padding: 56px 24px 100px;
+  }
+
+  .enroll-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    padding: 36px;
+    border-radius: 24px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(72, 200, 255, 0.16) 0%, transparent 70%),
+      rgba(8, 18, 44, 0.78);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    box-shadow: var(--shadow-bevel-card);
+  }
+
+  .enroll-title {
+    margin: 12px 0 8px;
+    font-size: 1.7rem;
+    color: #ffffff;
+  }
+
+  .enroll-desc {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.96rem;
+    max-width: 560px;
+  }
+
+  @media (max-width: 860px) {
+    .course-hero-grid,
+    .course-details-grid,
+    .tool-spotlight-card,
+    .enroll-card {
+      grid-template-columns: 1fr;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

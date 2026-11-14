@@ -1,0 +1,537 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/Header.astro";
+import Footer from "../../../components/Footer.astro";
+import { getAcademyItemBySlug, verifyAccessToken } from "../../../lib/academyDb";
+
+export const prerender = false;
+
+const slug = Astro.params.slug || "";
+const item = await getAcademyItemBySlug(slug, "guide", false);
+
+if (!item) {
+  return Astro.redirect("/academy/guides");
+}
+
+const cookieToken = Astro.cookies.get(`adaptif_academy_${item.slug}`)?.value;
+const isUnlocked = await verifyAccessToken(item.id, cookieToken);
+---
+
+<Layout title={`${item.title} — Free Guide | Adaptif Academy`} description={item.subtitle || item.description}>
+  <Header />
+  <main class="guide-landing">
+    <section class="guide-hero is-visible">
+      <div class="guide-container">
+        <div class="guide-breadcrumb">
+          <a href="/academy">Academy</a>
+          <span>/</span>
+          <a href="/academy/guides">Guides</a>
+          <span>/</span>
+          <span>{item.category}</span>
+        </div>
+
+        <div class="guide-hero-grid">
+          <div class="guide-hero-copy">
+            <div class="guide-badges">
+              <span class="badge-free">{item.landingData.heroBadge || "Free Guide"}</span>
+              {item.landingData.readTime && <span class="badge-meta">{item.landingData.readTime}</span>}
+            </div>
+            <h1 class="guide-title">{item.title}</h1>
+            <p class="guide-subtitle">{item.subtitle || item.description}</p>
+            <div class="guide-hero-actions">
+              {isUnlocked ? (
+                <>
+                  <a href={`/academy/guides/${item.slug}/slides`} class="btn-primary-cyan">
+                    Open Online Slides
+                  </a>
+                  <a href={`/academy/guides/${item.slug}/slides?print=1`} class="btn-outline-glass">
+                    Download PDF
+                  </a>
+                </>
+              ) : (
+                <a href="#unlock-form" class="btn-primary-cyan">
+                  Get Free Access (Slides + PDF) ↓
+                </a>
+              )}
+            </div>
+          </div>
+
+          {item.coverImage && (
+            <div class="guide-cover-card">
+              <img src={item.coverImage} alt={item.title} class="guide-cover-img" />
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+
+    <section class="guide-section is-visible">
+      <div class="guide-container">
+        <div class="guide-overview-grid">
+          <div class="overview-card">
+            <span class="section-eyebrow">Overview</span>
+            <h2 class="section-title">What this playbook covers</h2>
+            <p class="section-copy">{item.description}</p>
+            {item.landingData.audience && (
+              <p class="audience-note">
+                <strong>Best for:</strong> {item.landingData.audience}
+              </p>
+            )}
+          </div>
+
+          <div class="takeaways-card">
+            <span class="section-eyebrow">Key Takeaways</span>
+            <ul class="takeaways-list">
+              {(item.landingData.takeaways.length > 0
+                ? item.landingData.takeaways
+                : item.slides.map((s) => s.title)
+              ).map((point) => (
+                <li>{point}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {item.slides.length > 0 && (
+      <section class="guide-section is-visible">
+        <div class="guide-container">
+          <span class="section-eyebrow">Inside the Guide</span>
+          <h2 class="section-title">{item.slides.length} visual slides ready to read or print</h2>
+          <div class="slides-preview-grid">
+            {item.slides.map((slide, idx) => (
+              <div class="preview-tile">
+                <span class="preview-num">0{idx + 1}</span>
+                <h3 class="preview-title">{slide.title}</h3>
+                {slide.body && <p class="preview-body">{slide.body}</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Bottom Lead Capture Form -->
+    <section class="guide-unlock-section is-visible" id="unlock-form">
+      <div class="guide-container">
+        <div class="unlock-card">
+          {isUnlocked ? (
+            <div class="unlocked-state">
+              <span class="badge-free">Unlocked</span>
+              <h2 class="unlock-title">Your guide is ready</h2>
+              <p class="unlock-desc">
+                Read the interactive deck right in your browser or export a crisp vector PDF.
+              </p>
+              <div class="unlock-actions">
+                <a href={`/academy/guides/${item.slug}/slides`} class="btn-primary-cyan">
+                  View Online Slides
+                </a>
+                <a href={`/academy/guides/${item.slug}/slides?print=1`} class="btn-outline-glass">
+                  Download PDF
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div class="locked-state" id="guide-form-wrap">
+              <span class="badge-free">Instant Free Access</span>
+              <h2 class="unlock-title">Read online or download the PDF</h2>
+              <p class="unlock-desc">
+                Enter your name and email to unlock the full slide viewer and downloadable PDF.
+              </p>
+
+              <form class="guide-lead-form" id="guide-lead-form" data-slug={item.slug}>
+                <div class="form-row">
+                  <label class="field-group">
+                    <span>Your Name</span>
+                    <input type="text" name="name" required placeholder="Alex Morgan" autocomplete="name" />
+                  </label>
+                  <label class="field-group">
+                    <span>Work Email</span>
+                    <input type="email" name="email" required placeholder="alex@company.com" autocomplete="email" />
+                  </label>
+                </div>
+                <p class="form-error" id="guide-form-error" hidden></p>
+                <button type="submit" class="btn-primary-cyan btn-submit-full" id="guide-submit-btn">
+                  Unlock Guide &amp; PDF
+                </button>
+              </form>
+
+              <div class="unlocked-state" id="guide-unlocked-inline" hidden>
+                <span class="badge-free">Access Granted</span>
+                <h3 class="unlock-title">You’re in!</h3>
+                <p class="unlock-desc">Choose how you want to view this guide:</p>
+                <div class="unlock-actions">
+                  <a href={`/academy/guides/${item.slug}/slides`} id="unlocked-slides-link" class="btn-primary-cyan">
+                    View Online Slides
+                  </a>
+                  <a href={`/academy/guides/${item.slug}/slides?print=1`} id="unlocked-pdf-link" class="btn-outline-glass">
+                    Download PDF
+                  </a>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const form = document.getElementById("guide-lead-form") as HTMLFormElement | null;
+  const errorEl = document.getElementById("guide-form-error");
+  const submitBtn = document.getElementById("guide-submit-btn") as HTMLButtonElement | null;
+  const inlineSuccess = document.getElementById("guide-unlocked-inline");
+  const slidesLink = document.getElementById("unlocked-slides-link") as HTMLAnchorElement | null;
+  const pdfLink = document.getElementById("unlocked-pdf-link") as HTMLAnchorElement | null;
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form) return;
+    if (errorEl) errorEl.hidden = true;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Unlocking...";
+    }
+
+    const fd = new FormData(form);
+    try {
+      const res = await fetch("/api/academy/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug: form.dataset.slug,
+          name: fd.get("name"),
+          email: fd.get("email")
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || "Could not unlock guide.");
+      }
+
+      if (slidesLink && data.slidesUrl) slidesLink.href = data.slidesUrl;
+      if (pdfLink && data.pdfUrl) pdfLink.href = data.pdfUrl;
+      form.hidden = true;
+      if (inlineSuccess) inlineSuccess.hidden = false;
+    } catch (err: any) {
+      if (errorEl) {
+        errorEl.textContent = err?.message || "Something went wrong.";
+        errorEl.hidden = false;
+      }
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Unlock Guide & PDF";
+      }
+    }
+  });
+</script>
+
+<style>
+  .guide-landing {
+    position: relative;
+    z-index: 1;
+  }
+
+  .guide-container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .guide-hero {
+    padding: 150px 24px 72px;
+    background: radial-gradient(ellipse 65% 45% at 50% 0%, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+  }
+
+  .guide-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    margin-bottom: 24px;
+  }
+
+  .guide-breadcrumb a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .guide-hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 36px;
+    align-items: center;
+  }
+
+  .guide-badges {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .badge-free {
+    display: inline-flex;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .badge-meta {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+  }
+
+  .guide-title {
+    margin: 0 0 16px;
+    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+  }
+
+  .guide-subtitle {
+    margin: 0 0 28px;
+    font-size: 1.08rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .guide-hero-actions,
+  .unlock-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary-cyan,
+  .btn-outline-glass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary-cyan {
+    color: #031528;
+    background: linear-gradient(180deg, #56d3ff 0%, #0aa3f8 100%);
+  }
+
+  .btn-outline-glass {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .guide-cover-card {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    background: rgba(8, 18, 44, 0.6);
+    box-shadow: var(--shadow-bevel-card);
+  }
+
+  .guide-cover-img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+  }
+
+  .guide-section {
+    padding: 40px 24px;
+  }
+
+  .guide-overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .overview-card,
+  .takeaways-card {
+    padding: 28px;
+    border-radius: 20px;
+    background: rgba(8, 18, 44, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .section-eyebrow {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan);
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    margin: 0 0 14px;
+    font-size: 1.55rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .section-copy,
+  .audience-note {
+    margin: 0 0 14px;
+    font-size: 0.96rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .takeaways-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+  }
+
+  .takeaways-list li {
+    position: relative;
+    padding-left: 20px;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .takeaways-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #6ee7b7;
+    font-weight: 700;
+  }
+
+  .slides-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .preview-tile {
+    padding: 20px;
+    border-radius: 16px;
+    background: rgba(4, 9, 26, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .preview-num {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--color-brand-cyan);
+    margin-bottom: 8px;
+  }
+
+  .preview-title {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f8fafc;
+  }
+
+  .preview-body {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .guide-unlock-section {
+    padding: 56px 24px 100px;
+  }
+
+  .unlock-card {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 34px;
+    border-radius: 24px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      rgba(8, 18, 44, 0.75);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    box-shadow: var(--shadow-bevel-card);
+  }
+
+  .unlock-title {
+    margin: 14px 0 8px;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .unlock-desc {
+    margin: 0 0 24px;
+    color: var(--color-text-secondary);
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+
+  .guide-lead-form {
+    display: grid;
+    gap: 16px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #cbd5e1;
+  }
+
+  .field-group input {
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(2, 5, 14, 0.75);
+    color: #ffffff;
+    font-size: 0.94rem;
+  }
+
+  .btn-submit-full {
+    width: 100%;
+  }
+
+  .form-error {
+    margin: 0;
+    color: #fca5a5;
+    font-size: 0.86rem;
+  }
+
+  @media (max-width: 860px) {
+    .guide-hero-grid,
+    .guide-overview-grid,
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

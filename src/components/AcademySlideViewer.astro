@@ -1017,6 +1017,24 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     gap: 7px;
   }
 
+  .viewer-shell:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .viewer-shell:fullscreen .viewer-topbar {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .viewer-shell:fullscreen .btn-viewer-ghost,
+  .viewer-shell:fullscreen .btn-download-pdf {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   .viewer-shell:fullscreen .viewer-workspace {
     grid-template-columns: 1fr !important;
   }
@@ -1113,7 +1131,25 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
       overflow-x: auto;
     }
 
-    .viewer-shell:fullscreen .viewer-workspace {
+    .viewer-shell:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .viewer-shell:fullscreen .viewer-topbar {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .viewer-shell:fullscreen .btn-viewer-ghost,
+  .viewer-shell:fullscreen .btn-download-pdf {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .viewer-shell:fullscreen .viewer-workspace {
     grid-template-columns: 1fr !important;
   }
 

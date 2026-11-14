@@ -153,6 +153,7 @@ export interface AcademyLandingData {
   faq: { q: string; a: string }[];
   funnelVisibility?: FunnelVisibility;
   funnel?: Partial<CourseFunnelData>;
+  customPdfUrl?: string;
 }
 
 export interface AcademyItem {

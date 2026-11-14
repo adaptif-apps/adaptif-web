@@ -79,6 +79,24 @@ const { initialItems, initialSettings } = Astro.props;
           </span>
           <input type="text" id="acd-category" placeholder="AI Workflows" />
         </label>
+
+        <div class="acd-field acd-span-2">
+          <span class="acd-label-row">
+            Custom PDF Override (Optional)
+            <span class="acd-tip-wrap">
+              <button type="button" class="acd-tip-btn" aria-label="Custom PDF info">?</button>
+              <span class="acd-tip-box" role="tooltip">
+                Upload your own PDF to display it directly in the course PDF viewer instead of the AI-generated slides.
+              </span>
+            </span>
+          </span>
+          <div class="acd-pdf-override-row">
+            <input type="file" id="acd-custom-pdf-input" accept="application/pdf,.pdf" hidden />
+            <button type="button" class="acd-btn-glass" id="btn-upload-custom-pdf">Upload Custom PDF</button>
+            <span class="acd-pdf-status" id="acd-custom-pdf-status">Using AI-generated slides</span>
+            <button type="button" class="acd-btn-danger" id="btn-remove-custom-pdf" hidden>Remove PDF</button>
+          </div>
+        </div>
       </div>
     </form>
     </div>
@@ -589,6 +607,15 @@ const { initialItems, initialSettings } = Astro.props;
       if (landingPreview) landingPreview.href = `/academy/${baseFolder}/${item.slug}`;
       if (slidesPreview) slidesPreview.href = `/academy/${baseFolder}/${item.slug}/slides?preview=1`;
 
+      const pdfStatusEl = document.getElementById("acd-custom-pdf-status");
+      const removePdfBtn = document.getElementById("btn-remove-custom-pdf");
+      const hasCustomPdf = Boolean(item.landingData?.customPdfUrl);
+      if (pdfStatusEl) {
+        pdfStatusEl.textContent = hasCustomPdf ? "Custom PDF active (overrides AI slides)" : "Using AI-generated slides";
+        pdfStatusEl.classList.toggle("is-active", hasCustomPdf);
+      }
+      if (removePdfBtn) removePdfBtn.hidden = !hasCustomPdf;
+
       toggleKindAndStatusUI(item.kind);
     }
 
@@ -624,6 +651,69 @@ const { initialItems, initialSettings } = Astro.props;
 
     document.getElementById("btn-new-guide")?.addEventListener("click", () => createItem("guide"));
     document.getElementById("btn-new-course")?.addEventListener("click", () => createItem("course"));
+
+    const customPdfInput = document.getElementById("acd-custom-pdf-input") as HTMLInputElement | null;
+    const uploadCustomPdfBtn = document.getElementById("btn-upload-custom-pdf") as HTMLButtonElement | null;
+    const removeCustomPdfBtn = document.getElementById("btn-remove-custom-pdf") as HTMLButtonElement | null;
+
+    uploadCustomPdfBtn?.addEventListener("click", () => customPdfInput?.click());
+    customPdfInput?.addEventListener("change", async () => {
+      const file = customPdfInput.files?.[0];
+      customPdfInput.value = "";
+      if (!file || !selectedId) return;
+      const item = items.find((i) => i.id === selectedId);
+      if (!item || !uploadCustomPdfBtn) return;
+
+      uploadCustomPdfBtn.disabled = true;
+      uploadCustomPdfBtn.textContent = "Uploading PDF...";
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("folder", "academy-pdfs");
+        const upRes = await fetch("/api/upload", { method: "POST", body: fd });
+        const upData = await upRes.json();
+        if (!upRes.ok || !upData?.url) throw new Error(upData?.error || "PDF upload failed");
+
+        const nextLandingData = { ...(item.landingData || {}), customPdfUrl: upData.url };
+        const patchRes = await fetch(`/api/academy/items/${selectedId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ landingData: nextLandingData })
+        });
+        const patchData = await patchRes.json();
+        if (patchRes.ok && patchData.item) {
+          const idx = items.findIndex((i) => i.id === selectedId);
+          if (idx !== -1) items[idx] = patchData.item;
+          renderEditor();
+          showStudioToast("Custom PDF uploaded & active!");
+        }
+      } catch (err: any) {
+        showStudioToast(err?.message || "PDF upload failed");
+      } finally {
+        uploadCustomPdfBtn.disabled = false;
+        uploadCustomPdfBtn.textContent = "Upload Custom PDF";
+      }
+    });
+
+    removeCustomPdfBtn?.addEventListener("click", async () => {
+      if (!selectedId) return;
+      const item = items.find((i) => i.id === selectedId);
+      if (!item) return;
+      const nextLandingData = { ...(item.landingData || {}) };
+      delete nextLandingData.customPdfUrl;
+      const patchRes = await fetch(`/api/academy/items/${selectedId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ landingData: nextLandingData })
+      });
+      const patchData = await patchRes.json();
+      if (patchRes.ok && patchData.item) {
+        const idx = items.findIndex((i) => i.id === selectedId);
+        if (idx !== -1) items[idx] = patchData.item;
+        renderEditor();
+        showStudioToast("Custom PDF removed — using AI slides");
+      }
+    });
 
     window.addEventListener("academy:item-generated", (e: any) => {
       const newItem = e?.detail?.item;
@@ -909,6 +999,23 @@ const { initialItems, initialSettings } = Astro.props;
   .acd-unified-card {
     position: relative;
     overflow: visible;
+  }
+
+  .acd-pdf-override-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .acd-pdf-status {
+    font-size: 0.8rem;
+    color: var(--text-muted, #7d93ab);
+  }
+
+  .acd-pdf-status.is-active {
+    color: #4ade80;
+    font-weight: 600;
   }
 
   .acd-editor-shell {

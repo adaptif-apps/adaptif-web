@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { item, backHref, autoPrint = false, isEditMode = false, isPreview = false } = Astro.props;
+const customPdfUrl = item.landingData?.customPdfUrl?.trim() || "";
 const slides: AcademySlide[] =
   item.slides.length > 0
     ? item.slides
@@ -58,17 +59,31 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
           <span aria-hidden="true">↗</span>
         </a>
       )}
-      <span class="slide-counter" id="slide-counter">1 / {slides.length}</span>
-      <button type="button" class="btn-viewer-ghost" id="btn-fullscreen" title="Fullscreen">
-        Fullscreen
-      </button>
-      <button type="button" class="btn-download-pdf" id="btn-download-pdf">
-        Download PDF
-      </button>
+      {!customPdfUrl && (
+        <>
+          <span class="slide-counter" id="slide-counter">1 / {slides.length}</span>
+          <button type="button" class="btn-viewer-ghost" id="btn-fullscreen" title="Fullscreen">
+            Fullscreen
+          </button>
+          <button type="button" class="btn-download-pdf" id="btn-download-pdf">
+            Download PDF
+          </button>
+        </>
+      )}
+      {customPdfUrl && (
+        <a href={customPdfUrl} download target="_blank" rel="noopener noreferrer" class="btn-download-pdf">
+          Download PDF
+        </a>
+      )}
     </div>
   </header>
 
-  <div class="viewer-workspace no-print">
+  {customPdfUrl ? (
+    <div class="custom-pdf-stage no-print">
+      <iframe src={`${customPdfUrl}#toolbar=1&navpanes=1`} class="custom-pdf-frame" title={item.title}></iframe>
+    </div>
+  ) : (
+    <div class="viewer-workspace no-print">
     <!-- Left Slide Index Sidebar (hidden in PDF print) -->
     <aside class="viewer-sidebar" aria-label="Slide index">
       <div class="sidebar-head">
@@ -189,6 +204,7 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     </button>
   </main>
   </div>
+  )}
 
   <!-- Print-Only Exact 16:9 Vector PDF Deck -->
   <section class="print-deck" aria-hidden="true">
@@ -811,6 +827,21 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     color: #ffffff;
   }
 
+  .custom-pdf-stage {
+    flex: 1;
+    display: flex;
+    padding: 16px 24px 24px;
+    min-height: calc(100vh - 72px);
+  }
+
+  .custom-pdf-frame {
+    width: 100%;
+    height: calc(100vh - 112px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: #0b1322;
+  }
+
   .viewer-workspace {
     flex: 1;
     display: grid;
@@ -902,7 +933,22 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
   }
 
   @media (max-width: 900px) {
-    .viewer-workspace {
+    .custom-pdf-stage {
+    flex: 1;
+    display: flex;
+    padding: 16px 24px 24px;
+    min-height: calc(100vh - 72px);
+  }
+
+  .custom-pdf-frame {
+    width: 100%;
+    height: calc(100vh - 112px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: #0b1322;
+  }
+
+  .viewer-workspace {
       grid-template-columns: 1fr;
     }
 

@@ -51,33 +51,38 @@ export const POST: APIRoute = async ({ request }) => {
 
     const isImage =
       file.type.startsWith("image/") || IMAGE_EXT_RE.test(file.name);
-    if (!isImage) {
+    const isPdf =
+      file.type === "application/pdf" || /\.pdf$/i.test(file.name);
+    if (!isImage && !isPdf) {
       return new Response(
-        JSON.stringify({ error: "Only image files are supported." }),
+        JSON.stringify({ error: "Only image or PDF files are supported." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     if (file.size > MAX_BYTES) {
       return new Response(
-        JSON.stringify({ error: "Image exceeds 10 MB limit." }),
+        JSON.stringify({ error: "File exceeds 10 MB limit." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     const inputBuffer = Buffer.from(await file.arrayBuffer());
-    const webpBuffer = await ensureWebpBuffer(inputBuffer);
-
     const safeBaseName = file.name
       .replace(/\.[^/.]+$/, "")
-      .replace(/[^a-zA-Z0-9._-]/g, "_") || "image";
+      .replace(/[^a-zA-Z0-9._-]/g, "_") || (isPdf ? "document" : "image");
+
+    const uploadBuffer = isPdf ? inputBuffer : await ensureWebpBuffer(inputBuffer);
+    const ext = isPdf ? "pdf" : "webp";
+    const contentType = isPdf ? "application/pdf" : "image/webp";
+
     const blob = await put(
-      `${folder}/${Date.now()}-${safeBaseName}.webp`,
-      webpBuffer,
+      `${folder}/${Date.now()}-${safeBaseName}.${ext}`,
+      uploadBuffer,
       {
         access: "public",
         addRandomSuffix: true,
-        contentType: "image/webp",
+        contentType,
         token,
       }
     );

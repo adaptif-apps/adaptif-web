@@ -609,15 +609,22 @@ const { initialItems, initialSettings } = Astro.props;
 
       const pdfStatusEl = document.getElementById("acd-custom-pdf-status");
       const removePdfBtn = document.getElementById("btn-remove-custom-pdf");
-      const customPdfUrl = item.landingData?.customPdfUrl?.trim() || "";
-      const hasCustomPdf = Boolean(customPdfUrl);
+      const effectivePdfUrl =
+        pendingCustomPdfUrl !== undefined
+          ? pendingCustomPdfUrl || ""
+          : item.landingData?.customPdfUrl?.trim() || "";
+      const hasCustomPdf = Boolean(effectivePdfUrl);
+      const isPendingPdfChange = pendingCustomPdfUrl !== undefined;
       if (pdfStatusEl) {
         if (hasCustomPdf) {
-          const rawName = decodeURIComponent(customPdfUrl.split("/").pop()?.split("?")[0] || "custom.pdf");
+          const rawName = decodeURIComponent(effectivePdfUrl.split("/").pop()?.split("?")[0] || "custom.pdf");
           const cleanName = rawName.replace(/^\d+-/, "");
-          pdfStatusEl.innerHTML = `Active PDF: <a href="${customPdfUrl}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">${cleanName}</a>`;
+          const prefix = isPendingPdfChange ? "Pending PDF (click Save Changes):" : "Active PDF:";
+          pdfStatusEl.innerHTML = `${prefix} <a href="${effectivePdfUrl}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">${cleanName}</a>`;
         } else {
-          pdfStatusEl.textContent = "Using AI-generated slides";
+          pdfStatusEl.textContent = isPendingPdfChange
+            ? "PDF removal pending (click Save Changes)"
+            : "Using AI-generated slides";
         }
         pdfStatusEl.classList.toggle("is-active", hasCustomPdf);
       }
@@ -671,6 +678,7 @@ const { initialItems, initialSettings } = Astro.props;
     document.getElementById("btn-new-guide")?.addEventListener("click", () => createItem("guide"));
     document.getElementById("btn-new-course")?.addEventListener("click", () => createItem("course"));
 
+    let pendingCustomPdfUrl: string | null | undefined = undefined;
     const customPdfInput = document.getElementById("acd-custom-pdf-input") as HTMLInputElement | null;
     const uploadCustomPdfBtn = document.getElementById("btn-upload-custom-pdf") as HTMLButtonElement | null;
     const removeCustomPdfBtn = document.getElementById("btn-remove-custom-pdf") as HTMLButtonElement | null;
@@ -694,19 +702,9 @@ const { initialItems, initialSettings } = Astro.props;
         });
         if (!blob?.url) throw new Error("PDF upload failed");
 
-        const nextLandingData = { ...(item.landingData || {}), customPdfUrl: blob.url };
-        const patchRes = await fetch(`/api/academy/items/${selectedId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ landingData: nextLandingData })
-        });
-        const patchData = await patchRes.json();
-        if (patchRes.ok && patchData.item) {
-          const idx = items.findIndex((i) => i.id === selectedId);
-          if (idx !== -1) items[idx] = patchData.item;
-          renderEditor();
-          showStudioToast("Custom PDF uploaded & active!");
-        }
+        pendingCustomPdfUrl = blob.url;
+        renderEditor();
+        showStudioToast("PDF uploaded — click Save Changes to apply!");
       } catch (err: any) {
         showStudioToast(err?.message || "PDF upload failed");
       } finally {
@@ -715,24 +713,11 @@ const { initialItems, initialSettings } = Astro.props;
       }
     });
 
-    removeCustomPdfBtn?.addEventListener("click", async () => {
+    removeCustomPdfBtn?.addEventListener("click", () => {
       if (!selectedId) return;
-      const item = items.find((i) => i.id === selectedId);
-      if (!item) return;
-      const nextLandingData = { ...(item.landingData || {}) };
-      delete nextLandingData.customPdfUrl;
-      const patchRes = await fetch(`/api/academy/items/${selectedId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ landingData: nextLandingData })
-      });
-      const patchData = await patchRes.json();
-      if (patchRes.ok && patchData.item) {
-        const idx = items.findIndex((i) => i.id === selectedId);
-        if (idx !== -1) items[idx] = patchData.item;
-        renderEditor();
-        showStudioToast("Custom PDF removed — using AI slides");
-      }
+      pendingCustomPdfUrl = null;
+      renderEditor();
+      showStudioToast("PDF marked for removal — click Save Changes to apply");
     });
 
     window.addEventListener("academy:item-generated", (e: any) => {
@@ -766,7 +751,14 @@ const { initialItems, initialSettings } = Astro.props;
       const nextStatus = genVal("gen-status") || item.status;
       const nextPublishAtRaw = genVal("gen-publish-at");
 
-      const payload = {
+        const nextLandingData = { ...(item.landingData || {}) };
+        if (pendingCustomPdfUrl === null) {
+          delete nextLandingData.customPdfUrl;
+        } else if (typeof pendingCustomPdfUrl === "string" && pendingCustomPdfUrl) {
+          nextLandingData.customPdfUrl = pendingCustomPdfUrl;
+        }
+
+        const payload = {
         kind: item.kind,
         status: nextStatus,
         publishAt: nextStatus === "scheduled" && nextPublishAtRaw ? new Date(nextPublishAtRaw).toISOString() : null,
@@ -782,7 +774,7 @@ const { initialItems, initialSettings } = Astro.props;
         toolName: item.kind === "course" ? genVal("gen-tool-name") : "",
         toolType: item.kind === "course" ? genVal("gen-tool-type") : "",
         toolUrl: item.kind === "course" ? genVal("gen-tool-url") : "",
-        landingData: item.landingData || {},
+        landingData: nextLandingData,
         slides: item.slides || []
       };
 
@@ -793,6 +785,7 @@ const { initialItems, initialSettings } = Astro.props;
       });
       const data = await res.json();
       if (res.ok && data.item) {
+        pendingCustomPdfUrl = undefined;
         const idx = items.findIndex((i) => i.id === selectedId);
         if (idx !== -1) items[idx] = data.item;
         renderSidebarLists();

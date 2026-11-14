@@ -22,14 +22,14 @@ html {
   color-scheme: dark;
   scroll-behavior: smooth;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
   min-height: 100dvh;
   position: relative;
   background-color: var(--color-void);
-  overflow-x: hidden;
+  overflow-x: clip;
   color: var(--color-text-primary);
 }
 

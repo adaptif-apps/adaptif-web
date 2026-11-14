@@ -59,16 +59,14 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
           <span aria-hidden="true">↗</span>
         </a>
       )}
+      <span class="slide-counter" id="slide-counter">1 / {customPdfUrl ? "…" : slides.length}</span>
+      <button type="button" class="btn-viewer-ghost" id="btn-fullscreen" title="Fullscreen">
+        Fullscreen
+      </button>
       {!customPdfUrl && (
-        <>
-          <span class="slide-counter" id="slide-counter">1 / {slides.length}</span>
-          <button type="button" class="btn-viewer-ghost" id="btn-fullscreen" title="Fullscreen">
-            Fullscreen
-          </button>
-          <button type="button" class="btn-download-pdf" id="btn-download-pdf">
-            Download PDF
-          </button>
-        </>
+        <button type="button" class="btn-download-pdf" id="btn-download-pdf">
+          Download PDF
+        </button>
       )}
       {customPdfUrl && (
         <a href={customPdfUrl} download target="_blank" rel="noopener noreferrer" class="btn-download-pdf">
@@ -87,8 +85,16 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
         </div>
         <nav class="viewer-strip" id="custom-pdf-strip" aria-label="Page selector"></nav>
       </aside>
-      <main class="slides-stage" id="custom-pdf-stage" data-custom-pdf-url={customPdfUrl}>
-        <div class="pdf-loading-state" id="custom-pdf-loading">Loading PDF pages…</div>
+      <main class="viewer-stage">
+        <button type="button" class="nav-arrow nav-prev" id="pdf-prev" aria-label="Previous page" disabled>
+          ←
+        </button>
+        <div class="slides-stage" id="custom-pdf-stage" data-custom-pdf-url={customPdfUrl} style="width:100%;max-width:960px;display:flex;justify-content:center;align-items:center;">
+          <div class="pdf-loading-state" id="custom-pdf-loading">Loading PDF pages…</div>
+        </div>
+        <button type="button" class="nav-arrow nav-next" id="pdf-next" aria-label="Next page">
+          →
+        </button>
       </main>
     </div>
   ) : (
@@ -340,10 +346,38 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
         const pdf = await pdfjsLib.getDocument(customPdfUrl).promise;
         const total = pdf.numPages;
         const countEl = document.getElementById("custom-pdf-count");
+        const counterEl = document.getElementById("slide-counter");
         const stripEl = document.getElementById("custom-pdf-strip");
         const loadingEl = document.getElementById("custom-pdf-loading");
+        const prevBtn = document.getElementById("pdf-prev") as HTMLButtonElement | null;
+        const nextBtn = document.getElementById("pdf-next") as HTMLButtonElement | null;
         if (countEl) countEl.textContent = String(total);
+        if (counterEl) counterEl.textContent = `1 / ${total}`;
         if (loadingEl) loadingEl.remove();
+
+        let currentPage = 1;
+        const sheets: HTMLElement[] = [];
+
+        function showPage(pageNum: number) {
+          if (pageNum < 1 || pageNum > total) return;
+          currentPage = pageNum;
+          sheets.forEach((s, idx) => {
+            s.style.display = idx + 1 === currentPage ? "flex" : "none";
+          });
+          if (counterEl) counterEl.textContent = `${currentPage} / ${total}`;
+          if (prevBtn) prevBtn.disabled = currentPage <= 1;
+          if (nextBtn) nextBtn.disabled = currentPage >= total;
+          stripEl?.querySelectorAll(".strip-btn").forEach((b, idx) => {
+            b.classList.toggle("is-active", idx + 1 === currentPage);
+          });
+        }
+
+        prevBtn?.addEventListener("click", () => showPage(currentPage - 1));
+        nextBtn?.addEventListener("click", () => showPage(currentPage + 1));
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowLeft") showPage(currentPage - 1);
+          if (e.key === "ArrowRight") showPage(currentPage + 1);
+        });
 
         for (let i = 1; i <= total; i++) {
           if (stripEl) {
@@ -351,11 +385,7 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
             btn.type = "button";
             btn.className = `strip-btn${i === 1 ? " is-active" : ""}`;
             btn.innerHTML = `<span class="strip-num">${String(i).padStart(2, "0")}</span><span class="strip-title">Page ${i}</span>`;
-            btn.addEventListener("click", () => {
-              stripEl.querySelectorAll(".strip-btn").forEach((b) => b.classList.remove("is-active"));
-              btn.classList.add("is-active");
-              document.getElementById(`pdf-page-${i}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-            });
+            btn.addEventListener("click", () => showPage(i));
             stripEl.appendChild(btn);
           }
 
@@ -366,25 +396,32 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
           sheet.id = `pdf-page-${i}`;
           sheet.style.padding = "0";
           sheet.style.overflow = "hidden";
-          sheet.style.display = "flex";
+          sheet.style.display = i === 1 ? "flex" : "none";
           sheet.style.alignItems = "center";
           sheet.style.justifyContent = "center";
           sheet.style.background = "#0b1220";
+          sheet.style.borderRadius = "16px";
+          sheet.style.border = "1px solid rgba(255, 255, 255, 0.12)";
+          sheet.style.width = "100%";
 
           const canvas = document.createElement("canvas");
           canvas.width = viewport.width;
           canvas.height = viewport.height;
           canvas.style.width = "100%";
           canvas.style.height = "auto";
+          canvas.style.maxHeight = "calc(100vh - 140px)";
+          canvas.style.objectFit = "contain";
           canvas.style.display = "block";
           sheet.appendChild(canvas);
           customPdfStage.appendChild(sheet);
+          sheets.push(sheet);
 
           const ctx = canvas.getContext("2d");
           if (ctx) {
             await page.render({ canvasContext: ctx, viewport }).promise;
           }
         }
+        showPage(1);
       } catch (err) {
         const loadingEl = document.getElementById("custom-pdf-loading");
         if (loadingEl) {
@@ -966,7 +1003,8 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     gap: 7px;
   }
 
-  .strip-btn {
+  .strip-btn,
+  :global(#custom-pdf-strip .strip-btn) {
     display: flex;
     align-items: flex-start;
     gap: 10px;
@@ -983,12 +1021,14 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
   }
 
-  .strip-btn:hover {
+  .strip-btn:hover,
+  :global(#custom-pdf-strip .strip-btn:hover) {
     background: rgba(255, 255, 255, 0.05);
     color: #e2e8f0;
   }
 
-  .strip-btn.is-active {
+  .strip-btn.is-active,
+  :global(#custom-pdf-strip .strip-btn.is-active) {
     background: rgba(72, 200, 255, 0.12);
     border-color: rgba(72, 200, 255, 0.45);
     color: #ffffff;
@@ -1043,7 +1083,8 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
       overflow-x: auto;
     }
 
-    .strip-btn {
+    .strip-btn,
+  :global(#custom-pdf-strip .strip-btn) {
       width: auto;
       white-space: nowrap;
       align-items: center;

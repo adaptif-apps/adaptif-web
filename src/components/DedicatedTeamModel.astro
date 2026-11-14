@@ -54,10 +54,7 @@ const pillars: ModelPillar[] = [
   <div class="container dt-model__container">
     <!-- Section Intro -->
     <header class="dt-model__header">
-      <div class="dt-model__eyebrow">
-        <span class="dt-model__dot" aria-hidden="true"></span>
-        <span>The model</span>
-      </div>
+      <span class="dt-model__eyebrow">The model</span>
 
       <h2 id="dt-model-heading" class="dt-model__title">
         One subscription.
@@ -181,29 +178,14 @@ const pillars: ModelPillar[] = [
   }
 
   .dt-model__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 14px;
-    border-radius: var(--radius-pill);
-    background: rgba(8, 18, 44, 0.65);
-    border: 1px solid rgba(72, 200, 255, 0.25);
-    margin-bottom: 18px;
-  }
-
-  .dt-model__eyebrow span:last-child {
-    font-size: 0.82rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: #cbd5e1;
-  }
-
-  .dt-model__dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-brand-cyan, #48C8FF);
-    flex-shrink: 0;
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+    margin-bottom: 14px;
   }
 
   .dt-model__title {

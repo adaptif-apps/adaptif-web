@@ -1,0 +1,472 @@
+---
+// DedicatedTeamRoles.astro - Creative and strategic capabilities available through Adaptif
+interface RoleItem {
+  title: string;
+  description: string;
+  icon:
+    | "director"
+    | "brand"
+    | "motion"
+    | "webDesign"
+    | "content"
+    | "marketing"
+    | "production"
+    | "webDev";
+}
+
+interface RoleGroup {
+  groupLabel: string;
+  roles: RoleItem[];
+}
+
+const roleGroups: RoleGroup[] = [
+  {
+    groupLabel: "Direction & Identity",
+    roles: [
+      {
+        title: "Creative Director",
+        description:
+          "Sets the creative vision and ensures every visual touchpoint stays strategically on brand.",
+        icon: "director",
+      },
+      {
+        title: "Brand Designer",
+        description:
+          "Identity systems, visual language, color hierarchies, and typography.",
+        icon: "brand",
+      },
+    ],
+  },
+  {
+    groupLabel: "Motion & Interface Design",
+    roles: [
+      {
+        title: "Motion Designer",
+        description:
+          "Animation, video editing, social content, and short-form reel production.",
+        icon: "motion",
+      },
+      {
+        title: "Web Designer",
+        description:
+          "Landing pages, UI/UX design, and responsive web layouts built for conversion.",
+        icon: "webDesign",
+      },
+    ],
+  },
+  {
+    groupLabel: "Strategy & Messaging",
+    roles: [
+      {
+        title: "Content Strategist",
+        description:
+          "Copywriting, messaging frameworks, campaign ideation, and tone of voice.",
+        icon: "content",
+      },
+      {
+        title: "Marketing Strategist",
+        description:
+          "Leads campaign strategy, brand positioning, and growth marketing across channels.",
+        icon: "marketing",
+      },
+    ],
+  },
+  {
+    groupLabel: "Delivery & Web Engineering",
+    roles: [
+      {
+        title: "Production Lead",
+        description:
+          "Coordinates briefs, timelines, and quality review across active requests.",
+        icon: "production",
+      },
+      {
+        title: "Web Developer",
+        description:
+          "Builds and ships in Webflow, HTML/CSS, and JavaScript—from landing pages to full sites.",
+        icon: "webDev",
+      },
+    ],
+  },
+];
+---
+
+<section
+  class="dt-roles"
+  id="team-roles"
+  aria-labelledby="dt-roles-heading"
+>
+  <div class="container dt-roles__container">
+    <!-- Section Intro -->
+    <header class="dt-roles__header">
+      <div class="dt-roles__header-copy">
+        <span class="dt-roles__eyebrow">WHO'S ON YOUR TEAM</span>
+
+        <h2 id="dt-roles-heading" class="dt-roles__title">
+          Creative talent, already
+          <span class="title-highlight dt-roles__title-accent">in your corner</span>
+        </h2>
+
+        <p class="dt-roles__description">
+          Your subscription connects you with a bench of specialists across design, strategy, motion, and web—matched to your chosen plan’s scope and active project needs.
+        </p>
+      </div>
+
+      <div class="dt-roles__header-action">
+        <a href="/pricing" class="dt-roles__link-btn">
+          <span>Compare plan scope</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- 4 Functional Capability Clusters (8 Roles) -->
+    <div class="dt-roles__clusters">
+      {roleGroups.map((group, gIdx) => (
+        <section
+          class="dt-roles__cluster reveal-role"
+          aria-label={group.groupLabel}
+          style={`--role-delay: ${gIdx * 80}ms;`}
+        >
+          <div class="dt-roles__cluster-head">
+            <span class="dt-roles__cluster-label">{group.groupLabel}</span>
+          </div>
+
+          <div class="dt-roles__cluster-items">
+            {group.roles.map((role) => (
+              <article class="dt-role-card">
+                <div class="dt-role-card__icon" aria-hidden="true">
+                  {role.icon === "director" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="9" />
+                      <polygon points="15.5 8.5 13.5 13.5 8.5 15.5 10.5 10.5 15.5 8.5" />
+                    </svg>
+                  )}
+                  {role.icon === "brand" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" />
+                      <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5" />
+                    </svg>
+                  )}
+                  {role.icon === "motion" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="5" width="18" height="14" rx="2.5" />
+                      <polygon points="10 9.5 15.5 12 10 14.5 10 9.5" />
+                    </svg>
+                  )}
+                  {role.icon === "webDesign" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="16" rx="2.5" />
+                      <path d="M3 9.5h18M9.5 9.5V20" />
+                    </svg>
+                  )}
+                  {role.icon === "content" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                  )}
+                  {role.icon === "marketing" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 17l6-6 4 4 7-7" />
+                      <path d="M14 8h6v6" />
+                    </svg>
+                  )}
+                  {role.icon === "production" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="4" y="5" width="16" height="14" rx="2" />
+                      <path d="M8 10h8M8 14h5" />
+                    </svg>
+                  )}
+                  {role.icon === "webDev" && (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="8 7 3 12 8 17" />
+                      <polyline points="16 7 21 12 16 17" />
+                      <line x1="13.5" y1="5.5" x2="10.5" y2="18.5" />
+                    </svg>
+                  )}
+                </div>
+
+                <div class="dt-role-card__body">
+                  <h3 class="dt-role-card__title">{role.title}</h3>
+                  <p class="dt-role-card__desc">{role.description}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const initDedicatedTeamRoles = () => {
+    const items = document.querySelectorAll("#team-roles .reveal-role");
+    if (!items.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -30px 0px" }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  };
+
+  initDedicatedTeamRoles();
+  document.addEventListener("astro:page-load", initDedicatedTeamRoles);
+</script>
+
+<style>
+  .dt-roles {
+    position: relative;
+    padding: clamp(72px, 10vw, 128px) 0;
+    background: var(--color-void, #010307);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .dt-roles__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .dt-roles__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px 40px;
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+
+  .dt-roles__header-copy {
+    max-width: 660px;
+  }
+
+  .dt-roles__eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+    margin-bottom: 14px;
+  }
+
+  .dt-roles__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.4rem, 4.3vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: var(--font-letter-spacing-display, -0.04em);
+    font-weight: 400;
+    color: var(--color-text-white, #ffffff);
+    margin-bottom: 16px;
+    text-wrap: balance;
+  }
+
+  .dt-roles__title-accent {
+    font-style: italic;
+  }
+
+  .dt-roles__description {
+    font-size: clamp(0.98rem, 1.1vw, 1.12rem);
+    line-height: 1.6;
+    letter-spacing: -0.015em;
+    color: var(--color-text-secondary, #94a3b8);
+    max-width: 580px;
+    margin: 0;
+  }
+
+  .dt-roles__link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border-radius: var(--radius-pill);
+    background: rgba(10, 20, 48, 0.55);
+    border: 1px solid rgba(72, 200, 255, 0.32);
+    color: #e2e8f0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    transition:
+      transform var(--duration-fast) var(--ease-spring),
+      border-color var(--duration-fast) ease,
+      background var(--duration-fast) ease,
+      color var(--duration-fast) ease;
+  }
+
+  .dt-roles__link-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(72, 200, 255, 0.72);
+    background: rgba(14, 28, 66, 0.78);
+    color: #ffffff;
+  }
+
+  .dt-roles__link-btn:focus-visible {
+    outline: 2px solid var(--color-brand-cyan, #48C8FF);
+    outline-offset: 4px;
+  }
+
+  .dt-roles__link-btn svg {
+    color: var(--color-brand-cyan, #48C8FF);
+    transition: transform var(--duration-fast) var(--ease-spring);
+  }
+
+  .dt-roles__link-btn:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* Clusters Grid */
+  .dt-roles__clusters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .dt-roles__cluster {
+    border-radius: 22px;
+    background: rgba(6, 13, 30, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 16px 36px -16px rgba(0, 0, 0, 0.75);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dt-roles__cluster-head {
+    padding: 13px 24px;
+    background: rgba(2, 6, 16, 0.52);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-roles__cluster-label {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+
+  .dt-roles__cluster-items {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dt-role-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px 24px;
+    transition: background 0.25s ease;
+  }
+
+  .dt-role-card + .dt-role-card {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .dt-role-card:hover {
+    background: rgba(72, 200, 255, 0.03);
+  }
+
+  .dt-role-card__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-brand-cyan, #48C8FF);
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .dt-role-card__body {
+    min-width: 0;
+  }
+
+  .dt-role-card__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.32rem, 1.7vw, 1.6rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+
+  .dt-role-card__desc {
+    font-size: 0.94rem;
+    line-height: 1.58;
+    color: #cbd5e1;
+    margin: 0;
+  }
+
+  /* Reveal animation */
+  .reveal-role {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s ease var(--role-delay, 0ms),
+      transform 0.5s var(--ease-spring) var(--role-delay, 0ms);
+  }
+
+  .reveal-role.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-role {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .dt-roles__link-btn,
+    .dt-roles__link-btn svg {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .dt-roles__clusters {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .dt-role-card {
+      padding: 18px;
+      gap: 14px;
+    }
+  }
+</style>

@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import {
   createAcademyItem,
+  defaultFunnelVisibility,
   getAcademyAiCredentials,
   type AcademyKind,
   type AcademySlide,
@@ -105,8 +106,79 @@ async function fetchWebContext(urlStr: string): Promise<string> {
 
 function buildSystemPrompt(kind: AcademyKind): string {
   const isCourse = kind === "course";
+  const courseFunnelSchema = isCourse
+    ? `,
+    "funnel": {
+      "valueStrip": ["4-5 short trust/value highlights like 'Instant PDF + Web Slides'"],
+      "beforeAfter": {
+        "eyebrow": "The Shift",
+        "title": "Why most approaches stall vs. this system",
+        "subtitle": "1-sentence contrast summary",
+        "beforeItems": [{"title": "Pain 1", "body": "1 sentence"}, {"title": "Pain 2", "body": "1 sentence"}, {"title": "Pain 3", "body": "1 sentence"}],
+        "afterItems": [{"title": "Win 1", "body": "1 sentence"}, {"title": "Win 2", "body": "1 sentence"}, {"title": "Win 3", "body": "1 sentence"}]
+      },
+      "visualComparison": {
+        "eyebrow": "Side-by-Side",
+        "title": "See the difference in execution",
+        "body": "2 sentences explaining the before vs after transformation.",
+        "beforeLabel": "Without System",
+        "afterLabel": "With This Course"
+      },
+      "pillars": {
+        "eyebrow": "Core Architecture",
+        "title": "6 pillars of the system",
+        "subtitle": "1-sentence overview",
+        "items": [{"title": "Pillar 1", "body": "1-2 sentences"}, {"title": "Pillar 2", "body": "1-2 sentences"}, {"title": "Pillar 3", "body": "1-2 sentences"}, {"title": "Pillar 4", "body": "1-2 sentences"}, {"title": "Pillar 5", "body": "1-2 sentences"}, {"title": "Pillar 6", "body": "1-2 sentences"}]
+      },
+      "systemShowcase": {
+        "eyebrow": "Complete Workflow",
+        "title": "How every piece connects",
+        "subtitle": "1-sentence summary of the end-to-end pipeline",
+        "caption": "Short caption describing the workflow"
+      },
+      "explorer": {
+        "eyebrow": "Inside the System",
+        "title": "Explore what you get",
+        "subtitle": "1-sentence summary",
+        "tabs": [
+          {"label": "Tab 1", "title": "Tab Headline", "body": "2 sentences", "specs": [{"label": "Spec 1", "value": "Detail"}, {"label": "Spec 2", "value": "Detail"}, {"label": "Spec 3", "value": "Detail"}, {"label": "Spec 4", "value": "Detail"}]},
+          {"label": "Tab 2", "title": "Tab Headline", "body": "2 sentences", "specs": [{"label": "Spec 1", "value": "Detail"}, {"label": "Spec 2", "value": "Detail"}, {"label": "Spec 3", "value": "Detail"}, {"label": "Spec 4", "value": "Detail"}]},
+          {"label": "Tab 3", "title": "Tab Headline", "body": "2 sentences", "specs": [{"label": "Spec 1", "value": "Detail"}, {"label": "Spec 2", "value": "Detail"}, {"label": "Spec 3", "value": "Detail"}, {"label": "Spec 4", "value": "Detail"}]}
+        ]
+      },
+      "curriculum": {
+        "eyebrow": "Full Curriculum",
+        "title": "Everything covered step by step",
+        "subtitle": "1-sentence summary",
+        "modules": [{"tag": "01", "title": "Topic title", "body": "1 short sentence"}]
+      },
+      "outcomes": {
+        "eyebrow": "Target Outcomes",
+        "title": "What you can ship right after finishing",
+        "subtitle": "1-sentence summary",
+        "bullets": [{"title": "Outcome 1", "body": "1 sentence"}, {"title": "Outcome 2", "body": "1 sentence"}, {"title": "Outcome 3", "body": "1 sentence"}, {"title": "Outcome 4", "body": "1 sentence"}]
+      },
+      "deliverables": {
+        "eyebrow": "Included Assets",
+        "title": "Everything included with your purchase",
+        "items": [
+          {"badge": "Slides", "title": "Interactive Slide Deck", "body": "1 sentence"},
+          {"badge": "PDF", "title": "Vector PDF Handbook", "body": "1 sentence"},
+          {"badge": "Templates", "title": "Ready-to-Use Prompts & Assets", "body": "1 sentence"},
+          {"badge": "Access", "title": "Lifetime Updates", "body": "1 sentence"}
+        ]
+      },
+      "closingCta": {
+        "eyebrow": "Ready to Build",
+        "title": "Get instant access today",
+        "body": "1-2 compelling closing sentences",
+        "checklist": ["Instant slide deck access", "Downloadable vector PDF", "Companion templates & updates"]
+      }
+    }`
+    : "";
+
   return `You are the Adaptif Academy Curriculum Architect.
-Synthesize all provided source files, images, YouTube transcripts, links, and manual notes into a structured JSON object for a ${isCourse ? "PRO COURSE (in-depth, specific, tactical execution system)" : "FREE GUIDE (concise, approachable, high-level playbook)"}.
+Synthesize all provided source files, images, YouTube transcripts, links, and manual notes into a structured JSON object for a ${isCourse ? "PRO COURSE (in-depth, specific, tactical execution system with high-converting sales funnel copy)" : "FREE GUIDE (concise, approachable, high-level playbook)"}.
 
 Return ONLY valid JSON matching this exact schema:
 {
@@ -119,7 +191,7 @@ Return ONLY valid JSON matching this exact schema:
     "readTime": "${isCourse ? "40 min deep-dive · 8 slides" : "10 min read · 6 slides"}",
     "audience": "Specific target roles",
     "takeaways": ["4 to 5 concrete takeaways"],
-    "faq": [{"q": "Question?", "a": "Clear answer."}]
+    "faq": [{"q": "Question?", "a": "Clear answer."}]${courseFunnelSchema}
   },
   "slides": [
     {
@@ -137,7 +209,7 @@ Rules:
 - First slide MUST use layout "cover".
 - Last slide MUST use layout "cta".
 - Middle slides should alternate between "bullets", "grid", "split", and "quote" for visual rhythm.
-- ${isCourse ? "Generate 7 to 9 detailed, actionable slides." : "Generate 5 to 6 clear, high-level slides."}
+- ${isCourse ? "Generate 7 to 9 detailed, actionable slides, and 9 to 12 curriculum modules in funnel.curriculum.modules." : "Generate 5 to 6 clear, high-level slides."}
 - Keep text punchy so every 16:9 slide fits cleanly without overflowing.`;
 }
 
@@ -325,7 +397,12 @@ export const POST: APIRoute = async ({ request }) => {
           : [],
         faq: Array.isArray(generated?.landingData?.faq)
           ? generated.landingData.faq.map((f: any) => ({ q: String(f?.q ?? ""), a: String(f?.a ?? "") }))
-          : []
+          : [],
+        funnelVisibility: defaultFunnelVisibility(),
+        funnel:
+          kind === "course" && generated?.landingData?.funnel && typeof generated.landingData.funnel === "object"
+            ? generated.landingData.funnel
+            : undefined
       },
       slides
     });

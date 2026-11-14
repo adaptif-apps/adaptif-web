@@ -17,12 +17,139 @@ export interface AcademySlide {
   callout?: string;
 }
 
+export type FunnelBlockKey =
+  | "valueStrip"
+  | "beforeAfter"
+  | "visualComparison"
+  | "pillars"
+  | "systemShowcase"
+  | "explorer"
+  | "toolSpotlight"
+  | "curriculum"
+  | "outcomes"
+  | "deliverables"
+  | "closingCta"
+  | "faq";
+
+export type FunnelVisibility = Record<FunnelBlockKey, boolean>;
+
+export const FUNNEL_BLOCKS: { key: FunnelBlockKey; label: string; desc: string }[] = [
+  { key: "valueStrip", label: "Value Strip", desc: "4–5 quick trust & format highlights" },
+  { key: "beforeAfter", label: "Before / After Grid", desc: "6-card problem vs. solution contrast" },
+  { key: "visualComparison", label: "Visual Split Proof", desc: "Side-by-side transformation visual" },
+  { key: "pillars", label: "Core Method Pillars", desc: "6-card framework principles" },
+  { key: "systemShowcase", label: "System Showcase", desc: "Full-width workflow or diagram frame" },
+  { key: "explorer", label: "Interactive Explorer", desc: "Tabbed module & specs preview" },
+  { key: "toolSpotlight", label: "Companion Tool", desc: "Included template or micro-app card" },
+  { key: "curriculum", label: "Curriculum Grid", desc: "Micro-cards covering every topic" },
+  { key: "outcomes", label: "Target Outcomes", desc: "Outcome bullets + vertical visual" },
+  { key: "deliverables", label: "Deliverables Grid", desc: "4-card breakdown of included assets" },
+  { key: "closingCta", label: "Closing Offer Banner", desc: "Final conversion card & checklist" },
+  { key: "faq", label: "FAQ Accordion", desc: "Objection-handling Q&A section" }
+];
+
+export function defaultFunnelVisibility(overrides?: Partial<Record<FunnelBlockKey, boolean>>): FunnelVisibility {
+  const base: FunnelVisibility = {
+    valueStrip: true,
+    beforeAfter: true,
+    visualComparison: true,
+    pillars: true,
+    systemShowcase: true,
+    explorer: true,
+    toolSpotlight: true,
+    curriculum: true,
+    outcomes: true,
+    deliverables: true,
+    closingCta: true,
+    faq: true
+  };
+  if (overrides && typeof overrides === "object") {
+    for (const { key } of FUNNEL_BLOCKS) {
+      if (typeof overrides[key] === "boolean") {
+        base[key] = overrides[key] as boolean;
+      }
+    }
+  }
+  return base;
+}
+
+export interface CourseFunnelData {
+  valueStrip: string[];
+  beforeAfter: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    beforeItems: { title: string; body: string }[];
+    afterItems: { title: string; body: string }[];
+  };
+  visualComparison: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    beforeLabel: string;
+    afterLabel: string;
+    image: string;
+  };
+  pillars: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    items: { title: string; body: string }[];
+  };
+  systemShowcase: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    image: string;
+    caption: string;
+  };
+  explorer: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    tabs: {
+      label: string;
+      title: string;
+      body: string;
+      image: string;
+      specs: { label: string; value: string }[];
+    }[];
+  };
+  curriculum: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    modules: { tag: string; title: string; body: string }[];
+  };
+  outcomes: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    image: string;
+    bullets: { title: string; body: string }[];
+  };
+  deliverables: {
+    eyebrow: string;
+    title: string;
+    items: { badge: string; title: string; body: string }[];
+  };
+  closingCta: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    checklist: string[];
+    image: string;
+  };
+}
+
 export interface AcademyLandingData {
   heroBadge: string;
   readTime: string;
   audience: string;
   takeaways: string[];
   faq: { q: string; a: string }[];
+  funnelVisibility?: FunnelVisibility;
+  funnel?: Partial<CourseFunnelData>;
 }
 
 export interface AcademyItem {
@@ -407,7 +534,9 @@ function mapItem(row: Record<string, any>): AcademyItem {
       takeaways: Array.isArray(landingRaw.takeaways) ? landingRaw.takeaways.map(String) : [],
       faq: Array.isArray(landingRaw.faq)
         ? landingRaw.faq.map((f: any) => ({ q: String(f?.q ?? ""), a: String(f?.a ?? "") }))
-        : []
+        : [],
+      funnelVisibility: defaultFunnelVisibility(landingRaw.funnelVisibility),
+      funnel: landingRaw.funnel && typeof landingRaw.funnel === "object" ? landingRaw.funnel : undefined
     },
     slides: slidesRaw.map((s: any, idx: number) => ({
       id: String(s?.id ?? `slide-${idx + 1}`),

@@ -1,5 +1,5 @@
 ---
-import type { AcademyItem, AcademySettings } from "../lib/academyDb";
+import { FUNNEL_BLOCKS, type AcademyItem, type AcademySettings } from "../lib/academyDb";
 import AcademyGeneratorModal from "./AcademyGeneratorModal.astro";
 
 interface Props {
@@ -196,6 +196,58 @@ const { initialItems, initialSettings } = Astro.props;
             <span>Tool / Micro-App URL (Optional)</span>
             <input type="url" id="acd-tool-url" placeholder="https://..." />
           </label>
+        </div>
+
+        <div class="acd-funnel-visibility-wrap">
+          <div class="acd-funnel-vis-head">
+            <div>
+              <span class="acd-section-kicker">Landing Funnel Sections</span>
+              <h4 class="acd-funnel-vis-title">Show or Hide Funnel Blocks</h4>
+            </div>
+            <div class="acd-funnel-vis-actions">
+              <button type="button" class="acd-btn-mini" id="btn-funnel-all-on">All On</button>
+              <button type="button" class="acd-btn-mini" id="btn-funnel-minimal">Essential Only</button>
+            </div>
+          </div>
+
+          <div class="acd-funnel-grid" id="acd-funnel-toggles">
+            {FUNNEL_BLOCKS.map((block) => (
+              <label class="acd-funnel-toggle" data-funnel-key={block.key}>
+                <div class="acd-funnel-toggle-copy">
+                  <span class="acd-funnel-toggle-name">{block.label}</span>
+                  <span class="acd-funnel-toggle-desc">{block.desc}</span>
+                </div>
+                <input type="checkbox" class="acd-funnel-chk" data-funnel-key={block.key} checked />
+                <span class="acd-switch" aria-hidden="true"></span>
+              </label>
+            ))}
+          </div>
+
+          <details class="acd-funnel-details">
+            <summary>Funnel Media &amp; Key Headlines (Optional Overrides)</summary>
+            <div class="acd-form-grid acd-funnel-fields-grid">
+              <label class="acd-field acd-span-2">
+                <span>Value Strip Items (one per line)</span>
+                <textarea id="acd-funnel-value-strip" rows="3" placeholder="Instant Access&#10;Vector PDF + Online Slides&#10;Included Templates"></textarea>
+              </label>
+              <label class="acd-field">
+                <span>Before / After Section Title</span>
+                <input type="text" id="acd-funnel-ba-title" placeholder="From scattered prompts to a repeatable system" />
+              </label>
+              <label class="acd-field">
+                <span>Visual Split Image URL</span>
+                <input type="text" id="acd-funnel-vc-image" placeholder="/images/why-us/our-technology.jpg" />
+              </label>
+              <label class="acd-field">
+                <span>System Showcase Image URL</span>
+                <input type="text" id="acd-funnel-sys-image" placeholder="/images/why-us/ai-excellence.jpg" />
+              </label>
+              <label class="acd-field">
+                <span>Target Outcomes Image URL</span>
+                <input type="text" id="acd-funnel-out-image" placeholder="/images/why-us/our-technology.jpg" />
+              </label>
+            </div>
+          </details>
         </div>
       </div>
 
@@ -522,6 +574,18 @@ const { initialItems, initialSettings } = Astro.props;
       el("acd-audience")!.value = item.landingData?.audience || "";
       el("acd-takeaways")!.value = (item.landingData?.takeaways || []).join("\n");
 
+      const vis = item.landingData?.funnelVisibility || {};
+      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
+        const key = chk.dataset.funnelKey || "";
+        chk.checked = (vis as Record<string, boolean>)[key] !== false;
+      });
+      const funnel = item.landingData?.funnel || {};
+      el("acd-funnel-value-strip")!.value = (funnel.valueStrip || []).join("\n");
+      el("acd-funnel-ba-title")!.value = funnel.beforeAfter?.title || "";
+      el("acd-funnel-vc-image")!.value = funnel.visualComparison?.image || "";
+      el("acd-funnel-sys-image")!.value = funnel.systemShowcase?.image || "";
+      el("acd-funnel-out-image")!.value = funnel.outcomes?.image || "";
+
       const baseFolder = item.kind === "course" ? "courses" : "guides";
       const landingPreview = document.getElementById("acd-preview-landing") as HTMLAnchorElement | null;
       const slidesPreview = document.getElementById("acd-preview-slides") as HTMLAnchorElement | null;
@@ -603,11 +667,43 @@ const { initialItems, initialSettings } = Astro.props;
       showStudioToast(`AI generated ${newItem.kind}: ${newItem.title}`);
     });
 
+    document.getElementById("btn-funnel-all-on")?.addEventListener("click", () => {
+      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
+        chk.checked = true;
+      });
+    });
+
+    document.getElementById("btn-funnel-minimal")?.addEventListener("click", () => {
+      const essential = new Set(["valueStrip", "toolSpotlight", "curriculum", "deliverables", "closingCta", "faq"]);
+      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
+        chk.checked = essential.has(chk.dataset.funnelKey || "");
+      });
+    });
+
     formEl?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!selectedId) return;
       const item = items.find((i) => i.id === selectedId);
       if (!item) return;
+
+      const funnelVisibility: Record<string, boolean> = {};
+      document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
+        if (chk.dataset.funnelKey) {
+          funnelVisibility[chk.dataset.funnelKey] = chk.checked;
+        }
+      });
+
+      const prevFunnel: any = item.landingData?.funnel ? structuredClone(item.landingData.funnel) : {};
+      const valueStripLines = el("acd-funnel-value-strip")!.value.split("\n").map((x) => x.trim()).filter(Boolean);
+      if (valueStripLines.length > 0) prevFunnel.valueStrip = valueStripLines;
+      const baTitle = el("acd-funnel-ba-title")!.value.trim();
+      if (baTitle) prevFunnel.beforeAfter = { ...(prevFunnel.beforeAfter || {}), title: baTitle };
+      const vcImg = el("acd-funnel-vc-image")!.value.trim();
+      if (vcImg) prevFunnel.visualComparison = { ...(prevFunnel.visualComparison || {}), image: vcImg };
+      const sysImg = el("acd-funnel-sys-image")!.value.trim();
+      if (sysImg) prevFunnel.systemShowcase = { ...(prevFunnel.systemShowcase || {}), image: sysImg };
+      const outImg = el("acd-funnel-out-image")!.value.trim();
+      if (outImg) prevFunnel.outcomes = { ...(prevFunnel.outcomes || {}), image: outImg };
 
       const payload = {
         kind: el("acd-kind")!.value,
@@ -630,7 +726,9 @@ const { initialItems, initialSettings } = Astro.props;
           readTime: el("acd-read-time")!.value.trim(),
           audience: el("acd-audience")!.value.trim(),
           takeaways: el("acd-takeaways")!.value.split("\n").map((x) => x.trim()).filter(Boolean),
-          faq: item.landingData?.faq || []
+          faq: item.landingData?.faq || [],
+          funnelVisibility,
+          funnel: prevFunnel
         },
         slides: collectSlidesFromDOM()
       };
@@ -1047,6 +1145,170 @@ const { initialItems, initialSettings } = Astro.props;
 
     .acd-span-2 {
       grid-column: span 1;
+    }
+  }
+
+  .acd-funnel-visibility-wrap {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .acd-funnel-vis-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .acd-funnel-vis-title {
+    margin: 4px 0 0;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .acd-funnel-vis-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .acd-btn-mini {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.74rem;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+
+  .acd-btn-mini:hover {
+    border-color: rgba(72, 200, 255, 0.45);
+    color: var(--text-primary);
+    background: rgba(72, 200, 255, 0.08);
+  }
+
+  .acd-funnel-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .acd-funnel-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    background: rgba(5, 16, 28, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .acd-funnel-toggle:hover {
+    border-color: rgba(72, 200, 255, 0.28);
+  }
+
+  .acd-funnel-toggle-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .acd-funnel-toggle-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .acd-funnel-toggle-desc {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    line-height: 1.3;
+  }
+
+  .acd-funnel-chk {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .acd-switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 34px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .acd-switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #d8ecf8;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .acd-funnel-chk:checked + .acd-switch {
+    background: rgba(72, 200, 255, 0.28);
+    border-color: rgba(72, 200, 255, 0.7);
+  }
+
+  .acd-funnel-chk:checked + .acd-switch::after {
+    transform: translateX(14px);
+    background: var(--color-brand-cyan, #48c8ff);
+  }
+
+  .acd-funnel-details {
+    margin-top: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    background: rgba(5, 16, 28, 0.42);
+    padding: 10px 14px;
+  }
+
+  .acd-funnel-details summary {
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #9ce1ff;
+    list-style: none;
+  }
+
+  .acd-funnel-fields-grid {
+    margin-top: 14px;
+  }
+
+  @media (max-width: 1120px) {
+    .acd-funnel-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 720px) {
+    .acd-funnel-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

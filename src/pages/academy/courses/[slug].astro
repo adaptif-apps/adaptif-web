@@ -3,6 +3,7 @@ import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
 import {
+  defaultFunnelVisibility,
   getAcademyItemBySlug,
   getAcademySettings,
   verifyAccessToken
@@ -26,14 +27,229 @@ const isUnlocked =
   effectiveAccessMode === "open" ||
   (effectiveAccessMode === "checkout_redirect" && Astro.url.searchParams.get("checkout") === "success") ||
   (await verifyAccessToken(item.id, queryToken || cookieToken));
+
+const vis = defaultFunnelVisibility(item.landingData.funnelVisibility);
+const f = item.landingData.funnel || {};
+const coverImg = item.coverImage || "/images/why-us/our-technology.jpg";
+
+// Smart fallbacks so every funnel block looks complete even on older courses
+const valueStrip =
+  Array.isArray(f.valueStrip) && f.valueStrip.length > 0
+    ? f.valueStrip
+    : [
+        "Instant Digital Access",
+        "Interactive Web Slide Deck",
+        "Selectable-Text Vector PDF",
+        item.toolName ? `Includes ${item.toolName}` : "Actionable Templates",
+        "No Quizzes or Fluff"
+      ];
+
+const beforeAfter = {
+  eyebrow: f.beforeAfter?.eyebrow || "The Execution Gap",
+  title: f.beforeAfter?.title || "Why ad-hoc workflows stall vs. a structured system",
+  subtitle:
+    f.beforeAfter?.subtitle ||
+    "Stop piecing together scattered tutorials. Move from trial-and-error to a repeatable production pipeline.",
+  beforeItems:
+    Array.isArray(f.beforeAfter?.beforeItems) && f.beforeAfter!.beforeItems.length > 0
+      ? f.beforeAfter!.beforeItems
+      : [
+          { title: "Fragmented Tools", body: "Jumping between disconnected prompts and docs with inconsistent quality." },
+          { title: "Hours of Trial & Error", body: "Rebuilding basic workflows from scratch every time a new project starts." },
+          { title: "No Clear Guardrails", body: "Generic outputs that miss brand standards and require heavy manual rework." }
+        ],
+  afterItems:
+    Array.isArray(f.beforeAfter?.afterItems) && f.beforeAfter!.afterItems.length > 0
+      ? f.beforeAfter!.afterItems
+      : [
+          { title: "Unified Playbook", body: "One coherent, step-by-step system you can reference online or as a PDF." },
+          { title: "Rapid Execution", body: "Apply proven structures and companion templates in minutes instead of weeks." },
+          { title: "Consistent Craft", body: "Repeatable, studio-grade deliverables built for real client and team work." }
+        ]
+};
+
+const visualComparison = {
+  eyebrow: f.visualComparison?.eyebrow || "Side-by-Side Impact",
+  title: f.visualComparison?.title || "Built for real-world output, not theory",
+  body:
+    f.visualComparison?.body ||
+    item.description ||
+    "See how structured guardrails transform raw inputs into cohesive, client-ready results.",
+  beforeLabel: f.visualComparison?.beforeLabel || "Ad-Hoc Approach",
+  afterLabel: f.visualComparison?.afterLabel || "With This System",
+  image: f.visualComparison?.image || coverImg
+};
+
+const pillars = {
+  eyebrow: f.pillars?.eyebrow || "Core Architecture",
+  title: f.pillars?.title || "6 pillars of the system",
+  subtitle:
+    f.pillars?.subtitle ||
+    "Every concept is organized into practical building blocks you can deploy immediately.",
+  items:
+    Array.isArray(f.pillars?.items) && f.pillars!.items.length > 0
+      ? f.pillars!.items
+      : (item.landingData.takeaways.length > 0
+          ? item.landingData.takeaways.map((t, idx) => ({
+              title: `Pillar 0${idx + 1}`,
+              body: t
+            }))
+          : [
+              { title: "Clear Foundations", body: "Establish constraints and structure before generating assets." },
+              { title: "Repeatable Pipelines", body: "Turn one-off wins into documented multi-step workflows." },
+              { title: "Visual Consistency", body: "Keep typography, lighting, and tone locked across channels." },
+              { title: "Companion Assets", body: "Start faster with pre-built templates and prompt kits." },
+              { title: "Vector PDF Reference", body: "Keep the entire handbook offline with selectable text." },
+              { title: "Zero Busywork", body: "Skip filler modules and jump straight to execution." }
+            ])
+};
+
+const systemShowcase = {
+  eyebrow: f.systemShowcase?.eyebrow || "Complete Workflow",
+  title: f.systemShowcase?.title || "How every piece connects",
+  subtitle:
+    f.systemShowcase?.subtitle ||
+    "A unified visual overview of the steps, assets, and deliverables inside this course.",
+  image: f.systemShowcase?.image || coverImg,
+  caption:
+    f.systemShowcase?.caption ||
+    `${item.title} — End-to-end production system & companion workflow`
+};
+
+const explorerTabs =
+  Array.isArray(f.explorer?.tabs) && f.explorer!.tabs.length > 0
+    ? f.explorer!.tabs
+    : [
+        {
+          label: "Slide Deck",
+          title: `${item.slides.length || 6} Interactive Slides`,
+          body: "Navigate the full visual curriculum directly in your browser with crisp typography and structured layouts.",
+          image: coverImg,
+          specs: [
+            { label: "Format", value: "16:9 Web Deck" },
+            { label: "Navigation", value: "Keyboard & Click" },
+            { label: "Read Time", value: item.landingData.readTime || "Self-paced" },
+            { label: "Access", value: "Instant & Lifetime" }
+          ]
+        },
+        {
+          label: "Vector PDF",
+          title: "Pixel-Perfect Offline Handbook",
+          body: "Download a crisp PDF generated directly from the web slides—preserving layout fidelity and selectable text.",
+          image: coverImg,
+          specs: [
+            { label: "Text", value: "100% Selectable" },
+            { label: "Fidelity", value: "Matches Web Slides" },
+            { label: "Usage", value: "Offline & Team Share" },
+            { label: "Updates", value: "Included" }
+          ]
+        },
+        {
+          label: item.toolName || "Companion Kit",
+          title: item.toolName || "Ready-to-Use Templates",
+          body: "Pair the handbook with practical templates, prompt kits, or micro-apps designed for immediate application.",
+          image: coverImg,
+          specs: [
+            { label: "Asset Type", value: item.toolType || "Template / Kit" },
+            { label: "Setup Time", value: "Under 5 minutes" },
+            { label: "Modules", value: "None required" },
+            { label: "License", value: "Commercial Projects" }
+          ]
+        }
+      ];
+
+const explorer = {
+  eyebrow: f.explorer?.eyebrow || "Inside the System",
+  title: f.explorer?.title || "Explore every component",
+  subtitle:
+    f.explorer?.subtitle || "Inspect the slide deck, vector PDF, and companion resources before you enroll.",
+  tabs: explorerTabs
+};
+
+const curriculumModules =
+  Array.isArray(f.curriculum?.modules) && f.curriculum!.modules.length > 0
+    ? f.curriculum!.modules
+    : item.slides.map((s, idx) => ({
+        tag: idx < 9 ? `0${idx + 1}` : `${idx + 1}`,
+        title: s.title,
+        body: s.body || (s.bullets && s.bullets[0]) || "Core tactical breakdown"
+      }));
+
+const curriculum = {
+  eyebrow: f.curriculum?.eyebrow || "Deck Curriculum",
+  title: f.curriculum?.title || `${curriculumModules.length} focused sections + downloadable PDF`,
+  subtitle:
+    f.curriculum?.subtitle || "Every slide is engineered to be scanned, applied, and referenced without fluff.",
+  modules: curriculumModules
+};
+
+const outcomes = {
+  eyebrow: f.outcomes?.eyebrow || "Target Outcomes",
+  title: f.outcomes?.title || "What you will ship after finishing",
+  subtitle:
+    f.outcomes?.subtitle ||
+    (item.landingData.audience ? `Built specifically for ${item.landingData.audience}.` : "Designed for immediate execution."),
+  image: f.outcomes?.image || coverImg,
+  bullets:
+    Array.isArray(f.outcomes?.bullets) && f.outcomes!.bullets.length > 0
+      ? f.outcomes!.bullets
+      : (item.landingData.takeaways.length > 0
+          ? item.landingData.takeaways.map((t, i) => ({
+              title: `Outcome 0${i + 1}`,
+              body: t
+            }))
+          : [
+              { title: "Faster Production", body: "Cut concept-to-delivery cycles dramatically." },
+              { title: "Repeatable Quality", body: "Eliminate guesswork with documented guardrails." }
+            ])
+};
+
+const deliverables = {
+  eyebrow: f.deliverables?.eyebrow || "Included Assets",
+  title: f.deliverables?.title || "Everything included with your purchase",
+  items:
+    Array.isArray(f.deliverables?.items) && f.deliverables!.items.length > 0
+      ? f.deliverables!.items
+      : [
+          { badge: "Deck", title: "Online Slide Viewer", body: "Full-screen 16:9 interactive presentation accessible from any device." },
+          { badge: "PDF", title: "Selectable-Text Vector PDF", body: "Exported directly from the slide engine for pixel-perfect offline reference." },
+          { badge: "Kit", title: item.toolName || "Companion Templates", body: "Practical templates, prompts, or micro-app links ready to duplicate." },
+          { badge: "Access", title: "Zero Locked Modules", body: "Immediate access to all slides and assets the moment checkout completes." }
+        ]
+};
+
+const closingCta = {
+  eyebrow: f.closingCta?.eyebrow || "Instant Access",
+  title: f.closingCta?.title || `Start using ${item.title} today`,
+  body:
+    f.closingCta?.body ||
+    item.subtitle ||
+    "Unlock the full online slide deck, downloadable PDF, and companion resources in seconds.",
+  checklist:
+    Array.isArray(f.closingCta?.checklist) && f.closingCta!.checklist.length > 0
+      ? f.closingCta!.checklist
+      : [
+          "Complete online slide deck",
+          "High-resolution selectable PDF",
+          item.toolName ? `Companion asset: ${item.toolName}` : "Ready-to-use workflows",
+          "Instant access upon checkout"
+        ],
+  image: f.closingCta?.image || coverImg
+};
+
+const primaryCtaHref = isUnlocked
+  ? `/academy/courses/${item.slug}/slides`
+  : item.stripeCheckoutUrl || "#course-enroll";
+const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
 ---
 
 <Layout title={`${item.title} — Course | Adaptif Academy`} description={item.subtitle || item.description}>
   <Header />
-  <main class="course-landing">
-    <section class="course-hero is-visible">
-      <div class="course-container">
-        <div class="course-breadcrumb">
+  <main class="course-funnel">
+    <!-- 1. HERO SPLIT -->
+    <section class="cf-hero is-visible">
+      <div class="cf-container">
+        <div class="cf-breadcrumb">
           <a href="/academy">Academy</a>
           <span>/</span>
           <a href="/academy/courses">Courses</a>
@@ -41,18 +257,18 @@ const isUnlocked =
           <span>{item.category}</span>
         </div>
 
-        <div class="course-hero-grid">
-          <div class="course-hero-copy">
-            <div class="course-badges">
+        <div class="cf-hero-grid">
+          <div class="cf-hero-copy">
+            <div class="cf-badges">
               <span class="badge-pro">{item.landingData.heroBadge || "Pro Course"}</span>
               {item.priceLabel && <span class="badge-price">{item.priceLabel}</span>}
               {item.landingData.readTime && <span class="badge-meta">{item.landingData.readTime}</span>}
             </div>
 
-            <h1 class="course-title">{item.title}</h1>
-            <p class="course-subtitle">{item.subtitle || item.description}</p>
+            <h1 class="cf-title">{item.title}</h1>
+            <p class="cf-subtitle">{item.subtitle || item.description}</p>
 
-            <div class="course-cta-row">
+            <div class="cf-cta-row">
               {isUnlocked ? (
                 <>
                   <a href={`/academy/courses/${item.slug}/slides`} class="btn-primary-cyan">
@@ -62,41 +278,231 @@ const isUnlocked =
                     Download PDF
                   </a>
                 </>
-              ) : item.stripeCheckoutUrl ? (
+              ) : (
                 <a
-                  href={item.stripeCheckoutUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={primaryCtaHref}
+                  target={primaryCtaExternal ? "_blank" : undefined}
+                  rel={primaryCtaExternal ? "noopener noreferrer" : undefined}
                   class="btn-primary-cyan"
                 >
-                  Buy Course {item.priceLabel ? `— ${item.priceLabel}` : ""} ↗
-                </a>
-              ) : (
-                <a href="#course-enroll" class="btn-primary-cyan">
-                  Get Course Access
+                  {item.stripeCheckoutUrl
+                    ? `Buy Course ${item.priceLabel ? `— ${item.priceLabel}` : ""}`
+                    : "Get Course Access"}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 5l7 7-7 7" />
+                  </svg>
                 </a>
               )}
               {item.toolUrl && isUnlocked && (
                 <a href={item.toolUrl} target="_blank" rel="noopener noreferrer" class="btn-tool-pill">
-                  Launch {item.toolName || "Companion Tool"} ↗
+                  Launch {item.toolName || "Companion Tool"}
                 </a>
               )}
             </div>
+
+            {item.landingData.audience && (
+              <p class="cf-hero-meta">
+                Designed for <strong>{item.landingData.audience}</strong>
+              </p>
+            )}
           </div>
 
-          {item.coverImage && (
-            <div class="course-cover-frame">
-              <img src={item.coverImage} alt={item.title} class="course-cover-img" />
+          <div class="cf-hero-card">
+            <div class="cf-hero-card-media">
+              <img src={coverImg} alt={item.title} />
+              <span class="cf-hero-card-tag">{item.category}</span>
             </div>
-          )}
+            <div class="cf-hero-card-body">
+              <div class="cf-hero-card-row">
+                <span class="cf-hc-label">Format</span>
+                <span class="cf-hc-val">Online Slides + Vector PDF</span>
+              </div>
+              {item.toolName && (
+                <div class="cf-hero-card-row">
+                  <span class="cf-hc-label">Included Tool</span>
+                  <span class="cf-hc-val cf-cyan">{item.toolName}</span>
+                </div>
+              )}
+              <div class="cf-hero-card-row">
+                <span class="cf-hc-label">Price</span>
+                <span class="cf-hc-val">{item.priceLabel || "Included"}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Companion Tool / Template Spotlight -->
-    {(item.toolName || item.toolUrl) && (
-      <section class="course-section is-visible">
-        <div class="course-container">
+    <!-- 2. VALUE STRIP -->
+    {vis.valueStrip && valueStrip.length > 0 && (
+      <section class="cf-value-strip is-visible">
+        <div class="cf-container">
+          <div class="cf-strip-bar">
+            {valueStrip.map((label) => (
+              <div class="cf-strip-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 3. BEFORE / AFTER GRID -->
+    {vis.beforeAfter && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">{beforeAfter.eyebrow}</span>
+            <h2 class="section-title">{beforeAfter.title}</h2>
+            <p class="section-sub">{beforeAfter.subtitle}</p>
+          </div>
+
+          <div class="cf-ba-grid">
+            {beforeAfter.beforeItems.slice(0, 3).map((card, idx) => (
+              <div class="cf-ba-card cf-ba-before">
+                <span class="cf-ba-pill cf-pill-before">Before · 0{idx + 1}</span>
+                <h3>{card.title}</h3>
+                <p>{card.body}</p>
+              </div>
+            ))}
+            {beforeAfter.afterItems.slice(0, 3).map((card, idx) => (
+              <div class="cf-ba-card cf-ba-after">
+                <span class="cf-ba-pill cf-pill-after">After · 0{idx + 1}</span>
+                <h3>{card.title}</h3>
+                <p>{card.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 4. VISUAL SPLIT COMPARISON -->
+    {vis.visualComparison && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-split-proof">
+            <div class="cf-split-copy">
+              <span class="section-eyebrow">{visualComparison.eyebrow}</span>
+              <h2 class="section-title">{visualComparison.title}</h2>
+              <p class="section-copy">{visualComparison.body}</p>
+            </div>
+            <div class="cf-split-visual">
+              <img src={visualComparison.image} alt={visualComparison.title} />
+              <div class="cf-split-badges">
+                <span class="cf-badge-dark">{visualComparison.beforeLabel}</span>
+                <span class="cf-badge-cyan">{visualComparison.afterLabel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 5. CORE METHOD PILLARS -->
+    {vis.pillars && pillars.items.length > 0 && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">{pillars.eyebrow}</span>
+            <h2 class="section-title">{pillars.title}</h2>
+            <p class="section-sub">{pillars.subtitle}</p>
+          </div>
+
+          <div class="cf-pillars-grid">
+            {pillars.items.slice(0, 6).map((pillar, idx) => (
+              <div class="cf-pillar-card">
+                <span class="cf-pillar-num">0{idx + 1}</span>
+                <h3>{pillar.title}</h3>
+                <p>{pillar.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 6. SYSTEM / WORKFLOW SHOWCASE -->
+    {vis.systemShowcase && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">{systemShowcase.eyebrow}</span>
+            <h2 class="section-title">{systemShowcase.title}</h2>
+            <p class="section-sub">{systemShowcase.subtitle}</p>
+          </div>
+
+          <div class="cf-showcase-frame">
+            <div class="cf-showcase-topbar">
+              <span class="cf-dot"></span>
+              <span class="cf-dot"></span>
+              <span class="cf-dot"></span>
+              <span class="cf-showcase-url">{item.title}</span>
+            </div>
+            <div class="cf-showcase-media">
+              <img src={systemShowcase.image} alt={systemShowcase.title} />
+            </div>
+            {systemShowcase.caption && <p class="cf-showcase-caption">{systemShowcase.caption}</p>}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 7. INTERACTIVE TABBED EXPLORER -->
+    {vis.explorer && explorer.tabs.length > 0 && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">{explorer.eyebrow}</span>
+            <h2 class="section-title">{explorer.title}</h2>
+            <p class="section-sub">{explorer.subtitle}</p>
+          </div>
+
+          <div class="cf-explorer-tabs" role="tablist">
+            {explorer.tabs.map((tab, idx) => (
+              <button
+                type="button"
+                class={`cf-tab-btn ${idx === 0 ? "is-active" : ""}`}
+                data-tab-index={idx}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div class="cf-explorer-panels">
+            {explorer.tabs.map((tab, idx) => (
+              <div class={`cf-explorer-panel ${idx === 0 ? "is-active" : ""}`} data-panel-index={idx} hidden={idx !== 0}>
+                <div class="cf-explorer-img">
+                  <img src={tab.image || coverImg} alt={tab.title} />
+                </div>
+                <div class="cf-explorer-info">
+                  <h3>{tab.title}</h3>
+                  <p>{tab.body}</p>
+                  <div class="cf-specs-grid">
+                    {(tab.specs || []).slice(0, 4).map((spec) => (
+                      <div class="cf-spec-box">
+                        <span class="cf-spec-label">{spec.label}</span>
+                        <span class="cf-spec-val">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 8. COMPANION TOOL SPOTLIGHT -->
+    {vis.toolSpotlight && (item.toolName || item.toolUrl) && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
           <div class="tool-spotlight-card">
             <div>
               <span class="section-eyebrow">Included With This Course</span>
@@ -107,7 +513,7 @@ const isUnlocked =
             </div>
             {isUnlocked && item.toolUrl ? (
               <a href={item.toolUrl} target="_blank" rel="noopener noreferrer" class="btn-primary-cyan">
-                Open {item.toolType || "Tool"} ↗
+                Open {item.toolType || "Tool"}
               </a>
             ) : (
               <span class="tool-locked-pill">Included upon purchase</span>
@@ -117,47 +523,22 @@ const isUnlocked =
       </section>
     )}
 
-    <!-- Specific Curriculum & Deliverables -->
-    <section class="course-section is-visible">
-      <div class="course-container">
-        <div class="course-details-grid">
-          <div class="detail-card">
-            <span class="section-eyebrow">System Breakdown</span>
-            <h2 class="section-title">What you will build</h2>
-            <p class="section-copy">{item.description}</p>
-            {item.landingData.audience && (
-              <p class="audience-note">
-                <strong>Built for:</strong> {item.landingData.audience}
-              </p>
-            )}
+    <!-- 9. CURRICULUM MICRO-GRID -->
+    {vis.curriculum && curriculum.modules.length > 0 && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">{curriculum.eyebrow}</span>
+            <h2 class="section-title">{curriculum.title}</h2>
+            <p class="section-sub">{curriculum.subtitle}</p>
           </div>
 
-          <div class="detail-card">
-            <span class="section-eyebrow">What’s Inside</span>
-            <ul class="takeaways-list">
-              {(item.landingData.takeaways.length > 0
-                ? item.landingData.takeaways
-                : ["Full online slide deck", "Vector PDF handbook", "Included templates & workflow"]
-              ).map((point) => (
-                <li>{point}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {item.slides.length > 0 && (
-      <section class="course-section is-visible">
-        <div class="course-container">
-          <span class="section-eyebrow">Deck Curriculum</span>
-          <h2 class="section-title">{item.slides.length} focused slides + downloadable PDF</h2>
           <div class="curriculum-grid">
-            {item.slides.map((slide, idx) => (
+            {curriculum.modules.map((mod, idx) => (
               <div class="curriculum-card">
-                <span class="curr-num">0{idx + 1}</span>
-                <h3 class="curr-title">{slide.title}</h3>
-                {slide.body && <p class="curr-body">{slide.body}</p>}
+                <span class="curr-num">{mod.tag || `0${idx + 1}`}</span>
+                <h3 class="curr-title">{mod.title}</h3>
+                {mod.body && <p class="curr-body">{mod.body}</p>}
               </div>
             ))}
           </div>
@@ -165,192 +546,742 @@ const isUnlocked =
       </section>
     )}
 
-    <!-- Bottom Purchase / Access Card -->
-    <section class="course-enroll-section is-visible" id="course-enroll">
-      <div class="course-container">
-        <div class="enroll-card">
-          <div>
-            <span class="badge-pro">{isUnlocked ? "Unlocked" : item.priceLabel || "Pro Course"}</span>
-            <h2 class="enroll-title">
-              {isUnlocked ? "You have full access" : `Get instant access to ${item.title}`}
-            </h2>
-            <p class="enroll-desc">
-              {isUnlocked
-                ? "Read the interactive slide deck online, export the vector PDF, or launch your companion tool."
-                : "One-time purchase. Instant access to the online slide deck, downloadable PDF, and included companion tool."}
-            </p>
-          </div>
-          <div class="enroll-actions">
-            {isUnlocked ? (
-              <>
-                <a href={`/academy/courses/${item.slug}/slides`} class="btn-primary-cyan">
-                  Open Course Slides
-                </a>
-                <a href={`/academy/courses/${item.slug}/slides?print=1`} class="btn-outline-glass">
-                  Download PDF
-                </a>
-              </>
-            ) : item.stripeCheckoutUrl ? (
-              <a
-                href={item.stripeCheckoutUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn-primary-cyan"
-              >
-                Checkout with Stripe {item.priceLabel ? `(${item.priceLabel})` : ""} ↗
-              </a>
-            ) : (
-              <span class="tool-locked-pill">Stripe checkout link pending</span>
-            )}
+    <!-- 10. TARGET OUTCOMES SPLIT -->
+    {vis.outcomes && outcomes.bullets.length > 0 && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-outcomes-split">
+            <div class="cf-outcomes-copy">
+              <span class="section-eyebrow">{outcomes.eyebrow}</span>
+              <h2 class="section-title">{outcomes.title}</h2>
+              <p class="section-sub">{outcomes.subtitle}</p>
+              <div class="cf-outcomes-list">
+                {outcomes.bullets.map((b) => (
+                  <div class="cf-outcome-item">
+                    <span class="cf-outcome-check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                    </span>
+                    <div>
+                      <h4>{b.title}</h4>
+                      <p>{b.body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="cf-outcomes-visual">
+              <img src={outcomes.image} alt={outcomes.title} />
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    )}
+
+    <!-- 11. DELIVERABLES 4-CARD GRID -->
+    {vis.deliverables && deliverables.items.length > 0 && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">{deliverables.eyebrow}</span>
+            <h2 class="section-title">{deliverables.title}</h2>
+          </div>
+          <div class="cf-deliverables-grid">
+            {deliverables.items.slice(0, 4).map((deliv) => (
+              <div class="cf-deliv-card">
+                <span class="cf-deliv-badge">{deliv.badge}</span>
+                <h3>{deliv.title}</h3>
+                <p>{deliv.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 12. CLOSING CONVERSION BANNER -->
+    {vis.closingCta && (
+      <section class="cf-section is-visible" id="course-enroll">
+        <div class="cf-container">
+          <div class="cf-closing-card">
+            <div class="cf-closing-visual">
+              <img src={closingCta.image} alt={item.title} />
+            </div>
+            <div class="cf-closing-copy">
+              <span class="section-eyebrow">{closingCta.eyebrow}</span>
+              <h2 class="cf-closing-title">{closingCta.title}</h2>
+              <p class="cf-closing-body">{closingCta.body}</p>
+              <ul class="cf-closing-list">
+                {closingCta.checklist.map((line) => (
+                  <li>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+              <div class="cf-closing-actions">
+                {isUnlocked ? (
+                  <>
+                    <a href={`/academy/courses/${item.slug}/slides`} class="btn-primary-cyan">
+                      Open Course Slides
+                    </a>
+                    <a href={`/academy/courses/${item.slug}/slides?print=1`} class="btn-outline-glass">
+                      Download PDF
+                    </a>
+                  </>
+                ) : item.stripeCheckoutUrl ? (
+                  <a
+                    href={item.stripeCheckoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn-primary-cyan"
+                  >
+                    Buy Course {item.priceLabel ? `— ${item.priceLabel}` : ""}
+                  </a>
+                ) : (
+                  <span class="tool-locked-pill">Stripe Checkout URL not configured yet</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 13. FAQ ACCORDION -->
+    {vis.faq && item.landingData.faq.length > 0 && (
+      <section class="cf-section is-visible">
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">Questions &amp; Answers</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+          </div>
+          <div class="faq-list">
+            {item.landingData.faq.map((entry, idx) => (
+              <details class="faq-card" open={idx === 0}>
+                <summary>
+                  <span>{entry.q}</span>
+                  <span class="faq-plus" aria-hidden="true">+</span>
+                </summary>
+                <p>{entry.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
   </main>
   <Footer />
 </Layout>
 
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".cf-tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = btn.dataset.tabIndex;
+      document.querySelectorAll(".cf-tab-btn").forEach((b) => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      document.querySelectorAll<HTMLElement>(".cf-explorer-panel").forEach((panel) => {
+        const match = panel.dataset.panelIndex === idx;
+        panel.hidden = !match;
+        panel.classList.toggle("is-active", match);
+      });
+    });
+  });
+</script>
+
 <style>
-  .course-landing {
-    position: relative;
-    z-index: 1;
+  .course-funnel {
+    --bg-void: var(--color-void, #010307);
+    --cyan-primary: var(--color-brand-cyan, #48c8ff);
+    --cyan-soft: #9ce1ff;
+    --text-primary: var(--color-text-primary, #f8fafc);
+    --text-secondary: var(--color-text-secondary, #94a3b8);
+    --text-muted: var(--color-text-muted, #64748b);
+    padding-top: 108px;
+    padding-bottom: 90px;
+    background: var(--bg-void);
+    min-height: 100vh;
   }
 
-  .course-container {
-    max-width: 1080px;
+  .cf-container {
+    width: min(1180px, 92vw);
     margin: 0 auto;
   }
 
-  .course-hero {
-    padding: 150px 24px 72px;
-    background: radial-gradient(ellipse 65% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%);
-  }
-
-  .course-breadcrumb {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-    color: var(--color-text-muted);
-    margin-bottom: 24px;
-  }
-
-  .course-breadcrumb a {
-    color: var(--color-text-secondary);
-    text-decoration: none;
-  }
-
-  .course-hero-grid {
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 36px;
-    align-items: center;
-  }
-
-  .course-badges {
+  .cf-breadcrumb {
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .cf-breadcrumb a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .cf-breadcrumb a:hover {
+    color: var(--cyan-primary);
+  }
+
+  /* Hero */
+  .cf-hero {
+    padding: 18px 0 42px;
+  }
+
+  .cf-hero-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.85fr;
+    gap: 40px;
+    align-items: center;
+  }
+
+  .cf-badges {
+    display: flex;
     flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 18px;
   }
 
   .badge-pro,
-  .badge-price {
-    display: inline-flex;
-    padding: 5px 12px;
+  .badge-price,
+  .badge-meta {
+    padding: 5px 13px;
     border-radius: 999px;
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   .badge-pro {
-    color: #7dd3fc;
-    background: rgba(72, 200, 255, 0.12);
-    border: 1px solid rgba(72, 200, 255, 0.32);
+    background: rgba(72, 200, 255, 0.14);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    color: var(--cyan-primary);
   }
 
   .badge-price {
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: var(--text-primary);
   }
 
   .badge-meta {
-    font-size: 0.82rem;
-    color: var(--color-text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
   }
 
-  .course-title {
+  .cf-title {
     margin: 0 0 16px;
-    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
-    font-weight: 600;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    color: #ffffff;
+    font-size: clamp(2.1rem, 4.1vw, 3.3rem);
+    line-height: 1.07;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
   }
 
-  .course-subtitle {
+  .cf-subtitle {
     margin: 0 0 28px;
-    font-size: 1.08rem;
-    line-height: 1.6;
-    color: var(--color-text-secondary);
+    font-size: 1.06rem;
+    line-height: 1.62;
+    color: var(--text-secondary);
   }
 
-  .course-cta-row,
-  .enroll-actions {
+  .cf-cta-row {
     display: flex;
-    gap: 12px;
     flex-wrap: wrap;
+    gap: 12px;
     align-items: center;
   }
 
-  .btn-primary-cyan,
+  .cf-hero-meta {
+    margin: 18px 0 0;
+    font-size: 0.86rem;
+    color: var(--text-muted);
+  }
+
+  .cf-hero-meta strong {
+    color: var(--text-secondary);
+  }
+
+  .btn-primary-cyan {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 24px;
+    border-radius: 999px;
+    background: var(--cyan-primary);
+    color: #03121e;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-primary-cyan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(72, 200, 255, 0.3);
+  }
+
   .btn-outline-glass,
   .btn-tool-pill {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 12px 22px;
+    gap: 8px;
+    padding: 12px 20px;
     border-radius: 999px;
-    font-size: 0.92rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
     font-weight: 600;
+    font-size: 0.88rem;
     text-decoration: none;
   }
 
-  .btn-primary-cyan {
-    color: #031528;
-    background: linear-gradient(180deg, #56d3ff 0%, #0aa3f8 100%);
-  }
-
-  .btn-outline-glass,
-  .btn-tool-pill {
-    color: #f8fafc;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-  }
-
-  .course-cover-frame {
-    border-radius: 20px;
+  .cf-hero-card {
+    border-radius: 22px;
     overflow: hidden;
-    border: 1px solid rgba(72, 200, 255, 0.26);
-    background: rgba(8, 18, 44, 0.6);
-    box-shadow: var(--shadow-bevel-card);
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    background: linear-gradient(180deg, rgba(12, 35, 58, 0.72), rgba(5, 16, 28, 0.9));
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
   }
 
-  .course-cover-img {
-    width: 100%;
+  .cf-hero-card-media {
+    position: relative;
     aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  .cf-hero-card-media img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     display: block;
   }
 
-  .course-section {
-    padding: 36px 24px;
+  .cf-hero-card-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(5, 16, 28, 0.78);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--cyan-soft);
   }
 
+  .cf-hero-card-body {
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cf-hero-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.84rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .cf-hero-card-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .cf-hc-label {
+    color: var(--text-muted);
+  }
+
+  .cf-hc-val {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .cf-cyan {
+    color: var(--cyan-primary);
+  }
+
+  /* Value Strip */
+  .cf-value-strip {
+    padding: 14px 0 24px;
+  }
+
+  .cf-strip-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px 28px;
+    padding: 16px 22px;
+    border-radius: 16px;
+    background: rgba(11, 32, 54, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .cf-strip-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .cf-strip-item svg {
+    color: var(--cyan-primary);
+  }
+
+  /* Sections */
+  .cf-section {
+    padding: 46px 0;
+  }
+
+  .cf-section-head {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 32px;
+  }
+
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan-primary);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    margin: 0 0 10px;
+    font-size: clamp(1.55rem, 2.7vw, 2.2rem);
+    line-height: 1.16;
+    color: var(--text-primary);
+  }
+
+  .section-sub,
+  .section-copy {
+    margin: 0;
+    font-size: 0.96rem;
+    line-height: 1.62;
+    color: var(--text-secondary);
+  }
+
+  /* Before / After Grid */
+  .cf-ba-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .cf-ba-card {
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(11, 32, 54, 0.48);
+  }
+
+  .cf-ba-before {
+    border-color: rgba(255, 107, 107, 0.22);
+    background: linear-gradient(180deg, rgba(60, 18, 28, 0.35), rgba(10, 20, 34, 0.55));
+  }
+
+  .cf-ba-after {
+    border-color: rgba(72, 200, 255, 0.28);
+    background: linear-gradient(180deg, rgba(12, 46, 72, 0.48), rgba(7, 20, 36, 0.65));
+  }
+
+  .cf-ba-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .cf-pill-before {
+    background: rgba(255, 107, 107, 0.14);
+    color: #ff9e9e;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+  }
+
+  .cf-pill-after {
+    background: rgba(72, 200, 255, 0.14);
+    color: var(--cyan-primary);
+    border: 1px solid rgba(72, 200, 255, 0.32);
+  }
+
+  .cf-ba-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.02rem;
+    color: var(--text-primary);
+  }
+
+  .cf-ba-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  /* Visual Split Proof */
+  .cf-split-proof {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 36px;
+    align-items: center;
+    padding: 30px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(11, 32, 54, 0.42);
+  }
+
+  .cf-split-visual {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    aspect-ratio: 16 / 10;
+  }
+
+  .cf-split-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cf-split-badges {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .cf-badge-dark,
+  .cf-badge-cyan {
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    backdrop-filter: blur(8px);
+  }
+
+  .cf-badge-dark {
+    background: rgba(5, 14, 24, 0.8);
+    color: #ffb0b0;
+    border: 1px solid rgba(255, 107, 107, 0.35);
+  }
+
+  .cf-badge-cyan {
+    background: rgba(7, 28, 46, 0.85);
+    color: var(--cyan-primary);
+    border: 1px solid rgba(72, 200, 255, 0.45);
+  }
+
+  /* Pillars */
+  .cf-pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .cf-pillar-card {
+    padding: 22px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(11, 32, 54, 0.48);
+  }
+
+  .cf-pillar-num {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--cyan-primary);
+    margin-bottom: 10px;
+  }
+
+  .cf-pillar-card h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: var(--text-primary);
+  }
+
+  .cf-pillar-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  /* System Showcase */
+  .cf-showcase-frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    background: rgba(5, 16, 28, 0.85);
+  }
+
+  .cf-showcase-topbar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    background: rgba(12, 32, 52, 0.65);
+  }
+
+  .cf-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .cf-showcase-url {
+    margin-left: 8px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .cf-showcase-media {
+    max-height: 480px;
+    overflow: hidden;
+  }
+
+  .cf-showcase-media img {
+    width: 100%;
+    height: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cf-showcase-caption {
+    margin: 0;
+    padding: 12px 18px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  /* Explorer */
+  .cf-explorer-tabs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .cf-tab-btn {
+    appearance: none;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .cf-tab-btn.is-active {
+    background: rgba(72, 200, 255, 0.16);
+    border-color: rgba(72, 200, 255, 0.5);
+    color: var(--cyan-primary);
+  }
+
+  .cf-explorer-panel {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 26px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(11, 32, 54, 0.48);
+  }
+
+  .cf-explorer-panel[hidden] {
+    display: none;
+  }
+
+  .cf-explorer-img {
+    border-radius: 14px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cf-explorer-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cf-explorer-info h3 {
+    margin: 0 0 10px;
+    font-size: 1.3rem;
+    color: var(--text-primary);
+  }
+
+  .cf-explorer-info p {
+    margin: 0 0 18px;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .cf-specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .cf-spec-box {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(5, 16, 28, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .cf-spec-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+  }
+
+  .cf-spec-val {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  /* Companion Tool */
   .tool-spotlight-card {
     display: flex;
     align-items: center;
@@ -358,169 +1289,300 @@ const isUnlocked =
     gap: 24px;
     padding: 28px 32px;
     border-radius: 20px;
-    background:
-      radial-gradient(ellipse 70% 60% at 100% 50%, rgba(72, 200, 255, 0.12) 0%, transparent 70%),
-      rgba(8, 18, 44, 0.72);
-    border: 1px solid rgba(72, 200, 255, 0.28);
+    background: linear-gradient(135deg, rgba(16, 48, 80, 0.7), rgba(7, 22, 38, 0.85));
+    border: 1px solid rgba(72, 200, 255, 0.3);
   }
 
   .tool-title {
     margin: 0 0 6px;
-    font-size: 1.4rem;
-    color: #ffffff;
+    font-size: 1.45rem;
+    color: var(--text-primary);
   }
 
   .tool-desc {
     margin: 0;
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-size: 0.94rem;
   }
 
   .tool-locked-pill {
-    padding: 8px 14px;
+    padding: 10px 16px;
     border-radius: 999px;
-    font-size: 0.82rem;
-    color: #94a3b8;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
     white-space: nowrap;
   }
 
-  .course-details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-
-  .detail-card {
-    padding: 28px;
-    border-radius: 20px;
-    background: rgba(8, 18, 44, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .section-eyebrow {
-    display: block;
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-brand-cyan);
-    margin-bottom: 10px;
-  }
-
-  .section-title {
-    margin: 0 0 14px;
-    font-size: 1.55rem;
-    font-weight: 600;
-    color: #ffffff;
-  }
-
-  .section-copy,
-  .audience-note {
-    margin: 0 0 14px;
-    font-size: 0.96rem;
-    line-height: 1.65;
-    color: var(--color-text-secondary);
-  }
-
-  .takeaways-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 12px;
-  }
-
-  .takeaways-list li {
-    position: relative;
-    padding-left: 20px;
-    color: #e2e8f0;
-    font-size: 0.95rem;
-    line-height: 1.5;
-  }
-
-  .takeaways-list li::before {
-    content: "→";
-    position: absolute;
-    left: 0;
-    color: #48C8FF;
-    font-weight: 700;
-  }
-
+  /* Curriculum Grid */
   .curriculum-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 16px;
-    margin-top: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
   }
 
   .curriculum-card {
-    padding: 20px;
-    border-radius: 16px;
-    background: rgba(4, 9, 26, 0.72);
-    border: 1px solid rgba(72, 200, 255, 0.16);
+    padding: 18px 20px;
+    border-radius: 15px;
+    background: rgba(11, 32, 54, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .curr-num {
-    display: block;
-    font-size: 0.74rem;
+    display: inline-block;
+    font-size: 0.72rem;
     font-weight: 700;
-    color: #48C8FF;
-    margin-bottom: 8px;
+    color: var(--cyan-primary);
+    margin-bottom: 6px;
   }
 
   .curr-title {
     margin: 0 0 6px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #ffffff;
+    font-size: 0.98rem;
+    color: var(--text-primary);
   }
 
   .curr-body {
     margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  /* Outcomes Split */
+  .cf-outcomes-split {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 34px;
+    align-items: center;
+    padding: 30px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(11, 32, 54, 0.42);
+  }
+
+  .cf-outcomes-list {
+    margin-top: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .cf-outcome-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .cf-outcome-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(72, 200, 255, 0.14);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    color: var(--cyan-primary);
+    margin-top: 2px;
+  }
+
+  .cf-outcome-item h4 {
+    margin: 0 0 3px;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+  }
+
+  .cf-outcome-item p {
+    margin: 0;
     font-size: 0.86rem;
     line-height: 1.5;
-    color: var(--color-text-secondary);
+    color: var(--text-secondary);
   }
 
-  .course-enroll-section {
-    padding: 56px 24px 100px;
+  .cf-outcomes-visual {
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4 / 4.4;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .enroll-card {
+  .cf-outcomes-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Deliverables */
+  .cf-deliverables-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .cf-deliv-card {
+    padding: 24px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(11, 32, 54, 0.5);
+  }
+
+  .cf-deliv-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    color: var(--cyan-primary);
+    margin-bottom: 10px;
+  }
+
+  .cf-deliv-card h3 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+  }
+
+  .cf-deliv-card p {
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+  }
+
+  /* Closing Banner */
+  .cf-closing-card {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 32px;
+    align-items: center;
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    background: linear-gradient(135deg, rgba(14, 46, 78, 0.72), rgba(5, 16, 28, 0.92));
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  .cf-closing-visual {
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .cf-closing-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cf-closing-title {
+    margin: 0 0 10px;
+    font-size: clamp(1.55rem, 2.8vw, 2.2rem);
+    line-height: 1.15;
+    color: var(--text-primary);
+  }
+
+  .cf-closing-body {
+    margin: 0 0 18px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .cf-closing-list {
+    list-style: none;
+    margin: 0 0 22px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px 14px;
+  }
+
+  .cf-closing-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: var(--text-primary);
+  }
+
+  .cf-closing-list svg {
+    color: var(--cyan-primary);
+    flex-shrink: 0;
+  }
+
+  .cf-closing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* FAQ */
+  .faq-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .faq-card {
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: rgba(11, 32, 54, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .faq-card summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 28px;
-    padding: 36px;
-    border-radius: 24px;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(72, 200, 255, 0.16) 0%, transparent 70%),
-      rgba(8, 18, 44, 0.78);
-    border: 1px solid rgba(72, 200, 255, 0.3);
-    box-shadow: var(--shadow-bevel-card);
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-primary);
+    list-style: none;
   }
 
-  .enroll-title {
-    margin: 12px 0 8px;
-    font-size: 1.7rem;
-    color: #ffffff;
+  .faq-plus {
+    color: var(--cyan-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
   }
 
-  .enroll-desc {
-    margin: 0;
-    color: var(--color-text-secondary);
-    font-size: 0.96rem;
-    max-width: 560px;
+  .faq-card p {
+    margin: 12px 0 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
   }
 
-  @media (max-width: 860px) {
-    .course-hero-grid,
-    .course-details-grid,
-    .tool-spotlight-card,
-    .enroll-card {
+  @media (max-width: 960px) {
+    .cf-hero-grid,
+    .cf-split-proof,
+    .cf-explorer-panel,
+    .cf-outcomes-split,
+    .cf-closing-card,
+    .cf-ba-grid,
+    .cf-pillars-grid,
+    .curriculum-grid,
+    .cf-deliverables-grid,
+    .faq-list {
       grid-template-columns: 1fr;
+    }
+
+    .cf-closing-list {
+      grid-template-columns: 1fr;
+    }
+
+    .tool-spotlight-card {
       flex-direction: column;
       align-items: flex-start;
     }

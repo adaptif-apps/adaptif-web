@@ -131,10 +131,16 @@ const tagPresets = [
                   </a>
                 </div>
 
-                <label class="toggle-wrap">
-                  <input type="checkbox" id="field-published" checked />
-                  <span>Visible on /our-work</span>
-                </label>
+                <div class="editor-toggles" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                  <label class="toggle-wrap">
+                    <input type="checkbox" id="field-published" checked />
+                    <span>Visible on /our-work</span>
+                  </label>
+                  <label class="toggle-wrap">
+                    <input type="checkbox" id="field-home" />
+                    <span>Show on Home</span>
+                  </label>
+                </div>
               </div>
 
               <div class="form-grid">
@@ -247,6 +253,7 @@ const tagPresets = [
         gallery: string[];
         sortOrder: number;
         isPublished: boolean;
+        showOnHome: boolean;
       }
 
       let projects: Project[] = Array.isArray((window as any).__INITIAL_PROJECTS__)
@@ -267,6 +274,7 @@ const tagPresets = [
       const modePillEl = document.getElementById("editor-mode-pill")!;
       const shareLinkEl = document.getElementById("editor-share-link") as HTMLAnchorElement;
       const publishedEl = document.getElementById("field-published") as HTMLInputElement;
+      const homeEl = document.getElementById("field-home") as HTMLInputElement;
       const titleEl = document.getElementById("field-title") as HTMLInputElement;
       const descEl = document.getElementById("field-description") as HTMLTextAreaElement;
       const imageEl = document.getElementById("field-image") as HTMLInputElement;
@@ -423,6 +431,7 @@ const tagPresets = [
           shareLinkEl.textContent = "/our-work (saved on create)";
           shareLinkEl.href = "/our-work";
           publishedEl.checked = true;
+          homeEl.checked = false;
           titleEl.value = "";
           descEl.value = "";
           imageEl.value = "";
@@ -437,6 +446,7 @@ const tagPresets = [
           shareLinkEl.textContent = `/our-work?project=${project.id}`;
           shareLinkEl.href = `/our-work?project=${project.id}`;
           publishedEl.checked = project.isPublished;
+          homeEl.checked = Boolean(project.showOnHome);
           titleEl.value = project.title;
           descEl.value = project.description;
           imageEl.value = project.image;
@@ -476,7 +486,7 @@ const tagPresets = [
               <img src="${project.image}" alt="" class="brand-row-thumb" />
               <div class="brand-row-text">
                 <span class="brand-row-title"></span>
-                <span class="brand-row-sub">${project.isPublished ? "Visible" : "Hidden"} &bull; ${project.tags.length} tags</span>
+                <span class="brand-row-sub">${project.isPublished ? "Visible" : "Hidden"}${project.showOnHome ? " &bull; Home" : ""} &bull; ${project.tags.length} tags</span>
               </div>
             </button>
             <div class="brand-row-order">
@@ -601,6 +611,7 @@ const tagPresets = [
           image: imageEl.value.trim(),
           gallery: draftGallery.length > 0 ? draftGallery : [imageEl.value.trim()],
           isPublished: publishedEl.checked,
+          showOnHome: homeEl.checked,
         };
 
         try {

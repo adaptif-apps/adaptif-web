@@ -7,6 +7,7 @@ export interface PortfolioProject {
   gallery: string[];
   sortOrder: number;
   isPublished: boolean;
+  showOnHome: boolean;
 }
 
 const imagePool = [
@@ -41,7 +42,7 @@ function buildGallery(primary: string, offset: number): string[] {
   return [primary, ...rotated.slice(0, 11)];
 }
 
-const rawSeed: Omit<PortfolioProject, "gallery" | "sortOrder" | "isPublished">[] = [
+const rawSeed: Omit<PortfolioProject, "gallery" | "sortOrder" | "isPublished" | "showOnHome">[] = [
   {
     id: "sideline-podcast",
     title: "Sideline Podcast",
@@ -201,4 +202,5 @@ export const portfolioSeed: PortfolioProject[] = rawSeed.map((item, idx) => ({
   gallery: buildGallery(item.image, idx * 2),
   sortOrder: idx,
   isPublished: true,
+  showOnHome: idx < 6,
 }));

@@ -15,6 +15,13 @@ import OurDifference from "../components/OurDifference.astro";
 import WorldClassTalent from "../components/WorldClassTalent.astro";
 import FaqSection from "../components/FaqSection.astro";
 import Footer from "../components/Footer.astro";
+import { listProjects } from "../lib/portfolioDb";
+
+export const prerender = false;
+
+Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+
+const homeProjects = await listProjects({ onlyHome: true });
 ---
 
 <Layout 
@@ -31,7 +38,7 @@ import Footer from "../components/Footer.astro";
     <CreativeRange />
     <ServicesCarousel />
     <ComparisonTable />
-    <OurWorkGrid />
+    <OurWorkGrid projects={homeProjects} />
     <WorkflowsSection />
     <OurDifference />
     <WorldClassTalent />

@@ -37,6 +37,7 @@ export const POST: APIRoute = async ({ request }) => {
       image: String(body.image),
       gallery: Array.isArray(body.gallery) ? body.gallery.map(String) : [],
       isPublished: body.isPublished !== false,
+      showOnHome: Boolean(body.showOnHome ?? false),
     });
 
     return new Response(JSON.stringify({ project }), {

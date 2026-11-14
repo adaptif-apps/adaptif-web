@@ -36,9 +36,15 @@ export async function ensurePortfolioSchema(): Promise<void> {
         gallery JSONB NOT NULL DEFAULT '[]'::jsonb,
         sort_order INTEGER NOT NULL DEFAULT 0,
         is_published BOOLEAN NOT NULL DEFAULT true,
+        show_on_home BOOLEAN NOT NULL DEFAULT false,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
+    `;
+
+    await sql`
+      ALTER TABLE portfolio_projects
+      ADD COLUMN IF NOT EXISTS show_on_home BOOLEAN NOT NULL DEFAULT false
     `;
 
     const countRows = await sql`SELECT COUNT(*)::int AS count FROM portfolio_projects`;
@@ -49,7 +55,7 @@ export async function ensurePortfolioSchema(): Promise<void> {
       for (const item of portfolioSeed) {
         await sql`
           INSERT INTO portfolio_projects (
-            id, title, description, tags, image, gallery, sort_order, is_published
+            id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
           ) VALUES (
             ${item.id},
             ${item.title},
@@ -58,9 +64,20 @@ export async function ensurePortfolioSchema(): Promise<void> {
             ${item.image},
             ${JSON.stringify(item.gallery)}::jsonb,
             ${item.sortOrder},
-            ${item.isPublished}
+            ${item.isPublished},
+            ${item.showOnHome}
           )
           ON CONFLICT (id) DO NOTHING
+        `;
+      }
+    } else {
+      // One-time default backfill if no projects are marked for Home yet
+      const homeRows = await sql`SELECT COUNT(*)::int AS count FROM portfolio_projects WHERE show_on_home = true`;
+      if (Number(homeRows[0]?.count ?? 0) === 0) {
+        await sql`
+          UPDATE portfolio_projects
+          SET show_on_home = true
+          WHERE id IN ('sideline-podcast', 'yum-yum-digital', 'morganic', 'dunamis-xp', 'forever-and-ever', 'platemakrs')
         `;
       }
     }
@@ -84,20 +101,29 @@ function mapRow(row: Record<string, any>): PortfolioProject {
     gallery: gallery.length > 0 ? gallery : [String(row.image)],
     sortOrder: Number(row.sort_order ?? 0),
     isPublished: Boolean(row.is_published ?? true),
+    showOnHome: Boolean(row.show_on_home ?? false),
   };
 }
 
-export async function listProjects(options: { includeHidden?: boolean } = {}): Promise<PortfolioProject[]> {
+export async function listProjects(options: { includeHidden?: boolean; onlyHome?: boolean } = {}): Promise<PortfolioProject[]> {
   const queryProjects = async () => {
     const sql = getSql();
+    if (options.onlyHome) {
+      return await sql`
+        SELECT id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
+        FROM portfolio_projects
+        WHERE is_published = true AND show_on_home = true
+        ORDER BY sort_order ASC, created_at ASC
+      `;
+    }
     return options.includeHidden
       ? await sql`
-          SELECT id, title, description, tags, image, gallery, sort_order, is_published
+          SELECT id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
           FROM portfolio_projects
           ORDER BY sort_order ASC, created_at ASC
         `
       : await sql`
-          SELECT id, title, description, tags, image, gallery, sort_order, is_published
+          SELECT id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
           FROM portfolio_projects
           WHERE is_published = true
           ORDER BY sort_order ASC, created_at ASC
@@ -108,8 +134,8 @@ export async function listProjects(options: { includeHidden?: boolean } = {}): P
     const rows = await queryProjects();
     return rows.map(mapRow);
   } catch (err: any) {
-    // Only run schema initialization/seed on read if the table does not exist yet
-    if (err?.code === "42P01") {
+    // Run schema initialization/migration on read if table (42P01) or column (42703) does not exist yet
+    if (err?.code === "42P01" || err?.code === "42703") {
       try {
         await ensurePortfolioSchema();
         const rows = await queryProjects();
@@ -119,6 +145,9 @@ export async function listProjects(options: { includeHidden?: boolean } = {}): P
       }
     } else {
       console.error("[portfolioDb] Falling back to static seed:", err);
+    }
+    if (options.onlyHome) {
+      return portfolioSeed.filter((p) => p.isPublished && p.showOnHome);
     }
     return options.includeHidden
       ? portfolioSeed
@@ -143,6 +172,7 @@ export interface CreateProjectInput {
   image: string;
   gallery?: string[];
   isPublished?: boolean;
+  showOnHome?: boolean;
 }
 
 export async function createProject(input: CreateProjectInput): Promise<PortfolioProject> {
@@ -170,7 +200,7 @@ export async function createProject(input: CreateProjectInput): Promise<Portfoli
 
   const rows = await sql`
     INSERT INTO portfolio_projects (
-      id, title, description, tags, image, gallery, sort_order, is_published
+      id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
     ) VALUES (
       ${candidateId},
       ${input.title.trim()},
@@ -179,9 +209,10 @@ export async function createProject(input: CreateProjectInput): Promise<Portfoli
       ${input.image},
       ${JSON.stringify(gallery)}::jsonb,
       ${nextOrder},
-      ${input.isPublished ?? true}
+      ${input.isPublished ?? true},
+      ${input.showOnHome ?? false}
     )
-    RETURNING id, title, description, tags, image, gallery, sort_order, is_published
+    RETURNING id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
   `;
 
   return mapRow(rows[0]);
@@ -195,6 +226,7 @@ export interface UpdateProjectInput {
   gallery?: string[];
   sortOrder?: number;
   isPublished?: boolean;
+  showOnHome?: boolean;
 }
 
 export async function updateProject(id: string, patch: UpdateProjectInput): Promise<PortfolioProject | null> {
@@ -202,7 +234,7 @@ export async function updateProject(id: string, patch: UpdateProjectInput): Prom
   const sql = getSql();
 
   const existingRows = await sql`
-    SELECT id, title, description, tags, image, gallery, sort_order, is_published
+    SELECT id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
     FROM portfolio_projects
     WHERE id = ${id}
     LIMIT 1
@@ -220,6 +252,7 @@ export async function updateProject(id: string, patch: UpdateProjectInput): Prom
       : current.gallery;
   const nextOrder = patch.sortOrder !== undefined ? patch.sortOrder : current.sortOrder;
   const nextPublished = patch.isPublished !== undefined ? patch.isPublished : current.isPublished;
+  const nextShowOnHome = patch.showOnHome !== undefined ? patch.showOnHome : current.showOnHome;
 
   const updated = await sql`
     UPDATE portfolio_projects
@@ -231,9 +264,10 @@ export async function updateProject(id: string, patch: UpdateProjectInput): Prom
       gallery = ${JSON.stringify(nextGallery)}::jsonb,
       sort_order = ${nextOrder},
       is_published = ${nextPublished},
+      show_on_home = ${nextShowOnHome},
       updated_at = NOW()
     WHERE id = ${id}
-    RETURNING id, title, description, tags, image, gallery, sort_order, is_published
+    RETURNING id, title, description, tags, image, gallery, sort_order, is_published, show_on_home
   `;
 
   return updated.length > 0 ? mapRow(updated[0]) : null;

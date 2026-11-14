@@ -22,6 +22,7 @@ export const PATCH: APIRoute = async ({ params, request }) => {
       gallery: Array.isArray(body.gallery) ? body.gallery.map(String) : undefined,
       sortOrder: body.sortOrder !== undefined ? Number(body.sortOrder) : undefined,
       isPublished: body.isPublished !== undefined ? Boolean(body.isPublished) : undefined,
+      showOnHome: body.showOnHome !== undefined ? Boolean(body.showOnHome) : undefined,
     });
 
     if (!updated) {

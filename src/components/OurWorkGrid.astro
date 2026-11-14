@@ -5,62 +5,32 @@
 //   - Eyebrow: "OUR WORK"
 //   - Title: "See how top brands use Adaptif" (with "top brands" in italic cyan accent)
 //   - CTA: "Explore all our work" pill button
-// Grid: 4-column balanced Bento layout:
-//   Row 1: [Sideline Podcast (span 2)] [Yum Yum Digital (span 1)] [Morganic (span 1)]
-//   Row 2: [Dunamis XP (span 1)] [Forever & Ever (span 1)] [Platemakrs (span 2)]
+// Grid: 4-column balanced modular Bento layout:
+//   Even rows: [span 2] [span 1] [span 1]
+//   Odd rows:  [span 1] [span 1] [span 2]
+//   Incomplete last row: 1 item -> span 4; 2 items -> span 2 + span 2
 
-interface WorkItem {
-  id: string;
-  title: string;
-  categories: string;
-  image: string;
-  span: number;
+import { portfolioSeed, type PortfolioProject } from "../data/portfolioSeed";
+import WorkProjectModal from "./WorkProjectModal.astro";
+
+interface Props {
+  projects?: PortfolioProject[];
 }
 
-const workItems: WorkItem[] = [
-  {
-    id: "sideline",
-    title: "Sideline Podcast",
-    categories: "Branding, Motion Design, Social Media Creative, Ad Creative, Video Production",
-    image: "/work-featured/sideline.jpg",
-    span: 2
-  },
-  {
-    id: "yumyum",
-    title: "Yum Yum Digital",
-    categories: "Branding, Social Media Creative, Web Design, Motion Design",
-    image: "/work-featured/yumyum.jpg",
-    span: 1
-  },
-  {
-    id: "morganic",
-    title: "Morganic",
-    categories: "Branding, Ecommerce, Social Media, Packaging",
-    image: "/work-featured/morganic.jpg",
-    span: 1
-  },
-  {
-    id: "dunamis",
-    title: "Dunamis XP",
-    categories: "Branding, App Design",
-    image: "/work-featured/dunamis.jpg",
-    span: 1
-  },
-  {
-    id: "forever",
-    title: "Forever & Ever",
-    categories: "Branding, App Design, Web Design, Motion Design",
-    image: "/work-featured/forever.jpg",
-    span: 1
-  },
-  {
-    id: "platemakrs",
-    title: "Platemakrs",
-    categories: "Branding, App Design, Email Campaign, Social Media, Ad Creatives",
-    image: "/work-featured/platemakrs.jpg",
-    span: 2
+const { projects = portfolioSeed.filter((p) => p.isPublished && p.showOnHome) } = Astro.props;
+
+function getCardSpan(index: number, total: number): number {
+  const rowIndex = Math.floor(index / 3);
+  const posInRow = index % 3;
+  const totalRows = Math.ceil(total / 3);
+  const rem = total % 3;
+
+  if (rowIndex === totalRows - 1 && rem !== 0) {
+    return rem === 1 ? 4 : 2;
   }
-];
+
+  return rowIndex % 2 === 0 ? (posInRow === 0 ? 2 : 1) : (posInRow === 2 ? 2 : 1);
+}
 ---
 
 <section class="our-work-section" id="our-work" data-theme="light">
@@ -89,29 +59,41 @@ const workItems: WorkItem[] = [
       </div>
     </header>
 
-    <!-- Bento Work Grid (Row 1: 2-1-1 / Row 2: 1-1-2) -->
+    <!-- Modular Bento Work Grid -->
     <div class="work-grid">
-      {workItems.map((item, index) => (
-        <article class={`work-card span-${item.span}`} style={`--card-index: ${index};`}>
-          <div class="work-card-media">
-            <img 
-              src={item.image} 
-              alt={item.title} 
-              loading="lazy" 
-              decoding="async" 
-              class="work-card-img"
-            />
-          </div>
+      {projects.map((item, index) => {
+        const span = getCardSpan(index, projects.length);
+        return (
+          <article
+            class={`work-card span-${span}`}
+            style={`--card-index: ${index};`}
+            data-open-project={item.id}
+            role="button"
+            tabindex="0"
+            aria-label={`View ${item.title} gallery`}
+          >
+            <div class="work-card-media">
+              <img
+                src={item.image}
+                alt={item.title}
+                loading="lazy"
+                decoding="async"
+                class="work-card-img"
+              />
+            </div>
 
-          <div class="work-card-info">
-            <h3 class="work-card-title">{item.title}</h3>
-            <p class="work-card-categories">{item.categories}</p>
-          </div>
-        </article>
-      ))}
+            <div class="work-card-info">
+              <h3 class="work-card-title">{item.title}</h3>
+              <p class="work-card-categories">{item.tags.join(", ")}</p>
+            </div>
+          </article>
+        );
+      })}
     </div>
   </div>
 </section>
+
+<WorkProjectModal projects={projects} syncUrl={false} />
 
 <script is:inline>
   (function () {
@@ -303,6 +285,7 @@ const workItems: WorkItem[] = [
     position: relative;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
     opacity: 0;
     transform: translateY(28px);
     transition: 
@@ -310,9 +293,19 @@ const workItems: WorkItem[] = [
       transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) calc(0.15s + var(--card-index, 0) * 0.08s);
   }
 
+  .work-card:focus-visible {
+    outline: 2px solid #0284c7;
+    outline-offset: 6px;
+    border-radius: 20px;
+  }
+
   .our-work-section.is-visible .work-card {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  .work-card.span-4 {
+    grid-column: span 4;
   }
 
   .work-card.span-2 {
@@ -401,6 +394,7 @@ const workItems: WorkItem[] = [
       gap: 20px;
     }
 
+    .work-card.span-4,
     .work-card.span-2 {
       grid-column: span 2;
     }
@@ -432,6 +426,7 @@ const workItems: WorkItem[] = [
       gap: 28px;
     }
 
+    .work-card.span-4,
     .work-card.span-2,
     .work-card.span-1 {
       grid-column: span 1;

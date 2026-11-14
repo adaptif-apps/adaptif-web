@@ -22,10 +22,13 @@ const { initialItems, initialSettings } = Astro.props;
     </div>
   </header>
 
-  <!-- Unified Generator & Item Settings Card -->
-  <section class="acd-glass-card acd-unified-card" aria-label="Course or Guide Generator and Settings">
+  <!-- Card 1: AI Curriculum Engine -->
+  <section class="acd-glass-card" aria-label="AI Curriculum Engine">
     <AcademyGeneratorModal initialSettings={initialSettings} />
+  </section>
 
+  <!-- Card 2: Course Settings & Assets -->
+  <section class="acd-glass-card acd-settings-card" aria-label="Course Settings and Assets">
     <div class="acd-editor-shell">
       <div class="acd-empty-editor" id="acd-empty-editor">
         Select an item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
@@ -46,10 +49,6 @@ const { initialItems, initialSettings } = Astro.props;
           <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-slides" class="acd-btn-glass">
             Preview Slides / PDF ↗
           </a>
-        </div>
-        <div class="acd-editor-actions">
-          <button type="button" class="acd-btn-danger" id="btn-delete-acd-item">Delete</button>
-          <button type="submit" class="acd-btn-cyan" id="btn-save-acd-item">Save Changes</button>
         </div>
       </div>
 
@@ -97,6 +96,11 @@ const { initialItems, initialSettings } = Astro.props;
             <button type="button" class="acd-btn-danger" id="btn-remove-custom-pdf" hidden>Remove PDF</button>
           </div>
         </div>
+      </div>
+
+      <div class="acd-editor-footer">
+        <button type="button" class="acd-btn-danger" id="btn-delete-acd-item">Delete</button>
+        <button type="submit" class="acd-btn-cyan" id="btn-save-acd-item">Save Changes</button>
       </div>
     </form>
     </div>
@@ -618,9 +622,9 @@ const { initialItems, initialSettings } = Astro.props;
       if (pdfStatusEl) {
         if (hasCustomPdf) {
           const rawName = decodeURIComponent(effectivePdfUrl.split("/").pop()?.split("?")[0] || "custom.pdf");
-          const cleanName = rawName.replace(/^\d+-/, "");
+          const cleanName = rawName.replace(/^\d+-/, "").replace(/-[A-Za-z0-9]{20,}(\.pdf)$/i, "$1");
           const prefix = isPendingPdfChange ? "Pending PDF (click Save Changes):" : "Active PDF:";
-          pdfStatusEl.innerHTML = `${prefix} <a href="${effectivePdfUrl}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">${cleanName}</a>`;
+          pdfStatusEl.innerHTML = `${prefix} <a href="${effectivePdfUrl}" target="_blank" rel="noopener noreferrer" title="${cleanName}" style="color:inherit;text-decoration:underline;">${cleanName}</a>`;
         } else {
           pdfStatusEl.textContent = isPendingPdfChange
             ? "PDF removal pending (click Save Changes)"
@@ -1546,6 +1550,27 @@ const { initialItems, initialSettings } = Astro.props;
     opacity: 0.4;
     pointer-events: none;
     cursor: not-allowed;
+  }
+
+  .acd-settings-card {
+    margin-top: 20px;
+  }
+
+  .acd-editor-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .acd-pdf-status {
+    max-width: 360px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .acd-modal-backdrop[hidden] {

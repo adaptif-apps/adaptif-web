@@ -79,8 +79,17 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
   </header>
 
   {customPdfUrl ? (
-    <div class="custom-pdf-stage no-print">
-      <iframe src={`${customPdfUrl}#toolbar=1&navpanes=1`} class="custom-pdf-frame" title={item.title}></iframe>
+    <div class="viewer-workspace no-print">
+      <aside class="viewer-sidebar" aria-label="PDF Page index">
+        <div class="sidebar-head">
+          <span class="sidebar-label">PAGES INDEX</span>
+          <span class="sidebar-count" id="custom-pdf-count">…</span>
+        </div>
+        <nav class="viewer-strip" id="custom-pdf-strip" aria-label="Page selector"></nav>
+      </aside>
+      <main class="slides-stage" id="custom-pdf-stage" data-custom-pdf-url={customPdfUrl}>
+        <div class="pdf-loading-state" id="custom-pdf-loading">Loading PDF pages…</div>
+      </main>
     </div>
   ) : (
     <div class="viewer-workspace no-print">
@@ -315,6 +324,76 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     />
   )}
 </div>
+
+<script>
+  const customPdfStage = document.getElementById("custom-pdf-stage");
+  const customPdfUrl = customPdfStage?.getAttribute("data-custom-pdf-url");
+  if (customPdfStage && customPdfUrl) {
+    (async () => {
+      try {
+        const pdfjsLib = await import(
+          /* @vite-ignore */ "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs"
+        );
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
+
+        const pdf = await pdfjsLib.getDocument(customPdfUrl).promise;
+        const total = pdf.numPages;
+        const countEl = document.getElementById("custom-pdf-count");
+        const stripEl = document.getElementById("custom-pdf-strip");
+        const loadingEl = document.getElementById("custom-pdf-loading");
+        if (countEl) countEl.textContent = String(total);
+        if (loadingEl) loadingEl.remove();
+
+        for (let i = 1; i <= total; i++) {
+          if (stripEl) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = `strip-btn${i === 1 ? " is-active" : ""}`;
+            btn.innerHTML = `<span class="strip-num">${String(i).padStart(2, "0")}</span><span class="strip-title">Page ${i}</span>`;
+            btn.addEventListener("click", () => {
+              stripEl.querySelectorAll(".strip-btn").forEach((b) => b.classList.remove("is-active"));
+              btn.classList.add("is-active");
+              document.getElementById(`pdf-page-${i}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+            stripEl.appendChild(btn);
+          }
+
+          const page = await pdf.getPage(i);
+          const viewport = page.getViewport({ scale: 1.6 });
+          const sheet = document.createElement("section");
+          sheet.className = "slide-sheet pdf-page-sheet";
+          sheet.id = `pdf-page-${i}`;
+          sheet.style.padding = "0";
+          sheet.style.overflow = "hidden";
+          sheet.style.display = "flex";
+          sheet.style.alignItems = "center";
+          sheet.style.justifyContent = "center";
+          sheet.style.background = "#0b1220";
+
+          const canvas = document.createElement("canvas");
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          canvas.style.width = "100%";
+          canvas.style.height = "auto";
+          canvas.style.display = "block";
+          sheet.appendChild(canvas);
+          customPdfStage.appendChild(sheet);
+
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            await page.render({ canvasContext: ctx, viewport }).promise;
+          }
+        }
+      } catch (err) {
+        const loadingEl = document.getElementById("custom-pdf-loading");
+        if (loadingEl) {
+          loadingEl.textContent = "Could not render PDF inline. Use Download PDF above.";
+        }
+      }
+    })();
+  }
+</script>
 
 <script>
   const shell = document.querySelector<HTMLElement>(".viewer-shell");

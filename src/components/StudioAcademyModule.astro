@@ -550,12 +550,18 @@ const { initialItems, initialSettings } = Astro.props;
 
     function renderEditor() {
       const item = items.find((i) => i.id === selectedId);
+      const eyebrowEl = document.getElementById("acd-module-eyebrow");
+      const titleEl = document.getElementById("acd-module-title");
       if (!item || !formEl || !emptyEl) {
+        if (eyebrowEl) eyebrowEl.textContent = "AI Curriculum Engine";
+        if (titleEl) titleEl.innerHTML = "Generate <span>Course</span>";
         if (formEl) formEl.hidden = true;
         if (emptyEl) emptyEl.hidden = false;
         window.dispatchEvent(new CustomEvent("academy:selection-changed", { detail: { item: null } }));
         return;
       }
+      if (eyebrowEl) eyebrowEl.textContent = item.kind === "course" ? "AI Curriculum Engine · Course" : "AI Curriculum Engine · Guide";
+      if (titleEl) titleEl.textContent = item.title || (item.kind === "course" ? "Untitled Course" : "Untitled Guide");
 
       emptyEl.hidden = true;
       formEl.hidden = false;

@@ -1,16 +1,13 @@
 ---
-// DedicatedTeamMetrics.astro - Light-mode typographic metrics pause with one-time count-up
+// DedicatedTeamMetrics.astro - Open typographic metrics pause with one-time count-up
 import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
 ---
 
 <section
   class="dt-metrics"
   id="team-metrics"
-  data-theme="light"
   aria-label="Adaptif track record and delivery metrics"
 >
-  <div class="dt-metrics__ambient" aria-hidden="true"></div>
-
   <div class="container dt-metrics__container">
     <div class="dt-metrics__intro">
       <span class="dt-metrics__eyebrow">BY THE NUMBERS</span>
@@ -23,15 +20,13 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
           style={`--metric-delay: ${idx * 70}ms;`}
         >
           <dt class="dt-metric__label">{metric.label}</dt>
-          <dd
-            class="dt-metric__value"
-            aria-label={`${metric.value}${metric.unit} ${metric.label}`}
-          >
-            <span
-              class="dt-metric__num"
-              data-count-target={metric.value}
-              aria-hidden="true"
-            >{metric.value}</span><span class="dt-metric__unit" aria-hidden="true">{metric.unit}</span>
+          <dd class="dt-metric__value" aria-label={`${metric.value}${metric.unit} ${metric.label}`}>
+            <span aria-hidden="true">
+              <span
+                class="dt-metric__num"
+                data-target={metric.value}
+              >{metric.value}</span><span class="dt-metric__unit">{metric.unit}</span>
+            </span>
           </dd>
         </div>
       ))}
@@ -45,57 +40,47 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
     if (!section) return;
 
     const items = section.querySelectorAll<HTMLElement>(".reveal-metric");
-    const counters = section.querySelectorAll<HTMLElement>("[data-count-target]");
+    const numEls = section.querySelectorAll<HTMLElement>(".dt-metric__num");
     if (!items.length) return;
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
       items.forEach((item) => item.classList.add("is-visible"));
-      counters.forEach((el) => {
-        el.textContent = el.dataset.countTarget ?? el.textContent;
-      });
       return;
     }
 
     let hasAnimated = false;
 
-    const animateCounters = () => {
+    const animateNumbers = () => {
       if (hasAnimated) return;
       hasAnimated = true;
 
       const duration = 1100;
       const startTime = performance.now();
 
-      const targets = Array.from(counters).map((el) => ({
-        el,
-        target: Number(el.dataset.countTarget || 0),
-      }));
-
-      // Initialize visual display to 0 at animation start
-      targets.forEach(({ el }) => {
-        el.textContent = "0";
-      });
-
       const step = (now: number) => {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        // Ease-out cubic for smooth deceleration
         const eased = 1 - Math.pow(1 - progress, 3);
 
-        targets.forEach(({ el, target }) => {
-          const current = Math.round(eased * target);
+        numEls.forEach((el) => {
+          const target = Number(el.dataset.target || "0");
+          const current = Math.round(target * eased);
           el.textContent = String(current);
         });
 
         if (progress < 1) {
           requestAnimationFrame(step);
         } else {
-          targets.forEach(({ el, target }) => {
-            el.textContent = String(target);
+          numEls.forEach((el) => {
+            el.textContent = el.dataset.target || "0";
           });
         }
       };
 
+      numEls.forEach((el) => {
+        el.textContent = "0";
+      });
       requestAnimationFrame(step);
     };
 
@@ -104,12 +89,12 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             items.forEach((item) => item.classList.add("is-visible"));
-            animateCounters();
+            animateNumbers();
             observer.disconnect();
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.25 }
     );
 
     observer.observe(section);
@@ -122,21 +107,8 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
 <style>
   .dt-metrics {
     position: relative;
-    padding: clamp(72px, 10vw, 120px) 0;
-    background: linear-gradient(180deg, #f5faff 0%, #eaf6fe 100%);
-    overflow: hidden;
-  }
-
-  .dt-metrics__ambient {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      ellipse 70% 60% at 50% 0%,
-      rgba(56, 189, 248, 0.12) 0%,
-      transparent 70%
-    );
-    pointer-events: none;
-    z-index: 0;
+    padding: clamp(64px, 9vw, 112px) 0;
+    background: var(--color-void, #010307);
   }
 
   .dt-metrics__container {
@@ -145,7 +117,7 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
   }
 
   .dt-metrics__intro {
-    margin-bottom: clamp(24px, 3.5vw, 38px);
+    margin-bottom: clamp(24px, 3.2vw, 36px);
   }
 
   .dt-metrics__eyebrow {
@@ -155,7 +127,7 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #0284c7;
+    color: var(--color-brand-cyan, #48C8FF);
   }
 
   .dt-metrics__grid {
@@ -170,13 +142,13 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
     flex-direction: column-reverse;
     justify-content: flex-end;
     gap: 10px;
-    padding-right: clamp(18px, 2.8vw, 36px);
+    padding-right: clamp(16px, 2.5vw, 32px);
     user-select: text;
   }
 
   .dt-metric + .dt-metric {
-    padding-left: clamp(18px, 2.8vw, 36px);
-    border-left: 1px solid rgba(15, 23, 42, 0.1);
+    padding-left: clamp(16px, 2.5vw, 32px);
+    border-left: 1px solid rgba(255, 255, 255, 0.09);
   }
 
   .dt-metric__value {
@@ -186,12 +158,12 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
     line-height: 0.96;
     letter-spacing: -0.04em;
     font-weight: 400;
-    color: #0b0f19;
+    color: #ffffff;
     font-variant-numeric: tabular-nums;
   }
 
   .dt-metric__unit {
-    color: #0284c7;
+    color: var(--color-brand-cyan, #48C8FF);
     font-style: italic;
     padding-left: 0.03em;
   }
@@ -200,8 +172,8 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
     font-size: 0.96rem;
     line-height: 1.45;
     letter-spacing: -0.01em;
-    color: #475569;
-    font-weight: 500;
+    color: #cbd5e1;
+    font-weight: 400;
   }
 
   /* Subtle one-time reveal */
@@ -257,7 +229,7 @@ import { dedicatedTeamMetrics } from "../data/dedicatedTeamMetrics";
 
     .dt-metric + .dt-metric {
       padding-top: 22px;
-      border-top: 1px solid rgba(15, 23, 42, 0.1);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
     }
   }
 </style>

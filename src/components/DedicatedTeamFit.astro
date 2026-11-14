@@ -1,0 +1,276 @@
+---
+// DedicatedTeamFit.astro - Light-mode editorial section: Is Adaptif right for you?
+interface FitProfile {
+  number: string;
+  segment: string;
+  question: string;
+  response: string;
+}
+
+const profiles: FitProfile[] = [
+  {
+    number: "01",
+    segment: "Fast-growing brands",
+    question: "Scaling faster than your team can keep up?",
+    response:
+      "When your momentum accelerates, slow creative production shouldn’t hold back campaigns or launches. Adaptif plugs in as an ongoing creative partner so your output scales alongside your roadmap.",
+  },
+  {
+    number: "02",
+    segment: "Lean marketing teams",
+    question: "Buried in design requests?",
+    response:
+      "Your team does its best work on strategy, positioning, and growth. Offload day-to-day creative production to Adaptif so your marketers can stay focused on high-impact priorities.",
+  },
+  {
+    number: "03",
+    segment: "Founder-led companies",
+    question: "Need structured creative support without hiring in-house?",
+    response:
+      "Present your brand with the polish of an established company—tapping into the creative capabilities included in your chosen plan through one predictable subscription, without recruiting and managing an internal department.",
+  },
+];
+---
+
+<section
+  class="dt-fit"
+  id="is-adaptif-right-for-you"
+  data-theme="light"
+  aria-labelledby="dt-fit-heading"
+>
+  <div class="container dt-fit__container">
+    <div class="dt-fit__layout">
+      <!-- Left Sticky Intro -->
+      <header class="dt-fit__intro">
+        <span class="dt-fit__eyebrow">IS ADAPTIF RIGHT FOR YOU?</span>
+
+        <h2 id="dt-fit-heading" class="dt-fit__title">
+          Adaptif is the easiest fit for
+          <span class="dt-fit__title-accent">fast-moving brands</span>
+        </h2>
+
+        <p class="dt-fit__lead">
+          Teams come to Adaptif at different stages—and many identify with more than one of these situations.
+        </p>
+      </header>
+
+      <!-- Right Editorial Situations List -->
+      <div class="dt-fit__list" role="list" aria-label="Brand situations">
+        {profiles.map((profile, idx) => (
+          <article
+            class="dt-fit__item reveal-fit"
+            role="listitem"
+            style={`--fit-delay: ${idx * 80}ms;`}
+          >
+            <div class="dt-fit__item-meta">
+              <span class="dt-fit__num">{profile.number}</span>
+              <span class="dt-fit__segment">{profile.segment}</span>
+            </div>
+
+            <div class="dt-fit__item-body">
+              <h3 class="dt-fit__question">{profile.question}</h3>
+              <p class="dt-fit__response">{profile.response}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initDedicatedTeamFit = () => {
+    const items = document.querySelectorAll("#is-adaptif-right-for-you .reveal-fit");
+    if (!items.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      items.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.14, rootMargin: "0px 0px -30px 0px" }
+    );
+
+    items.forEach((item) => observer.observe(item));
+  };
+
+  initDedicatedTeamFit();
+  document.addEventListener("astro:page-load", initDedicatedTeamFit);
+</script>
+
+<style>
+  .dt-fit {
+    position: relative;
+    padding: clamp(80px, 11vw, 136px) 0;
+    background: linear-gradient(180deg, #f3faff 0%, #eaf6fe 100%);
+    color: #07142b;
+    user-select: text;
+  }
+
+  .dt-fit__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dt-fit__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.25fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: start;
+  }
+
+  /* Left Sticky Intro */
+  .dt-fit__intro {
+    position: sticky;
+    top: calc(var(--header-height, 84px) + 40px);
+  }
+
+  .dt-fit__eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0284c7;
+    margin-bottom: 14px;
+  }
+
+  .dt-fit__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.4rem, 4.3vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: var(--font-letter-spacing-display, -0.04em);
+    font-weight: 400;
+    color: #07142b;
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .dt-fit__title-accent {
+    display: inline-block;
+    font-style: italic;
+    line-height: 1.15;
+    padding-top: 0.04em;
+    padding-bottom: 0.16em;
+    margin-bottom: -0.16em;
+    padding-right: 0.1em;
+    background: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #0ea5e9 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .dt-fit__lead {
+    font-size: clamp(0.98rem, 1.1vw, 1.12rem);
+    line-height: 1.62;
+    letter-spacing: -0.015em;
+    color: #475569;
+    max-width: 420px;
+    margin: 0;
+  }
+
+  /* Right Editorial List */
+  .dt-fit__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dt-fit__item {
+    padding: clamp(26px, 3.2vw, 36px) 0;
+    border-top: 1px solid rgba(7, 20, 43, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .dt-fit__item:last-child {
+    border-bottom: 1px solid rgba(7, 20, 43, 0.12);
+  }
+
+  .dt-fit__item-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .dt-fit__num {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #0284c7;
+  }
+
+  .dt-fit__segment {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    background: rgba(2, 132, 199, 0.09);
+    border: 1px solid rgba(2, 132, 199, 0.2);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0369a1;
+  }
+
+  .dt-fit__question {
+    font-family: var(--font-family-display);
+    font-size: clamp(1.55rem, 2.2vw, 2.05rem);
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+    color: #07142b;
+    margin: 0 0 10px;
+  }
+
+  .dt-fit__response {
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: #334155;
+    margin: 0;
+    max-width: 600px;
+  }
+
+  /* Subtle reveal animation */
+  .reveal-fit {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.5s ease var(--fit-delay, 0ms),
+      transform 0.5s var(--ease-spring) var(--fit-delay, 0ms);
+  }
+
+  .reveal-fit.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-fit {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .dt-fit__layout {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .dt-fit__intro {
+      position: static;
+    }
+  }
+</style>

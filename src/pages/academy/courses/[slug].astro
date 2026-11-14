@@ -560,7 +560,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
             <p class="section-sub" {...ed("landingData.funnel.explorer.subtitle")}>{explorer.subtitle}</p>
           </div>
 
-          <div class="cf-explorer-tabs" role="tablist">
+          <div class="cf-explorer-tabs" id="cf-explorer-tabs" role="tablist">
             {explorer.tabs.map((tab, idx) => (
               <button
                 type="button"
@@ -568,11 +568,17 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
                 data-tab-index={idx}
               >
                 <span {...ed(`landingData.funnel.explorer.tabs.${idx}.label`)}>{tab.label}</span>
+                {isEditMode && (
+                  <span class="cf-tab-del" title="Remove tag" aria-label="Remove tag">×</span>
+                )}
               </button>
             ))}
+            {isEditMode && (
+              <button type="button" class="cf-tab-btn cf-tab-add" id="btn-add-explorer-tab">+ Add Tag</button>
+            )}
           </div>
 
-          <div class="cf-explorer-panels">
+          <div class="cf-explorer-panels" id="cf-explorer-panels">
             {explorer.tabs.map((tab, idx) => (
               <div class={`cf-explorer-panel ${idx === 0 ? "is-active" : ""}`} data-panel-index={idx} hidden={idx !== 0}>
                 <div class="cf-explorer-img">
@@ -911,17 +917,28 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 </Layout>
 
 <script>
-  document.querySelectorAll<HTMLButtonElement>(".cf-tab-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const idx = btn.dataset.tabIndex;
-      document.querySelectorAll(".cf-tab-btn").forEach((b) => b.classList.remove("is-active"));
-      btn.classList.add("is-active");
-      document.querySelectorAll<HTMLElement>(".cf-explorer-panel").forEach((panel) => {
-        const match = panel.dataset.panelIndex === idx;
-        panel.hidden = !match;
-        panel.classList.toggle("is-active", match);
-      });
+  const explorerTabsEl = document.getElementById("cf-explorer-tabs");
+  const explorerPanelsEl = document.getElementById("cf-explorer-panels");
+
+  function setActiveExplorerTab(idx: string) {
+    if (!explorerTabsEl || !explorerPanelsEl) return;
+    explorerTabsEl.querySelectorAll(".cf-tab-btn:not(.cf-tab-add)").forEach((b) => {
+      b.classList.toggle("is-active", (b as HTMLElement).dataset.tabIndex === idx);
     });
+    explorerPanelsEl.querySelectorAll<HTMLElement>(".cf-explorer-panel").forEach((panel) => {
+      const match = panel.dataset.panelIndex === idx;
+      panel.hidden = !match;
+      panel.classList.toggle("is-active", match);
+    });
+  }
+
+  explorerTabsEl?.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    if (target.closest(".cf-tab-del")) return;
+    const btn = target.closest<HTMLButtonElement>(".cf-tab-btn:not(.cf-tab-add)");
+    if (!btn) return;
+    const idx = btn.dataset.tabIndex;
+    if (idx !== undefined) setActiveExplorerTab(idx);
   });
 
   // Hero Flow Micro Gallery interactive tag switcher (public + edit mode)
@@ -1021,16 +1038,16 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       el.addEventListener("click", (e) => e.stopPropagation());
     });
 
-    // Image edit triggers: open system file picker directly without popup
-    document.querySelectorAll<HTMLButtonElement>(".cf-img-edit-btn[data-target-img]").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const field = btn.dataset.targetImg || "";
-        if (!field) return;
-        activeImgField = field;
-        imgFileInput?.click();
-      });
+    // Image edit triggers: open system file picker directly without popup (delegated for dynamic panels)
+    document.addEventListener("click", (e) => {
+      const btn = (e.target as HTMLElement)?.closest<HTMLButtonElement>(".cf-img-edit-btn[data-target-img]");
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const field = btn.dataset.targetImg || "";
+      if (!field) return;
+      activeImgField = field;
+      imgFileInput?.click();
     });
 
     imgFileInput?.addEventListener("change", async () => {
@@ -1209,6 +1226,81 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       reindexModules();
     });
 
+    const addExplorerTabBtn = document.getElementById("btn-add-explorer-tab");
+
+    function reindexExplorerTabs() {
+      if (!explorerTabsEl || !explorerPanelsEl) return;
+      const tabs = Array.from(explorerTabsEl.querySelectorAll<HTMLButtonElement>(".cf-tab-btn:not(.cf-tab-add)"));
+      const panels = Array.from(explorerPanelsEl.querySelectorAll<HTMLElement>(".cf-explorer-panel"));
+      tabs.forEach((tab, idx) => {
+        tab.dataset.tabIndex = String(idx);
+        const label = tab.querySelector<HTMLElement>("[data-edit-field]");
+        if (label) label.dataset.editField = `landingData.funnel.explorer.tabs.${idx}.label`;
+      });
+      panels.forEach((panel, idx) => {
+        panel.dataset.panelIndex = String(idx);
+        const img = panel.querySelector<HTMLImageElement>("[data-edit-image]");
+        if (img) img.dataset.editImage = `landingData.funnel.explorer.tabs.${idx}.image`;
+        const imgBtn = panel.querySelector<HTMLButtonElement>(".cf-img-edit-btn[data-target-img]");
+        if (imgBtn) imgBtn.dataset.targetImg = `landingData.funnel.explorer.tabs.${idx}.image`;
+        const title = panel.querySelector<HTMLElement>(".cf-explorer-info h3");
+        if (title) title.dataset.editField = `landingData.funnel.explorer.tabs.${idx}.title`;
+        const body = panel.querySelector<HTMLElement>(".cf-explorer-info p");
+        if (body) body.dataset.editField = `landingData.funnel.explorer.tabs.${idx}.body`;
+        panel.querySelectorAll<HTMLElement>(".cf-spec-box").forEach((box, sIdx) => {
+          const sLabel = box.querySelector<HTMLElement>(".cf-spec-label");
+          if (sLabel) sLabel.dataset.editField = `landingData.funnel.explorer.tabs.${idx}.specs.${sIdx}.label`;
+          const sVal = box.querySelector<HTMLElement>(".cf-spec-val");
+          if (sVal) sVal.dataset.editField = `landingData.funnel.explorer.tabs.${idx}.specs.${sIdx}.value`;
+        });
+      });
+    }
+
+    explorerTabsEl?.addEventListener("click", (e) => {
+      const del = (e.target as HTMLElement)?.closest(".cf-tab-del");
+      if (!del || !explorerTabsEl || !explorerPanelsEl) return;
+      e.stopPropagation();
+      const tabs = explorerTabsEl.querySelectorAll(".cf-tab-btn:not(.cf-tab-add)");
+      if (tabs.length <= 1) {
+        showToast("At least one tab is required.");
+        return;
+      }
+      const tabBtn = del.closest<HTMLButtonElement>(".cf-tab-btn");
+      if (!tabBtn) return;
+      const oldIdx = tabBtn.dataset.tabIndex;
+      const wasActive = tabBtn.classList.contains("is-active");
+      const panel = explorerPanelsEl.querySelector<HTMLElement>(`.cf-explorer-panel[data-panel-index="${oldIdx}"]`);
+      tabBtn.remove();
+      panel?.remove();
+      reindexExplorerTabs();
+      if (wasActive) setActiveExplorerTab("0");
+    });
+
+    addExplorerTabBtn?.addEventListener("click", () => {
+      if (!explorerTabsEl || !explorerPanelsEl) return;
+      const templatePanel = explorerPanelsEl.querySelector<HTMLElement>(".cf-explorer-panel");
+      if (!templatePanel) return;
+      const newIdx = explorerTabsEl.querySelectorAll(".cf-tab-btn:not(.cf-tab-add)").length;
+
+      const newTab = document.createElement("button");
+      newTab.type = "button";
+      newTab.className = "cf-tab-btn";
+      newTab.dataset.tabIndex = String(newIdx);
+      newTab.innerHTML = `<span contenteditable="true" spellcheck="false" data-edit-field="landingData.funnel.explorer.tabs.${newIdx}.label">New Tag</span><span class="cf-tab-del" title="Remove tag" aria-label="Remove tag">×</span>`;
+      explorerTabsEl.insertBefore(newTab, addExplorerTabBtn);
+
+      const newPanel = templatePanel.cloneNode(true) as HTMLElement;
+      newPanel.dataset.panelIndex = String(newIdx);
+      const titleEl = newPanel.querySelector<HTMLElement>(".cf-explorer-info h3");
+      if (titleEl) titleEl.textContent = "New Workflow Title";
+      const bodyEl = newPanel.querySelector<HTMLElement>(".cf-explorer-info p");
+      if (bodyEl) bodyEl.textContent = "Describe what this workflow or use case unlocks.";
+      explorerPanelsEl.appendChild(newPanel);
+
+      reindexExplorerTabs();
+      setActiveExplorerTab(String(newIdx));
+    });
+
     saveBtn?.addEventListener("click", async () => {
       if (!saveBtn) return;
       saveBtn.disabled = true;
@@ -1216,6 +1308,10 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       saveBtn.textContent = "Saving...";
 
       syncBlockVisibilityFromCheckboxes();
+
+      if (explorerTabsEl && seed.landingData?.funnel?.explorer) {
+        seed.landingData.funnel.explorer.tabs = [];
+      }
 
       document.querySelectorAll<HTMLElement>("[data-edit-field]").forEach((node) => {
         const path = node.dataset.editField;
@@ -2173,6 +2269,9 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
   .cf-tab-btn {
     appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 9px 18px;
     border-radius: 999px;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -2189,6 +2288,36 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     background: rgba(72, 200, 255, 0.16);
     border-color: rgba(72, 200, 255, 0.5);
     color: var(--cyan-primary);
+  }
+
+  .cf-tab-del {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    line-height: 1;
+    color: rgba(248, 250, 252, 0.55);
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .cf-tab-del:hover {
+    color: #fca5a5;
+    background: rgba(248, 113, 113, 0.18);
+  }
+
+  .cf-tab-add {
+    border-style: dashed;
+    border-color: rgba(72, 200, 255, 0.42);
+    color: var(--cyan-soft);
+  }
+
+  .cf-tab-add:hover {
+    background: rgba(72, 200, 255, 0.12);
+    border-color: rgba(72, 200, 255, 0.72);
+    color: #fff;
   }
 
   .cf-explorer-panel {

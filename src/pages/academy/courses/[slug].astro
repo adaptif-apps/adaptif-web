@@ -20,7 +20,7 @@ if (!item) {
 }
 
 const settings = await getAcademySettings();
-const effectiveAccessMode = item.accessMode || settings.defaultCourseAccessMode;
+const effectiveAccessMode = settings.defaultCourseAccessMode || item.accessMode;
 
 const cookieToken = Astro.cookies.get(`adaptif_academy_${item.slug}`)?.value;
 const queryToken = Astro.url.searchParams.get("access");

@@ -1,0 +1,790 @@
+---
+import { defaultBookCallConfig } from "../lib/bookCallDb";
+---
+
+<div
+  class="book-call-modal"
+  id="book-call-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="bc-step1-title"
+  hidden
+>
+  <div class="book-call-backdrop" data-close-book-call></div>
+
+  <div class="book-call-shell" data-close-book-call>
+    <div class="book-call-card" id="book-call-card" data-step="1">
+      <button
+        type="button"
+        class="book-call-close"
+        id="book-call-close"
+        aria-label="Close booking form"
+        data-close-book-call
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 6 6 18" />
+          <path d="m6 6 12 12" />
+        </svg>
+      </button>
+
+      <!-- STEP 1 -->
+      <form class="book-call-step" id="bc-form-step1" novalidate>
+        <span class="adaptif-eyebrow" id="bc-step1-eyebrow">{defaultBookCallConfig.step1Eyebrow}</span>
+        <h2 class="bc-title" id="bc-step1-title">
+          <span id="bc-step1-title-prefix">{defaultBookCallConfig.step1Title}</span>{" "}
+          <span class="bc-title-italic" id="bc-step1-title-highlight">{defaultBookCallConfig.step1TitleHighlight}</span>{" "}
+          <span id="bc-step1-title-suffix">{defaultBookCallConfig.step1TitleSuffix}</span>
+        </h2>
+        <p class="bc-subtitle" id="bc-step1-subtitle">{defaultBookCallConfig.step1Subtitle}</p>
+
+        <div class="bc-grid-2">
+          <div class="bc-field">
+            <label for="bc-full-name" class="bc-label">
+              <span id="bc-name-label">{defaultBookCallConfig.nameLabel}</span>
+              <span class="bc-required">*Required</span>
+            </label>
+            <input
+              type="text"
+              id="bc-full-name"
+              name="fullName"
+              class="bc-input"
+              placeholder={defaultBookCallConfig.namePlaceholder}
+              required
+              autocomplete="name"
+            />
+          </div>
+
+          <div class="bc-field">
+            <label for="bc-work-email" class="bc-label">
+              <span id="bc-email-label">{defaultBookCallConfig.emailLabel}</span>
+              <span class="bc-required">*Required</span>
+            </label>
+            <input
+              type="email"
+              id="bc-work-email"
+              name="workEmail"
+              class="bc-input"
+              placeholder={defaultBookCallConfig.emailPlaceholder}
+              required
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <div class="bc-field bc-field--full">
+          <label for="bc-help-topic" class="bc-label">
+            <span id="bc-help-label">{defaultBookCallConfig.helpLabel}</span>
+          </label>
+          <div class="bc-select-wrap">
+            <select id="bc-help-topic" name="helpTopic" class="bc-select">
+              <option value="">{defaultBookCallConfig.helpPlaceholder}</option>
+              {defaultBookCallConfig.helpOptions.map((opt) => (
+                <option value={opt}>{opt}</option>
+              ))}
+            </select>
+            <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
+        </div>
+
+        <p class="bc-error" id="bc-step1-error" role="alert" hidden></p>
+
+        <div class="bc-footer">
+          <div class="bc-privacy">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span id="bc-privacy-note">{defaultBookCallConfig.privacyNote}</span>
+          </div>
+
+          <button type="submit" class="bc-cta-btn">
+            <span id="bc-step1-cta">{defaultBookCallConfig.step1Cta}</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <!-- STEP 2 -->
+      <form class="book-call-step" id="bc-form-step2" hidden novalidate>
+        <span class="adaptif-eyebrow" id="bc-step2-eyebrow">{defaultBookCallConfig.step2Eyebrow}</span>
+        <h2 class="bc-title" id="bc-step2-title">{defaultBookCallConfig.step2Title}</h2>
+        <p class="bc-subtitle" id="bc-step2-subtitle">{defaultBookCallConfig.step2Subtitle}</p>
+
+        <div class="bc-grid-2">
+          <div class="bc-field">
+            <label for="bc-project-goal" class="bc-label">
+              <span id="bc-goal-label">{defaultBookCallConfig.goalLabel}</span>
+            </label>
+            <input
+              type="text"
+              id="bc-project-goal"
+              name="projectGoal"
+              class="bc-input"
+              placeholder={defaultBookCallConfig.goalPlaceholder}
+            />
+          </div>
+
+          <div class="bc-field">
+            <label for="bc-reference-link" class="bc-label">
+              <span id="bc-link-label">{defaultBookCallConfig.linkLabel}</span>
+            </label>
+            <input
+              type="text"
+              id="bc-reference-link"
+              name="referenceLink"
+              class="bc-input"
+              placeholder={defaultBookCallConfig.linkPlaceholder}
+            />
+          </div>
+
+          <div class="bc-field">
+            <label for="bc-timeline" class="bc-label">
+              <span id="bc-timeline-label">{defaultBookCallConfig.timelineLabel}</span>
+            </label>
+            <div class="bc-select-wrap">
+              <select id="bc-timeline" name="timeline" class="bc-select">
+                <option value="">{defaultBookCallConfig.timelinePlaceholder}</option>
+                {defaultBookCallConfig.timelineOptions.map((opt) => (
+                  <option value={opt}>{opt}</option>
+                ))}
+              </select>
+              <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="bc-field">
+            <label for="bc-budget" class="bc-label">
+              <span id="bc-budget-label">{defaultBookCallConfig.budgetLabel}</span>
+            </label>
+            <div class="bc-select-wrap">
+              <select id="bc-budget" name="budgetRange" class="bc-select">
+                <option value="">{defaultBookCallConfig.budgetPlaceholder}</option>
+                {defaultBookCallConfig.budgetOptions.map((opt) => (
+                  <option value={opt}>{opt}</option>
+                ))}
+              </select>
+              <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bc-field bc-field--full">
+          <label for="bc-notes" class="bc-label">
+            <span id="bc-notes-label">{defaultBookCallConfig.notesLabel}</span>
+          </label>
+          <textarea
+            id="bc-notes"
+            name="notes"
+            rows="3"
+            class="bc-textarea"
+            placeholder={defaultBookCallConfig.notesPlaceholder}
+          ></textarea>
+        </div>
+
+        <p class="bc-error" id="bc-step2-error" role="alert" hidden></p>
+
+        <div class="bc-footer">
+          <button type="button" class="bc-back-btn" id="bc-back-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m12 19-7-7 7-7" />
+              <path d="M19 12H5" />
+            </svg>
+            <span>Back</span>
+          </button>
+
+          <button type="submit" class="bc-cta-btn" id="bc-submit-btn">
+            <span id="bc-step2-cta">{defaultBookCallConfig.step2Cta}</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- STEP 3: CONFIRMATION -->
+      <div class="book-call-step bc-success" id="bc-step-success" hidden>
+        <div class="bc-success-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+        </div>
+        <span class="adaptif-eyebrow" id="bc-success-eyebrow">{defaultBookCallConfig.successEyebrow}</span>
+        <h2 class="bc-title" id="bc-success-title">{defaultBookCallConfig.successTitle}</h2>
+        <p class="bc-subtitle bc-subtitle--center" id="bc-success-message">{defaultBookCallConfig.successMessage}</p>
+        <button type="button" class="bc-cta-btn" data-close-book-call>Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initBookCallModal() {
+    const modal = document.getElementById("book-call-modal");
+    if (!modal || modal.dataset.bound === "true") return;
+    modal.dataset.bound = "true";
+
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+
+    const card = document.getElementById("book-call-card")!;
+    const formStep1 = document.getElementById("bc-form-step1") as HTMLFormElement;
+    const formStep2 = document.getElementById("bc-form-step2") as HTMLFormElement;
+    const stepSuccess = document.getElementById("bc-step-success")!;
+
+    const fullNameEl = document.getElementById("bc-full-name") as HTMLInputElement;
+    const workEmailEl = document.getElementById("bc-work-email") as HTMLInputElement;
+    const helpTopicEl = document.getElementById("bc-help-topic") as HTMLSelectElement;
+
+    const projectGoalEl = document.getElementById("bc-project-goal") as HTMLInputElement;
+    const referenceLinkEl = document.getElementById("bc-reference-link") as HTMLInputElement;
+    const timelineEl = document.getElementById("bc-timeline") as HTMLSelectElement;
+    const budgetEl = document.getElementById("bc-budget") as HTMLSelectElement;
+    const notesEl = document.getElementById("bc-notes") as HTMLTextAreaElement;
+
+    const step1ErrorEl = document.getElementById("bc-step1-error")!;
+    const step2ErrorEl = document.getElementById("bc-step2-error")!;
+    const backBtn = document.getElementById("bc-back-btn")!;
+    const submitBtn = document.getElementById("bc-submit-btn") as HTMLButtonElement;
+
+    let lastFocusedTrigger: HTMLElement | null = null;
+    let configLoaded = false;
+
+    function populateSelect(select: HTMLSelectElement, placeholder: string, options: string[]) {
+      const currentVal = select.value;
+      select.innerHTML = "";
+      const ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = placeholder;
+      select.appendChild(ph);
+      options.forEach((opt) => {
+        const el = document.createElement("option");
+        el.value = opt;
+        el.textContent = opt;
+        select.appendChild(el);
+      });
+      if (currentVal && options.includes(currentVal)) {
+        select.value = currentVal;
+      }
+    }
+
+    function applyConfig(cfg: Record<string, any>) {
+      const setText = (id: string, val: unknown) => {
+        const el = document.getElementById(id);
+        if (el && typeof val === "string") el.textContent = val;
+      };
+      setText("bc-step1-eyebrow", cfg.step1Eyebrow);
+      setText("bc-step1-title-prefix", cfg.step1Title);
+      setText("bc-step1-title-highlight", cfg.step1TitleHighlight);
+      setText("bc-step1-title-suffix", cfg.step1TitleSuffix);
+      setText("bc-step1-subtitle", cfg.step1Subtitle);
+      setText("bc-name-label", cfg.nameLabel);
+      if (typeof cfg.namePlaceholder === "string") fullNameEl.placeholder = cfg.namePlaceholder;
+      setText("bc-email-label", cfg.emailLabel);
+      if (typeof cfg.emailPlaceholder === "string") workEmailEl.placeholder = cfg.emailPlaceholder;
+      setText("bc-help-label", cfg.helpLabel);
+      if (Array.isArray(cfg.helpOptions)) {
+        populateSelect(helpTopicEl, String(cfg.helpPlaceholder || "Select an option..."), cfg.helpOptions);
+      }
+      setText("bc-privacy-note", cfg.privacyNote);
+      setText("bc-step1-cta", cfg.step1Cta);
+
+      setText("bc-step2-eyebrow", cfg.step2Eyebrow);
+      setText("bc-step2-title", cfg.step2Title);
+      setText("bc-step2-subtitle", cfg.step2Subtitle);
+      setText("bc-goal-label", cfg.goalLabel);
+      if (typeof cfg.goalPlaceholder === "string") projectGoalEl.placeholder = cfg.goalPlaceholder;
+      setText("bc-link-label", cfg.linkLabel);
+      if (typeof cfg.linkPlaceholder === "string") referenceLinkEl.placeholder = cfg.linkPlaceholder;
+      setText("bc-timeline-label", cfg.timelineLabel);
+      if (Array.isArray(cfg.timelineOptions)) {
+        populateSelect(timelineEl, String(cfg.timelinePlaceholder || "Select a timeline"), cfg.timelineOptions);
+      }
+      setText("bc-budget-label", cfg.budgetLabel);
+      if (Array.isArray(cfg.budgetOptions)) {
+        populateSelect(budgetEl, String(cfg.budgetPlaceholder || "This helps us recommend the right approach"), cfg.budgetOptions);
+      }
+      setText("bc-notes-label", cfg.notesLabel);
+      if (typeof cfg.notesPlaceholder === "string") notesEl.placeholder = cfg.notesPlaceholder;
+      setText("bc-step2-cta", cfg.step2Cta);
+
+      setText("bc-success-eyebrow", cfg.successEyebrow);
+      setText("bc-success-title", cfg.successTitle);
+      setText("bc-success-message", cfg.successMessage);
+    }
+
+    async function refreshConfig() {
+      if (configLoaded) return;
+      configLoaded = true;
+      try {
+        const res = await fetch("/api/book-call/config");
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.config) applyConfig(data.config);
+        }
+      } catch {
+        // Fallback to built-in defaults silently
+      }
+    }
+
+    function setStep(step: "1" | "2" | "success") {
+      card.dataset.step = step;
+      formStep1.hidden = step !== "1";
+      formStep2.hidden = step !== "2";
+      stepSuccess.hidden = step !== "success";
+      step1ErrorEl.hidden = true;
+      step2ErrorEl.hidden = true;
+    }
+
+    function openBookCallModal() {
+      lastFocusedTrigger = document.activeElement as HTMLElement | null;
+      refreshConfig();
+      setStep("1");
+      modal.hidden = false;
+      document.documentElement.style.overflow = "hidden";
+      requestAnimationFrame(() => {
+        modal.classList.add("is-open");
+        fullNameEl.focus({ preventScroll: true });
+      });
+    }
+
+    function closeBookCallModal() {
+      if (modal.hidden) return;
+      modal.classList.remove("is-open");
+      document.documentElement.style.overflow = "";
+      window.setTimeout(() => {
+        if (!modal.classList.contains("is-open")) {
+          modal.hidden = true;
+          lastFocusedTrigger?.focus({ preventScroll: true });
+        }
+      }, 220);
+    }
+
+    // Link every "Book a Call" button/link across the site + [data-open-book-call]
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      const closer = target.closest<HTMLElement>("[data-close-book-call]");
+      if (closer && (e.target === closer || closer.id === "book-call-close" || closer.closest("#bc-step-success"))) {
+        e.preventDefault();
+        closeBookCallModal();
+        return;
+      }
+
+      const actionable = target.closest<HTMLElement>("a, button");
+      if (!actionable) return;
+      const text = (actionable.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+      if (actionable.hasAttribute("data-open-book-call") || text === "book a call") {
+        // Ignore the submit button inside Step 2 itself
+        if (actionable.id === "bc-submit-btn") return;
+        e.preventDefault();
+        openBookCallModal();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) {
+        closeBookCallModal();
+      }
+    });
+
+    formStep1.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = fullNameEl.value.trim();
+      const email = workEmailEl.value.trim();
+      if (!name) {
+        step1ErrorEl.textContent = "Please enter your full name.";
+        step1ErrorEl.hidden = false;
+        fullNameEl.focus();
+        return;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        step1ErrorEl.textContent = "Please enter a valid work email address.";
+        step1ErrorEl.hidden = false;
+        workEmailEl.focus();
+        return;
+      }
+      setStep("2");
+      projectGoalEl.focus({ preventScroll: true });
+    });
+
+    backBtn.addEventListener("click", () => {
+      setStep("1");
+      fullNameEl.focus({ preventScroll: true });
+    });
+
+    formStep2.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      step2ErrorEl.hidden = true;
+
+      try {
+        const res = await fetch("/api/book-call/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: fullNameEl.value.trim(),
+            workEmail: workEmailEl.value.trim(),
+            helpTopic: helpTopicEl.value,
+            projectGoal: projectGoalEl.value.trim(),
+            referenceLink: referenceLinkEl.value.trim(),
+            timeline: timelineEl.value,
+            budgetRange: budgetEl.value,
+            notes: notesEl.value.trim(),
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Could not submit your request.");
+
+        formStep1.reset();
+        formStep2.reset();
+        setStep("success");
+      } catch (err: any) {
+        step2ErrorEl.textContent = err?.message || "Something went wrong. Please try again.";
+        step2ErrorEl.hidden = false;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    (window as any).__openBookCallModal = openBookCallModal;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initBookCallModal);
+  } else {
+    initBookCallModal();
+  }
+
+  document.addEventListener("astro:page-load", initBookCallModal);
+</script>
+
+<style>
+  .book-call-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+  }
+
+  .book-call-modal[hidden] {
+    display: none;
+  }
+
+  .book-call-modal.is-open {
+    opacity: 1;
+  }
+
+  .book-call-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 6, 15, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .book-call-shell {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-height: 100dvh;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(16px, 4vw, 36px);
+  }
+
+  .book-call-card {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    padding: clamp(26px, 4vw, 40px);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 82% 18%, rgba(56, 189, 248, 0.22) 0%, rgba(15, 42, 92, 0.18) 38%, transparent 72%),
+      linear-gradient(155deg, rgba(16, 39, 80, 0.96) 0%, rgba(8, 22, 48, 0.98) 65%, rgba(6, 15, 34, 0.99) 100%);
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    box-shadow:
+      0 32px 90px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    transform: translateY(10px) scale(0.985);
+    transition:
+      transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+      max-width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .book-call-card[data-step="2"] {
+    max-width: 780px;
+  }
+
+  .book-call-card[data-step="success"] {
+    max-width: 520px;
+  }
+
+  .book-call-modal.is-open .book-call-card {
+    transform: translateY(0) scale(1);
+  }
+
+  .book-call-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(226, 232, 240, 0.72);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .book-call-close:hover {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #ffffff;
+  }
+
+  .bc-title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2rem, 3.6vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    margin: 10px 0 10px;
+    padding-right: 36px;
+  }
+
+  .bc-title-italic {
+    font-style: italic;
+    color: var(--color-brand-cyan, #48c8ff);
+  }
+
+  .bc-subtitle {
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: rgba(203, 213, 225, 0.78);
+    margin: 0 0 24px;
+    max-width: 58ch;
+  }
+
+  .bc-subtitle--center {
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .bc-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .bc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .bc-field--full {
+    margin-top: 16px;
+  }
+
+  .bc-label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #7dd3fc;
+  }
+
+  .bc-required {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: rgba(203, 213, 225, 0.62);
+  }
+
+  .bc-input,
+  .bc-select,
+  .bc-textarea {
+    width: 100%;
+    font-family: var(--font-family-body);
+    font-size: 0.88rem;
+    color: #f8fafc;
+    background: rgba(18, 44, 88, 0.52);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    border-radius: 10px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .bc-input::placeholder,
+  .bc-textarea::placeholder {
+    color: rgba(148, 163, 184, 0.62);
+  }
+
+  .bc-input:focus,
+  .bc-select:focus,
+  .bc-textarea:focus {
+    border-color: rgba(72, 200, 255, 0.6);
+    background: rgba(20, 50, 100, 0.65);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
+  }
+
+  .bc-select-wrap {
+    position: relative;
+  }
+
+  .bc-select {
+    appearance: none;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .bc-select option {
+    background: #0a1935;
+    color: #f8fafc;
+  }
+
+  .bc-select-chevron {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: rgba(203, 213, 225, 0.65);
+  }
+
+  .bc-textarea {
+    resize: vertical;
+    min-height: 92px;
+  }
+
+  .bc-error {
+    margin: 14px 0 0;
+    font-size: 0.82rem;
+    color: #fda4af;
+  }
+
+  .bc-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .bc-privacy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: rgba(148, 163, 184, 0.8);
+  }
+
+  .bc-privacy svg {
+    color: #38bdf8;
+    flex-shrink: 0;
+  }
+
+  .bc-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: rgba(203, 213, 225, 0.78);
+    padding: 8px 4px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .bc-back-btn:hover {
+    color: #ffffff;
+  }
+
+  .bc-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #5ce1ff 0%, #38bdf8 55%, #0ea5e9 100%);
+    color: #031528;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow:
+      0 0 24px rgba(56, 189, 248, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  }
+
+  .bc-cta-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 32px rgba(56, 189, 248, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .bc-cta-btn:disabled {
+    opacity: 0.65;
+    cursor: wait;
+  }
+
+  .bc-success {
+    text-align: center;
+    padding: 12px 8px;
+  }
+
+  .bc-success-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #38bdf8;
+    box-shadow: 0 0 26px rgba(56, 189, 248, 0.25);
+  }
+
+  @media (max-width: 640px) {
+    .bc-grid-2 {
+      grid-template-columns: 1fr;
+    }
+
+    .bc-footer {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .bc-cta-btn {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,11 +1,15 @@
 ---
 import { listProjects } from "../lib/portfolioDb";
+import { getBookCallConfig } from "../lib/bookCallDb";
 
 export const prerender = false;
 
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
 
-const initialProjects = await listProjects({ includeHidden: true });
+const [initialProjects, initialBookCallConfig] = await Promise.all([
+  listProjects({ includeHidden: true }),
+  getBookCallConfig(),
+]);
 
 const tagPresets = [
   "Branding",
@@ -50,9 +54,13 @@ const tagPresets = [
 
         <nav class="studio-nav" aria-label="Preferences modules">
           <div class="nav-group-label">CMS Modules</div>
-          <button type="button" class="nav-item is-active" aria-current="page">
+          <button type="button" class="nav-item is-active" data-module-tab="portfolio" aria-current="page">
             <span>Portfolio</span>
             <span class="nav-count" id="sidebar-project-count">{initialProjects.length}</span>
+          </button>
+          <button type="button" class="nav-item" data-module-tab="book-call">
+            <span>Book a Call Form</span>
+            <span class="nav-count">2 steps</span>
           </button>
 
           <div class="nav-item is-disabled" aria-disabled="true">
@@ -83,19 +91,20 @@ const tagPresets = [
 
       <!-- Main Workspace -->
       <main class="studio-main">
-        <header class="studio-header">
-          <div>
-            <p class="studio-eyebrow">Internal CMS</p>
-            <h1 class="studio-title">Portfolio <span>Showcase</span></h1>
-          </div>
-          <div class="studio-header-actions">
-            <button type="button" class="btn-primary" id="btn-add-brand">
-              + Add Brand
-            </button>
-          </div>
-        </header>
+        <div id="module-portfolio">
+          <header class="studio-header">
+            <div>
+              <p class="studio-eyebrow">Internal CMS</p>
+              <h1 class="studio-title">Portfolio <span>Showcase</span></h1>
+            </div>
+            <div class="studio-header-actions">
+              <button type="button" class="btn-primary" id="btn-add-brand">
+                + Add Brand
+              </button>
+            </div>
+          </header>
 
-        <div class="studio-workspace">
+          <div class="studio-workspace">
           <!-- Left List: Brands -->
           <section class="brand-list-panel" aria-label="Brands list">
             <div class="panel-search-wrap">
@@ -233,6 +242,186 @@ const tagPresets = [
               </div>
             </form>
           </section>
+          </div>
+        </div>
+
+        <!-- Book a Call Form Module -->
+        <div id="module-book-call" hidden>
+          <header class="studio-header">
+            <div>
+              <p class="studio-eyebrow">Lead Capture</p>
+              <h1 class="studio-title">Book a Call <span>Form</span></h1>
+            </div>
+            <div class="studio-header-actions">
+              <button type="submit" form="book-call-cms-form" class="btn-primary" id="btn-save-book-call">
+                Save Form Settings
+              </button>
+            </div>
+          </header>
+
+          <form id="book-call-cms-form" class="bc-cms-form">
+            <section class="bc-cms-card">
+              <h2 class="bc-cms-card-title">Step 1 — Strategy Call Intro &amp; Required Fields</h2>
+              <div class="bc-cms-grid">
+                <div class="form-field">
+                  <label for="bc-cfg-step1-eyebrow">Eyebrow</label>
+                  <input type="text" id="bc-cfg-step1-eyebrow" value={initialBookCallConfig.step1Eyebrow} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-step1-cta">Primary CTA Button</label>
+                  <input type="text" id="bc-cfg-step1-cta" value={initialBookCallConfig.step1Cta} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-step1-title">Title Prefix</label>
+                  <input type="text" id="bc-cfg-step1-title" value={initialBookCallConfig.step1Title} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-step1-highlight">Title Italic Highlight</label>
+                  <input type="text" id="bc-cfg-step1-highlight" value={initialBookCallConfig.step1TitleHighlight} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-step1-suffix">Title Suffix</label>
+                  <input type="text" id="bc-cfg-step1-suffix" value={initialBookCallConfig.step1TitleSuffix} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-privacy">Privacy Note</label>
+                  <input type="text" id="bc-cfg-privacy" value={initialBookCallConfig.privacyNote} />
+                </div>
+              </div>
+
+              <div class="form-field" style="margin-top: 14px;">
+                <label for="bc-cfg-step1-subtitle">Subtitle</label>
+                <textarea id="bc-cfg-step1-subtitle" rows="2">{initialBookCallConfig.step1Subtitle}</textarea>
+              </div>
+
+              <div class="bc-cms-grid" style="margin-top: 14px;">
+                <div class="form-field">
+                  <label for="bc-cfg-name-label">Name Field Label</label>
+                  <input type="text" id="bc-cfg-name-label" value={initialBookCallConfig.nameLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-name-ph">Name Placeholder</label>
+                  <input type="text" id="bc-cfg-name-ph" value={initialBookCallConfig.namePlaceholder} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-email-label">Email Field Label</label>
+                  <input type="text" id="bc-cfg-email-label" value={initialBookCallConfig.emailLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-email-ph">Email Placeholder</label>
+                  <input type="text" id="bc-cfg-email-ph" value={initialBookCallConfig.emailPlaceholder} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-help-label">Help Topic Label</label>
+                  <input type="text" id="bc-cfg-help-label" value={initialBookCallConfig.helpLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-help-ph">Help Topic Placeholder</label>
+                  <input type="text" id="bc-cfg-help-ph" value={initialBookCallConfig.helpPlaceholder} />
+                </div>
+              </div>
+
+              <div class="form-field" style="margin-top: 14px;">
+                <label for="bc-cfg-help-options">Help Topic Dropdown Options (one per line)</label>
+                <textarea id="bc-cfg-help-options" rows="4">{initialBookCallConfig.helpOptions.join("\n")}</textarea>
+              </div>
+            </section>
+
+            <section class="bc-cms-card">
+              <h2 class="bc-cms-card-title">Step 2 — Optional Project Details</h2>
+              <div class="bc-cms-grid">
+                <div class="form-field">
+                  <label for="bc-cfg-step2-eyebrow">Eyebrow</label>
+                  <input type="text" id="bc-cfg-step2-eyebrow" value={initialBookCallConfig.step2Eyebrow} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-step2-title">Title</label>
+                  <input type="text" id="bc-cfg-step2-title" value={initialBookCallConfig.step2Title} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-step2-cta">Submit Button Text</label>
+                  <input type="text" id="bc-cfg-step2-cta" value={initialBookCallConfig.step2Cta} />
+                </div>
+              </div>
+
+              <div class="form-field" style="margin-top: 14px;">
+                <label for="bc-cfg-step2-subtitle">Subtitle</label>
+                <textarea id="bc-cfg-step2-subtitle" rows="2">{initialBookCallConfig.step2Subtitle}</textarea>
+              </div>
+
+              <div class="bc-cms-grid" style="margin-top: 14px;">
+                <div class="form-field">
+                  <label for="bc-cfg-goal-label">Goal Field Label</label>
+                  <input type="text" id="bc-cfg-goal-label" value={initialBookCallConfig.goalLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-goal-ph">Goal Placeholder</label>
+                  <input type="text" id="bc-cfg-goal-ph" value={initialBookCallConfig.goalPlaceholder} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-link-label">Link Field Label</label>
+                  <input type="text" id="bc-cfg-link-label" value={initialBookCallConfig.linkLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-link-ph">Link Placeholder</label>
+                  <input type="text" id="bc-cfg-link-ph" value={initialBookCallConfig.linkPlaceholder} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-timeline-label">Timeline Label</label>
+                  <input type="text" id="bc-cfg-timeline-label" value={initialBookCallConfig.timelineLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-timeline-ph">Timeline Placeholder</label>
+                  <input type="text" id="bc-cfg-timeline-ph" value={initialBookCallConfig.timelinePlaceholder} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-budget-label">Budget Label</label>
+                  <input type="text" id="bc-cfg-budget-label" value={initialBookCallConfig.budgetLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-budget-ph">Budget Placeholder</label>
+                  <input type="text" id="bc-cfg-budget-ph" value={initialBookCallConfig.budgetPlaceholder} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-notes-label">Notes Field Label</label>
+                  <input type="text" id="bc-cfg-notes-label" value={initialBookCallConfig.notesLabel} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-notes-ph">Notes Placeholder</label>
+                  <input type="text" id="bc-cfg-notes-ph" value={initialBookCallConfig.notesPlaceholder} />
+                </div>
+              </div>
+
+              <div class="bc-cms-grid" style="margin-top: 14px;">
+                <div class="form-field">
+                  <label for="bc-cfg-timeline-options">Timeline Options (one per line)</label>
+                  <textarea id="bc-cfg-timeline-options" rows="4">{initialBookCallConfig.timelineOptions.join("\n")}</textarea>
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-budget-options">Budget Options (one per line)</label>
+                  <textarea id="bc-cfg-budget-options" rows="4">{initialBookCallConfig.budgetOptions.join("\n")}</textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="bc-cms-card">
+              <h2 class="bc-cms-card-title">Confirmation Screen</h2>
+              <div class="bc-cms-grid">
+                <div class="form-field">
+                  <label for="bc-cfg-success-eyebrow">Eyebrow</label>
+                  <input type="text" id="bc-cfg-success-eyebrow" value={initialBookCallConfig.successEyebrow} />
+                </div>
+                <div class="form-field">
+                  <label for="bc-cfg-success-title">Title</label>
+                  <input type="text" id="bc-cfg-success-title" value={initialBookCallConfig.successTitle} />
+                </div>
+              </div>
+              <div class="form-field" style="margin-top: 14px;">
+                <label for="bc-cfg-success-message">Confirmation Message</label>
+                <textarea id="bc-cfg-success-message" rows="2">{initialBookCallConfig.successMessage}</textarea>
+              </div>
+            </section>
+          </form>
         </div>
       </main>
     </div>
@@ -672,6 +861,95 @@ const tagPresets = [
       // Init
       renderList();
       loadEditor(projects[0] ?? null, false);
+
+      // Module tab switching (Portfolio <-> Book a Call Form)
+      const moduleTabs = document.querySelectorAll<HTMLButtonElement>("[data-module-tab]");
+      const portfolioModule = document.getElementById("module-portfolio");
+      const bookCallModule = document.getElementById("module-book-call");
+
+      moduleTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.moduleTab;
+          moduleTabs.forEach((t) => {
+            const active = t.dataset.moduleTab === target;
+            t.classList.toggle("is-active", active);
+            if (active) t.setAttribute("aria-current", "page");
+            else t.removeAttribute("aria-current");
+          });
+          if (portfolioModule) portfolioModule.hidden = target !== "portfolio";
+          if (bookCallModule) bookCallModule.hidden = target !== "book-call";
+        });
+      });
+
+      // Book a Call Form CMS save
+      const bcCmsForm = document.getElementById("book-call-cms-form") as HTMLFormElement | null;
+      const bcSaveBtn = document.getElementById("btn-save-book-call") as HTMLButtonElement | null;
+
+      bcCmsForm?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (bcSaveBtn) bcSaveBtn.disabled = true;
+
+        const val = (id: string) =>
+          (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement)?.value.trim() ?? "";
+        const lines = (id: string) =>
+          ((document.getElementById(id) as HTMLTextAreaElement)?.value ?? "")
+            .split("\n")
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+        const payload = {
+          step1Eyebrow: val("bc-cfg-step1-eyebrow"),
+          step1Title: val("bc-cfg-step1-title"),
+          step1TitleHighlight: val("bc-cfg-step1-highlight"),
+          step1TitleSuffix: val("bc-cfg-step1-suffix"),
+          step1Subtitle: val("bc-cfg-step1-subtitle"),
+          nameLabel: val("bc-cfg-name-label"),
+          namePlaceholder: val("bc-cfg-name-ph"),
+          emailLabel: val("bc-cfg-email-label"),
+          emailPlaceholder: val("bc-cfg-email-ph"),
+          helpLabel: val("bc-cfg-help-label"),
+          helpPlaceholder: val("bc-cfg-help-ph"),
+          helpOptions: lines("bc-cfg-help-options"),
+          privacyNote: val("bc-cfg-privacy"),
+          step1Cta: val("bc-cfg-step1-cta"),
+
+          step2Eyebrow: val("bc-cfg-step2-eyebrow"),
+          step2Title: val("bc-cfg-step2-title"),
+          step2Subtitle: val("bc-cfg-step2-subtitle"),
+          goalLabel: val("bc-cfg-goal-label"),
+          goalPlaceholder: val("bc-cfg-goal-ph"),
+          linkLabel: val("bc-cfg-link-label"),
+          linkPlaceholder: val("bc-cfg-link-ph"),
+          timelineLabel: val("bc-cfg-timeline-label"),
+          timelinePlaceholder: val("bc-cfg-timeline-ph"),
+          timelineOptions: lines("bc-cfg-timeline-options"),
+          budgetLabel: val("bc-cfg-budget-label"),
+          budgetPlaceholder: val("bc-cfg-budget-ph"),
+          budgetOptions: lines("bc-cfg-budget-options"),
+          notesLabel: val("bc-cfg-notes-label"),
+          notesPlaceholder: val("bc-cfg-notes-ph"),
+          step2Cta: val("bc-cfg-step2-cta"),
+
+          successEyebrow: val("bc-cfg-success-eyebrow"),
+          successTitle: val("bc-cfg-success-title"),
+          successMessage: val("bc-cfg-success-message"),
+        };
+
+        try {
+          const res = await fetch("/api/book-call/config", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data?.error || "Failed to save Book a Call form");
+          showToast("Book a Call form saved & live!");
+        } catch (err: any) {
+          showToast(err?.message || "Failed to save form settings", true);
+        } finally {
+          if (bcSaveBtn) bcSaveBtn.disabled = false;
+        }
+      });
     </script>
 
     <style>
@@ -1403,6 +1681,39 @@ const tagPresets = [
       .toast.is-visible {
         opacity: 1;
         transform: translateY(0);
+      }
+
+      .bc-cms-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .bc-cms-card {
+        background: rgba(10, 18, 36, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 22px;
+      }
+
+      .bc-cms-card-title {
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #7dd3fc;
+        margin: 0 0 16px;
+      }
+
+      .bc-cms-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      @media (max-width: 720px) {
+        .bc-cms-grid {
+          grid-template-columns: 1fr;
+        }
       }
 
       @media (max-width: 1024px) {

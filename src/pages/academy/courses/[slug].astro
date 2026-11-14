@@ -3,8 +3,10 @@ import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
 import FaqSection from "../../../components/FaqSection.astro";
+import CourseHeroShaderBg from "../../../components/CourseHeroShaderBg.astro";
 import {
   FUNNEL_BLOCKS,
+  buildSlidesFromLanding,
   defaultFunnelVisibility,
   getAcademyItemBySlug,
   getAcademySettings,
@@ -31,6 +33,7 @@ const isUnlocked =
   (await verifyAccessToken(item.id, queryToken || cookieToken));
 
 const vis = defaultFunnelVisibility(item.landingData.funnelVisibility);
+const pdfModules = buildSlidesFromLanding(item);
 const f = item.landingData.funnel || {};
 const coverImg = item.coverImage || "/images/why-us/our-technology.jpg";
 const isEditMode = Astro.url.searchParams.get("edit") === "1";
@@ -272,6 +275,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
   <main class:list={["course-funnel", { "is-edit-mode": isEditMode }]}>
     <!-- 1. HERO SPLIT -->
     <section class="cf-hero is-visible">
+      <CourseHeroShaderBg seed={item.slug} />
       <div class="cf-container">
         <div class="cf-breadcrumb">
           <a href="/academy">Academy</a>
@@ -283,11 +287,9 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
         <div class="cf-hero-grid">
           <div class="cf-hero-copy">
-            <div class="cf-badges">
-              <span class="badge-pro" {...ed("landingData.heroBadge")}>{item.landingData.heroBadge || "Pro Course"}</span>
-              {item.priceLabel && <span class="badge-price">{item.priceLabel}</span>}
-              {item.landingData.readTime && <span class="badge-meta" {...ed("landingData.readTime")}>{item.landingData.readTime}</span>}
-            </div>
+            <span class="section-eyebrow" style="margin-bottom: 12px;" {...ed("landingData.heroBadge")}>
+              {item.landingData.heroBadge || "Pro Course"}
+            </span>
 
             <h1 class="cf-title" {...ed("title")}>{item.title}</h1>
             <p class="cf-subtitle" {...ed("subtitle")}>{item.subtitle || item.description}</p>
@@ -581,6 +583,38 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- 9B. COURSE MODULES (PDF / DECK BREAKDOWN) -->
+    {(vis.modules || isEditMode) && pdfModules.length > 0 && (
+      <section class="cf-section is-visible" data-funnel-block="modules" hidden={!vis.modules}>
+        <div class="cf-container">
+          <div class="cf-section-head">
+            <span class="section-eyebrow">Course Modules</span>
+            <h2 class="section-title">What’s Inside Every Module</h2>
+            <p class="section-sub">
+              Each module maps directly to a dedicated section in your interactive online deck and downloadable handbook.
+            </p>
+          </div>
+
+          <div class="cf-modules-grid">
+            {pdfModules.map((mod, idx) => {
+              const rawTag = (mod.eyebrow || mod.layout || "Module").replace(/^\d+\s*[·•\-:]\s*/, "").trim();
+              const summaryText = mod.body || (mod.bullets || []).slice(0, 2).join(" · ");
+              return (
+                <article class="cf-module-card">
+                  <div class="cf-module-top">
+                    <span class="cf-module-num">Module {String(idx + 1).padStart(2, "0")}</span>
+                    <span class="cf-module-pill">{rawTag}</span>
+                  </div>
+                  <h3 class="cf-module-title">{mod.title}</h3>
+                  {summaryText && <p class="cf-module-body">{summaryText}</p>}
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1031,7 +1065,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     --text-primary: var(--color-text-primary, #f8fafc);
     --text-secondary: var(--color-text-secondary, #94a3b8);
     --text-muted: var(--color-text-muted, #64748b);
-    padding-top: 108px;
+    padding-top: 0;
     padding-bottom: 90px;
     background: var(--bg-void);
     min-height: 100vh;
@@ -1062,7 +1096,14 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
   /* Hero */
   .cf-hero {
-    padding: 18px 0 42px;
+    position: relative;
+    overflow: hidden;
+    padding: 126px 0 48px;
+  }
+
+  .cf-hero > .cf-container {
+    position: relative;
+    z-index: 2;
   }
 
   .cf-hero-grid {
@@ -1140,37 +1181,58 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
   }
 
   .btn-primary-cyan {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 13px 24px;
-    border-radius: 999px;
-    background: var(--cyan-primary);
-    color: #03121e;
-    font-weight: 700;
-    font-size: 0.9rem;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 30px;
+    border-radius: var(--radius-pill, 999px);
+    background:
+      radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%),
+      linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
+    border: none;
+    box-shadow: var(--shadow-button-primary, 0 0 28px rgba(48, 186, 255, 0.4), 0 10px 24px rgba(0, 0, 0, 0.45));
+    color: #031528;
+    font-weight: 600;
+    font-size: var(--font-size-btn, 0.94rem);
+    letter-spacing: -0.01em;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
     text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1), filter 0.25s ease;
   }
 
   .btn-primary-cyan:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(72, 200, 255, 0.3);
+    filter: brightness(1.06);
+    box-shadow: 0 0 36px rgba(72, 200, 255, 0.55), 0 14px 30px rgba(0, 0, 0, 0.5);
   }
 
   .btn-outline-glass,
   .btn-tool-pill {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 12px 20px;
-    border-radius: 999px;
+    padding: 13px 24px;
+    border-radius: var(--radius-pill, 999px);
     border: 1px solid rgba(255, 255, 255, 0.16);
     background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 8px 24px rgba(0, 0, 0, 0.35);
     color: var(--text-primary);
     font-weight: 600;
-    font-size: 0.88rem;
+    font-size: var(--font-size-btn, 0.92rem);
     text-decoration: none;
+    transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+  }
+
+  .btn-outline-glass:hover,
+  .btn-tool-pill:hover {
+    transform: translateY(-2px);
+    border-color: rgba(72, 200, 255, 0.45);
+    background: rgba(72, 200, 255, 0.08);
   }
 
   .cf-hero-card {
@@ -1253,10 +1315,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     flex-wrap: wrap;
     justify-content: center;
     gap: 14px 28px;
-    padding: 16px 22px;
-    border-radius: 16px;
-    background: rgba(11, 32, 54, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 8px 0;
   }
 
   .cf-strip-item {
@@ -1356,8 +1415,9 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
   }
 
   .cf-ba-card h3 {
-    margin: 0 0 8px;
-    font-size: 1.02rem;
+    margin: 0 0 10px;
+    font-size: 1.38rem;
+    line-height: 1.22;
     color: var(--text-primary);
   }
 
@@ -1372,12 +1432,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
   .cf-split-proof {
     display: grid;
     grid-template-columns: 0.95fr 1.05fr;
-    gap: 36px;
+    gap: 44px;
     align-items: center;
-    padding: 30px;
-    border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    background: rgba(11, 32, 54, 0.42);
   }
 
   .cf-split-visual {
@@ -1681,6 +1737,83 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     color: var(--text-secondary);
   }
 
+  /* 9B. COURSE MODULES */
+  .cf-modules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .cf-module-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 22px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(165deg, rgba(12, 30, 54, 0.52) 0%, rgba(5, 14, 28, 0.72) 100%);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .cf-module-card:hover {
+    border-color: rgba(72, 200, 255, 0.28);
+    transform: translateY(-2px);
+  }
+
+  .cf-module-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .cf-module-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan-primary);
+  }
+
+  .cf-module-pill {
+    padding: 4px 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    white-space: nowrap;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cf-module-title {
+    margin: 2px 0 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text-primary);
+  }
+
+  .cf-module-body {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 1080px) {
+    .cf-modules-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   /* Outcomes Split */
   .cf-outcomes-split {
     display: grid;
@@ -1866,6 +1999,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     .cf-ba-grid,
     .cf-pillars-grid,
     .curriculum-grid,
+    .cf-modules-grid,
     .cf-deliverables-grid {
       grid-template-columns: 1fr;
     }

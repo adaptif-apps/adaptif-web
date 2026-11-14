@@ -26,6 +26,7 @@ export type FunnelBlockKey =
   | "explorer"
   | "toolSpotlight"
   | "curriculum"
+  | "modules"
   | "outcomes"
   | "deliverables"
   | "closingCta"
@@ -42,6 +43,7 @@ export const FUNNEL_BLOCKS: { key: FunnelBlockKey; label: string; desc: string }
   { key: "explorer", label: "Interactive Explorer", desc: "Tabbed module & specs preview" },
   { key: "toolSpotlight", label: "Companion Tool", desc: "Included template or micro-app card" },
   { key: "curriculum", label: "Curriculum Grid", desc: "Micro-cards covering every topic" },
+  { key: "modules", label: "Course Modules", desc: "3-column module cards synced with slides" },
   { key: "outcomes", label: "Target Outcomes", desc: "Outcome bullets + vertical visual" },
   { key: "deliverables", label: "Deliverables Grid", desc: "4-card breakdown of included assets" },
   { key: "closingCta", label: "Closing Offer Banner", desc: "Final conversion card & checklist" },
@@ -58,6 +60,7 @@ export function defaultFunnelVisibility(overrides?: Partial<Record<FunnelBlockKe
     explorer: true,
     toolSpotlight: true,
     curriculum: true,
+    modules: true,
     outcomes: true,
     deliverables: true,
     closingCta: true,

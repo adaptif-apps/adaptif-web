@@ -1,0 +1,329 @@
+---
+interface Props {
+  seed: string;
+}
+
+const { seed = "adaptif-course" } = Astro.props;
+---
+
+<div class="cf-shader-bg" data-course-shader-seed={seed} aria-hidden="true">
+  <canvas class="cf-shader-canvas"></canvas>
+  <div class="cf-shader-vignette"></div>
+</div>
+
+<script>
+  (() => {
+    const containers = document.querySelectorAll<HTMLElement>("[data-course-shader-seed]");
+    if (!containers.length) return;
+
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+
+    function hashString(str: string): number {
+      let h = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+
+    function seededRandom(seedNum: number): () => number {
+      let s = seedNum || 1;
+      return () => {
+        s = (s * 1664525 + 1013904223) >>> 0;
+        return s / 4294967296;
+      };
+    }
+
+    const VERT_SRC = `
+      attribute vec2 a_pos;
+      varying vec2 v_uv;
+      void main() {
+        v_uv = a_pos * 0.5 + 0.5;
+        gl_Position = vec4(a_pos, 0.0, 1.0);
+      }
+    `;
+
+    const FRAG_SRC = `
+      precision highp float;
+      varying vec2 v_uv;
+
+      uniform vec2 u_res;
+      uniform float u_time;
+      uniform vec2 u_mouse;
+      uniform float u_seed;
+      uniform float u_mode;
+      uniform float u_scale;
+      uniform float u_angle;
+      uniform float u_hue;
+
+      float hash(vec2 p) {
+        return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+      }
+
+      float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        float a = hash(i);
+        float b = hash(i + vec2(1.0, 0.0));
+        float c = hash(i + vec2(0.0, 1.0));
+        float d = hash(i + vec2(1.0, 1.0));
+        return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+      }
+
+      float fbm(vec2 p) {
+        float v = 0.0;
+        float a = 0.5;
+        mat2 rot = mat2(0.80, -0.60, 0.60, 0.80);
+        for (int i = 0; i < 4; i++) {
+          v += a * noise(p);
+          p = rot * p * 2.02;
+          a *= 0.5;
+        }
+        return v;
+      }
+
+      mat2 rot2(float a) {
+        float c = cos(a);
+        float s = sin(a);
+        return mat2(c, -s, s, c);
+      }
+
+      void main() {
+        vec2 aspect = vec2(u_res.x / max(u_res.y, 1.0), 1.0);
+        vec2 uv = (v_uv - 0.5) * aspect;
+        vec2 mouseOffset = (u_mouse - 0.5) * 0.25;
+        vec2 p = rot2(u_angle) * (uv + mouseOffset) * u_scale + vec2(u_seed * 0.13, u_seed * 0.07);
+
+        float t = u_time * 0.18;
+        float field = 0.0;
+        float highlight = 0.0;
+
+        if (u_mode < 0.5) {
+          // Mode 0: Abyssal Silk Waves (domain-warped FBM)
+          vec2 q = vec2(fbm(p + t * 0.6), fbm(p + vec2(5.2, 1.3) - t * 0.4));
+          vec2 r = vec2(fbm(p + 2.4 * q + vec2(1.7, 9.2) + t * 0.35), fbm(p + 2.1 * q + vec2(8.3, 2.8)));
+          field = fbm(p + 2.0 * r);
+          highlight = smoothstep(0.55, 0.92, field) * 0.85 + pow(clamp(length(q) * 0.72, 0.0, 1.0), 2.5) * 0.35;
+        } else if (u_mode < 1.5) {
+          // Mode 1: Volumetric Aurora Caustics
+          float n1 = fbm(p * 1.15 + vec2(t * 0.7, -t * 0.4));
+          float n2 = fbm(p * 1.65 - vec2(t * 0.5, t * 0.6) + n1 * 1.4);
+          float ridge = 1.0 - abs(n2 * 2.0 - 1.0);
+          field = n1 * 0.55 + pow(ridge, 2.2) * 0.65;
+          highlight = pow(ridge, 4.0) * 0.9;
+        } else if (u_mode < 2.5) {
+          // Mode 2: Topographic Contour Rings
+          float d = length(uv + mouseOffset * 0.6);
+          float warp = fbm(p * 0.9 + t * 0.5);
+          float rings = sin((d * 7.5 - t * 1.4 + warp * 3.8) * 3.14159);
+          field = warp * 0.65 + (rings * 0.5 + 0.5) * 0.35;
+          highlight = smoothstep(0.86, 0.99, rings * 0.5 + 0.5) * 0.75 * exp(-d * 1.1);
+        } else {
+          // Mode 3: Orbital Nebula Flow
+          float r = length(p);
+          float a = atan(p.y, p.x) + r * 0.8 - t * 0.5;
+          vec2 swirl = vec2(cos(a), sin(a)) * r;
+          float f1 = fbm(swirl * 0.85 + t * 0.4);
+          float f2 = fbm(p * 1.4 - swirl * 0.35 - t * 0.3);
+          field = mix(f1, f2, 0.5);
+          highlight = smoothstep(0.58, 0.94, field) * 0.85;
+        }
+
+        // Adaptif Palette (deep void -> abyssal blue -> brand cyan -> subtle tint shift)
+        vec3 colVoid = vec3(0.004, 0.012, 0.027);
+        vec3 colDeep = vec3(0.028, 0.095, 0.215);
+        vec3 colMid  = mix(vec3(0.055, 0.240, 0.460), vec3(0.070, 0.190, 0.480), u_hue);
+        vec3 colCyan = mix(vec3(0.282, 0.784, 1.000), vec3(0.180, 0.850, 0.950), u_hue);
+
+        vec3 col = mix(colVoid, colDeep, smoothstep(0.18, 0.58, field));
+        col = mix(col, colMid, smoothstep(0.45, 0.82, field) * 0.72);
+        col += colCyan * highlight * 0.34;
+
+        // Soft ambient upper-right / center glow
+        float radialGlow = exp(-dot(uv - vec2(0.18, 0.12), uv - vec2(0.18, 0.12)) * 2.2);
+        col += colCyan * radialGlow * 0.09;
+
+        // Subtle film grain to prevent banding
+        float grain = (hash(gl_FragCoord.xy + fract(u_time) * 100.0) - 0.5) * 0.014;
+        col = clamp(col + grain, 0.0, 1.0);
+
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `;
+
+    containers.forEach((container) => {
+      const canvas = container.querySelector<HTMLCanvasElement>(".cf-shader-canvas");
+      if (!canvas) return;
+
+      const seedStr = container.dataset.courseShaderSeed || "adaptif-course";
+      const rand = seededRandom(hashString(seedStr));
+      const mode = Math.floor(rand() * 4);
+      const seedVal = 10 + rand() * 90;
+      const scaleVal = 1.45 + rand() * 0.85;
+      const angleVal = rand() * Math.PI * 2;
+      const hueVal = rand();
+
+      const gl = canvas.getContext("webgl", {
+        alpha: true,
+        antialias: false,
+        powerPreference: "high-performance",
+        preserveDrawingBuffer: false
+      });
+
+      if (!gl) return;
+
+      const compile = (type: number, src: string) => {
+        const shader = gl.createShader(type);
+        if (!shader) return null;
+        gl.shaderSource(shader, src);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          gl.deleteShader(shader);
+          return null;
+        }
+        return shader;
+      };
+
+      const vs = compile(gl.VERTEX_SHADER, VERT_SRC);
+      const fs = compile(gl.FRAGMENT_SHADER, FRAG_SRC);
+      if (!vs || !fs) return;
+
+      const program = gl.createProgram();
+      if (!program) return;
+      gl.attachShader(program, vs);
+      gl.attachShader(program, fs);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+
+      gl.useProgram(program);
+
+      const buf = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+        gl.STATIC_DRAW
+      );
+
+      const aPos = gl.getAttribLocation(program, "a_pos");
+      gl.enableVertexAttribArray(aPos);
+      gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+      const uRes = gl.getUniformLocation(program, "u_res");
+      const uTime = gl.getUniformLocation(program, "u_time");
+      const uMouse = gl.getUniformLocation(program, "u_mouse");
+      const uSeed = gl.getUniformLocation(program, "u_seed");
+      const uMode = gl.getUniformLocation(program, "u_mode");
+      const uScale = gl.getUniformLocation(program, "u_scale");
+      const uAngle = gl.getUniformLocation(program, "u_angle");
+      const uHue = gl.getUniformLocation(program, "u_hue");
+
+      gl.uniform1f(uSeed, seedVal);
+      gl.uniform1f(uMode, mode);
+      gl.uniform1f(uScale, scaleVal);
+      gl.uniform1f(uAngle, angleVal);
+      gl.uniform1f(uHue, hueVal);
+
+      let width = 0;
+      let height = 0;
+      const resize = () => {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        const rect = container.getBoundingClientRect();
+        width = Math.max(1, Math.floor(rect.width * dpr));
+        height = Math.max(1, Math.floor(rect.height * dpr));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+          gl.viewport(0, 0, width, height);
+        }
+      };
+
+      resize();
+      const ro = new ResizeObserver(resize);
+      ro.observe(container);
+
+      let targetMouseX = 0.5;
+      let targetMouseY = 0.5;
+      let mouseX = 0.5;
+      let mouseY = 0.5;
+
+      const heroEl = container.closest(".cf-hero");
+      heroEl?.addEventListener("pointermove", (e: Event) => {
+        const pe = e as PointerEvent;
+        const rect = container.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        targetMouseX = Math.max(0, Math.min(1, (pe.clientX - rect.left) / rect.width));
+        targetMouseY = Math.max(0, Math.min(1, 1 - (pe.clientY - rect.top) / rect.height));
+      });
+
+      let isVisible = true;
+      const io = new IntersectionObserver(
+        (entries) => {
+          isVisible = entries[0]?.isIntersecting ?? true;
+        },
+        { threshold: 0.01 }
+      );
+      io.observe(container);
+
+      let rafId = 0;
+      const start = performance.now();
+
+      const render = (now: number) => {
+        if (isVisible) {
+          mouseX += (targetMouseX - mouseX) * 0.05;
+          mouseY += (targetMouseY - mouseY) * 0.05;
+          const elapsed = prefersReducedMotion ? 2.5 : (now - start) * 0.001;
+          gl.uniform2f(uRes, width, height);
+          gl.uniform1f(uTime, elapsed);
+          gl.uniform2f(uMouse, mouseX, mouseY);
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        }
+        if (!prefersReducedMotion) {
+          rafId = requestAnimationFrame(render);
+        }
+      };
+
+      render(start);
+
+      document.addEventListener(
+        "astro:before-swap",
+        () => {
+          cancelAnimationFrame(rafId);
+          ro.disconnect();
+          io.disconnect();
+        },
+        { once: true }
+      );
+    });
+  })();
+</script>
+
+<style>
+  .cf-shader-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 55% at 70% 20%, rgba(72, 200, 255, 0.14) 0%, transparent 65%),
+      radial-gradient(ellipse 65% 50% at 20% 10%, rgba(18, 65, 130, 0.22) 0%, transparent 70%);
+  }
+
+  .cf-shader-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0.92;
+  }
+
+  .cf-shader-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(1, 3, 7, 0.25) 0%, rgba(1, 3, 7, 0.05) 35%, rgba(1, 3, 7, 0.72) 82%, #010307 100%),
+      radial-gradient(ellipse 95% 85% at 50% 45%, transparent 45%, rgba(1, 3, 7, 0.72) 100%);
+  }
+</style>

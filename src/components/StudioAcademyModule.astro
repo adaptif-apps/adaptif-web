@@ -1570,6 +1570,14 @@ const { initialItems, initialSettings } = Astro.props;
     cursor: not-allowed;
   }
 
+  .acd-btn-cyan:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+    box-shadow: none;
+    pointer-events: none;
+  }
+
   .acd-settings-card {
     margin-top: 20px;
   }

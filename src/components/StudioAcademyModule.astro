@@ -13,8 +13,8 @@ const { initialItems, initialSettings } = Astro.props;
 <div id="module-academy" hidden>
   <header class="studio-header">
     <div>
-      <p class="studio-eyebrow" id="acd-module-eyebrow">Academy CMS</p>
-      <h1 class="studio-title" id="acd-module-title">Courses &amp; <span>Guides</span></h1>
+      <p class="studio-eyebrow" id="acd-module-eyebrow">AI Curriculum Engine</p>
+      <h1 class="studio-title" id="acd-module-title">Generate <span>Course</span></h1>
     </div>
     <div class="studio-header-actions">
       <button type="button" class="acd-btn-cyan" id="btn-new-guide">+ New Guide</button>
@@ -426,6 +426,7 @@ const { initialItems, initialSettings } = Astro.props;
       const bookCallModule = document.getElementById("module-book-call");
       const activeCampaignModule = document.getElementById("module-activecampaign");
       const academyModule = document.getElementById("module-academy");
+      const generalInfoModule = document.getElementById("module-general-info");
       const paymentModule = document.getElementById("module-payment");
       const aiConfigModule = document.getElementById("module-ai-config");
 
@@ -437,6 +438,7 @@ const { initialItems, initialSettings } = Astro.props;
       if (portfolioModule) portfolioModule.hidden = true;
       if (bookCallModule) bookCallModule.hidden = true;
       if (activeCampaignModule) activeCampaignModule.hidden = true;
+      if (generalInfoModule) generalInfoModule.hidden = true;
       if (paymentModule) paymentModule.hidden = true;
       if (aiConfigModule) aiConfigModule.hidden = true;
       if (academyModule) academyModule.hidden = false;
@@ -498,12 +500,11 @@ const { initialItems, initialSettings } = Astro.props;
       if (newCourseBtn) newCourseBtn.hidden = kind !== "course";
 
       if (titleHeaderEl && eyebrowHeaderEl) {
+        eyebrowHeaderEl.textContent = "AI Curriculum Engine";
         if (kind === "course") {
-          eyebrowHeaderEl.textContent = "Academy · Courses CMS";
-          titleHeaderEl.innerHTML = "Course <span>Editor</span>";
+          titleHeaderEl.innerHTML = "Generate <span>Course</span>";
         } else {
-          eyebrowHeaderEl.textContent = "Academy · Guides CMS";
-          titleHeaderEl.innerHTML = "Guide <span>Editor</span>";
+          titleHeaderEl.innerHTML = "Generate <span>Guide</span>";
         }
       }
     }

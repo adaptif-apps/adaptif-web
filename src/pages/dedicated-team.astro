@@ -12,6 +12,7 @@ import DedicatedTeamFit from "../components/DedicatedTeamFit.astro";
 import DedicatedTeamOutcomes from "../components/DedicatedTeamOutcomes.astro";
 import DedicatedTeamServices from "../components/DedicatedTeamServices.astro";
 import PricingHero from "../components/PricingHero.astro";
+import ComparisonTable from "../components/ComparisonTable.astro";
 import Footer from "../components/Footer.astro";
 ---
 
@@ -33,11 +34,13 @@ import Footer from "../components/Footer.astro";
     <DedicatedTeamServices />
     <PricingHero
       asSection
+      showBackground={false}
       eyebrow="Flexible plans"
       title="Your full-time creative team,"
       highlightTitle="on retainer"
       sectionId="dedicated-team-pricing"
     />
+    <ComparisonTable />
   </main>
   <Footer />
 </Layout>

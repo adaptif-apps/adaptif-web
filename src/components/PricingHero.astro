@@ -7,6 +7,7 @@ interface Props {
   title?: string;
   highlightTitle?: string;
   asSection?: boolean;
+  showBackground?: boolean;
   sectionId?: string;
 }
 
@@ -15,6 +16,7 @@ const {
   title = "Your full-time creative team,",
   highlightTitle = "for one hire.",
   asSection = false,
+  showBackground = !asSection,
   sectionId = "pricing-hero",
 } = Astro.props;
 import UnderwaterLightRays from "./UnderwaterLightRays.astro";
@@ -170,13 +172,15 @@ const fullStackFeatures: PlanFeature[] = [
   id={sectionId}
   data-pricing-root
 >
-  <!-- Volumetric Underwater Light Rays Atmosphere -->
-  <div class="pricing-bg" aria-hidden="true">
-    <div class="pricing-rays-layer">
-      <UnderwaterLightRays />
+  {showBackground && (
+    <!-- Volumetric Underwater Light Rays Atmosphere -->
+    <div class="pricing-bg" aria-hidden="true">
+      <div class="pricing-rays-layer">
+        <UnderwaterLightRays />
+      </div>
+      <div class="pricing-bottom-fade"></div>
     </div>
-    <div class="pricing-bottom-fade"></div>
-  </div>
+  )}
 
   <div class="container pricing-container">
     <div class="pricing-grid">

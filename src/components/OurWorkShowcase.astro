@@ -248,9 +248,10 @@ function getFilterCategories(tags: string[]): string[] {
     // --- Shareable Overlay Gallery ---
     let lastFocusedTrigger: HTMLElement | null = null;
 
-    function createTile(src: string, alt: string, extraClass = "") {
+    function createTile(src: string, alt: string, extraClass = "", index = 0) {
       const div = document.createElement("div");
       div.className = `bento-tile ${extraClass}`.trim();
+      div.style.setProperty("--tile-delay", `${index * 65}ms`);
       const img = document.createElement("img");
       img.src = src;
       img.alt = alt;
@@ -269,43 +270,43 @@ function getFilterCategories(tags: string[]): string[] {
       // Block 1: Large 2x2 square (0)
       const b1 = document.createElement("div");
       b1.className = "bento-block bento-block-square";
-      b1.appendChild(createTile(imgs[0], `${project.title} — featured visual`));
+      b1.appendChild(createTile(imgs[0], `${project.title} — featured visual`, "", 0));
       galleryTrack.appendChild(b1);
 
       // Block 2: Top wide (1) + Bottom 2 squares (2, 3)
       const b2 = document.createElement("div");
       b2.className = "bento-block bento-block-top-wide";
-      b2.appendChild(createTile(imgs[1], `${project.title} — campaign view`, "tile-wide"));
-      b2.appendChild(createTile(imgs[2], `${project.title} — detail 1`));
-      b2.appendChild(createTile(imgs[3], `${project.title} — detail 2`));
+      b2.appendChild(createTile(imgs[1], `${project.title} — campaign view`, "tile-wide", 1));
+      b2.appendChild(createTile(imgs[2], `${project.title} — detail 1`, "", 2));
+      b2.appendChild(createTile(imgs[3], `${project.title} — detail 2`, "", 3));
       galleryTrack.appendChild(b2);
 
       // Block 3: Tall portrait (4)
       const b3 = document.createElement("div");
       b3.className = "bento-block bento-block-tall";
-      b3.appendChild(createTile(imgs[4], `${project.title} — vertical asset`));
+      b3.appendChild(createTile(imgs[4], `${project.title} — vertical asset`, "", 4));
       galleryTrack.appendChild(b3);
 
       // Block 4: Top 2 squares (5, 6) + Bottom wide (7)
       const b4 = document.createElement("div");
       b4.className = "bento-block bento-block-bottom-wide";
-      b4.appendChild(createTile(imgs[5], `${project.title} — detail 3`));
-      b4.appendChild(createTile(imgs[6], `${project.title} — detail 4`));
-      b4.appendChild(createTile(imgs[7], `${project.title} — wide showcase`, "tile-wide-bottom"));
+      b4.appendChild(createTile(imgs[5], `${project.title} — detail 3`, "", 5));
+      b4.appendChild(createTile(imgs[6], `${project.title} — detail 4`, "", 6));
+      b4.appendChild(createTile(imgs[7], `${project.title} — wide showcase`, "tile-wide-bottom", 7));
       galleryTrack.appendChild(b4);
 
       // Block 5: Tall portrait (8)
       const b5 = document.createElement("div");
       b5.className = "bento-block bento-block-tall";
-      b5.appendChild(createTile(imgs[8], `${project.title} — vertical highlight`));
+      b5.appendChild(createTile(imgs[8], `${project.title} — vertical highlight`, "", 8));
       galleryTrack.appendChild(b5);
 
       // Block 6: Top wide (9) + Bottom 2 squares (10, 11)
       const b6 = document.createElement("div");
       b6.className = "bento-block bento-block-top-wide";
-      b6.appendChild(createTile(imgs[9], `${project.title} — wide layout`, "tile-wide"));
-      b6.appendChild(createTile(imgs[10], `${project.title} — detail 5`));
-      b6.appendChild(createTile(imgs[11], `${project.title} — detail 6`));
+      b6.appendChild(createTile(imgs[9], `${project.title} — wide layout`, "tile-wide", 9));
+      b6.appendChild(createTile(imgs[10], `${project.title} — detail 5`, "", 10));
+      b6.appendChild(createTile(imgs[11], `${project.title} — detail 6`, "", 11));
       galleryTrack.appendChild(b6);
     }
 
@@ -373,6 +374,19 @@ function getFilterCategories(tags: string[]): string[] {
       el.addEventListener("click", () => closeProjectModal(true));
     });
 
+    const modalShell = modal?.querySelector<HTMLElement>(".work-modal-shell");
+    modalShell?.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (
+        target.classList.contains("work-modal-shell") ||
+        target.classList.contains("work-modal-topbar") ||
+        target.classList.contains("work-modal-body")
+      ) {
+        closeProjectModal(true);
+      }
+    });
+
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && modal && !modal.hidden) {
         closeProjectModal(true);
@@ -420,10 +434,12 @@ function getFilterCategories(tags: string[]): string[] {
 <style>
   .work-showcase-section {
     position: relative;
+    z-index: 1;
     width: 100%;
-    background-color: var(--color-void, #010307);
+    background-color: transparent;
     padding: clamp(28px, 4vh, 48px) 0 clamp(80px, 10vh, 130px);
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .showcase-ambient-glow {
@@ -889,6 +905,24 @@ function getFilterCategories(tags: string[]): string[] {
     overflow: hidden;
     background: #0b111e;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    animation: bentoTileReveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) var(--tile-delay, 0ms) both;
+  }
+
+  @keyframes bentoTileReveal {
+    from {
+      opacity: 0;
+      transform: translateX(18px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.bento-tile) {
+      animation: none;
+    }
   }
 
   :global(.bento-tile.tile-wide) {

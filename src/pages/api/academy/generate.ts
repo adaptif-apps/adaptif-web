@@ -306,7 +306,7 @@ export const POST: APIRoute = async ({ request }) => {
     if (!apiKey) {
       return new Response(
         JSON.stringify({
-          error: "Missing AI API Key. Add your Gemini or OpenAI API key in the AI Engine settings inside this modal."
+          error: "Missing AI API Key. Add your Gemini or OpenAI API key in Studio → Preferences → AI Engine."
         }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );

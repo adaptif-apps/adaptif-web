@@ -215,7 +215,20 @@ const { initialItems, initialSettings } = Astro.props;
 
       <label class="acd-field acd-span-2">
         <span class="acd-label-row">
-          API Key
+          <a
+            id="gen-ai-key-link"
+            class="acd-label-link"
+            href={initialSettings.aiProvider === "openai"
+              ? "https://platform.openai.com/api-keys"
+              : "https://aistudio.google.com/app/apikey"}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={initialSettings.aiProvider === "openai"
+              ? "Open OpenAI API Keys"
+              : "Open Google AI Studio API Keys"}
+          >
+            API Key
+          </a>
           <span class="acd-tip-wrap">
             <button type="button" class="acd-tip-btn" aria-label="API Key info">?</button>
             <span class="acd-tip-box" role="tooltip">
@@ -650,6 +663,19 @@ const { initialItems, initialSettings } = Astro.props;
         showStudioToast("Payment preferences saved!");
       }
     });
+
+    const aiProviderSelect = document.getElementById("gen-ai-provider") as HTMLSelectElement | null;
+    const aiKeyLink = document.getElementById("gen-ai-key-link") as HTMLAnchorElement | null;
+
+    function syncAiKeyLink() {
+      if (!aiKeyLink) return;
+      const isOpenAi = aiProviderSelect?.value === "openai";
+      aiKeyLink.href = isOpenAi ? "https://platform.openai.com/api-keys" : "https://aistudio.google.com/app/apikey";
+      aiKeyLink.title = isOpenAi ? "Open OpenAI API Keys" : "Open Google AI Studio API Keys";
+    }
+
+    aiProviderSelect?.addEventListener("change", syncAiKeyLink);
+    syncAiKeyLink();
 
     const saveAiKeyBtn = document.getElementById("btn-save-ai-key") as HTMLButtonElement | null;
     saveAiKeyBtn?.addEventListener("click", async () => {
@@ -1534,6 +1560,19 @@ const { initialItems, initialSettings } = Astro.props;
     display: inline-flex !important;
     align-items: center;
     gap: 7px;
+  }
+
+  .acd-label-link {
+    color: var(--cyan-primary, #48c8ff);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(72, 200, 255, 0.45);
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  }
+
+  .acd-label-link:hover {
+    color: #9ce2ff;
+    text-decoration-color: rgba(156, 226, 255, 0.85);
   }
 
   .acd-tip-wrap {

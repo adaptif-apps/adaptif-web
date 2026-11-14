@@ -17,74 +17,33 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title" id="acd-module-title">Courses &amp; <span>Guides</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-glass acd-btn-ai" id="btn-open-generator">
+      <button type="button" class="acd-btn-glass" id="btn-open-payment">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3l1.9 5.8L20 10.7l-5.2 3.3L16.5 20 12 16.6 7.5 20l1.7-6-5.2-3.3 6.1-1.9L12 3z" />
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <line x1="2" y1="10" x2="22" y2="10" />
         </svg>
-        <span>AI Generator</span>
+        <span>Payment</span>
       </button>
       <button type="button" class="acd-btn-cyan" id="btn-new-guide">+ New Guide</button>
       <button type="button" class="acd-btn-cyan" id="btn-new-course">+ New Course</button>
     </div>
   </header>
 
-  <!-- Access & Stripe Preferences (Luminous Obsidian Glass) -->
-  <section class="acd-glass-card acd-prefs-card" id="acd-prefs-section" aria-label="Course Access & Stripe Preferences">
-    <div class="acd-prefs-head">
-      <div>
-        <span class="acd-section-kicker">Stripe &amp; Access Control</span>
-        <h2 class="acd-card-title">Course Access Preferences</h2>
-        <p class="acd-card-sub">
-          Configure how paid courses unlock after checkout. Paste individual Stripe Payment Links on each course below.
-        </p>
-      </div>
-      <button type="button" class="acd-btn-cyan" id="btn-save-acd-settings">Save Preferences</button>
-    </div>
-
-    <div class="acd-prefs-grid">
-      <label class="acd-field">
-        <span>Default Course Access Mode</span>
-        <select id="acd-default-access-mode" class="ac-select">
-          <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
-            Option A: Stripe Webhook + Secure Token (Recommended)
-          </option>
-          <option value="checkout_redirect" selected={initialSettings.defaultCourseAccessMode === "checkout_redirect"}>
-            Simple Checkout Redirect (?checkout=success)
-          </option>
-          <option value="open" selected={initialSettings.defaultCourseAccessMode === "open"}>
-            Open Access (No Gate)
-          </option>
-        </select>
-      </label>
-
-      <label class="acd-field">
-        <span>Stripe Webhook Secret (whsec_...)</span>
-        <input
-          type="password"
-          id="acd-stripe-secret"
-          placeholder={initialSettings.hasStripeWebhookSecret ? "Saved (leave blank to keep)" : "whsec_..."}
-        />
-      </label>
-
-      <div class="acd-field">
-        <span>Stripe Webhook Endpoint</span>
-        <div class="acd-copy-row">
-          <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
-          <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- 1st Module: Inline AI Curriculum Generator -->
+  <AcademyGeneratorModal initialSettings={initialSettings} />
 
   <!-- Full-Width Editor Card (selection happens in Sidebar Courses / Guides dropdowns) -->
   <section class="acd-glass-card acd-editor-shell" aria-label="Course or Guide editor">
     <div class="acd-empty-editor" id="acd-empty-editor">
-      Select a item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
+      Select an item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
     </div>
 
     <form id="acd-editor-form" hidden>
       <div class="acd-editor-topbar">
         <div class="acd-editor-links">
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-content" class="acd-btn-cyan-outline">
+            Edit Content ↗
+          </a>
           <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="acd-btn-glass">
             Preview Landing ↗
           </a>
@@ -222,56 +181,6 @@ const { initialItems, initialSettings } = Astro.props;
               </label>
             ))}
           </div>
-
-          <details class="acd-funnel-details">
-            <summary>Funnel Media &amp; Key Headlines (Optional Overrides)</summary>
-            <div class="acd-form-grid acd-funnel-fields-grid">
-              <label class="acd-field acd-span-2">
-                <span>Value Strip Items (one per line)</span>
-                <textarea id="acd-funnel-value-strip" rows="3" placeholder="Instant Access&#10;Vector PDF + Online Slides&#10;Included Templates"></textarea>
-              </label>
-              <label class="acd-field">
-                <span>Before / After Section Title</span>
-                <input type="text" id="acd-funnel-ba-title" placeholder="From scattered prompts to a repeatable system" />
-              </label>
-              <label class="acd-field">
-                <span>Visual Split Image URL</span>
-                <input type="text" id="acd-funnel-vc-image" placeholder="/images/why-us/our-technology.jpg" />
-              </label>
-              <label class="acd-field">
-                <span>System Showcase Image URL</span>
-                <input type="text" id="acd-funnel-sys-image" placeholder="/images/why-us/ai-excellence.jpg" />
-              </label>
-              <label class="acd-field">
-                <span>Target Outcomes Image URL</span>
-                <input type="text" id="acd-funnel-out-image" placeholder="/images/why-us/our-technology.jpg" />
-              </label>
-            </div>
-          </details>
-        </div>
-      </div>
-
-      <!-- Landing Copy -->
-      <div class="acd-subsection">
-        <span class="acd-section-kicker">Landing Template</span>
-        <h3 class="acd-sub-title">Landing Page Content</h3>
-        <div class="acd-form-grid">
-          <label class="acd-field">
-            <span>Hero Badge</span>
-            <input type="text" id="acd-hero-badge" placeholder="Free Tactical Guide" />
-          </label>
-          <label class="acd-field">
-            <span>Read Time / Format</span>
-            <input type="text" id="acd-read-time" placeholder="12 min read · 6 slides" />
-          </label>
-          <label class="acd-field acd-span-2">
-            <span>Target Audience</span>
-            <input type="text" id="acd-audience" placeholder="Creative Directors, Founders & Marketing Leads" />
-          </label>
-          <label class="acd-field acd-span-2">
-            <span>Key Takeaways (one per line)</span>
-            <textarea id="acd-takeaways" rows="4"></textarea>
-          </label>
         </div>
       </div>
 
@@ -289,7 +198,67 @@ const { initialItems, initialSettings } = Astro.props;
     </form>
   </section>
 
-  <AcademyGeneratorModal initialSettings={initialSettings} />
+  <!-- Payment & Stripe Access Control Popup Modal -->
+  <div
+    class="acd-modal-backdrop"
+    id="acd-payment-modal"
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="acd-payment-modal-title"
+  >
+    <div class="acd-modal-panel">
+      <div class="acd-prefs-head">
+        <div>
+          <span class="acd-section-kicker">Stripe &amp; Access Control</span>
+          <h2 class="acd-card-title" id="acd-payment-modal-title">Course Access Preferences</h2>
+          <p class="acd-card-sub">
+            Configure how paid courses unlock after checkout. Paste individual Stripe Payment Links on each course.
+          </p>
+        </div>
+        <button type="button" class="acd-modal-close" id="btn-close-payment-modal" aria-label="Close modal">×</button>
+      </div>
+
+      <div class="acd-prefs-grid">
+        <label class="acd-field">
+          <span>Default Course Access Mode</span>
+          <select id="acd-default-access-mode" class="ac-select">
+            <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
+              Option A: Stripe Webhook + Secure Token (Recommended)
+            </option>
+            <option value="checkout_redirect" selected={initialSettings.defaultCourseAccessMode === "checkout_redirect"}>
+              Simple Checkout Redirect (?checkout=success)
+            </option>
+            <option value="open" selected={initialSettings.defaultCourseAccessMode === "open"}>
+              Open Access (No Gate)
+            </option>
+          </select>
+        </label>
+
+        <label class="acd-field">
+          <span>Stripe Webhook Secret (whsec_...)</span>
+          <input
+            type="password"
+            id="acd-stripe-secret"
+            placeholder={initialSettings.hasStripeWebhookSecret ? "Saved (leave blank to keep)" : "whsec_..."}
+          />
+        </label>
+
+        <div class="acd-field">
+          <span>Stripe Webhook Endpoint</span>
+          <div class="acd-copy-row">
+            <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
+            <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="acd-modal-foot">
+        <button type="button" class="acd-btn-glass" id="btn-cancel-payment-modal">Close</button>
+        <button type="button" class="acd-btn-cyan" id="btn-save-acd-settings">Save Preferences</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script define:vars={{ initialItems, initialSettings }}>
@@ -569,26 +538,21 @@ const { initialItems, initialSettings } = Astro.props;
       el("acd-tool-name")!.value = item.toolName || "";
       el("acd-tool-type")!.value = item.toolType || "";
       el("acd-tool-url")!.value = item.toolUrl || "";
-      el("acd-hero-badge")!.value = item.landingData?.heroBadge || "";
-      el("acd-read-time")!.value = item.landingData?.readTime || "";
-      el("acd-audience")!.value = item.landingData?.audience || "";
-      el("acd-takeaways")!.value = (item.landingData?.takeaways || []).join("\n");
 
       const vis = item.landingData?.funnelVisibility || {};
       document.querySelectorAll<HTMLInputElement>(".acd-funnel-chk").forEach((chk) => {
         const key = chk.dataset.funnelKey || "";
         chk.checked = (vis as Record<string, boolean>)[key] !== false;
       });
-      const funnel = item.landingData?.funnel || {};
-      el("acd-funnel-value-strip")!.value = (funnel.valueStrip || []).join("\n");
-      el("acd-funnel-ba-title")!.value = funnel.beforeAfter?.title || "";
-      el("acd-funnel-vc-image")!.value = funnel.visualComparison?.image || "";
-      el("acd-funnel-sys-image")!.value = funnel.systemShowcase?.image || "";
-      el("acd-funnel-out-image")!.value = funnel.outcomes?.image || "";
 
       const baseFolder = item.kind === "course" ? "courses" : "guides";
+      const editContentLink = document.getElementById("acd-edit-content") as HTMLAnchorElement | null;
       const landingPreview = document.getElementById("acd-preview-landing") as HTMLAnchorElement | null;
       const slidesPreview = document.getElementById("acd-preview-slides") as HTMLAnchorElement | null;
+      if (editContentLink) {
+        editContentLink.href = `/academy/${baseFolder}/${item.slug}?edit=1`;
+        editContentLink.hidden = item.kind !== "course";
+      }
       if (landingPreview) landingPreview.href = `/academy/${baseFolder}/${item.slug}`;
       if (slidesPreview) slidesPreview.href = `/academy/${baseFolder}/${item.slug}/slides`;
 
@@ -652,9 +616,23 @@ const { initialItems, initialSettings } = Astro.props;
     document.getElementById("btn-new-guide")?.addEventListener("click", () => createItem("guide"));
     document.getElementById("btn-new-course")?.addEventListener("click", () => createItem("course"));
 
-    document.getElementById("btn-open-generator")?.addEventListener("click", () => {
-      const currentKind = el("acd-kind")?.value === "guide" ? "guide" : "course";
-      window.dispatchEvent(new CustomEvent("academy:open-generator", { detail: { kind: currentKind } }));
+    const paymentModal = document.getElementById("acd-payment-modal");
+    const closePaymentModal = () => {
+      if (paymentModal) paymentModal.hidden = true;
+    };
+
+    document.getElementById("btn-open-payment")?.addEventListener("click", () => {
+      if (paymentModal) paymentModal.hidden = false;
+      const sel = document.getElementById("acd-default-access-mode") as HTMLSelectElement | null;
+      if (sel) {
+        w.__STUDIO_ENHANCE_SELECT__?.(sel);
+        w.__STUDIO_SYNC_SELECT__?.(sel);
+      }
+    });
+    document.getElementById("btn-close-payment-modal")?.addEventListener("click", closePaymentModal);
+    document.getElementById("btn-cancel-payment-modal")?.addEventListener("click", closePaymentModal);
+    paymentModal?.addEventListener("click", (e) => {
+      if (e.target === paymentModal) closePaymentModal();
     });
 
     window.addEventListener("academy:item-generated", (e: any) => {
@@ -693,18 +671,6 @@ const { initialItems, initialSettings } = Astro.props;
         }
       });
 
-      const prevFunnel: any = item.landingData?.funnel ? structuredClone(item.landingData.funnel) : {};
-      const valueStripLines = el("acd-funnel-value-strip")!.value.split("\n").map((x) => x.trim()).filter(Boolean);
-      if (valueStripLines.length > 0) prevFunnel.valueStrip = valueStripLines;
-      const baTitle = el("acd-funnel-ba-title")!.value.trim();
-      if (baTitle) prevFunnel.beforeAfter = { ...(prevFunnel.beforeAfter || {}), title: baTitle };
-      const vcImg = el("acd-funnel-vc-image")!.value.trim();
-      if (vcImg) prevFunnel.visualComparison = { ...(prevFunnel.visualComparison || {}), image: vcImg };
-      const sysImg = el("acd-funnel-sys-image")!.value.trim();
-      if (sysImg) prevFunnel.systemShowcase = { ...(prevFunnel.systemShowcase || {}), image: sysImg };
-      const outImg = el("acd-funnel-out-image")!.value.trim();
-      if (outImg) prevFunnel.outcomes = { ...(prevFunnel.outcomes || {}), image: outImg };
-
       const payload = {
         kind: el("acd-kind")!.value,
         status: el("acd-status")!.value,
@@ -722,13 +688,8 @@ const { initialItems, initialSettings } = Astro.props;
         toolType: el("acd-tool-type")!.value.trim(),
         toolUrl: el("acd-tool-url")!.value.trim(),
         landingData: {
-          heroBadge: el("acd-hero-badge")!.value.trim(),
-          readTime: el("acd-read-time")!.value.trim(),
-          audience: el("acd-audience")!.value.trim(),
-          takeaways: el("acd-takeaways")!.value.split("\n").map((x) => x.trim()).filter(Boolean),
-          faq: item.landingData?.faq || [],
-          funnelVisibility,
-          funnel: prevFunnel
+          ...(item.landingData || {}),
+          funnelVisibility
         },
         slides: collectSlidesFromDOM()
       };
@@ -786,7 +747,8 @@ const { initialItems, initialSettings } = Astro.props;
         body: JSON.stringify({ defaultCourseAccessMode: mode, stripeWebhookSecret: secret })
       });
       if (res.ok) {
-        showStudioToast("Academy preferences saved!");
+        closePaymentModal();
+        showStudioToast("Payment preferences saved!");
       }
     });
 
@@ -1310,5 +1272,80 @@ const { initialItems, initialSettings } = Astro.props;
     .acd-funnel-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  .acd-btn-cyan-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(72, 200, 255, 0.5);
+    background: rgba(72, 200, 255, 0.12);
+    color: #9ce1ff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+
+  .acd-btn-cyan-outline:hover {
+    background: rgba(72, 200, 255, 0.22);
+    border-color: rgba(72, 200, 255, 0.8);
+    color: #ffffff;
+  }
+
+  .acd-btn-cyan-outline[hidden] {
+    display: none !important;
+  }
+
+  .acd-modal-backdrop[hidden] {
+    display: none !important;
+  }
+
+  .acd-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    background: rgba(1, 3, 7, 0.8);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .acd-modal-panel {
+    width: min(820px, 100%);
+    padding: 24px 26px;
+    border-radius: 22px;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      #04091a;
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    box-shadow:
+      inset 0 1px 1.5px rgba(255, 255, 255, 0.2),
+      0 32px 80px rgba(0, 0, 0, 0.9);
+  }
+
+  .acd-modal-close {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.04);
+    color: #cbd5e1;
+    font-size: 1.2rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .acd-modal-foot {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
   }
 </style>

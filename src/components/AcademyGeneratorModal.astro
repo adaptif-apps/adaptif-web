@@ -8,8 +8,8 @@ interface Props {
 const { initialSettings } = Astro.props;
 ---
 
-<div class="gen-modal-backdrop" id="acd-gen-modal" hidden role="dialog" aria-modal="true" aria-labelledby="gen-modal-title">
-  <div class="gen-modal-panel">
+<section class="acd-glass-card acd-gen-card" id="acd-gen-card" aria-label="AI Curriculum Generator">
+  <div class="gen-card-inner">
     <header class="gen-modal-head">
       <div>
         <span class="gen-kicker">AI Curriculum Engine</span>
@@ -17,7 +17,6 @@ const { initialSettings } = Astro.props;
           Generate <span class="gen-title-italic" id="gen-title-kind">Course</span>
         </h2>
       </div>
-      <button type="button" class="gen-close-btn" id="btn-close-gen-modal" aria-label="Close modal">×</button>
     </header>
 
     <div class="gen-modal-body">
@@ -146,7 +145,6 @@ const { initialSettings } = Astro.props;
     </div>
 
     <footer class="gen-modal-foot">
-      <button type="button" class="gen-btn-glass" id="btn-cancel-gen">Cancel</button>
       <button type="button" class="gen-btn-cyan" id="btn-run-generate">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3l1.9 5.8L20 10.7l-5.2 3.3L16.5 20 12 16.6 7.5 20l1.7-6-5.2-3.3 6.1-1.9L12 3z" />
@@ -155,13 +153,11 @@ const { initialSettings } = Astro.props;
       </button>
     </footer>
   </div>
-</div>
+</section>
 
 <script>
   (() => {
-    const modal = document.getElementById("acd-gen-modal");
-    const closeBtn = document.getElementById("btn-close-gen-modal");
-    const cancelBtn = document.getElementById("btn-cancel-gen");
+    const genCard = document.getElementById("acd-gen-card");
     const runBtn = document.getElementById("btn-run-generate") as HTMLButtonElement | null;
     const kindTitleEl = document.getElementById("gen-title-kind");
     const courseFieldsEl = document.getElementById("gen-course-fields");
@@ -291,21 +287,7 @@ const { initialSettings } = Astro.props;
       handleFiles(e.dataTransfer?.files || null);
     });
 
-    function closeModal() {
-      if (modal) modal.hidden = true;
-    }
-
-    closeBtn?.addEventListener("click", closeModal);
-    cancelBtn?.addEventListener("click", closeModal);
-    modal?.addEventListener("click", (e) => {
-      if (e.target === modal) closeModal();
-    });
-
-    window.addEventListener("academy:open-generator", (e: any) => {
-      const requestedKind = e?.detail?.kind === "guide" ? "guide" : "course";
-      setKind(requestedKind);
-      if (errorEl) errorEl.hidden = true;
-      if (modal) modal.hidden = false;
+    function syncGenSelects() {
       const w = window as any;
       ["gen-ai-provider", "gen-status"].forEach((id) => {
         const sel = document.getElementById(id) as HTMLSelectElement | null;
@@ -314,6 +296,21 @@ const { initialSettings } = Astro.props;
           w.__STUDIO_SYNC_SELECT__?.(sel);
         }
       });
+    }
+
+    syncGenSelects();
+
+    window.addEventListener("academy:open-generator", (e: any) => {
+      const requestedKind = e?.detail?.kind === "guide" ? "guide" : "course";
+      setKind(requestedKind);
+      if (errorEl) errorEl.hidden = true;
+      syncGenSelects();
+      genCard?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    window.addEventListener("academy:kind-changed", (e: any) => {
+      const requestedKind = e?.detail?.kind === "guide" ? "guide" : "course";
+      setKind(requestedKind);
     });
 
     runBtn?.addEventListener("click", async () => {
@@ -356,7 +353,6 @@ const { initialSettings } = Astro.props;
         window.dispatchEvent(new CustomEvent("academy:item-generated", { detail: { item: data.item } }));
         attachedFiles = [];
         renderChips();
-        closeModal();
       } catch (err: any) {
         if (errorEl) {
           errorEl.textContent = err?.message || "Something went wrong.";
@@ -371,46 +367,39 @@ const { initialSettings } = Astro.props;
 </script>
 
 <style>
-  .gen-modal-backdrop[hidden],
   .gen-course-box[hidden],
   .gen-ai-config-box[hidden],
   .gen-field[hidden] {
     display: none !important;
   }
 
-  .gen-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(1, 3, 7, 0.82);
-    backdrop-filter: blur(12px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+  .acd-gen-card {
+    position: relative;
+    z-index: 40;
+    border-radius: 20px;
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    background:
+      radial-gradient(ellipse 65% 40% at 50% 0%, rgba(72, 200, 255, 0.1) 0%, transparent 70%),
+      rgba(11, 32, 54, 0.56);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 20px 50px rgba(0, 0, 0, 0.4);
+    margin-bottom: 22px;
+    overflow: visible;
   }
 
-  .gen-modal-panel {
-    width: min(860px, 100%);
-    max-height: 90vh;
+  .gen-card-inner {
     display: flex;
     flex-direction: column;
-    border-radius: 24px;
-    background:
-      radial-gradient(ellipse 70% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
-      #04091a;
-    border: 1px solid rgba(72, 200, 255, 0.28);
-    box-shadow:
-      inset 0 1px 1.5px rgba(255, 255, 255, 0.22),
-      0 32px 80px rgba(0, 0, 0, 0.9);
-    overflow: hidden;
   }
 
   .gen-modal-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 26px;
+    padding: 20px 26px 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -450,7 +439,6 @@ const { initialSettings } = Astro.props;
 
   .gen-modal-body {
     padding: 22px 26px;
-    overflow-y: auto;
     display: grid;
     gap: 18px;
   }

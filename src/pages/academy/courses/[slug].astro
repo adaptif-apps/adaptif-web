@@ -31,6 +31,13 @@ const isUnlocked =
 const vis = defaultFunnelVisibility(item.landingData.funnelVisibility);
 const f = item.landingData.funnel || {};
 const coverImg = item.coverImage || "/images/why-us/our-technology.jpg";
+const isEditMode = Astro.url.searchParams.get("edit") === "1";
+
+const ed = (field: string): Record<string, string> =>
+  isEditMode ? { contenteditable: "true", "data-edit-field": field, spellcheck: "false" } : {};
+
+const edImg = (field: string): Record<string, string> =>
+  isEditMode ? { "data-edit-image": field } : {};
 
 // Smart fallbacks so every funnel block looks complete even on older courses
 const valueStrip =
@@ -245,7 +252,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
 
 <Layout title={`${item.title} — Course | Adaptif Academy`} description={item.subtitle || item.description}>
   <Header />
-  <main class="course-funnel">
+  <main class:list={["course-funnel", { "is-edit-mode": isEditMode }]}>
     <!-- 1. HERO SPLIT -->
     <section class="cf-hero is-visible">
       <div class="cf-container">
@@ -260,13 +267,13 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
         <div class="cf-hero-grid">
           <div class="cf-hero-copy">
             <div class="cf-badges">
-              <span class="badge-pro">{item.landingData.heroBadge || "Pro Course"}</span>
+              <span class="badge-pro" {...ed("landingData.heroBadge")}>{item.landingData.heroBadge || "Pro Course"}</span>
               {item.priceLabel && <span class="badge-price">{item.priceLabel}</span>}
-              {item.landingData.readTime && <span class="badge-meta">{item.landingData.readTime}</span>}
+              {item.landingData.readTime && <span class="badge-meta" {...ed("landingData.readTime")}>{item.landingData.readTime}</span>}
             </div>
 
-            <h1 class="cf-title">{item.title}</h1>
-            <p class="cf-subtitle">{item.subtitle || item.description}</p>
+            <h1 class="cf-title" {...ed("title")}>{item.title}</h1>
+            <p class="cf-subtitle" {...ed("subtitle")}>{item.subtitle || item.description}</p>
 
             <div class="cf-cta-row">
               {isUnlocked ? (
@@ -300,16 +307,19 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
               )}
             </div>
 
-            {item.landingData.audience && (
+            {(item.landingData.audience || isEditMode) && (
               <p class="cf-hero-meta">
-                Designed for <strong>{item.landingData.audience}</strong>
+                Designed for <strong {...ed("landingData.audience")}>{item.landingData.audience || "Creative Teams & Founders"}</strong>
               </p>
             )}
           </div>
 
           <div class="cf-hero-card">
             <div class="cf-hero-card-media">
-              <img src={coverImg} alt={item.title} />
+              <img src={coverImg} alt={item.title} {...edImg("coverImage")} />
+              {isEditMode && (
+                <button type="button" class="cf-img-edit-btn" data-target-img="coverImage">Change Image</button>
+              )}
               <span class="cf-hero-card-tag">{item.category}</span>
             </div>
             <div class="cf-hero-card-body">
@@ -338,12 +348,12 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       <section class="cf-value-strip is-visible">
         <div class="cf-container">
           <div class="cf-strip-bar">
-            {valueStrip.map((label) => (
+            {valueStrip.map((label, idx) => (
               <div class="cf-strip-item">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M20 6 9 17l-5-5" />
                 </svg>
-                <span>{label}</span>
+                <span {...ed(`landingData.funnel.valueStrip.${idx}`)}>{label}</span>
               </div>
             ))}
           </div>
@@ -356,24 +366,24 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       <section class="cf-section is-visible">
         <div class="cf-container">
           <div class="cf-section-head">
-            <span class="section-eyebrow">{beforeAfter.eyebrow}</span>
-            <h2 class="section-title">{beforeAfter.title}</h2>
-            <p class="section-sub">{beforeAfter.subtitle}</p>
+            <span class="section-eyebrow" {...ed("landingData.funnel.beforeAfter.eyebrow")}>{beforeAfter.eyebrow}</span>
+            <h2 class="section-title" {...ed("landingData.funnel.beforeAfter.title")}>{beforeAfter.title}</h2>
+            <p class="section-sub" {...ed("landingData.funnel.beforeAfter.subtitle")}>{beforeAfter.subtitle}</p>
           </div>
 
           <div class="cf-ba-grid">
             {beforeAfter.beforeItems.slice(0, 3).map((card, idx) => (
               <div class="cf-ba-card cf-ba-before">
                 <span class="cf-ba-pill cf-pill-before">Before · 0{idx + 1}</span>
-                <h3>{card.title}</h3>
-                <p>{card.body}</p>
+                <h3 {...ed(`landingData.funnel.beforeAfter.beforeItems.${idx}.title`)}>{card.title}</h3>
+                <p {...ed(`landingData.funnel.beforeAfter.beforeItems.${idx}.body`)}>{card.body}</p>
               </div>
             ))}
             {beforeAfter.afterItems.slice(0, 3).map((card, idx) => (
               <div class="cf-ba-card cf-ba-after">
                 <span class="cf-ba-pill cf-pill-after">After · 0{idx + 1}</span>
-                <h3>{card.title}</h3>
-                <p>{card.body}</p>
+                <h3 {...ed(`landingData.funnel.beforeAfter.afterItems.${idx}.title`)}>{card.title}</h3>
+                <p {...ed(`landingData.funnel.beforeAfter.afterItems.${idx}.body`)}>{card.body}</p>
               </div>
             ))}
           </div>
@@ -387,15 +397,18 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
         <div class="cf-container">
           <div class="cf-split-proof">
             <div class="cf-split-copy">
-              <span class="section-eyebrow">{visualComparison.eyebrow}</span>
-              <h2 class="section-title">{visualComparison.title}</h2>
-              <p class="section-copy">{visualComparison.body}</p>
+              <span class="section-eyebrow" {...ed("landingData.funnel.visualComparison.eyebrow")}>{visualComparison.eyebrow}</span>
+              <h2 class="section-title" {...ed("landingData.funnel.visualComparison.title")}>{visualComparison.title}</h2>
+              <p class="section-copy" {...ed("landingData.funnel.visualComparison.body")}>{visualComparison.body}</p>
             </div>
             <div class="cf-split-visual">
-              <img src={visualComparison.image} alt={visualComparison.title} />
+              <img src={visualComparison.image} alt={visualComparison.title} {...edImg("landingData.funnel.visualComparison.image")} />
+              {isEditMode && (
+                <button type="button" class="cf-img-edit-btn" data-target-img="landingData.funnel.visualComparison.image">Change Image</button>
+              )}
               <div class="cf-split-badges">
-                <span class="cf-badge-dark">{visualComparison.beforeLabel}</span>
-                <span class="cf-badge-cyan">{visualComparison.afterLabel}</span>
+                <span class="cf-badge-dark" {...ed("landingData.funnel.visualComparison.beforeLabel")}>{visualComparison.beforeLabel}</span>
+                <span class="cf-badge-cyan" {...ed("landingData.funnel.visualComparison.afterLabel")}>{visualComparison.afterLabel}</span>
               </div>
             </div>
           </div>
@@ -408,17 +421,17 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       <section class="cf-section is-visible">
         <div class="cf-container">
           <div class="cf-section-head">
-            <span class="section-eyebrow">{pillars.eyebrow}</span>
-            <h2 class="section-title">{pillars.title}</h2>
-            <p class="section-sub">{pillars.subtitle}</p>
+            <span class="section-eyebrow" {...ed("landingData.funnel.pillars.eyebrow")}>{pillars.eyebrow}</span>
+            <h2 class="section-title" {...ed("landingData.funnel.pillars.title")}>{pillars.title}</h2>
+            <p class="section-sub" {...ed("landingData.funnel.pillars.subtitle")}>{pillars.subtitle}</p>
           </div>
 
           <div class="cf-pillars-grid">
             {pillars.items.slice(0, 6).map((pillar, idx) => (
               <div class="cf-pillar-card">
                 <span class="cf-pillar-num">0{idx + 1}</span>
-                <h3>{pillar.title}</h3>
-                <p>{pillar.body}</p>
+                <h3 {...ed(`landingData.funnel.pillars.items.${idx}.title`)}>{pillar.title}</h3>
+                <p {...ed(`landingData.funnel.pillars.items.${idx}.body`)}>{pillar.body}</p>
               </div>
             ))}
           </div>
@@ -431,9 +444,9 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       <section class="cf-section is-visible">
         <div class="cf-container">
           <div class="cf-section-head">
-            <span class="section-eyebrow">{systemShowcase.eyebrow}</span>
-            <h2 class="section-title">{systemShowcase.title}</h2>
-            <p class="section-sub">{systemShowcase.subtitle}</p>
+            <span class="section-eyebrow" {...ed("landingData.funnel.systemShowcase.eyebrow")}>{systemShowcase.eyebrow}</span>
+            <h2 class="section-title" {...ed("landingData.funnel.systemShowcase.title")}>{systemShowcase.title}</h2>
+            <p class="section-sub" {...ed("landingData.funnel.systemShowcase.subtitle")}>{systemShowcase.subtitle}</p>
           </div>
 
           <div class="cf-showcase-frame">
@@ -444,9 +457,14 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
               <span class="cf-showcase-url">{item.title}</span>
             </div>
             <div class="cf-showcase-media">
-              <img src={systemShowcase.image} alt={systemShowcase.title} />
+              <img src={systemShowcase.image} alt={systemShowcase.title} {...edImg("landingData.funnel.systemShowcase.image")} />
+              {isEditMode && (
+                <button type="button" class="cf-img-edit-btn" data-target-img="landingData.funnel.systemShowcase.image">Change Image</button>
+              )}
             </div>
-            {systemShowcase.caption && <p class="cf-showcase-caption">{systemShowcase.caption}</p>}
+            {(systemShowcase.caption || isEditMode) && (
+              <p class="cf-showcase-caption" {...ed("landingData.funnel.systemShowcase.caption")}>{systemShowcase.caption}</p>
+            )}
           </div>
         </div>
       </section>
@@ -457,9 +475,9 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       <section class="cf-section is-visible">
         <div class="cf-container">
           <div class="cf-section-head">
-            <span class="section-eyebrow">{explorer.eyebrow}</span>
-            <h2 class="section-title">{explorer.title}</h2>
-            <p class="section-sub">{explorer.subtitle}</p>
+            <span class="section-eyebrow" {...ed("landingData.funnel.explorer.eyebrow")}>{explorer.eyebrow}</span>
+            <h2 class="section-title" {...ed("landingData.funnel.explorer.title")}>{explorer.title}</h2>
+            <p class="section-sub" {...ed("landingData.funnel.explorer.subtitle")}>{explorer.subtitle}</p>
           </div>
 
           <div class="cf-explorer-tabs" role="tablist">
@@ -469,7 +487,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
                 class={`cf-tab-btn ${idx === 0 ? "is-active" : ""}`}
                 data-tab-index={idx}
               >
-                {tab.label}
+                <span {...ed(`landingData.funnel.explorer.tabs.${idx}.label`)}>{tab.label}</span>
               </button>
             ))}
           </div>
@@ -478,16 +496,19 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
             {explorer.tabs.map((tab, idx) => (
               <div class={`cf-explorer-panel ${idx === 0 ? "is-active" : ""}`} data-panel-index={idx} hidden={idx !== 0}>
                 <div class="cf-explorer-img">
-                  <img src={tab.image || coverImg} alt={tab.title} />
+                  <img src={tab.image || coverImg} alt={tab.title} {...edImg(`landingData.funnel.explorer.tabs.${idx}.image`)} />
+                  {isEditMode && (
+                    <button type="button" class="cf-img-edit-btn" data-target-img={`landingData.funnel.explorer.tabs.${idx}.image`}>Change Image</button>
+                  )}
                 </div>
                 <div class="cf-explorer-info">
-                  <h3>{tab.title}</h3>
-                  <p>{tab.body}</p>
+                  <h3 {...ed(`landingData.funnel.explorer.tabs.${idx}.title`)}>{tab.title}</h3>
+                  <p {...ed(`landingData.funnel.explorer.tabs.${idx}.body`)}>{tab.body}</p>
                   <div class="cf-specs-grid">
-                    {(tab.specs || []).slice(0, 4).map((spec) => (
+                    {(tab.specs || []).slice(0, 4).map((spec, sIdx) => (
                       <div class="cf-spec-box">
-                        <span class="cf-spec-label">{spec.label}</span>
-                        <span class="cf-spec-val">{spec.value}</span>
+                        <span class="cf-spec-label" {...ed(`landingData.funnel.explorer.tabs.${idx}.specs.${sIdx}.label`)}>{spec.label}</span>
+                        <span class="cf-spec-val" {...ed(`landingData.funnel.explorer.tabs.${idx}.specs.${sIdx}.value`)}>{spec.value}</span>
                       </div>
                     ))}
                   </div>
@@ -528,17 +549,19 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       <section class="cf-section is-visible">
         <div class="cf-container">
           <div class="cf-section-head">
-            <span class="section-eyebrow">{curriculum.eyebrow}</span>
-            <h2 class="section-title">{curriculum.title}</h2>
-            <p class="section-sub">{curriculum.subtitle}</p>
+            <span class="section-eyebrow" {...ed("landingData.funnel.curriculum.eyebrow")}>{curriculum.eyebrow}</span>
+            <h2 class="section-title" {...ed("landingData.funnel.curriculum.title")}>{curriculum.title}</h2>
+            <p class="section-sub" {...ed("landingData.funnel.curriculum.subtitle")}>{curriculum.subtitle}</p>
           </div>
 
           <div class="curriculum-grid">
             {curriculum.modules.map((mod, idx) => (
               <div class="curriculum-card">
-                <span class="curr-num">{mod.tag || `0${idx + 1}`}</span>
-                <h3 class="curr-title">{mod.title}</h3>
-                {mod.body && <p class="curr-body">{mod.body}</p>}
+                <span class="curr-num" {...ed(`landingData.funnel.curriculum.modules.${idx}.tag`)}>{mod.tag || `0${idx + 1}`}</span>
+                <h3 class="curr-title" {...ed(`landingData.funnel.curriculum.modules.${idx}.title`)}>{mod.title}</h3>
+                {(mod.body || isEditMode) && (
+                  <p class="curr-body" {...ed(`landingData.funnel.curriculum.modules.${idx}.body`)}>{mod.body}</p>
+                )}
               </div>
             ))}
           </div>
@@ -552,11 +575,11 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
         <div class="cf-container">
           <div class="cf-outcomes-split">
             <div class="cf-outcomes-copy">
-              <span class="section-eyebrow">{outcomes.eyebrow}</span>
-              <h2 class="section-title">{outcomes.title}</h2>
-              <p class="section-sub">{outcomes.subtitle}</p>
+              <span class="section-eyebrow" {...ed("landingData.funnel.outcomes.eyebrow")}>{outcomes.eyebrow}</span>
+              <h2 class="section-title" {...ed("landingData.funnel.outcomes.title")}>{outcomes.title}</h2>
+              <p class="section-sub" {...ed("landingData.funnel.outcomes.subtitle")}>{outcomes.subtitle}</p>
               <div class="cf-outcomes-list">
-                {outcomes.bullets.map((b) => (
+                {outcomes.bullets.map((b, idx) => (
                   <div class="cf-outcome-item">
                     <span class="cf-outcome-check" aria-hidden="true">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -564,15 +587,18 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
                       </svg>
                     </span>
                     <div>
-                      <h4>{b.title}</h4>
-                      <p>{b.body}</p>
+                      <h4 {...ed(`landingData.funnel.outcomes.bullets.${idx}.title`)}>{b.title}</h4>
+                      <p {...ed(`landingData.funnel.outcomes.bullets.${idx}.body`)}>{b.body}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
             <div class="cf-outcomes-visual">
-              <img src={outcomes.image} alt={outcomes.title} />
+              <img src={outcomes.image} alt={outcomes.title} {...edImg("landingData.funnel.outcomes.image")} />
+              {isEditMode && (
+                <button type="button" class="cf-img-edit-btn" data-target-img="landingData.funnel.outcomes.image">Change Image</button>
+              )}
             </div>
           </div>
         </div>
@@ -584,15 +610,15 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       <section class="cf-section is-visible">
         <div class="cf-container">
           <div class="cf-section-head">
-            <span class="section-eyebrow">{deliverables.eyebrow}</span>
-            <h2 class="section-title">{deliverables.title}</h2>
+            <span class="section-eyebrow" {...ed("landingData.funnel.deliverables.eyebrow")}>{deliverables.eyebrow}</span>
+            <h2 class="section-title" {...ed("landingData.funnel.deliverables.title")}>{deliverables.title}</h2>
           </div>
           <div class="cf-deliverables-grid">
-            {deliverables.items.slice(0, 4).map((deliv) => (
+            {deliverables.items.slice(0, 4).map((deliv, idx) => (
               <div class="cf-deliv-card">
-                <span class="cf-deliv-badge">{deliv.badge}</span>
-                <h3>{deliv.title}</h3>
-                <p>{deliv.body}</p>
+                <span class="cf-deliv-badge" {...ed(`landingData.funnel.deliverables.items.${idx}.badge`)}>{deliv.badge}</span>
+                <h3 {...ed(`landingData.funnel.deliverables.items.${idx}.title`)}>{deliv.title}</h3>
+                <p {...ed(`landingData.funnel.deliverables.items.${idx}.body`)}>{deliv.body}</p>
               </div>
             ))}
           </div>
@@ -606,19 +632,22 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
         <div class="cf-container">
           <div class="cf-closing-card">
             <div class="cf-closing-visual">
-              <img src={closingCta.image} alt={item.title} />
+              <img src={closingCta.image} alt={item.title} {...edImg("landingData.funnel.closingCta.image")} />
+              {isEditMode && (
+                <button type="button" class="cf-img-edit-btn" data-target-img="landingData.funnel.closingCta.image">Change Image</button>
+              )}
             </div>
             <div class="cf-closing-copy">
-              <span class="section-eyebrow">{closingCta.eyebrow}</span>
-              <h2 class="cf-closing-title">{closingCta.title}</h2>
-              <p class="cf-closing-body">{closingCta.body}</p>
+              <span class="section-eyebrow" {...ed("landingData.funnel.closingCta.eyebrow")}>{closingCta.eyebrow}</span>
+              <h2 class="cf-closing-title" {...ed("landingData.funnel.closingCta.title")}>{closingCta.title}</h2>
+              <p class="cf-closing-body" {...ed("landingData.funnel.closingCta.body")}>{closingCta.body}</p>
               <ul class="cf-closing-list">
-                {closingCta.checklist.map((line) => (
+                {closingCta.checklist.map((line, idx) => (
                   <li>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M20 6 9 17l-5-5" />
                     </svg>
-                    <span>{line}</span>
+                    <span {...ed(`landingData.funnel.closingCta.checklist.${idx}`)}>{line}</span>
                   </li>
                 ))}
               </ul>
@@ -661,12 +690,12 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
           </div>
           <div class="faq-list">
             {item.landingData.faq.map((entry, idx) => (
-              <details class="faq-card" open={idx === 0}>
+              <details class="faq-card" open={idx === 0 || isEditMode}>
                 <summary>
-                  <span>{entry.q}</span>
+                  <span {...ed(`landingData.faq.${idx}.q`)}>{entry.q}</span>
                   <span class="faq-plus" aria-hidden="true">+</span>
                 </summary>
-                <p>{entry.a}</p>
+                <p {...ed(`landingData.faq.${idx}.a`)}>{entry.a}</p>
               </details>
             ))}
           </div>
@@ -674,6 +703,73 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       </section>
     )}
   </main>
+
+  {isEditMode && (
+    <>
+      <div class="cf-edit-bar" id="cf-edit-bar">
+        <div class="cf-edit-status">
+          <span class="cf-edit-dot"></span>
+          <span>Edit Mode · Click any text or image to edit</span>
+        </div>
+        <div class="cf-edit-actions">
+          <a href="/studio-adaptif-9x4k" class="cf-edit-btn-glass">← Preferences</a>
+          <a href={`/academy/courses/${item.slug}`} class="cf-edit-btn-glass">Exit Edit Mode</a>
+          <button type="button" class="cf-edit-btn-cyan" id="cf-save-front-edits">Save Changes</button>
+        </div>
+      </div>
+
+      <div class="cf-img-modal-backdrop" id="cf-img-modal" hidden role="dialog" aria-modal="true">
+        <div class="cf-img-modal-card">
+          <h3>Update Image</h3>
+          <p class="cf-img-modal-sub">Upload a new image or paste an image URL below.</p>
+          <label class="cf-img-field">
+            <span>Image URL</span>
+            <input type="text" id="cf-img-url-input" placeholder="/images/..." />
+          </label>
+          <div class="cf-img-upload-row">
+            <label class="cf-edit-btn-glass cf-upload-btn">
+              Upload File
+              <input type="file" id="cf-img-file-input" accept="image/*" hidden />
+            </label>
+            <span class="cf-img-upload-status" id="cf-img-upload-status"></span>
+          </div>
+          <div class="cf-img-modal-actions">
+            <button type="button" class="cf-edit-btn-glass" id="cf-img-cancel">Cancel</button>
+            <button type="button" class="cf-edit-btn-cyan" id="cf-img-apply">Apply Image</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="cf-edit-toast" id="cf-edit-toast" hidden>Changes saved!</div>
+
+      <script
+        type="application/json"
+        id="cf-edit-seed"
+        set:html={JSON.stringify({
+          id: item.id,
+          slug: item.slug,
+          title: item.title,
+          subtitle: item.subtitle || item.description,
+          coverImage: coverImg,
+          landingData: {
+            ...item.landingData,
+            funnel: {
+              valueStrip,
+              beforeAfter,
+              visualComparison,
+              pillars,
+              systemShowcase,
+              explorer,
+              curriculum,
+              outcomes,
+              deliverables,
+              closingCta
+            }
+          }
+        })}
+      />
+    </>
+  )}
   <Footer />
 </Layout>
 
@@ -690,6 +786,152 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       });
     });
   });
+
+  // Frontend Edit Mode (?edit=1)
+  (() => {
+    const seedEl = document.getElementById("cf-edit-seed");
+    if (!seedEl) return;
+
+    const seed = JSON.parse(seedEl.textContent || "{}");
+    const imgModal = document.getElementById("cf-img-modal");
+    const imgUrlInput = document.getElementById("cf-img-url-input") as HTMLInputElement | null;
+    const imgFileInput = document.getElementById("cf-img-file-input") as HTMLInputElement | null;
+    const imgUploadStatus = document.getElementById("cf-img-upload-status");
+    const saveBtn = document.getElementById("cf-save-front-edits") as HTMLButtonElement | null;
+    const toastEl = document.getElementById("cf-edit-toast");
+
+    let activeImgField: string | null = null;
+
+    function showToast(msg: string) {
+      if (!toastEl) return;
+      toastEl.textContent = msg;
+      toastEl.hidden = false;
+      setTimeout(() => {
+        if (toastEl) toastEl.hidden = true;
+      }, 2600);
+    }
+
+    function setByPath(obj: any, path: string, value: string) {
+      const parts = path.split(".");
+      let cur = obj;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const key = parts[i];
+        const nextKey = parts[i + 1];
+        const isNextIndex = /^\d+$/.test(nextKey);
+        if (cur[key] === undefined || cur[key] === null) {
+          cur[key] = isNextIndex ? [] : {};
+        }
+        cur = cur[key];
+      }
+      cur[parts[parts.length - 1]] = value;
+    }
+
+    // Prevent <details> summary toggle when clicking editable text inside FAQ summary
+    document.querySelectorAll<HTMLElement>(".faq-card summary [contenteditable]").forEach((el) => {
+      el.addEventListener("click", (e) => e.stopPropagation());
+    });
+
+    // Image edit triggers
+    document.querySelectorAll<HTMLButtonElement>(".cf-img-edit-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const field = btn.dataset.targetImg || "";
+        const imgEl = document.querySelector<HTMLImageElement>(`[data-edit-image="${field}"]`);
+        activeImgField = field;
+        if (imgUrlInput) imgUrlInput.value = imgEl?.getAttribute("src") || "";
+        if (imgUploadStatus) imgUploadStatus.textContent = "";
+        if (imgModal) imgModal.hidden = false;
+      });
+    });
+
+    imgFileInput?.addEventListener("change", async () => {
+      const file = imgFileInput.files?.[0];
+      if (!file) return;
+      if (imgUploadStatus) imgUploadStatus.textContent = "Uploading...";
+      const fd = new FormData();
+      fd.append("file", file);
+      try {
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (res.ok && data.url && imgUrlInput) {
+          imgUrlInput.value = data.url;
+          if (imgUploadStatus) imgUploadStatus.textContent = "Uploaded!";
+        } else {
+          if (imgUploadStatus) imgUploadStatus.textContent = data?.error || "Upload failed";
+        }
+      } catch {
+        if (imgUploadStatus) imgUploadStatus.textContent = "Upload failed";
+      }
+      imgFileInput.value = "";
+    });
+
+    document.getElementById("cf-img-cancel")?.addEventListener("click", () => {
+      if (imgModal) imgModal.hidden = true;
+      activeImgField = null;
+    });
+
+    imgModal?.addEventListener("click", (e) => {
+      if (e.target === imgModal) {
+        imgModal.hidden = true;
+        activeImgField = null;
+      }
+    });
+
+    document.getElementById("cf-img-apply")?.addEventListener("click", () => {
+      if (!activeImgField || !imgUrlInput) return;
+      const newUrl = imgUrlInput.value.trim();
+      if (newUrl) {
+        const imgEl = document.querySelector<HTMLImageElement>(`[data-edit-image="${activeImgField}"]`);
+        if (imgEl) imgEl.src = newUrl;
+        setByPath(seed, activeImgField, newUrl);
+      }
+      if (imgModal) imgModal.hidden = true;
+      activeImgField = null;
+    });
+
+    saveBtn?.addEventListener("click", async () => {
+      if (!saveBtn) return;
+      saveBtn.disabled = true;
+      const prevLabel = saveBtn.textContent;
+      saveBtn.textContent = "Saving...";
+
+      document.querySelectorAll<HTMLElement>("[data-edit-field]").forEach((node) => {
+        const path = node.dataset.editField;
+        if (!path) return;
+        setByPath(seed, path, node.innerText.trim());
+      });
+
+      document.querySelectorAll<HTMLImageElement>("[data-edit-image]").forEach((img) => {
+        const path = img.dataset.editImage;
+        if (!path) return;
+        setByPath(seed, path, img.getAttribute("src") || "");
+      });
+
+      try {
+        const res = await fetch(`/api/academy/items/${seed.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: seed.title,
+            subtitle: seed.subtitle,
+            coverImage: seed.coverImage,
+            landingData: seed.landingData
+          })
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err?.error || "Save failed");
+        }
+        showToast("Changes saved!");
+      } catch (err: any) {
+        showToast(err?.message || "Failed to save changes");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = prevLabel || "Save Changes";
+      }
+    });
+  })();
 </script>
 
 <style>
@@ -1586,5 +1828,219 @@ const primaryCtaExternal = !isUnlocked && Boolean(item.stripeCheckoutUrl);
       flex-direction: column;
       align-items: flex-start;
     }
+  }
+
+  /* Frontend Edit Mode (?edit=1) */
+  .cf-showcase-media,
+  .cf-explorer-img,
+  .cf-outcomes-visual,
+  .cf-closing-visual {
+    position: relative;
+  }
+
+  .course-funnel.is-edit-mode {
+    padding-bottom: 130px;
+  }
+
+  .course-funnel.is-edit-mode [contenteditable="true"] {
+    outline: 1px dashed rgba(72, 200, 255, 0.35);
+    outline-offset: 3px;
+    border-radius: 6px;
+    cursor: text;
+    transition: outline-color 0.15s, background 0.15s;
+  }
+
+  .course-funnel.is-edit-mode [contenteditable="true"]:hover {
+    outline-color: rgba(72, 200, 255, 0.7);
+    background: rgba(72, 200, 255, 0.05);
+  }
+
+  .course-funnel.is-edit-mode [contenteditable="true"]:focus {
+    outline: 2px solid #48c8ff;
+    background: rgba(72, 200, 255, 0.09);
+  }
+
+  .cf-img-edit-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 12;
+    appearance: none;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(72, 200, 255, 0.6);
+    background: rgba(4, 12, 24, 0.86);
+    backdrop-filter: blur(10px);
+    color: #9ce1ff;
+    font-family: inherit;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .cf-img-edit-btn:hover {
+    background: #48c8ff;
+    color: #03121e;
+  }
+
+  .cf-edit-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    width: min(820px, 94vw);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: rgba(5, 16, 30, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(72, 200, 255, 0.42);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+  }
+
+  .cf-edit-status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #f8fafc;
+  }
+
+  .cf-edit-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #48c8ff;
+    box-shadow: 0 0 10px #48c8ff;
+  }
+
+  .cf-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .cf-edit-btn-glass,
+  .cf-edit-btn-cyan {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .cf-edit-btn-glass {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+  }
+
+  .cf-edit-btn-cyan {
+    border: none;
+    background: #48c8ff;
+    color: #03121e;
+  }
+
+  .cf-img-modal-backdrop[hidden],
+  .cf-edit-toast[hidden] {
+    display: none !important;
+  }
+
+  .cf-img-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 350;
+    background: rgba(1, 3, 7, 0.82);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .cf-img-modal-card {
+    width: min(460px, 100%);
+    padding: 24px;
+    border-radius: 20px;
+    background: #04091a;
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
+  }
+
+  .cf-img-modal-card h3 {
+    margin: 0 0 6px;
+    color: #ffffff;
+    font-size: 1.15rem;
+  }
+
+  .cf-img-modal-sub {
+    margin: 0 0 16px;
+    font-size: 0.85rem;
+    color: #94a3b8;
+  }
+
+  .cf-img-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    margin-bottom: 12px;
+  }
+
+  .cf-img-field input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.86rem;
+  }
+
+  .cf-img-upload-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .cf-img-upload-status {
+    font-size: 0.8rem;
+    color: #9ce1ff;
+  }
+
+  .cf-img-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .cf-edit-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 400;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: #48c8ff;
+    color: #03121e;
+    font-weight: 700;
+    font-size: 0.84rem;
+    box-shadow: 0 12px 28px rgba(72, 200, 255, 0.35);
   }
 </style>

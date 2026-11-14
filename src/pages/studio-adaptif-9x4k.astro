@@ -114,17 +114,6 @@ const tagPresets = [
             </div>
           </div>
         </nav>
-
-        <div class="studio-sidebar-footer">
-          <a href="/our-work" target="_blank" rel="noopener noreferrer" class="view-live-btn">
-            <span>View Live /our-work</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-          </a>
-        </div>
       </aside>
 
       <!-- Main Workspace -->
@@ -1237,11 +1226,126 @@ const tagPresets = [
       let acTags: { id: string; name: string }[] = Array.isArray(acState.cachedTags) ? acState.cachedTags : [];
       let acFields: { id: string; title: string; perstag: string }[] = Array.isArray(acState.cachedFields) ? acState.cachedFields : [];
 
+      function closeAllStudioDropdowns(except?: HTMLElement) {
+        document.querySelectorAll(".studio-dropdown.is-open").forEach((el) => {
+          if (except && el === except) return;
+          el.classList.remove("is-open");
+          el.querySelector(".studio-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+        });
+      }
+
+      document.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement | null;
+        if (!target?.closest(".studio-dropdown")) {
+          closeAllStudioDropdowns();
+        }
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeAllStudioDropdowns();
+      });
+
+      const studioDropdownMap = new WeakMap<HTMLSelectElement, () => void>();
+
+      function syncStudioDropdown(sel: HTMLSelectElement | null) {
+        if (!sel) return;
+        const syncFn = studioDropdownMap.get(sel);
+        if (syncFn) syncFn();
+      }
+
+      function enhanceStudioSelect(sel: HTMLSelectElement) {
+        if (studioDropdownMap.has(sel)) {
+          syncStudioDropdown(sel);
+          return;
+        }
+        sel.classList.add("is-enhanced-native");
+        const wrapper = document.createElement("div");
+        wrapper.className = "studio-dropdown";
+
+        const trigger = document.createElement("button");
+        trigger.type = "button";
+        trigger.className = "studio-dropdown-trigger";
+        trigger.setAttribute("aria-expanded", "false");
+        trigger.setAttribute("aria-haspopup", "listbox");
+
+        const valueSpan = document.createElement("span");
+        valueSpan.className = "studio-dropdown-value";
+
+        const chevron = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        chevron.setAttribute("class", "studio-dropdown-chevron");
+        chevron.setAttribute("width", "16");
+        chevron.setAttribute("height", "16");
+        chevron.setAttribute("viewBox", "0 0 24 24");
+        chevron.setAttribute("fill", "none");
+        chevron.setAttribute("stroke", "currentColor");
+        chevron.setAttribute("stroke-width", "2");
+        chevron.setAttribute("stroke-linecap", "round");
+        chevron.setAttribute("stroke-linejoin", "round");
+        chevron.setAttribute("aria-hidden", "true");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "m6 9 6 6 6-6");
+        chevron.appendChild(path);
+
+        trigger.appendChild(valueSpan);
+        trigger.appendChild(chevron);
+
+        const menu = document.createElement("div");
+        menu.className = "studio-dropdown-menu";
+        menu.setAttribute("role", "listbox");
+
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(menu);
+        sel.insertAdjacentElement("afterend", wrapper);
+
+        const sync = () => {
+          menu.innerHTML = "";
+          const options = Array.from(sel.options);
+          const selectedOpt = options.find((o) => o.value === sel.value) || options[0];
+          valueSpan.textContent = selectedOpt ? selectedOpt.textContent : "Select...";
+          trigger.classList.toggle("has-value", Boolean(selectedOpt && selectedOpt.value !== ""));
+
+          options.forEach((opt) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "studio-dropdown-option";
+            btn.setAttribute("role", "option");
+            const isSelected = opt.value === sel.value;
+            if (isSelected) btn.classList.add("is-selected");
+            btn.setAttribute("aria-selected", String(isSelected));
+            btn.textContent = opt.textContent || "";
+            btn.addEventListener("click", () => {
+              sel.value = opt.value;
+              sel.dispatchEvent(new Event("change", { bubbles: true }));
+              sync();
+              closeAllStudioDropdowns();
+            });
+            menu.appendChild(btn);
+          });
+        };
+
+        trigger.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const willOpen = !wrapper.classList.contains("is-open");
+          closeAllStudioDropdowns(wrapper);
+          wrapper.classList.toggle("is-open", willOpen);
+          trigger.setAttribute("aria-expanded", String(willOpen));
+        });
+
+        sel.addEventListener("change", sync);
+        studioDropdownMap.set(sel, sync);
+        sync();
+      }
+
+      document.querySelectorAll("select.ac-select").forEach((el) => {
+        enhanceStudioSelect(el as HTMLSelectElement);
+      });
+
       function renderAcControls(mappingOverride?: Record<string, string>, listOverride?: string) {
         const mapping = mappingOverride || acState.mapping || {};
         if (acFullNameSelect && mapping.fullNameMode) {
           acFullNameSelect.value = mapping.fullNameMode;
         }
+        syncStudioDropdown(acFullNameSelect);
 
         acFieldMapIds.forEach(([elId, mapKey]) => {
           const sel = document.getElementById(elId) as HTMLSelectElement | null;
@@ -1259,6 +1363,7 @@ const tagPresets = [
             sel.appendChild(opt);
           });
           sel.value = prevVal;
+          syncStudioDropdown(sel);
         });
 
         if (acListSelectEl) {
@@ -1275,6 +1380,7 @@ const tagPresets = [
             acListSelectEl.appendChild(opt);
           });
           acListSelectEl.value = prevList;
+          syncStudioDropdown(acListSelectEl);
         }
 
         if (acTagChipsEl) {
@@ -1406,13 +1512,13 @@ const tagPresets = [
 
     <style>
       :root {
-        --bg: #03060d;
-        --panel: #080d18;
-        --panel-2: #0c1324;
-        --border: rgba(255, 255, 255, 0.08);
+        --bg: #010307;
+        --panel: rgba(11, 27, 56, 0.72);
+        --panel-2: rgba(18, 44, 88, 0.45);
+        --border: rgba(72, 200, 255, 0.16);
         --text: #f8fafc;
         --muted: #94a3b8;
-        --cyan: #38bdf8;
+        --cyan: #48c8ff;
         --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
         --font-serif: "Instrument Serif", Georgia, serif;
       }
@@ -1442,7 +1548,10 @@ const tagPresets = [
 
       body {
         margin: 0;
-        background: var(--bg);
+        background:
+          radial-gradient(ellipse 80% 50% at 65% 0%, rgba(16, 78, 158, 0.22) 0%, transparent 65%),
+          radial-gradient(ellipse 60% 45% at 15% 100%, rgba(14, 165, 233, 0.08) 0%, transparent 60%),
+          var(--bg);
         color: var(--text);
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
@@ -1457,7 +1566,9 @@ const tagPresets = [
       }
 
       .studio-sidebar {
-        background: #050912;
+        background: linear-gradient(160deg, rgba(14, 34, 70, 0.62) 0%, rgba(7, 18, 40, 0.85) 100%);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
         border-right: 1px solid var(--border);
         padding: 24px 16px;
         display: flex;
@@ -1614,32 +1725,6 @@ const tagPresets = [
         color: #94a3b8;
       }
 
-      .view-live-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 10px 16px;
-        border-radius: 9999px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(255, 255, 255, 0.04);
-        color: #e2e8f0;
-        text-decoration: none;
-        font-size: 0.84rem;
-        font-weight: 500;
-        transition:
-          border-color 0.2s ease,
-          background-color 0.2s ease,
-          transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .view-live-btn:hover {
-        border-color: rgba(56, 189, 248, 0.45);
-        background: rgba(56, 189, 248, 0.1);
-        color: #ffffff;
-        transform: translateY(-1px);
-      }
-
       .studio-main {
         padding: 28px 32px;
         display: flex;
@@ -1656,12 +1741,12 @@ const tagPresets = [
       }
 
       .studio-eyebrow {
-        margin: 0 0 4px;
-        font-size: 0.74rem;
+        margin: 0 0 6px;
+        font-size: 0.82rem;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--cyan);
-        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: #48c8ff;
+        font-weight: 700;
       }
 
       .studio-title {
@@ -1686,9 +1771,12 @@ const tagPresets = [
 
       .brand-list-panel,
       .brand-editor-panel {
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 16px;
+        background: linear-gradient(160deg, rgba(14, 34, 70, 0.56) 0%, rgba(7, 18, 40, 0.78) 100%);
+        border: 1px solid rgba(72, 200, 255, 0.16);
+        border-radius: 18px;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
         overflow: hidden;
       }
 
@@ -1699,23 +1787,39 @@ const tagPresets = [
 
       .panel-search,
       input[type="text"],
+      input[type="url"],
+      input[type="password"],
+      input[type="email"],
+      input[type="search"],
       textarea {
         width: 100%;
-        background: var(--panel-2);
-        border: 1px solid var(--border);
-        border-radius: 10px;
+        background: rgba(18, 44, 88, 0.45);
+        border: 1px solid rgba(72, 200, 255, 0.18);
+        border-radius: 12px;
         color: var(--text);
         font-family: var(--font-sans);
         font-size: 0.88rem;
-        padding: 10px 12px;
+        padding: 11px 14px;
         outline: none;
-        transition: border-color 0.2s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+      }
+
+      .panel-search::placeholder,
+      input::placeholder,
+      textarea::placeholder {
+        color: #64748b;
       }
 
       .panel-search:focus,
       input[type="text"]:focus,
+      input[type="url"]:focus,
+      input[type="password"]:focus,
+      input[type="email"]:focus,
+      input[type="search"]:focus,
       textarea:focus {
-        border-color: var(--cyan);
+        border-color: rgba(72, 200, 255, 0.55);
+        background: rgba(18, 44, 88, 0.65);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
       }
 
       .brand-list {
@@ -2118,20 +2222,13 @@ const tagPresets = [
       .btn-primary {
         border: none;
         color: #031528;
-        background:
-          radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%),
-          linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
-        box-shadow:
-          inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.65),
-          0 4px 16px -2px rgba(10, 163, 248, 0.45);
-        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+        background: linear-gradient(135deg, #5ce1ff 0%, #38bdf8 55%, #0ea5e9 100%);
+        box-shadow: 0 0 24px rgba(56, 189, 248, 0.42);
       }
 
       .btn-primary:hover:not(:disabled) {
-        transform: translateY(-1.5px) scale(1.01);
-        box-shadow:
-          inset 0 1px 2px 0 rgba(255, 255, 255, 0.8),
-          0 8px 24px -2px rgba(10, 163, 248, 0.6);
+        transform: translateY(-1.5px);
+        box-shadow: 0 0 32px rgba(56, 189, 248, 0.62);
       }
 
       .btn-primary:disabled {
@@ -2140,8 +2237,8 @@ const tagPresets = [
       }
 
       .btn-secondary {
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(72, 200, 255, 0.2);
+        background: rgba(18, 44, 88, 0.45);
         color: #e2e8f0;
         display: inline-flex;
         align-items: center;
@@ -2150,8 +2247,8 @@ const tagPresets = [
       }
 
       .btn-secondary:hover {
-        background: rgba(56, 189, 248, 0.12);
-        border-color: rgba(56, 189, 248, 0.42);
+        background: rgba(56, 189, 248, 0.14);
+        border-color: rgba(72, 200, 255, 0.48);
         color: #ffffff;
         transform: translateY(-1px);
       }
@@ -2208,10 +2305,13 @@ const tagPresets = [
       }
 
       .bc-cms-card {
-        background: rgba(10, 18, 36, 0.72);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 22px;
+        background: linear-gradient(160deg, rgba(14, 34, 70, 0.56) 0%, rgba(7, 18, 40, 0.78) 100%);
+        border: 1px solid rgba(72, 200, 255, 0.16);
+        border-radius: 18px;
+        padding: 24px;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
       }
 
       .bc-cms-card-title {
@@ -2258,23 +2358,26 @@ const tagPresets = [
       .ac-map-table {
         display: flex;
         flex-direction: column;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px;
-        overflow: hidden;
+        border: 1px solid rgba(72, 200, 255, 0.16);
+        border-radius: 14px;
+        background: rgba(7, 18, 40, 0.45);
+        overflow: visible;
       }
 
       .ac-map-head {
         display: grid;
         grid-template-columns: 1fr 1.15fr;
         gap: 16px;
-        padding: 10px 16px;
-        background: rgba(255, 255, 255, 0.03);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 12px 16px;
+        background: rgba(18, 44, 88, 0.38);
+        border-bottom: 1px solid rgba(72, 200, 255, 0.14);
+        border-top-left-radius: 13px;
+        border-top-right-radius: 13px;
         font-size: 0.72rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: #7dd3fc;
+        color: #48c8ff;
       }
 
       .ac-map-row {
@@ -2283,7 +2386,7 @@ const tagPresets = [
         gap: 16px;
         align-items: center;
         padding: 12px 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        border-bottom: 1px solid rgba(72, 200, 255, 0.1);
       }
 
       .ac-map-row:last-child {
@@ -2308,29 +2411,121 @@ const tagPresets = [
       }
 
       .ac-map-locked {
-        padding: 9px 12px;
-        border-radius: 8px;
+        padding: 10px 14px;
+        border-radius: 12px;
         background: rgba(56, 189, 248, 0.08);
-        border: 1px solid rgba(56, 189, 248, 0.25);
+        border: 1px solid rgba(72, 200, 255, 0.25);
         color: #7dd3fc;
-        font-size: 0.82rem;
+        font-size: 0.84rem;
         font-weight: 500;
       }
 
-      .ac-select {
-        width: 100%;
-        padding: 9px 12px;
-        border-radius: 8px;
-        background: #060b16;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        color: #f8fafc;
-        font-family: var(--font-sans);
-        font-size: 0.84rem;
-        outline: none;
+      select.ac-select.is-enhanced-native {
+        display: none;
       }
 
-      .ac-select:focus {
-        border-color: rgba(56, 189, 248, 0.55);
+      :global(.studio-dropdown) {
+        position: relative;
+        width: 100%;
+      }
+
+      :global(.studio-dropdown-trigger) {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(72, 200, 255, 0.18);
+        background: rgba(18, 44, 88, 0.45);
+        color: #94a3b8;
+        font-family: var(--font-sans);
+        font-size: 0.86rem;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+      }
+
+      :global(.studio-dropdown-trigger.has-value) {
+        color: #f8fafc;
+      }
+
+      :global(.studio-dropdown-trigger:hover) {
+        border-color: rgba(72, 200, 255, 0.42);
+      }
+
+      :global(.studio-dropdown.is-open .studio-dropdown-trigger) {
+        border-color: rgba(72, 200, 255, 0.58);
+        background: rgba(18, 44, 88, 0.65);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
+      }
+
+      :global(.studio-dropdown-value) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      :global(.studio-dropdown-chevron) {
+        color: #7dd3fc;
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+      }
+
+      :global(.studio-dropdown.is-open .studio-dropdown-chevron) {
+        transform: rotate(180deg);
+      }
+
+      :global(.studio-dropdown-menu) {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        z-index: 60;
+        max-height: 240px;
+        overflow-y: auto;
+        padding: 6px;
+        border-radius: 14px;
+        background: linear-gradient(165deg, rgba(14, 34, 70, 0.96) 0%, rgba(7, 18, 40, 0.98) 100%);
+        border: 1px solid rgba(72, 200, 255, 0.28);
+        box-shadow:
+          0 20px 44px rgba(0, 0, 0, 0.72),
+          0 0 28px rgba(56, 189, 248, 0.14);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      :global(.studio-dropdown.is-open .studio-dropdown-menu) {
+        display: flex;
+      }
+
+      :global(.studio-dropdown-option) {
+        width: 100%;
+        padding: 9px 12px;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: #cbd5e1;
+        font-family: var(--font-sans);
+        font-size: 0.85rem;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+
+      :global(.studio-dropdown-option:hover) {
+        background: rgba(56, 189, 248, 0.15);
+        color: #ffffff;
+      }
+
+      :global(.studio-dropdown-option.is-selected) {
+        background: rgba(56, 189, 248, 0.22);
+        color: #48c8ff;
+        font-weight: 600;
       }
 
       .ac-tags-chips {

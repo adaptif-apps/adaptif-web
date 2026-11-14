@@ -747,7 +747,7 @@ function getFilterCategories(tags: string[]): string[] {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: clamp(18px, 3vh, 32px) clamp(16px, 3.5vw, 44px);
+    padding: clamp(18px, 3vh, 32px) 0;
     gap: clamp(16px, 2.5vh, 26px);
     overflow-y: auto;
   }
@@ -757,6 +757,8 @@ function getFilterCategories(tags: string[]): string[] {
     justify-content: flex-end;
     align-items: center;
     flex-shrink: 0;
+    width: 100%;
+    padding-inline: clamp(16px, 3.5vw, 44px);
   }
 
   .work-modal-actions {
@@ -816,8 +818,6 @@ function getFilterCategories(tags: string[]): string[] {
     flex-direction: column;
     gap: clamp(20px, 3vh, 32px);
     width: 100%;
-    max-width: 1480px;
-    margin-inline: auto;
   }
 
   .modal-gallery-viewport {
@@ -914,6 +914,10 @@ function getFilterCategories(tags: string[]): string[] {
     grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.3fr) minmax(240px, 1.1fr);
     align-items: start;
     gap: clamp(18px, 3vw, 40px);
+    width: 100%;
+    max-width: 1480px;
+    margin-inline: auto;
+    padding-inline: clamp(16px, 3.5vw, 44px);
     padding-top: 4px;
   }
 
@@ -989,7 +993,7 @@ function getFilterCategories(tags: string[]): string[] {
   @media (max-width: 768px) {
     .work-modal-shell {
       justify-content: flex-start;
-      padding: 16px 16px 32px;
+      padding: 16px 0 32px;
       gap: 14px;
     }
 
@@ -1003,6 +1007,7 @@ function getFilterCategories(tags: string[]): string[] {
       order: 2;
       overflow-x: visible;
       overflow-y: visible;
+      padding-inline: 16px;
       padding-bottom: 0;
     }
 

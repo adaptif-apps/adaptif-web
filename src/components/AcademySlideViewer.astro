@@ -374,12 +374,18 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
 
         prevBtn?.addEventListener("click", () => showPage(currentPage - 1));
         nextBtn?.addEventListener("click", () => showPage(currentPage + 1));
-        document.getElementById("btn-fullscreen")?.addEventListener("click", () => {
+        const fsBtn = document.getElementById("btn-fullscreen");
+        fsBtn?.addEventListener("click", () => {
           const shell = document.querySelector(".viewer-shell");
           if (!document.fullscreenElement && shell) {
             shell.requestFullscreen?.().catch(() => {});
           } else {
             document.exitFullscreen?.().catch(() => {});
+          }
+        });
+        document.addEventListener("fullscreenchange", () => {
+          if (fsBtn) {
+            fsBtn.textContent = document.fullscreenElement ? "Exit Fullscreen" : "Fullscreen";
           }
         });
         document.addEventListener("keydown", (e) => {
@@ -1011,6 +1017,10 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     gap: 7px;
   }
 
+  .viewer-shell:fullscreen .viewer-workspace {
+    grid-template-columns: 1fr !important;
+  }
+
   .viewer-shell:fullscreen .viewer-sidebar {
     display: none;
   }
@@ -1103,7 +1113,11 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
       overflow-x: auto;
     }
 
-    .viewer-shell:fullscreen .viewer-sidebar {
+    .viewer-shell:fullscreen .viewer-workspace {
+    grid-template-columns: 1fr !important;
+  }
+
+  .viewer-shell:fullscreen .viewer-sidebar {
     display: none;
   }
 

@@ -155,6 +155,37 @@ function getFilterCategories(tags: string[]): string[] {
   </div>
 </div>
 
+<!-- Fullscreen Image Lightbox -->
+<div
+  class="work-lightbox"
+  id="work-lightbox"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Fullscreen image preview"
+  hidden
+>
+  <div class="work-lightbox-backdrop" data-close-lightbox></div>
+  <button type="button" class="lightbox-close-btn" id="lightbox-close" aria-label="Close fullscreen image" data-close-lightbox>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  </button>
+  <button type="button" class="lightbox-nav-btn lightbox-prev" id="lightbox-prev" aria-label="Previous image">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m15 18-6-6 6-6" />
+    </svg>
+  </button>
+  <div class="work-lightbox-stage" id="work-lightbox-stage">
+    <img class="work-lightbox-img" id="work-lightbox-img" alt="" />
+  </div>
+  <button type="button" class="lightbox-nav-btn lightbox-next" id="lightbox-next" aria-label="Next image">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  </button>
+</div>
+
 <script define:vars={{ projects }}>
   window.__ADAPTIF_PROJECTS__ = projects;
 </script>
@@ -182,6 +213,13 @@ function getFilterCategories(tags: string[]): string[] {
     const galleryViewport = document.getElementById("modal-gallery-viewport");
     const galleryTrack = document.getElementById("modal-gallery-track");
     const closeBtn = document.getElementById("work-modal-close");
+
+    const lightbox = document.getElementById("work-lightbox");
+    const lightboxImg = document.getElementById("work-lightbox-img") as HTMLImageElement | null;
+    const lightboxStage = document.getElementById("work-lightbox-stage");
+    const lightboxCloseBtn = document.getElementById("lightbox-close");
+    const lightboxPrevBtn = document.getElementById("lightbox-prev");
+    const lightboxNextBtn = document.getElementById("lightbox-next");
 
     if (!section || !filterBar || !indicator || !grid) return;
 
@@ -245,19 +283,76 @@ function getFilterCategories(tags: string[]): string[] {
       });
     });
 
-    // --- Shareable Overlay Gallery ---
+    // --- Shareable Overlay Gallery & Fullscreen Lightbox ---
     let lastFocusedTrigger: HTMLElement | null = null;
+    let lastLightboxTrigger: HTMLElement | null = null;
+    let currentGalleryItems: { src: string; alt: string }[] = [];
+    let currentLightboxIndex = 0;
+
+    function openLightbox(index: number) {
+      if (!lightbox || !lightboxImg || currentGalleryItems.length === 0) return;
+      lastLightboxTrigger = document.activeElement as HTMLElement | null;
+      const total = currentGalleryItems.length;
+      currentLightboxIndex = ((index % total) + total) % total;
+      const item = currentGalleryItems[currentLightboxIndex];
+      lightboxImg.src = item.src;
+      lightboxImg.alt = item.alt;
+
+      lightbox.hidden = false;
+      requestAnimationFrame(() => {
+        lightbox.classList.add("is-open");
+        lightboxCloseBtn?.focus({ preventScroll: true });
+      });
+    }
+
+    function stepLightbox(delta: number) {
+      if (!lightbox || lightbox.hidden || currentGalleryItems.length === 0) return;
+      const total = currentGalleryItems.length;
+      currentLightboxIndex = (currentLightboxIndex + delta + total) % total;
+      const item = currentGalleryItems[currentLightboxIndex];
+      if (lightboxImg) {
+        lightboxImg.src = item.src;
+        lightboxImg.alt = item.alt;
+      }
+    }
+
+    function closeLightbox(restoreFocus = true) {
+      if (!lightbox || lightbox.hidden) return;
+      lightbox.classList.remove("is-open");
+      window.setTimeout(() => {
+        if (!lightbox.classList.contains("is-open")) {
+          lightbox.hidden = true;
+          if (restoreFocus) {
+            lastLightboxTrigger?.focus({ preventScroll: true });
+          }
+        }
+      }, 180);
+    }
 
     function createTile(src: string, alt: string, extraClass = "", index = 0) {
       const div = document.createElement("div");
       div.className = `bento-tile ${extraClass}`.trim();
       div.style.setProperty("--tile-delay", `${index * 65}ms`);
+      div.setAttribute("role", "button");
+      div.tabIndex = 0;
+      div.setAttribute("aria-label", `View ${alt} in fullscreen`);
       const img = document.createElement("img");
       img.src = src;
       img.alt = alt;
       img.loading = "eager";
       img.decoding = "async";
       div.appendChild(img);
+
+      div.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openLightbox(index);
+      });
+      div.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openLightbox(index);
+        }
+      });
       return div;
     }
 
@@ -266,47 +361,62 @@ function getFilterCategories(tags: string[]): string[] {
       galleryTrack.innerHTML = "";
       const source = project.gallery && project.gallery.length > 0 ? project.gallery : [project.image];
       const imgs = Array.from({ length: 12 }, (_, idx) => source[idx % source.length]);
+      const alts = [
+        `${project.title} — featured visual`,
+        `${project.title} — campaign view`,
+        `${project.title} — detail 1`,
+        `${project.title} — detail 2`,
+        `${project.title} — vertical asset`,
+        `${project.title} — detail 3`,
+        `${project.title} — detail 4`,
+        `${project.title} — wide showcase`,
+        `${project.title} — vertical highlight`,
+        `${project.title} — wide layout`,
+        `${project.title} — detail 5`,
+        `${project.title} — detail 6`,
+      ];
+      currentGalleryItems = imgs.map((src, i) => ({ src, alt: alts[i] }));
 
       // Block 1: Large 2x2 square (0)
       const b1 = document.createElement("div");
       b1.className = "bento-block bento-block-square";
-      b1.appendChild(createTile(imgs[0], `${project.title} — featured visual`, "", 0));
+      b1.appendChild(createTile(imgs[0], alts[0], "", 0));
       galleryTrack.appendChild(b1);
 
       // Block 2: Top wide (1) + Bottom 2 squares (2, 3)
       const b2 = document.createElement("div");
       b2.className = "bento-block bento-block-top-wide";
-      b2.appendChild(createTile(imgs[1], `${project.title} — campaign view`, "tile-wide", 1));
-      b2.appendChild(createTile(imgs[2], `${project.title} — detail 1`, "", 2));
-      b2.appendChild(createTile(imgs[3], `${project.title} — detail 2`, "", 3));
+      b2.appendChild(createTile(imgs[1], alts[1], "tile-wide", 1));
+      b2.appendChild(createTile(imgs[2], alts[2], "", 2));
+      b2.appendChild(createTile(imgs[3], alts[3], "", 3));
       galleryTrack.appendChild(b2);
 
       // Block 3: Tall portrait (4)
       const b3 = document.createElement("div");
       b3.className = "bento-block bento-block-tall";
-      b3.appendChild(createTile(imgs[4], `${project.title} — vertical asset`, "", 4));
+      b3.appendChild(createTile(imgs[4], alts[4], "", 4));
       galleryTrack.appendChild(b3);
 
       // Block 4: Top 2 squares (5, 6) + Bottom wide (7)
       const b4 = document.createElement("div");
       b4.className = "bento-block bento-block-bottom-wide";
-      b4.appendChild(createTile(imgs[5], `${project.title} — detail 3`, "", 5));
-      b4.appendChild(createTile(imgs[6], `${project.title} — detail 4`, "", 6));
-      b4.appendChild(createTile(imgs[7], `${project.title} — wide showcase`, "tile-wide-bottom", 7));
+      b4.appendChild(createTile(imgs[5], alts[5], "", 5));
+      b4.appendChild(createTile(imgs[6], alts[6], "", 6));
+      b4.appendChild(createTile(imgs[7], alts[7], "tile-wide-bottom", 7));
       galleryTrack.appendChild(b4);
 
       // Block 5: Tall portrait (8)
       const b5 = document.createElement("div");
       b5.className = "bento-block bento-block-tall";
-      b5.appendChild(createTile(imgs[8], `${project.title} — vertical highlight`, "", 8));
+      b5.appendChild(createTile(imgs[8], alts[8], "", 8));
       galleryTrack.appendChild(b5);
 
       // Block 6: Top wide (9) + Bottom 2 squares (10, 11)
       const b6 = document.createElement("div");
       b6.className = "bento-block bento-block-top-wide";
-      b6.appendChild(createTile(imgs[9], `${project.title} — wide layout`, "tile-wide", 9));
-      b6.appendChild(createTile(imgs[10], `${project.title} — detail 5`, "", 10));
-      b6.appendChild(createTile(imgs[11], `${project.title} — detail 6`, "", 11));
+      b6.appendChild(createTile(imgs[9], alts[9], "tile-wide", 9));
+      b6.appendChild(createTile(imgs[10], alts[10], "", 10));
+      b6.appendChild(createTile(imgs[11], alts[11], "", 11));
       galleryTrack.appendChild(b6);
     }
 
@@ -346,6 +456,7 @@ function getFilterCategories(tags: string[]): string[] {
 
     function closeProjectModal(updateUrl = true) {
       if (!modal || modal.hidden) return;
+      closeLightbox(false);
       modal.classList.remove("is-open");
       document.documentElement.style.overflow = "";
 
@@ -387,7 +498,37 @@ function getFilterCategories(tags: string[]): string[] {
       }
     });
 
+    lightbox?.querySelectorAll("[data-close-lightbox]").forEach((el) => {
+      el.addEventListener("click", () => closeLightbox(true));
+    });
+
+    lightboxStage?.addEventListener("click", (e) => {
+      if (e.target === lightboxStage) {
+        closeLightbox(true);
+      }
+    });
+
+    lightboxPrevBtn?.addEventListener("click", () => stepLightbox(-1));
+    lightboxNextBtn?.addEventListener("click", () => stepLightbox(1));
+
     document.addEventListener("keydown", (e) => {
+      if (lightbox && !lightbox.hidden) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          closeLightbox(true);
+          return;
+        }
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          stepLightbox(-1);
+          return;
+        }
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          stepLightbox(1);
+          return;
+        }
+      }
       if (e.key === "Escape" && modal && !modal.hidden) {
         closeProjectModal(true);
       }
@@ -905,7 +1046,18 @@ function getFilterCategories(tags: string[]): string[] {
     overflow: hidden;
     background: #0b111e;
     border: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: zoom-in;
     animation: bentoTileReveal 0.55s cubic-bezier(0.16, 1, 0.3, 1) var(--tile-delay, 0ms) both;
+    transition: border-color 0.25s ease;
+  }
+
+  :global(.bento-tile:hover) {
+    border-color: rgba(56, 189, 248, 0.38);
+  }
+
+  :global(.bento-tile:focus-visible) {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
   }
 
   @keyframes bentoTileReveal {
@@ -940,6 +1092,11 @@ function getFilterCategories(tags: string[]): string[] {
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :global(.bento-tile:hover img) {
+    transform: scale(1.025);
   }
 
   .modal-info-row {
@@ -1111,13 +1268,140 @@ function getFilterCategories(tags: string[]): string[] {
     }
   }
 
+  /* --- Fullscreen Image Lightbox --- */
+  .work-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+
+  .work-lightbox[hidden] {
+    display: none;
+  }
+
+  .work-lightbox.is-open {
+    opacity: 1;
+  }
+
+  .work-lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(2, 5, 11, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .work-lightbox-stage {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(56px, 8vh, 84px) clamp(56px, 7vw, 96px);
+  }
+
+  .work-lightbox-img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 28px 90px rgba(0, 0, 0, 0.72);
+    user-select: none;
+  }
+
+  .lightbox-close-btn,
+  .lightbox-nav-btn {
+    position: fixed;
+    z-index: 2;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .lightbox-close-btn {
+    top: clamp(16px, 3vh, 28px);
+    right: clamp(16px, 3.5vw, 40px);
+    width: 42px;
+    height: 42px;
+  }
+
+  .lightbox-nav-btn {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+  }
+
+  .lightbox-prev {
+    left: clamp(12px, 2.5vw, 32px);
+  }
+
+  .lightbox-next {
+    right: clamp(12px, 2.5vw, 32px);
+  }
+
+  .lightbox-close-btn:hover,
+  .lightbox-nav-btn:hover {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: rgba(56, 189, 248, 0.5);
+    color: #ffffff;
+  }
+
+  .lightbox-close-btn:focus-visible,
+  .lightbox-nav-btn:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 640px) {
+    .work-lightbox-stage {
+      padding: 64px 16px;
+    }
+
+    .lightbox-nav-btn {
+      width: 38px;
+      height: 38px;
+    }
+
+    .lightbox-prev {
+      left: 10px;
+    }
+
+    .lightbox-next {
+      right: 10px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .filter-indicator,
     .project-card,
     .project-img,
     .project-tags-wrap,
     .project-title,
-    .work-modal {
+    .work-modal,
+    .work-lightbox {
       transition: none !important;
       animation: none !important;
     }

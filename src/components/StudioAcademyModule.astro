@@ -538,7 +538,7 @@ const { initialItems, initialSettings } = Astro.props;
       if (newGuideBtn) newGuideBtn.hidden = kind !== "guide";
       if (newCourseBtn) newCourseBtn.hidden = kind !== "course";
 
-      if (titleHeaderEl && eyebrowHeaderEl) {
+      if (titleHeaderEl && eyebrowHeaderEl && !selectedId) {
         eyebrowHeaderEl.textContent = "AI Curriculum Engine";
         if (kind === "course") {
           titleHeaderEl.innerHTML = "Generate <span>Course</span>";

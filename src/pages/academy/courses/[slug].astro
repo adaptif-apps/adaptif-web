@@ -364,7 +364,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 2. VALUE STRIP -->
     {(vis.valueStrip || isEditMode) && valueStrip.length > 0 && (
-      <section class="cf-value-strip is-visible" data-funnel-block="valueStrip" hidden={!vis.valueStrip}>
+      <section class="cf-value-strip" data-funnel-block="valueStrip" hidden={!vis.valueStrip}>
         <div class="cf-container">
           <div class="cf-strip-bar">
             {valueStrip.map((label, idx) => (
@@ -382,7 +382,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 3. BEFORE / AFTER GRID -->
     {(vis.beforeAfter || isEditMode) && (
-      <section class="cf-section is-visible" data-funnel-block="beforeAfter" hidden={!vis.beforeAfter}>
+      <section class="cf-section" data-funnel-block="beforeAfter" hidden={!vis.beforeAfter}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.beforeAfter.eyebrow")}>{beforeAfter.eyebrow}</span>
@@ -412,7 +412,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 4. VISUAL SPLIT COMPARISON -->
     {(vis.visualComparison || isEditMode) && (
-      <section class="cf-section is-visible" data-funnel-block="visualComparison" hidden={!vis.visualComparison}>
+      <section class="cf-section" data-funnel-block="visualComparison" hidden={!vis.visualComparison}>
         <div class="cf-container">
           <div class="cf-split-proof">
             <div class="cf-split-copy">
@@ -437,7 +437,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 5. CORE METHOD PILLARS -->
     {(vis.pillars || isEditMode) && pillars.items.length > 0 && (
-      <section class="cf-section is-visible" data-funnel-block="pillars" hidden={!vis.pillars}>
+      <section class="cf-section" data-funnel-block="pillars" hidden={!vis.pillars}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.pillars.eyebrow")}>{pillars.eyebrow}</span>
@@ -460,7 +460,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 6. SYSTEM / WORKFLOW SHOWCASE -->
     {(vis.systemShowcase || isEditMode) && (
-      <section class="cf-section is-visible" data-funnel-block="systemShowcase" hidden={!vis.systemShowcase}>
+      <section class="cf-section" data-funnel-block="systemShowcase" hidden={!vis.systemShowcase}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.systemShowcase.eyebrow")}>{systemShowcase.eyebrow}</span>
@@ -491,7 +491,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 7. INTERACTIVE TABBED EXPLORER -->
     {(vis.explorer || isEditMode) && explorer.tabs.length > 0 && (
-      <section class="cf-section is-visible" data-funnel-block="explorer" hidden={!vis.explorer}>
+      <section class="cf-section" data-funnel-block="explorer" hidden={!vis.explorer}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.explorer.eyebrow")}>{explorer.eyebrow}</span>
@@ -541,7 +541,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 8. COMPANION TOOL SPOTLIGHT -->
     {(vis.toolSpotlight || isEditMode) && (item.toolName || item.toolUrl) && (
-      <section class="cf-section is-visible" data-funnel-block="toolSpotlight" hidden={!vis.toolSpotlight}>
+      <section class="cf-section" data-funnel-block="toolSpotlight" hidden={!vis.toolSpotlight}>
         <div class="cf-container">
           <div class="tool-spotlight-card">
             <div>
@@ -565,7 +565,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 9. CURRICULUM MICRO-GRID -->
     {(vis.curriculum || isEditMode) && curriculum.modules.length > 0 && (
-      <section class="cf-section is-visible" data-funnel-block="curriculum" hidden={!vis.curriculum}>
+      <section class="cf-section" data-funnel-block="curriculum" hidden={!vis.curriculum}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.curriculum.eyebrow")}>{curriculum.eyebrow}</span>
@@ -590,7 +590,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 9B. COURSE MODULES (PDF / DECK BREAKDOWN) -->
     {(vis.modules || isEditMode) && pdfModules.length > 0 && (
-      <section class="cf-section is-visible" data-funnel-block="modules" hidden={!vis.modules}>
+      <section class="cf-section" data-funnel-block="modules" hidden={!vis.modules}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow">Course Modules</span>
@@ -622,7 +622,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 10. TARGET OUTCOMES SPLIT -->
     {(vis.outcomes || isEditMode) && outcomes.bullets.length > 0 && (
-      <section class="cf-section is-visible" data-funnel-block="outcomes" hidden={!vis.outcomes}>
+      <section class="cf-section" data-funnel-block="outcomes" hidden={!vis.outcomes}>
         <div class="cf-container">
           <div class="cf-outcomes-split">
             <div class="cf-outcomes-copy">
@@ -658,7 +658,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 11. DELIVERABLES 4-CARD GRID -->
     {(vis.deliverables || isEditMode) && deliverables.items.length > 0 && (
-      <section class="cf-section is-visible" data-funnel-block="deliverables" hidden={!vis.deliverables}>
+      <section class="cf-section" data-funnel-block="deliverables" hidden={!vis.deliverables}>
         <div class="cf-container">
           <div class="cf-section-head">
             <span class="section-eyebrow" {...ed("landingData.funnel.deliverables.eyebrow")}>{deliverables.eyebrow}</span>
@@ -679,7 +679,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
     <!-- 12. CLOSING CONVERSION BANNER -->
     {(vis.closingCta || isEditMode) && (
-      <section class="cf-section is-visible" id="course-enroll" data-funnel-block="closingCta" hidden={!vis.closingCta}>
+      <section class="cf-section" id="course-enroll" data-funnel-block="closingCta" hidden={!vis.closingCta}>
         <div class="cf-container">
           <div class="cf-closing-card">
             <div class="cf-closing-visual">
@@ -1331,9 +1331,114 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     color: var(--cyan-primary);
   }
 
-  /* Sections */
+  /* Sections & Scroll Reveal */
+  .cf-value-strip,
+  .cf-section {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+  }
+
+  .cf-value-strip.is-visible,
+  .cf-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   .cf-section {
     padding: 46px 0;
+  }
+
+  .cf-section .cf-ba-card,
+  .cf-section .cf-pillar-card,
+  .cf-section .cf-module-card,
+  .cf-section .cf-deliv-card,
+  .cf-section .cf-outcome-item,
+  .cf-section .cf-curric-item,
+  .cf-section .cf-showcase-frame,
+  .cf-section .cf-impact-split,
+  .cf-section .cf-spotlight-card,
+  .cf-section .cf-explorer-shell,
+  .cf-section .cf-closing-card {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .cf-section.is-visible .cf-ba-card,
+  .cf-section.is-visible .cf-pillar-card,
+  .cf-section.is-visible .cf-module-card,
+  .cf-section.is-visible .cf-deliv-card,
+  .cf-section.is-visible .cf-outcome-item,
+  .cf-section.is-visible .cf-curric-item,
+  .cf-section.is-visible .cf-showcase-frame,
+  .cf-section.is-visible .cf-impact-split,
+  .cf-section.is-visible .cf-spotlight-card,
+  .cf-section.is-visible .cf-explorer-shell,
+  .cf-section.is-visible .cf-closing-card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cf-section.is-visible .cf-ba-card:nth-child(1),
+  .cf-section.is-visible .cf-pillar-card:nth-child(1),
+  .cf-section.is-visible .cf-module-card:nth-child(1),
+  .cf-section.is-visible .cf-deliv-card:nth-child(1),
+  .cf-section.is-visible .cf-outcome-item:nth-child(1),
+  .cf-section.is-visible .cf-curric-item:nth-child(1) { transition-delay: 0.05s; }
+  .cf-section.is-visible .cf-ba-card:nth-child(2),
+  .cf-section.is-visible .cf-pillar-card:nth-child(2),
+  .cf-section.is-visible .cf-module-card:nth-child(2),
+  .cf-section.is-visible .cf-deliv-card:nth-child(2),
+  .cf-section.is-visible .cf-outcome-item:nth-child(2),
+  .cf-section.is-visible .cf-curric-item:nth-child(2) { transition-delay: 0.11s; }
+  .cf-section.is-visible .cf-ba-card:nth-child(3),
+  .cf-section.is-visible .cf-pillar-card:nth-child(3),
+  .cf-section.is-visible .cf-module-card:nth-child(3),
+  .cf-section.is-visible .cf-deliv-card:nth-child(3),
+  .cf-section.is-visible .cf-outcome-item:nth-child(3),
+  .cf-section.is-visible .cf-curric-item:nth-child(3) { transition-delay: 0.17s; }
+  .cf-section.is-visible .cf-ba-card:nth-child(4),
+  .cf-section.is-visible .cf-pillar-card:nth-child(4),
+  .cf-section.is-visible .cf-module-card:nth-child(4),
+  .cf-section.is-visible .cf-deliv-card:nth-child(4),
+  .cf-section.is-visible .cf-outcome-item:nth-child(4),
+  .cf-section.is-visible .cf-curric-item:nth-child(4) { transition-delay: 0.23s; }
+  .cf-section.is-visible .cf-ba-card:nth-child(5),
+  .cf-section.is-visible .cf-pillar-card:nth-child(5),
+  .cf-section.is-visible .cf-module-card:nth-child(5),
+  .cf-section.is-visible .cf-curric-item:nth-child(5) { transition-delay: 0.29s; }
+  .cf-section.is-visible .cf-ba-card:nth-child(6),
+  .cf-section.is-visible .cf-pillar-card:nth-child(6),
+  .cf-section.is-visible .cf-module-card:nth-child(6),
+  .cf-section.is-visible .cf-curric-item:nth-child(6) { transition-delay: 0.35s; }
+  .cf-section.is-visible .cf-module-card:nth-child(n+7) { transition-delay: 0.4s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cf-value-strip,
+    .cf-section,
+    .cf-section .cf-ba-card,
+    .cf-section .cf-pillar-card,
+    .cf-section .cf-module-card,
+    .cf-section .cf-deliv-card,
+    .cf-section .cf-outcome-item,
+    .cf-section .cf-curric-item,
+    .cf-section .cf-showcase-frame,
+    .cf-section .cf-impact-split,
+    .cf-section .cf-spotlight-card,
+    .cf-section .cf-explorer-shell,
+    .cf-section .cf-closing-card {
+      opacity: 1;
+      transform: none;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
   }
 
   .cf-section-head {
@@ -1506,7 +1611,8 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
 
   .cf-pillar-card h3 {
     margin: 0 0 8px;
-    font-size: 1rem;
+    font-size: 1.38rem;
+    line-height: 1.22;
     color: var(--text-primary);
   }
 
@@ -1820,10 +1926,6 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     grid-template-columns: 1.05fr 0.95fr;
     gap: 34px;
     align-items: center;
-    padding: 30px;
-    border-radius: 22px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(11, 32, 54, 0.42);
   }
 
   .cf-outcomes-list {

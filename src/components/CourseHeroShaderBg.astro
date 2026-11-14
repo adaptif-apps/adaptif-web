@@ -50,7 +50,6 @@ const { seed = "adaptif-course" } = Astro.props;
 
       uniform vec2 u_res;
       uniform float u_time;
-      uniform vec2 u_mouse;
       uniform float u_seed;
       uniform float u_mode;
       uniform float u_scale;
@@ -93,8 +92,8 @@ const { seed = "adaptif-course" } = Astro.props;
       void main() {
         vec2 aspect = vec2(u_res.x / max(u_res.y, 1.0), 1.0);
         vec2 uv = (v_uv - 0.5) * aspect;
-        vec2 mouseOffset = (u_mouse - 0.5) * 0.25;
-        vec2 p = rot2(u_angle) * (uv + mouseOffset) * u_scale + vec2(u_seed * 0.13, u_seed * 0.07);
+        // Course hero shaders run autonomously without mouse pointer interaction
+        vec2 p = rot2(u_angle) * uv * u_scale + vec2(u_seed * 0.13, u_seed * 0.07);
 
         float t = u_time * 0.18;
         float field = 0.0;
@@ -115,7 +114,7 @@ const { seed = "adaptif-course" } = Astro.props;
           highlight = pow(ridge, 4.0) * 0.9;
         } else if (u_mode < 2.5) {
           // Mode 2: Topographic Contour Rings
-          float d = length(uv + mouseOffset * 0.6);
+          float d = length(uv);
           float warp = fbm(p * 0.9 + t * 0.5);
           float rings = sin((d * 7.5 - t * 1.4 + warp * 3.8) * 3.14159);
           field = warp * 0.65 + (rings * 0.5 + 0.5) * 0.35;
@@ -213,7 +212,6 @@ const { seed = "adaptif-course" } = Astro.props;
 
       const uRes = gl.getUniformLocation(program, "u_res");
       const uTime = gl.getUniformLocation(program, "u_time");
-      const uMouse = gl.getUniformLocation(program, "u_mouse");
       const uSeed = gl.getUniformLocation(program, "u_seed");
       const uMode = gl.getUniformLocation(program, "u_mode");
       const uScale = gl.getUniformLocation(program, "u_scale");
@@ -244,19 +242,7 @@ const { seed = "adaptif-course" } = Astro.props;
       const ro = new ResizeObserver(resize);
       ro.observe(container);
 
-      let targetMouseX = 0.5;
-      let targetMouseY = 0.5;
-      let mouseX = 0.5;
-      let mouseY = 0.5;
-
-      const heroEl = container.closest(".cf-hero");
-      heroEl?.addEventListener("pointermove", (e: Event) => {
-        const pe = e as PointerEvent;
-        const rect = container.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-        targetMouseX = Math.max(0, Math.min(1, (pe.clientX - rect.left) / rect.width));
-        targetMouseY = Math.max(0, Math.min(1, 1 - (pe.clientY - rect.top) / rect.height));
-      });
+      // Autonomous animation only — no pointermove/mouse interaction on course hero shaders
 
       let isVisible = true;
       const io = new IntersectionObserver(
@@ -272,12 +258,9 @@ const { seed = "adaptif-course" } = Astro.props;
 
       const render = (now: number) => {
         if (isVisible) {
-          mouseX += (targetMouseX - mouseX) * 0.05;
-          mouseY += (targetMouseY - mouseY) * 0.05;
           const elapsed = prefersReducedMotion ? 2.5 : (now - start) * 0.001;
           gl.uniform2f(uRes, width, height);
           gl.uniform1f(uTime, elapsed);
-          gl.uniform2f(uMouse, mouseX, mouseY);
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         }
         if (!prefersReducedMotion) {

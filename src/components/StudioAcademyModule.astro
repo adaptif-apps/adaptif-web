@@ -22,16 +22,16 @@ const { initialItems, initialSettings } = Astro.props;
     </div>
   </header>
 
-  <!-- 1st Module: Flat AI Curriculum Generator -->
-  <AcademyGeneratorModal initialSettings={initialSettings} />
+  <!-- Unified Generator & Item Settings Card -->
+  <section class="acd-glass-card acd-unified-card" aria-label="Course or Guide Generator and Settings">
+    <AcademyGeneratorModal initialSettings={initialSettings} />
 
-  <!-- Full-Width Editor Card (selection happens in Sidebar Courses / Guides dropdowns) -->
-  <section class="acd-glass-card acd-editor-shell" aria-label="Course or Guide settings">
-    <div class="acd-empty-editor" id="acd-empty-editor">
-      Select an item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
-    </div>
+    <div class="acd-editor-shell">
+      <div class="acd-empty-editor" id="acd-empty-editor">
+        Select an item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
+      </div>
 
-    <form id="acd-editor-form" hidden>
+      <form id="acd-editor-form" hidden>
       <div class="acd-editor-topbar">
         <div class="acd-editor-links">
           <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-content" class="acd-btn-cyan-outline">
@@ -78,6 +78,7 @@ const { initialItems, initialSettings } = Astro.props;
         </label>
       </div>
     </form>
+    </div>
   </section>
 
 </div>
@@ -536,6 +537,31 @@ const { initialItems, initialSettings } = Astro.props;
       el("acd-slug")!.value = item.slug || "";
       el("acd-category")!.value = item.category || "";
 
+      // Sync shared Course / Publishing fields in the unified generator block
+      const setSharedVal = (id: string, val: string) => {
+        const input = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+        if (input) input.value = val;
+      };
+      setSharedVal("gen-price", item.priceLabel || "$49");
+      setSharedVal("gen-stripe-url", item.stripeCheckoutUrl || "");
+      setSharedVal("gen-tool-name", item.toolName || "");
+      setSharedVal("gen-tool-type", item.toolType || "");
+      setSharedVal("gen-tool-url", item.toolUrl || "");
+
+      const genStatusEl = document.getElementById("gen-status") as HTMLSelectElement | null;
+      if (genStatusEl) {
+        genStatusEl.value = item.status || "draft";
+        (window as any).__STUDIO_SYNC_SELECT__?.(genStatusEl);
+      }
+      const genPublishAtEl = document.getElementById("gen-publish-at") as HTMLInputElement | null;
+      const genPublishAtWrap = document.getElementById("gen-publish-at-wrap");
+      if (genPublishAtEl) {
+        genPublishAtEl.value = item.publishAt ? new Date(item.publishAt).toISOString().slice(0, 16) : "";
+      }
+      if (genPublishAtWrap) {
+        genPublishAtWrap.hidden = item.status !== "scheduled";
+      }
+
       window.dispatchEvent(new CustomEvent("academy:kind-changed", { detail: { kind: item.kind } }));
 
       const baseFolder = item.kind === "course" ? "courses" : "guides";
@@ -601,22 +627,27 @@ const { initialItems, initialSettings } = Astro.props;
       const item = items.find((i) => i.id === selectedId);
       if (!item) return;
 
+      const genVal = (id: string) =>
+        (document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null)?.value.trim() || "";
+      const nextStatus = genVal("gen-status") || item.status;
+      const nextPublishAtRaw = genVal("gen-publish-at");
+
       const payload = {
         kind: item.kind,
-        status: item.status,
-        publishAt: item.publishAt,
+        status: nextStatus,
+        publishAt: nextStatus === "scheduled" && nextPublishAtRaw ? new Date(nextPublishAtRaw).toISOString() : null,
         title: item.title,
         slug: el("acd-slug")!.value.trim(),
         category: el("acd-category")!.value.trim(),
         subtitle: item.subtitle,
         description: item.description,
         coverImage: item.coverImage,
-        priceLabel: item.priceLabel,
+        priceLabel: item.kind === "course" ? genVal("gen-price") || item.priceLabel : "Free",
         accessMode: item.accessMode,
-        stripeCheckoutUrl: item.stripeCheckoutUrl,
-        toolName: item.toolName,
-        toolType: item.toolType,
-        toolUrl: item.toolUrl,
+        stripeCheckoutUrl: item.kind === "course" ? genVal("gen-stripe-url") : "",
+        toolName: item.kind === "course" ? genVal("gen-tool-name") : "",
+        toolType: item.kind === "course" ? genVal("gen-tool-type") : "",
+        toolUrl: item.kind === "course" ? genVal("gen-tool-url") : "",
         landingData: item.landingData || {},
         slides: item.slides || []
       };
@@ -851,9 +882,17 @@ const { initialItems, initialSettings } = Astro.props;
       var(--glass-bg-card, rgba(8, 18, 44, 0.65));
   }
 
+  .acd-unified-card {
+    position: relative;
+    overflow: visible;
+  }
+
   .acd-editor-shell {
     position: relative;
     z-index: 10;
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .acd-btn-ai {

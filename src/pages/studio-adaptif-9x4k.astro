@@ -4,6 +4,7 @@ import { getBookCallConfig } from "../lib/bookCallDb";
 import { getActiveCampaignConfig } from "../lib/activeCampaignDb";
 import { listAcademyItems, getAcademySettings } from "../lib/academyDb";
 import StudioAcademyModule from "../components/StudioAcademyModule.astro";
+import "../styles/tokens.css";
 
 export const prerender = false;
 
@@ -118,10 +119,31 @@ const tagPresets = [
             </div>
           </div>
 
-          <button type="button" class="nav-item" data-module-tab="academy">
-            <span>Courses &amp; Guides</span>
-            <span class="nav-count">{initialAcademyItems.length}</span>
-          </button>
+          <div class="nav-dropdown is-open" data-nav-group="courses">
+            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
+              <span>Courses</span>
+              <span class="nav-count" id="sidebar-courses-count">
+                {initialAcademyItems.filter((i) => i.kind === "course").length}
+              </span>
+              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <div class="nav-dropdown-items" id="sidebar-courses-list"></div>
+          </div>
+
+          <div class="nav-dropdown is-open" data-nav-group="guides">
+            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
+              <span>Guides</span>
+              <span class="nav-count" id="sidebar-guides-count">
+                {initialAcademyItems.filter((i) => i.kind === "guide").length}
+              </span>
+              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <div class="nav-dropdown-items" id="sidebar-guides-list"></div>
+          </div>
         </nav>
       </aside>
 
@@ -1528,14 +1550,14 @@ const tagPresets = [
 
     <style>
       :root {
-        --bg: #010307;
-        --panel: rgba(11, 27, 56, 0.72);
-        --panel-2: rgba(18, 44, 88, 0.45);
-        --border: rgba(72, 200, 255, 0.16);
-        --text: #f8fafc;
-        --muted: #94a3b8;
-        --cyan: #48c8ff;
-        --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+        --bg: var(--color-void, #010307);
+        --panel: var(--glass-bg-card, rgba(8, 18, 44, 0.65));
+        --panel-2: var(--glass-bg-elevated, rgba(14, 28, 66, 0.75));
+        --border: rgba(72, 200, 255, 0.18);
+        --text: var(--color-text-primary, #f8fafc);
+        --muted: var(--color-text-secondary, #94a3b8);
+        --cyan: var(--color-brand-cyan, #48c8ff);
+        --font-sans: var(--font-family-body, "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif);
         --font-serif: "Instrument Serif", Georgia, serif;
       }
 

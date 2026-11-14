@@ -12,25 +12,26 @@ const { initialItems, initialSettings } = Astro.props;
 <div id="module-academy" hidden>
   <header class="studio-header">
     <div>
-      <p class="studio-eyebrow">Academy CMS</p>
-      <h1 class="studio-title">Courses &amp; <span>Guides</span></h1>
+      <p class="studio-eyebrow" id="acd-module-eyebrow">Academy CMS</p>
+      <h1 class="studio-title" id="acd-module-title">Courses &amp; <span>Guides</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="btn-secondary" id="btn-new-guide">+ New Guide</button>
-      <button type="button" class="btn-primary" id="btn-new-course">+ New Course</button>
+      <button type="button" class="acd-btn-glass" id="btn-new-guide">+ New Guide</button>
+      <button type="button" class="acd-btn-cyan" id="btn-new-course">+ New Course</button>
     </div>
   </header>
 
-  <!-- Access & Stripe Preferences -->
-  <section class="bc-cms-card acd-prefs-card" aria-label="Course Access & Stripe Preferences">
+  <!-- Access & Stripe Preferences (Luminous Obsidian Glass) -->
+  <section class="acd-glass-card acd-prefs-card" id="acd-prefs-section" aria-label="Course Access & Stripe Preferences">
     <div class="acd-prefs-head">
       <div>
-        <h2 class="acd-card-title">Course Access &amp; Stripe Preferences</h2>
+        <span class="acd-section-kicker">Stripe &amp; Access Control</span>
+        <h2 class="acd-card-title">Course Access Preferences</h2>
         <p class="acd-card-sub">
           Configure how paid courses unlock after checkout. Paste individual Stripe Payment Links on each course below.
         </p>
       </div>
-      <button type="button" class="btn-primary" id="btn-save-acd-settings">Save Preferences</button>
+      <button type="button" class="acd-btn-cyan" id="btn-save-acd-settings">Save Preferences</button>
     </div>
 
     <div class="acd-prefs-grid">
@@ -62,180 +63,172 @@ const { initialItems, initialSettings } = Astro.props;
         <span>Stripe Webhook Endpoint</span>
         <div class="acd-copy-row">
           <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
-          <button type="button" class="btn-secondary" id="btn-copy-webhook">Copy</button>
+          <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Main CMS Split Workspace -->
-  <div class="studio-workspace">
-    <!-- Left List -->
-    <section class="brand-list-panel" aria-label="Courses and Guides list">
-      <div class="acd-filter-tabs" role="tablist">
-        <button type="button" class="acd-filter-btn is-active" data-acd-filter="all">All</button>
-        <button type="button" class="acd-filter-btn" data-acd-filter="course">Courses</button>
-        <button type="button" class="acd-filter-btn" data-acd-filter="guide">Guides</button>
-      </div>
-      <div class="brand-list" id="acd-item-list"></div>
-    </section>
+  <!-- Full-Width Editor Card (selection happens in Sidebar Courses / Guides dropdowns) -->
+  <section class="acd-glass-card acd-editor-shell" aria-label="Course or Guide editor">
+    <div class="acd-empty-editor" id="acd-empty-editor">
+      Select a item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
+    </div>
 
-    <!-- Right Editor -->
-    <section class="brand-editor-panel" aria-label="Course or Guide editor">
-      <div class="acd-empty-editor" id="acd-empty-editor">
-        Select a Course or Guide on the left, or click <strong>+ New Guide</strong> / <strong>+ New Course</strong>.
+    <form id="acd-editor-form" hidden>
+      <div class="acd-editor-topbar">
+        <div class="acd-editor-links">
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="acd-btn-glass">
+            Preview Landing ↗
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-slides" class="acd-btn-glass">
+            Preview Slides / PDF ↗
+          </a>
+        </div>
+        <div class="acd-editor-actions">
+          <button type="button" class="acd-btn-danger" id="btn-delete-acd-item">Delete</button>
+          <button type="submit" class="acd-btn-cyan" id="btn-save-acd-item">Save Changes</button>
+        </div>
       </div>
 
-      <form id="acd-editor-form" hidden>
-        <div class="acd-editor-topbar">
-          <div class="acd-editor-links">
-            <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="btn-secondary">
-              Preview Landing ↗
-            </a>
-            <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-slides" class="btn-secondary">
-              Preview Slides / PDF ↗
-            </a>
-          </div>
-          <div class="acd-editor-actions">
-            <button type="button" class="btn-danger" id="btn-delete-acd-item">Delete</button>
-            <button type="submit" class="btn-primary" id="btn-save-acd-item">Save Changes</button>
+      <div class="acd-form-grid">
+        <label class="acd-field">
+          <span>Type</span>
+          <select id="acd-kind">
+            <option value="guide">Guide (Free + Lead Form)</option>
+            <option value="course">Course (Paid + Companion Tool)</option>
+          </select>
+        </label>
+
+        <label class="acd-field">
+          <span>Visibility Status</span>
+          <select id="acd-status">
+            <option value="draft">Private (Draft)</option>
+            <option value="published">Public (Published)</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+        </label>
+
+        <label class="acd-field" id="acd-publish-at-wrap" hidden>
+          <span>Schedule Publish Date &amp; Time</span>
+          <input type="datetime-local" id="acd-publish-at" />
+        </label>
+
+        <label class="acd-field">
+          <span>Title</span>
+          <input type="text" id="acd-title" required />
+        </label>
+
+        <label class="acd-field">
+          <span>Slug (URL)</span>
+          <input type="text" id="acd-slug" required />
+        </label>
+
+        <label class="acd-field">
+          <span>Category</span>
+          <input type="text" id="acd-category" placeholder="AI Workflows" />
+        </label>
+
+        <label class="acd-field acd-span-2">
+          <span>Subtitle (Hero)</span>
+          <input type="text" id="acd-subtitle" />
+        </label>
+
+        <label class="acd-field acd-span-2">
+          <span>Description</span>
+          <textarea id="acd-description" rows="3"></textarea>
+        </label>
+
+        <div class="acd-field acd-span-2">
+          <span>Cover Image URL</span>
+          <div class="acd-copy-row">
+            <input type="text" id="acd-cover-image" placeholder="/images/..." />
+            <label class="acd-btn-glass acd-upload-label">
+              Upload
+              <input type="file" id="acd-cover-file" accept="image/*" hidden />
+            </label>
           </div>
         </div>
+      </div>
 
+      <!-- Course-Specific Fields -->
+      <div class="acd-subsection" id="acd-course-only">
+        <span class="acd-section-kicker">Monetization &amp; Companion Asset</span>
+        <h3 class="acd-sub-title">Course Pricing &amp; Companion Tool</h3>
         <div class="acd-form-grid">
           <label class="acd-field">
-            <span>Type</span>
-            <select id="acd-kind">
-              <option value="guide">Guide (Free + Lead Form)</option>
-              <option value="course">Course (Paid + Companion Tool)</option>
+            <span>Price (Display)</span>
+            <input type="text" id="acd-price-label" placeholder="$49" />
+          </label>
+
+          <label class="acd-field">
+            <span>Access Mode</span>
+            <select id="acd-access-mode">
+              <option value="stripe_webhook">Stripe Webhook + Token (Option A)</option>
+              <option value="checkout_redirect">Checkout Redirect (?checkout=success)</option>
+              <option value="open">Open Access</option>
             </select>
           </label>
 
-          <label class="acd-field">
-            <span>Visibility Status</span>
-            <select id="acd-status">
-              <option value="draft">Private (Draft)</option>
-              <option value="published">Public (Published)</option>
-              <option value="scheduled">Scheduled</option>
-            </select>
-          </label>
-
-          <label class="acd-field" id="acd-publish-at-wrap" hidden>
-            <span>Schedule Publish Date &amp; Time</span>
-            <input type="datetime-local" id="acd-publish-at" />
+          <label class="acd-field acd-span-2">
+            <span>Stripe Checkout Link</span>
+            <input type="url" id="acd-stripe-url" placeholder="https://buy.stripe.com/..." />
           </label>
 
           <label class="acd-field">
-            <span>Title</span>
-            <input type="text" id="acd-title" required />
+            <span>Tool / Template Name (Optional)</span>
+            <input type="text" id="acd-tool-name" placeholder="Magnific Prompt Kit" />
           </label>
 
           <label class="acd-field">
-            <span>Slug (URL)</span>
-            <input type="text" id="acd-slug" required />
-          </label>
-
-          <label class="acd-field">
-            <span>Category</span>
-            <input type="text" id="acd-category" placeholder="AI Workflows" />
+            <span>Tool Type</span>
+            <input type="text" id="acd-tool-type" placeholder="Template / Micro-App / Mockups" />
           </label>
 
           <label class="acd-field acd-span-2">
-            <span>Subtitle (Hero)</span>
-            <input type="text" id="acd-subtitle" />
+            <span>Tool / Micro-App URL (Optional)</span>
+            <input type="url" id="acd-tool-url" placeholder="https://..." />
           </label>
+        </div>
+      </div>
 
+      <!-- Landing Copy -->
+      <div class="acd-subsection">
+        <span class="acd-section-kicker">Landing Template</span>
+        <h3 class="acd-sub-title">Landing Page Content</h3>
+        <div class="acd-form-grid">
+          <label class="acd-field">
+            <span>Hero Badge</span>
+            <input type="text" id="acd-hero-badge" placeholder="Free Tactical Guide" />
+          </label>
+          <label class="acd-field">
+            <span>Read Time / Format</span>
+            <input type="text" id="acd-read-time" placeholder="12 min read · 6 slides" />
+          </label>
           <label class="acd-field acd-span-2">
-            <span>Description</span>
-            <textarea id="acd-description" rows="3"></textarea>
+            <span>Target Audience</span>
+            <input type="text" id="acd-audience" placeholder="Creative Directors, Founders & Marketing Leads" />
           </label>
-
-          <div class="acd-field acd-span-2">
-            <span>Cover Image URL</span>
-            <div class="acd-copy-row">
-              <input type="text" id="acd-cover-image" placeholder="/images/..." />
-              <label class="btn-secondary acd-upload-label">
-                Upload
-                <input type="file" id="acd-cover-file" accept="image/*" hidden />
-              </label>
-            </div>
-          </div>
+          <label class="acd-field acd-span-2">
+            <span>Key Takeaways (one per line)</span>
+            <textarea id="acd-takeaways" rows="4"></textarea>
+          </label>
         </div>
+      </div>
 
-        <!-- Course-Specific Fields -->
-        <div class="acd-subsection" id="acd-course-only">
-          <h3 class="acd-sub-title">Course Pricing &amp; Companion Tool</h3>
-          <div class="acd-form-grid">
-            <label class="acd-field">
-              <span>Price (Display)</span>
-              <input type="text" id="acd-price-label" placeholder="$49" />
-            </label>
-
-            <label class="acd-field">
-              <span>Access Mode</span>
-              <select id="acd-access-mode">
-                <option value="stripe_webhook">Stripe Webhook + Token (Option A)</option>
-                <option value="checkout_redirect">Checkout Redirect (?checkout=success)</option>
-                <option value="open">Open Access</option>
-              </select>
-            </label>
-
-            <label class="acd-field acd-span-2">
-              <span>Stripe Checkout Link</span>
-              <input type="url" id="acd-stripe-url" placeholder="https://buy.stripe.com/..." />
-            </label>
-
-            <label class="acd-field">
-              <span>Tool / Template Name (Optional)</span>
-              <input type="text" id="acd-tool-name" placeholder="Magnific Prompt Kit" />
-            </label>
-
-            <label class="acd-field">
-              <span>Tool Type</span>
-              <input type="text" id="acd-tool-type" placeholder="Template / Micro-App / Mockups" />
-            </label>
-
-            <label class="acd-field acd-span-2">
-              <span>Tool / Micro-App URL (Optional)</span>
-              <input type="url" id="acd-tool-url" placeholder="https://..." />
-            </label>
-          </div>
-        </div>
-
-        <!-- Landing Copy -->
-        <div class="acd-subsection">
-          <h3 class="acd-sub-title">Landing Page Content</h3>
-          <div class="acd-form-grid">
-            <label class="acd-field">
-              <span>Hero Badge</span>
-              <input type="text" id="acd-hero-badge" placeholder="Free Tactical Guide" />
-            </label>
-            <label class="acd-field">
-              <span>Read Time / Format</span>
-              <input type="text" id="acd-read-time" placeholder="12 min read · 6 slides" />
-            </label>
-            <label class="acd-field acd-span-2">
-              <span>Target Audience</span>
-              <input type="text" id="acd-audience" placeholder="Creative Directors, Founders & Marketing Leads" />
-            </label>
-            <label class="acd-field acd-span-2">
-              <span>Key Takeaways (one per line)</span>
-              <textarea id="acd-takeaways" rows="4"></textarea>
-            </label>
-          </div>
-        </div>
-
-        <!-- Slide Deck Builder -->
-        <div class="acd-subsection">
-          <div class="acd-slides-head">
+      <!-- Slide Deck Builder -->
+      <div class="acd-subsection">
+        <div class="acd-slides-head">
+          <div>
+            <span class="acd-section-kicker">Presentation &amp; Vector PDF</span>
             <h3 class="acd-sub-title">Online Slides &amp; PDF Deck</h3>
-            <button type="button" class="btn-secondary" id="btn-add-slide">+ Add Slide</button>
           </div>
-          <div id="acd-slides-container" class="acd-slides-list"></div>
+          <button type="button" class="acd-btn-glass" id="btn-add-slide">+ Add Slide</button>
         </div>
-      </form>
-    </section>
-  </div>
+        <div id="acd-slides-container" class="acd-slides-list"></div>
+      </div>
+    </form>
+  </section>
 </div>
 
 <script define:vars={{ initialItems, initialSettings }}>
@@ -247,16 +240,22 @@ const { initialItems, initialSettings } = Astro.props;
   (() => {
     const w = window as any;
     let items: any[] = Array.isArray(w.__INITIAL_ACADEMY_ITEMS__) ? [...w.__INITIAL_ACADEMY_ITEMS__] : [];
-    let activeFilter = "all";
     let selectedId: string | null = items[0]?.id ?? null;
 
-    const listEl = document.getElementById("acd-item-list");
     const formEl = document.getElementById("acd-editor-form") as HTMLFormElement | null;
     const emptyEl = document.getElementById("acd-empty-editor");
     const slidesContainer = document.getElementById("acd-slides-container");
     const courseOnlyEl = document.getElementById("acd-course-only");
+    const prefsSectionEl = document.getElementById("acd-prefs-section");
     const publishAtWrap = document.getElementById("acd-publish-at-wrap");
     const webhookUrlInput = document.getElementById("acd-webhook-url") as HTMLInputElement | null;
+    const titleHeaderEl = document.getElementById("acd-module-title");
+    const eyebrowHeaderEl = document.getElementById("acd-module-eyebrow");
+
+    const sidebarCoursesList = document.getElementById("sidebar-courses-list");
+    const sidebarGuidesList = document.getElementById("sidebar-guides-list");
+    const sidebarCoursesCount = document.getElementById("sidebar-courses-count");
+    const sidebarGuidesCount = document.getElementById("sidebar-guides-count");
 
     if (webhookUrlInput) {
       webhookUrlInput.value = `${window.location.origin}/api/academy/stripe-webhook`;
@@ -270,52 +269,8 @@ const { initialItems, initialSettings } = Astro.props;
       setTimeout(() => toast.classList.remove("is-visible"), 2600);
     };
 
-    const el = (id: string) => document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
-
-    function toggleKindAndStatusUI() {
-      const kind = el("acd-kind")?.value || "guide";
-      const status = el("acd-status")?.value || "draft";
-      if (courseOnlyEl) courseOnlyEl.hidden = kind !== "course";
-      if (publishAtWrap) publishAtWrap.hidden = status !== "scheduled";
-    }
-
-    el("acd-kind")?.addEventListener("change", toggleKindAndStatusUI);
-    el("acd-status")?.addEventListener("change", toggleKindAndStatusUI);
-
-    function renderList() {
-      if (!listEl) return;
-      const filtered = items.filter((it) => activeFilter === "all" || it.kind === activeFilter);
-      if (filtered.length === 0) {
-        listEl.innerHTML = `<div class="acd-list-empty">No items yet.</div>`;
-        return;
-      }
-
-      listEl.innerHTML = filtered
-        .map((it) => {
-          const isSelected = it.id === selectedId;
-          const badge = it.kind === "course" ? `Course · ${it.priceLabel || "$49"}` : "Guide · Free";
-          const statusLabel = it.status === "published" ? "Public" : it.status === "scheduled" ? "Scheduled" : "Private";
-          return `
-            <button type="button" class="acd-list-item ${isSelected ? "is-selected" : ""}" data-acd-id="${it.id}">
-              <div class="acd-list-row">
-                <span class="acd-kind-tag ${it.kind}">${badge}</span>
-                <span class="acd-status-tag ${it.status}">${statusLabel}</span>
-              </div>
-              <div class="acd-list-title">${escapeHtml(it.title)}</div>
-              <div class="acd-list-meta">${it.slides?.length || 0} slides · /${it.kind === "course" ? "courses" : "guides"}/${escapeHtml(it.slug)}</div>
-            </button>
-          `;
-        })
-        .join("");
-
-      listEl.querySelectorAll<HTMLButtonElement>("[data-acd-id]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          selectedId = btn.dataset.acdId || null;
-          renderList();
-          renderEditor();
-        });
-      });
-    }
+    const el = (id: string) =>
+      document.getElementById(id) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
 
     function escapeHtml(str: string) {
       return String(str ?? "")
@@ -325,6 +280,103 @@ const { initialItems, initialSettings } = Astro.props;
         .replace(/"/g, "&quot;");
     }
 
+    function activateAcademyModule() {
+      const portfolioModule = document.getElementById("module-portfolio");
+      const bookCallModule = document.getElementById("module-book-call");
+      const activeCampaignModule = document.getElementById("module-activecampaign");
+      const academyModule = document.getElementById("module-academy");
+
+      document.querySelectorAll<HTMLButtonElement>("[data-module-tab]").forEach((t) => {
+        t.classList.remove("is-active");
+        t.removeAttribute("aria-current");
+      });
+
+      if (portfolioModule) portfolioModule.hidden = true;
+      if (bookCallModule) bookCallModule.hidden = true;
+      if (activeCampaignModule) activeCampaignModule.hidden = true;
+      if (academyModule) academyModule.hidden = false;
+    }
+
+    function renderSidebarLists() {
+      const courses = items.filter((i) => i.kind === "course");
+      const guides = items.filter((i) => i.kind === "guide");
+
+      if (sidebarCoursesCount) sidebarCoursesCount.textContent = String(courses.length);
+      if (sidebarGuidesCount) sidebarGuidesCount.textContent = String(guides.length);
+
+      const renderGroup = (container: HTMLElement | null, groupItems: any[], kind: "course" | "guide") => {
+        if (!container) return;
+        const listHtml = groupItems
+          .map((it) => {
+            const isActive = it.id === selectedId && !document.getElementById("module-academy")?.hidden;
+            const dotClass =
+              it.status === "published" ? "is-live" : it.status === "scheduled" ? "is-scheduled" : "is-draft";
+            return `
+              <button
+                type="button"
+                class="nav-item nav-academy-item ${isActive ? "is-active" : ""}"
+                data-sidebar-academy-id="${it.id}"
+                title="${escapeHtml(it.title)}"
+              >
+                <span class="nav-acd-label">
+                  <span class="nav-acd-dot ${dotClass}" aria-hidden="true"></span>
+                  <span class="nav-acd-title">${escapeHtml(it.title)}</span>
+                </span>
+              </button>
+            `;
+          })
+          .join("");
+
+        const addLabel = kind === "course" ? "+ New Course" : "+ New Guide";
+        container.innerHTML =
+          listHtml +
+          `<button type="button" class="nav-item nav-acd-add" data-sidebar-new-kind="${kind}">
+            <span>${addLabel}</span>
+          </button>`;
+
+        container.querySelectorAll<HTMLButtonElement>("[data-sidebar-academy-id]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            selectedId = btn.dataset.sidebarAcademyId || null;
+            activateAcademyModule();
+            renderSidebarLists();
+            renderEditor();
+          });
+        });
+
+        container.querySelectorAll<HTMLButtonElement>("[data-sidebar-new-kind]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const k = btn.dataset.sidebarNewKind === "course" ? "course" : "guide";
+            activateAcademyModule();
+            createItem(k);
+          });
+        });
+      };
+
+      renderGroup(sidebarCoursesList, courses, "course");
+      renderGroup(sidebarGuidesList, guides, "guide");
+    }
+
+    function toggleKindAndStatusUI() {
+      const kind = el("acd-kind")?.value || "guide";
+      const status = el("acd-status")?.value || "draft";
+      if (courseOnlyEl) courseOnlyEl.hidden = kind !== "course";
+      if (prefsSectionEl) prefsSectionEl.hidden = kind !== "course";
+      if (publishAtWrap) publishAtWrap.hidden = status !== "scheduled";
+
+      if (titleHeaderEl && eyebrowHeaderEl) {
+        if (kind === "course") {
+          eyebrowHeaderEl.textContent = "Academy · Courses CMS";
+          titleHeaderEl.innerHTML = "Course <span>Editor</span>";
+        } else {
+          eyebrowHeaderEl.textContent = "Academy · Guides CMS";
+          titleHeaderEl.innerHTML = "Guide <span>Editor</span>";
+        }
+      }
+    }
+
+    el("acd-kind")?.addEventListener("change", toggleKindAndStatusUI);
+    el("acd-status")?.addEventListener("change", toggleKindAndStatusUI);
+
     function renderSlides(slides: any[]) {
       if (!slidesContainer) return;
       slidesContainer.innerHTML = slides
@@ -332,11 +384,11 @@ const { initialItems, initialSettings } = Astro.props;
           (s, idx) => `
           <div class="acd-slide-card" data-slide-idx="${idx}">
             <div class="acd-slide-card-head">
-              <strong>Slide ${idx + 1}</strong>
+              <strong class="acd-slide-label">Slide ${idx + 1}</strong>
               <div class="acd-slide-card-btns">
-                <button type="button" class="btn-secondary btn-sm" data-slide-up="${idx}">↑</button>
-                <button type="button" class="btn-secondary btn-sm" data-slide-down="${idx}">↓</button>
-                <button type="button" class="btn-danger btn-sm" data-slide-del="${idx}">Remove</button>
+                <button type="button" class="acd-btn-glass btn-sm" data-slide-up="${idx}">↑</button>
+                <button type="button" class="acd-btn-glass btn-sm" data-slide-down="${idx}">↓</button>
+                <button type="button" class="acd-btn-danger btn-sm" data-slide-del="${idx}">Remove</button>
               </div>
             </div>
             <div class="acd-form-grid">
@@ -473,16 +525,6 @@ const { initialItems, initialSettings } = Astro.props;
       renderSlides(item.slides || []);
     }
 
-    // Filter buttons
-    document.querySelectorAll<HTMLButtonElement>("[data-acd-filter]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        activeFilter = btn.dataset.acdFilter || "all";
-        document.querySelectorAll("[data-acd-filter]").forEach((b) => b.classList.toggle("is-active", b === btn));
-        renderList();
-      });
-    });
-
-    // Add Slide
     document.getElementById("btn-add-slide")?.addEventListener("click", () => {
       const item = items.find((i) => i.id === selectedId);
       if (!item) return;
@@ -498,7 +540,6 @@ const { initialItems, initialSettings } = Astro.props;
       renderSlides(item.slides);
     });
 
-    // Create New Guide / Course
     async function createItem(kind: "guide" | "course") {
       const res = await fetch("/api/academy/items", {
         method: "POST",
@@ -523,7 +564,7 @@ const { initialItems, initialSettings } = Astro.props;
       if (res.ok && data.item) {
         items.unshift(data.item);
         selectedId = data.item.id;
-        renderList();
+        renderSidebarLists();
         renderEditor();
         showStudioToast(`Created new ${kind}!`);
       }
@@ -532,7 +573,6 @@ const { initialItems, initialSettings } = Astro.props;
     document.getElementById("btn-new-guide")?.addEventListener("click", () => createItem("guide"));
     document.getElementById("btn-new-course")?.addEventListener("click", () => createItem("course"));
 
-    // Save Item
     formEl?.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!selectedId) return;
@@ -574,7 +614,7 @@ const { initialItems, initialSettings } = Astro.props;
       if (res.ok && data.item) {
         const idx = items.findIndex((i) => i.id === selectedId);
         if (idx !== -1) items[idx] = data.item;
-        renderList();
+        renderSidebarLists();
         renderEditor();
         showStudioToast("Saved changes!");
       } else {
@@ -582,7 +622,6 @@ const { initialItems, initialSettings } = Astro.props;
       }
     });
 
-    // Delete Item
     document.getElementById("btn-delete-acd-item")?.addEventListener("click", async () => {
       if (!selectedId) return;
       if (!confirm("Delete this Academy item permanently?")) return;
@@ -590,13 +629,12 @@ const { initialItems, initialSettings } = Astro.props;
       if (res.ok) {
         items = items.filter((i) => i.id !== selectedId);
         selectedId = items[0]?.id ?? null;
-        renderList();
+        renderSidebarLists();
         renderEditor();
         showStudioToast("Deleted item");
       }
     });
 
-    // Upload Cover Image
     document.getElementById("acd-cover-file")?.addEventListener("change", async (e) => {
       const input = e.target as HTMLInputElement;
       const file = input.files?.[0];
@@ -611,7 +649,6 @@ const { initialItems, initialSettings } = Astro.props;
       }
     });
 
-    // Save Preferences
     document.getElementById("btn-save-acd-settings")?.addEventListener("click", async () => {
       const mode = (document.getElementById("acd-default-access-mode") as HTMLSelectElement)?.value;
       const secret = (document.getElementById("acd-stripe-secret") as HTMLInputElement)?.value;
@@ -632,14 +669,44 @@ const { initialItems, initialSettings } = Astro.props;
       }
     });
 
-    renderList();
+    // Clear active state on Academy sidebar items when switching back to other Studio modules
+    document.querySelectorAll<HTMLButtonElement>("[data-module-tab]").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".nav-academy-item").forEach((b) => b.classList.remove("is-active"));
+      });
+    });
+
+    renderSidebarLists();
     renderEditor();
   })();
 </script>
 
 <style>
+  .acd-glass-card {
+    background: var(--glass-bg-card, rgba(8, 18, 44, 0.65));
+    backdrop-filter: var(--glass-blur-md, blur(24px));
+    -webkit-backdrop-filter: var(--glass-blur-md, blur(24px));
+    border: var(--border-subtle, 1px solid rgba(255, 255, 255, 0.12));
+    border-radius: 20px;
+    padding: 24px 26px;
+    box-shadow: var(--shadow-bevel-card, inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 12px 36px -8px rgba(0, 4, 15, 0.8));
+  }
+
   .acd-prefs-card {
     margin-bottom: 24px;
+    background:
+      radial-gradient(ellipse 65% 55% at 100% 0%, rgba(72, 200, 255, 0.1) 0%, transparent 65%),
+      var(--glass-bg-card, rgba(8, 18, 44, 0.65));
+  }
+
+  .acd-section-kicker {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan, #48C8FF);
+    margin-bottom: 4px;
   }
 
   .acd-prefs-head {
@@ -653,14 +720,15 @@ const { initialItems, initialSettings } = Astro.props;
 
   .acd-card-title {
     margin: 0 0 4px;
-    font-size: 1.05rem;
-    color: #fff;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: var(--color-text-white, #ffffff);
   }
 
   .acd-card-sub {
     margin: 0;
-    font-size: 0.85rem;
-    color: #94a3b8;
+    font-size: 0.84rem;
+    color: var(--color-text-secondary, #94a3b8);
   }
 
   .acd-prefs-grid,
@@ -682,20 +750,30 @@ const { initialItems, initialSettings } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    font-size: 0.8rem;
-    color: #cbd5e1;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--color-text-secondary, #94a3b8);
   }
 
   .acd-field input,
   .acd-field select,
   .acd-field textarea {
-    padding: 9px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(2, 5, 14, 0.72);
-    color: #f8fafc;
+    padding: 10px 13px;
+    border-radius: 11px;
+    border: var(--border-subtle, 1px solid rgba(255, 255, 255, 0.12));
+    background: rgba(1, 3, 7, 0.78);
+    color: var(--color-text-primary, #f8fafc);
     font-size: 0.88rem;
     font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .acd-field input:focus,
+  .acd-field select:focus,
+  .acd-field textarea:focus {
+    outline: none;
+    border-color: rgba(72, 200, 255, 0.55);
+    box-shadow: 0 0 0 3px rgba(72, 200, 255, 0.14);
   }
 
   .acd-copy-row {
@@ -708,77 +786,75 @@ const { initialItems, initialSettings } = Astro.props;
     min-width: 0;
   }
 
-  .acd-upload-label {
-    cursor: pointer;
+  /* Adaptif Brand Buttons */
+  .acd-btn-cyan {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: none;
+    background:
+      radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 70%),
+      linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
+    color: #031528;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(72, 200, 255, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .acd-filter-tabs {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
+  .acd-btn-cyan:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(72, 200, 255, 0.42);
   }
 
-  .acd-filter-btn {
-    flex: 1;
-    padding: 7px 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.03);
-    color: #94a3b8;
-    font-size: 0.78rem;
+  .acd-btn-glass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: var(--border-subtle, 1px solid rgba(255, 255, 255, 0.12));
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--color-text-primary, #f8fafc);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .acd-btn-glass:hover {
+    border-color: rgba(72, 200, 255, 0.45);
+    background: rgba(72, 200, 255, 0.08);
+  }
+
+  .acd-btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
   }
 
-  .acd-filter-btn.is-active {
-    background: rgba(72, 200, 255, 0.14);
-    border-color: rgba(72, 200, 255, 0.4);
-    color: #fff;
-  }
-
-  :global(.acd-list-item) {
-    width: 100%;
-    text-align: left;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.02);
-    color: #f8fafc;
+  .acd-upload-label {
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
   }
 
-  :global(.acd-list-item.is-selected) {
-    border-color: rgba(72, 200, 255, 0.5);
-    background: rgba(72, 200, 255, 0.1);
-  }
-
-  :global(.acd-list-row) {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  :global(.acd-kind-tag.guide) { color: #6ee7b7; }
-  :global(.acd-kind-tag.course) { color: #7dd3fc; }
-  :global(.acd-status-tag.published) { color: #6ee7b7; }
-  :global(.acd-status-tag.scheduled) { color: #fcd34d; }
-  :global(.acd-status-tag.draft) { color: #94a3b8; }
-
-  :global(.acd-list-title) {
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-
-  :global(.acd-list-meta) {
-    font-size: 0.74rem;
-    color: #64748b;
+  .acd-empty-editor {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--color-text-secondary, #94a3b8);
+    font-size: 0.94rem;
   }
 
   .acd-editor-topbar {
@@ -787,8 +863,8 @@ const { initialItems, initialSettings } = Astro.props;
     align-items: center;
     gap: 12px;
     flex-wrap: wrap;
-    padding-bottom: 16px;
-    margin-bottom: 18px;
+    padding-bottom: 18px;
+    margin-bottom: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -800,22 +876,23 @@ const { initialItems, initialSettings } = Astro.props;
   }
 
   .acd-subsection {
-    margin-top: 24px;
-    padding-top: 20px;
+    margin-top: 26px;
+    padding-top: 22px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .acd-sub-title {
     margin: 0 0 14px;
-    font-size: 0.95rem;
-    color: #48C8FF;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-white, #ffffff);
   }
 
   .acd-slides-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
   }
 
   .acd-slides-list {
@@ -824,10 +901,11 @@ const { initialItems, initialSettings } = Astro.props;
   }
 
   :global(.acd-slide-card) {
-    padding: 16px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(4, 9, 26, 0.65);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
   :global(.acd-slide-card-head) {
@@ -837,14 +915,59 @@ const { initialItems, initialSettings } = Astro.props;
     margin-bottom: 12px;
   }
 
+  :global(.acd-slide-label) {
+    color: #48C8FF;
+    font-size: 0.86rem;
+  }
+
   :global(.acd-slide-card-btns) {
     display: flex;
     gap: 6px;
   }
 
   :global(.btn-sm) {
-    padding: 4px 10px !important;
-    font-size: 0.75rem !important;
+    padding: 5px 10px !important;
+    font-size: 0.74rem !important;
+  }
+
+  /* Sidebar Academy Item Styling */
+  :global(.nav-academy-item) {
+    justify-content: flex-start !important;
+  }
+
+  :global(.nav-acd-label) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  :global(.nav-acd-dot) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  :global(.nav-acd-dot.is-live) { background: #34d399; box-shadow: 0 0 8px rgba(52, 211, 153, 0.6); }
+  :global(.nav-acd-dot.is-scheduled) { background: #fbbf24; }
+  :global(.nav-acd-dot.is-draft) { background: #64748b; }
+
+  :global(.nav-acd-title) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8rem;
+  }
+
+  :global(.nav-acd-add) {
+    color: #48C8FF !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    border-style: dashed !important;
+    border-color: rgba(72, 200, 255, 0.25) !important;
+    margin-top: 2px;
   }
 
   @media (max-width: 960px) {

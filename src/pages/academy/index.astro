@@ -1,0 +1,214 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+---
+
+<Layout
+  title="Academy — Adaptif"
+  description="Free tactical guides and deep-dive courses on AI workflows, creative systems, and high-velocity production."
+>
+  <Header />
+  <main class="academy-main">
+    <section class="academy-hero is-visible">
+      <div class="academy-container">
+        <span class="academy-eyebrow">Adaptif Academy</span>
+        <h1 class="academy-heading">
+          Systems &amp; playbooks <span class="academy-highlight">built to ship.</span>
+        </h1>
+        <p class="academy-lead">
+          Practical frameworks, interactive slide decks, downloadable PDFs, and ready-to-use creative tools from the Adaptif engine.
+        </p>
+
+        <div class="academy-hub-grid">
+          <a href="/academy/guides" class="hub-card">
+            <div class="hub-card-header">
+              <span class="hub-badge">Free</span>
+              <span class="hub-arrow" aria-hidden="true">→</span>
+            </div>
+            <h2 class="hub-title">Guides</h2>
+            <p class="hub-desc">
+              Focused, actionable playbooks on AI creative workflows, branding, and growth. Read online or download as PDF.
+            </p>
+            <span class="hub-cta">Browse Guides</span>
+          </a>
+
+          <a href="/academy/courses" class="hub-card is-featured">
+            <div class="hub-card-header">
+              <span class="hub-badge is-pro">Pro Courses</span>
+              <span class="hub-arrow" aria-hidden="true">→</span>
+            </div>
+            <h2 class="hub-title">Courses</h2>
+            <p class="hub-desc">
+              Comprehensive step-by-step systems paired with templates, mockups, and dedicated micro-apps.
+            </p>
+            <span class="hub-cta">Explore Courses</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .academy-main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 75vh;
+  }
+
+  .academy-hero {
+    padding: 168px 24px 110px;
+    background:
+      radial-gradient(ellipse 70% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      var(--color-void);
+  }
+
+  .academy-container {
+    max-width: 1040px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .academy-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.25);
+    margin-bottom: 24px;
+  }
+
+  .academy-heading {
+    font-size: clamp(2.5rem, 5.4vw, 4.2rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--color-text-white);
+    margin: 0 auto 20px;
+    max-width: 780px;
+  }
+
+  .academy-highlight {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-brand-cyan);
+  }
+
+  .academy-lead {
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    max-width: 640px;
+    margin: 0 auto 56px;
+  }
+
+  .academy-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    text-align: left;
+  }
+
+  .hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 32px;
+    border-radius: 22px;
+    background: rgba(8, 18, 44, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    box-shadow: var(--shadow-bevel-card);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .hub-card:hover {
+    transform: translateY(-4px);
+    background: rgba(14, 28, 66, 0.72);
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .hub-card.is-featured {
+    border-color: rgba(72, 200, 255, 0.24);
+    background:
+      radial-gradient(ellipse 80% 60% at 100% 0%, rgba(72, 200, 255, 0.12) 0%, transparent 65%),
+      rgba(8, 18, 44, 0.65);
+  }
+
+  .hub-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .hub-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.28);
+  }
+
+  .hub-badge.is-pro {
+    color: #7dd3fc;
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .hub-arrow {
+    font-size: 1.2rem;
+    color: var(--color-brand-cyan);
+    transition: transform 0.25s ease;
+  }
+
+  .hub-card:hover .hub-arrow {
+    transform: translateX(4px);
+  }
+
+  .hub-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-text-white);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .hub-desc {
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin: 0;
+    flex: 1;
+  }
+
+  .hub-cta {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-brand-cyan);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .academy-hero {
+      padding: 132px 20px 80px;
+    }
+
+    .academy-hub-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

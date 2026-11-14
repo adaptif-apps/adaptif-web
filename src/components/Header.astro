@@ -3,6 +3,7 @@
 
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isActiveRoute = (href: string) => (href.replace(/\/+$/, "") || "/") === currentPath;
+const isAcademyActive = currentPath === "/academy" || currentPath.startsWith("/academy/");
 
 interface ServiceItem {
   title: string;
@@ -89,6 +90,31 @@ const whyUsItems: WhyUsItem[] = [
     desc: "The tech powering your creative edge",
     href: "#our-technology",
     image: "/images/why-us/our-technology.jpg"
+  }
+];
+
+interface AcademyItem {
+  title: string;
+  desc: string;
+  href: string;
+  badge: string;
+  icon: "guides" | "courses";
+}
+
+const academyItems: AcademyItem[] = [
+  {
+    title: "Guides",
+    desc: "Free tactical playbooks & frameworks. Read online or download PDF.",
+    href: "/academy/guides",
+    badge: "Free",
+    icon: "guides"
+  },
+  {
+    title: "Courses",
+    desc: "Deep-dive systems with templates, micro-apps & step-by-step PDFs.",
+    href: "/academy/courses",
+    badge: "Pro",
+    icon: "courses"
   }
 ];
 ---
@@ -327,8 +353,78 @@ const whyUsItems: WhyUsItem[] = [
             </div>
           </div>
         </li>
-        <li><a href="#guides" class="nav-link">Guides</a></li>
-        <li><a href="#courses" class="nav-link">Courses</a></li>
+        <!-- Academy Dropdown Menu Item -->
+        <li class="nav-item nav-item-academy">
+          <button
+            type="button"
+            class:list={["nav-link nav-link-academy", { "is-active": isAcademyActive }]}
+            id="academy-trigger"
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="academy-mega-menu"
+          >
+            <span>Academy</span>
+            <svg class="chevron-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <!-- Academy Dropdown Container -->
+          <div class="mega-menu-wrapper academy-wrapper" id="academy-mega-menu" role="region" aria-label="Academy Menu">
+            <div class="mega-menu-panel academy-panel">
+              <div class="academy-grid">
+                {academyItems.map((item) => (
+                  <a
+                    href={item.href}
+                    class:list={["academy-card", { "is-active": isActiveRoute(item.href) }]}
+                    aria-current={isActiveRoute(item.href) ? "page" : undefined}
+                  >
+                    <div class="academy-card-top">
+                      <div class="academy-icon-wrap" aria-hidden="true">
+                        {item.icon === "guides" ? (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        ) : (
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3L2 8.5L12 14L22 8.5L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 10.7V16.5C6 18.43 8.69 20 12 20C15.31 20 18 18.43 18 16.5V10.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <span class:list={["academy-badge", { "is-pro": item.badge === "Pro" }]}>{item.badge}</span>
+                    </div>
+                    <div class="academy-info">
+                      <div class="academy-title-row">
+                        <span class="academy-title">{item.title}</span>
+                        <div class="why-us-arrow-wrap" aria-hidden="true">
+                          <svg class="why-us-arrow" width="13" height="13" viewBox="0 0 16 16" fill="none">
+                            <path d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                      <span class="academy-desc">{item.desc}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+
+              <div class="mega-footer-bar">
+                <div class="mega-footer-info">
+                  <span class="mega-footer-dot" aria-hidden="true"></span>
+                  <span>Practical AI, design &amp; creative systems built for modern teams.</span>
+                </div>
+                <a href="/academy" class="mega-footer-link">
+                  <span>Explore Academy</span>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3.33 8h9.34M8 3.33L12.67 8 8 12.67" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </li>
         <li>
           <a
             href="/pricing"
@@ -498,8 +594,56 @@ const whyUsItems: WhyUsItem[] = [
               </div>
             </div>
           </li>
-          <li><a href="#guides" class="mobile-nav-link">Guides</a></li>
-          <li><a href="#courses" class="mobile-nav-link">Courses</a></li>
+          <!-- Mobile Academy Accordion Item -->
+          <li class="mobile-nav-item mobile-academy-item" id="mobile-academy-item">
+            <button
+              type="button"
+              class:list={["mobile-nav-accordion-btn", { "is-active": isAcademyActive }]}
+              id="mobile-academy-accordion"
+              aria-expanded="false"
+              aria-controls="mobile-academy-panel"
+            >
+              <span>Academy</span>
+              <svg class="mobile-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+
+            <div class="mobile-academy-panel" id="mobile-academy-panel">
+              <div class="mobile-why-us-inner">
+                <div class="mobile-why-us-body">
+                  {academyItems.map((item) => (
+                    <a
+                      href={item.href}
+                      class:list={["mobile-academy-card", { "is-active": isActiveRoute(item.href) }]}
+                      aria-current={isActiveRoute(item.href) ? "page" : undefined}
+                    >
+                      <div class="mobile-academy-icon" aria-hidden="true">
+                        {item.icon === "guides" ? (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        ) : (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 3L2 8.5L12 14L22 8.5L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M6 10.7V16.5C6 18.43 8.69 20 12 20C15.31 20 18 18.43 18 16.5V10.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div class="mobile-why-us-content">
+                        <div class="mobile-why-us-header">
+                          <span class="mobile-why-us-title">{item.title}</span>
+                          <span class:list={["academy-badge mobile-badge", { "is-pro": item.badge === "Pro" }]}>{item.badge}</span>
+                        </div>
+                        <span class="mobile-why-us-desc">{item.desc}</span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </li>
           <li>
             <a
               href="/pricing"
@@ -627,7 +771,9 @@ const whyUsItems: WhyUsItem[] = [
   .header-container.theme-light .nav-item-services:hover .nav-link-services,
   .header-container.theme-light .nav-item-services.is-open .nav-link-services,
   .header-container.theme-light .nav-item-why-us:hover .nav-link-why-us,
-  .header-container.theme-light .nav-item-why-us.is-open .nav-link-why-us {
+  .header-container.theme-light .nav-item-why-us.is-open .nav-link-why-us,
+  .header-container.theme-light .nav-item-academy:hover .nav-link-academy,
+  .header-container.theme-light .nav-item-academy.is-open .nav-link-academy {
     color: #0f172a;
   }
 
@@ -654,7 +800,9 @@ const whyUsItems: WhyUsItem[] = [
   .header-container.theme-light .nav-item-services:hover .chevron-arrow,
   .header-container.theme-light .nav-item-services.is-open .chevron-arrow,
   .header-container.theme-light .nav-item-why-us:hover .chevron-arrow,
-  .header-container.theme-light .nav-item-why-us.is-open .chevron-arrow {
+  .header-container.theme-light .nav-item-why-us.is-open .chevron-arrow,
+  .header-container.theme-light .nav-item-academy:hover .chevron-arrow,
+  .header-container.theme-light .nav-item-academy.is-open .chevron-arrow {
     color: #0284c7;
   }
 
@@ -815,7 +963,9 @@ const whyUsItems: WhyUsItem[] = [
   .nav-item-services:hover .nav-link-services,
   .nav-item-services.is-open .nav-link-services,
   .nav-item-why-us:hover .nav-link-why-us,
-  .nav-item-why-us.is-open .nav-link-why-us {
+  .nav-item-why-us.is-open .nav-link-why-us,
+  .nav-item-academy:hover .nav-link-academy,
+  .nav-item-academy.is-open .nav-link-academy {
     color: var(--color-text-white);
   }
 
@@ -823,7 +973,9 @@ const whyUsItems: WhyUsItem[] = [
   .nav-item-services:hover .nav-link-services::before,
   .nav-item-services.is-open .nav-link-services::before,
   .nav-item-why-us:hover .nav-link-why-us::before,
-  .nav-item-why-us.is-open .nav-link-why-us::before {
+  .nav-item-why-us.is-open .nav-link-why-us::before,
+  .nav-item-academy:hover .nav-link-academy::before,
+  .nav-item-academy.is-open .nav-link-academy::before {
     opacity: 1;
     transform: scale(1);
   }
@@ -854,7 +1006,9 @@ const whyUsItems: WhyUsItem[] = [
   .nav-item-services:hover .chevron-arrow,
   .nav-item-services.is-open .chevron-arrow,
   .nav-item-why-us:hover .chevron-arrow,
-  .nav-item-why-us.is-open .chevron-arrow {
+  .nav-item-why-us.is-open .chevron-arrow,
+  .nav-item-academy:hover .chevron-arrow,
+  .nav-item-academy.is-open .chevron-arrow {
     transform: rotate(180deg);
     color: #48C8FF;
   }
@@ -901,7 +1055,9 @@ const whyUsItems: WhyUsItem[] = [
   .nav-item-services:focus-within #services-mega-menu,
   .nav-item-services.is-open #services-mega-menu,
   .nav-item-why-us:focus-within #why-us-mega-menu,
-  .nav-item-why-us.is-open #why-us-mega-menu {
+  .nav-item-why-us.is-open #why-us-mega-menu,
+  .nav-item-academy:focus-within #academy-mega-menu,
+  .nav-item-academy.is-open #academy-mega-menu {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -913,7 +1069,8 @@ const whyUsItems: WhyUsItem[] = [
   }
 
   .nav-item-services.is-open #services-mega-menu::before,
-  .nav-item-why-us.is-open #why-us-mega-menu::before {
+  .nav-item-why-us.is-open #why-us-mega-menu::before,
+  .nav-item-academy.is-open #academy-mega-menu::before {
     pointer-events: auto;
   }
 
@@ -1333,6 +1490,138 @@ const whyUsItems: WhyUsItem[] = [
   }
 
   .why-us-card:hover .why-us-desc {
+    color: #cbd5e1;
+  }
+
+  /* ==========================================================================
+     ACADEMY DROPDOWN MENU (2-Column Guides & Courses)
+     ========================================================================== */
+  .academy-wrapper {
+    width: min(620px, calc(100vw - 36px));
+  }
+
+  .academy-panel {
+    padding: 20px 22px 16px 22px;
+    background-color: #030716;
+    background-image:
+      radial-gradient(ellipse 65% 50% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 85% 80%, rgba(0, 102, 255, 0.08) 0%, transparent 60%);
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    border-radius: 22px;
+    box-shadow:
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.25),
+      inset 0 -1px 1px 0 rgba(0, 229, 255, 0.15),
+      0 28px 70px -12px rgba(0, 2, 8, 0.96),
+      0 0 45px -5px rgba(72, 200, 255, 0.25);
+  }
+
+  .academy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .academy-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(4, 9, 26, 0.72);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    text-decoration: none;
+    box-shadow:
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.08),
+      0 12px 28px -6px rgba(0, 0, 0, 0.7);
+    transition:
+      transform 0.28s var(--ease-spring),
+      border-color 0.25s ease,
+      box-shadow 0.25s ease,
+      background 0.25s ease;
+  }
+
+  .academy-card:hover,
+  .academy-card.is-active {
+    transform: translateY(-3px);
+    background: rgba(8, 18, 44, 0.88);
+    border-color: rgba(72, 200, 255, 0.45);
+    box-shadow:
+      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.2),
+      0 18px 40px -8px rgba(0, 0, 0, 0.9),
+      0 0 28px -4px rgba(72, 200, 255, 0.28);
+  }
+
+  .academy-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .academy-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #48C8FF;
+  }
+
+  .academy-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: #6ee7b7;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.28);
+  }
+
+  .academy-badge.is-pro {
+    color: #7dd3fc;
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.32);
+  }
+
+  .academy-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .academy-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .academy-title {
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #f8fafc;
+    letter-spacing: -0.01em;
+  }
+
+  .academy-card:hover .why-us-arrow-wrap {
+    transform: translateX(3px);
+    background: #48C8FF;
+    border-color: #48C8FF;
+    color: #020716;
+  }
+
+  .academy-desc {
+    font-size: 0.78rem;
+    color: #8FA0BA;
+    line-height: 1.45;
+  }
+
+  .academy-card:hover .academy-desc {
     color: #cbd5e1;
   }
 
@@ -1875,7 +2164,8 @@ const whyUsItems: WhyUsItem[] = [
     margin-bottom: 6px;
   }
 
-  .mobile-why-us-item.is-open .mobile-nav-accordion-btn {
+  .mobile-why-us-item.is-open .mobile-nav-accordion-btn,
+  .mobile-academy-item.is-open .mobile-nav-accordion-btn {
     color: #ffffff;
     font-weight: 600;
     background: rgba(72, 200, 255, 0.06);
@@ -1885,12 +2175,14 @@ const whyUsItems: WhyUsItem[] = [
     padding: 12px 14px;
   }
 
-  .mobile-why-us-item.is-open .mobile-chevron {
+  .mobile-why-us-item.is-open .mobile-chevron,
+  .mobile-academy-item.is-open .mobile-chevron {
     transform: rotate(180deg);
     color: #48C8FF;
   }
 
-  .mobile-why-us-panel {
+  .mobile-why-us-panel,
+  .mobile-academy-panel {
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
@@ -1903,7 +2195,8 @@ const whyUsItems: WhyUsItem[] = [
       visibility 0s 0.32s;
   }
 
-  .mobile-why-us-panel.is-open {
+  .mobile-why-us-panel.is-open,
+  .mobile-academy-panel.is-open {
     grid-template-rows: 1fr;
     opacity: 1;
     visibility: visible;
@@ -1912,6 +2205,57 @@ const whyUsItems: WhyUsItem[] = [
       grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1),
       opacity 0.28s ease,
       visibility 0s 0s;
+  }
+
+  .mobile-academy-item {
+    border-radius: 14px;
+    transition: background 0.25s ease, border-color 0.25s ease, margin 0.25s ease;
+    border: 1px solid transparent;
+    overflow: hidden;
+  }
+
+  .mobile-academy-item.is-open {
+    background: rgba(4, 10, 28, 0.72);
+    border-color: rgba(72, 200, 255, 0.24);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
+  .mobile-academy-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(72, 200, 255, 0.14);
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .mobile-academy-card:hover,
+  .mobile-academy-card.is-active {
+    background: rgba(72, 200, 255, 0.08);
+    border-color: rgba(72, 200, 255, 0.38);
+  }
+
+  .mobile-academy-icon {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #48C8FF;
+  }
+
+  .mobile-badge {
+    font-size: 0.62rem;
+    padding: 2px 7px;
   }
 
   .mobile-why-us-inner {
@@ -2188,11 +2532,18 @@ const whyUsItems: WhyUsItem[] = [
   const whyUsTrigger = document.getElementById('why-us-trigger');
   const whyUsMegaMenu = document.getElementById('why-us-mega-menu');
 
+  // Academy Dropdown Menu Elements
+  const academyItem = document.querySelector('.nav-item-academy');
+  const academyTrigger = document.getElementById('academy-trigger');
+  const academyMegaMenu = document.getElementById('academy-mega-menu');
+
   // Mobile Accordion Elements
   const mobileServicesBtn = document.getElementById('mobile-services-accordion');
   const mobileServicesPanel = document.getElementById('mobile-services-panel');
   const mobileWhyUsBtn = document.getElementById('mobile-why-us-accordion');
   const mobileWhyUsPanel = document.getElementById('mobile-why-us-panel');
+  const mobileAcademyBtn = document.getElementById('mobile-academy-accordion');
+  const mobileAcademyPanel = document.getElementById('mobile-academy-panel');
 
   function updateHeaderTheme() {
     if (!headerContainer) return;
@@ -2310,13 +2661,17 @@ const whyUsItems: WhyUsItem[] = [
 
   let closeServices: (instant?: boolean) => void = () => {};
   let closeWhyUs: (instant?: boolean) => void = () => {};
+  let closeAcademy: (instant?: boolean) => void = () => {};
 
   if (servicesItem && servicesTrigger && servicesMegaMenu) {
     const sMenu = setupDesktopMenu(
       servicesItem as HTMLElement,
       servicesTrigger as HTMLElement,
       servicesMegaMenu as HTMLElement,
-      () => closeWhyUs(true)
+      () => {
+        closeWhyUs(true);
+        closeAcademy(true);
+      }
     );
     closeServices = sMenu.close;
   }
@@ -2326,16 +2681,33 @@ const whyUsItems: WhyUsItem[] = [
       whyUsItem as HTMLElement,
       whyUsTrigger as HTMLElement,
       whyUsMegaMenu as HTMLElement,
-      () => closeServices(true)
+      () => {
+        closeServices(true);
+        closeAcademy(true);
+      }
     );
     closeWhyUs = wMenu.close;
   }
 
+  if (academyItem && academyTrigger && academyMegaMenu) {
+    const aMenu = setupDesktopMenu(
+      academyItem as HTMLElement,
+      academyTrigger as HTMLElement,
+      academyMegaMenu as HTMLElement,
+      () => {
+        closeServices(true);
+        closeWhyUs(true);
+      }
+    );
+    closeAcademy = aMenu.close;
+  }
+
   // Close open mega-menus immediately when hovering non-dropdown navbar links
-  document.querySelectorAll('.nav-desktop .nav-item:not(.nav-item-services):not(.nav-item-why-us), .btn-cta-header').forEach((el) => {
+  document.querySelectorAll('.nav-desktop .nav-item:not(.nav-item-services):not(.nav-item-why-us):not(.nav-item-academy), .btn-cta-header').forEach((el) => {
     el.addEventListener('mouseenter', () => {
       closeServices();
       closeWhyUs();
+      closeAcademy();
     });
   });
 
@@ -2350,6 +2722,10 @@ const whyUsItems: WhyUsItem[] = [
         closeWhyUs();
         whyUsTrigger?.focus();
       }
+      if (academyItem?.classList.contains('is-open')) {
+        closeAcademy();
+        academyTrigger?.focus();
+      }
     }
   });
 
@@ -2360,10 +2736,13 @@ const whyUsItems: WhyUsItem[] = [
       !servicesItem?.contains(target) && 
       !servicesMegaMenu?.contains(target) &&
       !whyUsItem?.contains(target) &&
-      !whyUsMegaMenu?.contains(target)
+      !whyUsMegaMenu?.contains(target) &&
+      !academyItem?.contains(target) &&
+      !academyMegaMenu?.contains(target)
     ) {
       closeServices();
       closeWhyUs();
+      closeAcademy();
     }
   });
 
@@ -2436,6 +2815,18 @@ const whyUsItems: WhyUsItem[] = [
       mobileWhyUsBtn.setAttribute('aria-expanded', String(willBeOpen));
       mobileWhyUsPanel.classList.toggle('is-open', willBeOpen);
       whyUsMobileItem?.classList.toggle('is-open', willBeOpen);
+    });
+  }
+
+  // Mobile Academy Accordion
+  if (mobileAcademyBtn && mobileAcademyPanel) {
+    const academyMobileItem = mobileAcademyBtn.closest('.mobile-academy-item');
+    mobileAcademyBtn.addEventListener('click', () => {
+      const isExpanded = mobileAcademyBtn.getAttribute('aria-expanded') === 'true';
+      const willBeOpen = !isExpanded;
+      mobileAcademyBtn.setAttribute('aria-expanded', String(willBeOpen));
+      mobileAcademyPanel.classList.toggle('is-open', willBeOpen);
+      academyMobileItem?.classList.toggle('is-open', willBeOpen);
     });
   }
 

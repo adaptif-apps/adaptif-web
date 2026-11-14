@@ -1,0 +1,201 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Header from "../../../components/Header.astro";
+import Footer from "../../../components/Footer.astro";
+---
+
+<Layout
+  title="Courses — Adaptif Academy"
+  description="Deep-dive creative & AI courses with downloadable PDFs, online slide decks, templates, and micro-apps."
+>
+  <Header />
+  <main class="catalog-main">
+    <section class="catalog-hero is-visible">
+      <div class="catalog-container">
+        <div class="catalog-breadcrumb">
+          <a href="/academy">Academy</a>
+          <span aria-hidden="true">/</span>
+          <span>Courses</span>
+        </div>
+
+        <span class="catalog-eyebrow">Pro Systems</span>
+        <h1 class="catalog-heading">
+          Courses built <span class="catalog-highlight">for execution.</span>
+        </h1>
+        <p class="catalog-lead">
+          In-depth systems with online slide decks, printable PDFs, and included templates, mockups, or micro-apps.
+        </p>
+
+        <div class="catalog-empty-card">
+          <div class="empty-pill">Catalog Initializing</div>
+          <h2 class="empty-title">New Courses launching soon</h2>
+          <p class="empty-desc">
+            Our structured courses and companion tools are being prepared in the Adaptif Studio. Check back shortly or browse our free guides.
+          </p>
+          <div class="empty-actions">
+            <a href="/academy/guides" class="btn-secondary">Browse Free Guides</a>
+            <a href="/academy" class="btn-ghost">Back to Academy</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .catalog-main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    min-height: 75vh;
+  }
+
+  .catalog-hero {
+    padding: 156px 24px 110px;
+    background:
+      radial-gradient(ellipse 65% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
+      var(--color-void);
+  }
+
+  .catalog-container {
+    max-width: 1040px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .catalog-breadcrumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    margin-bottom: 24px;
+  }
+
+  .catalog-breadcrumb a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+  }
+
+  .catalog-breadcrumb a:hover {
+    color: var(--color-brand-cyan);
+  }
+
+  .catalog-eyebrow {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 20px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7dd3fc;
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+  }
+
+  .catalog-heading {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--color-text-white);
+    margin: 0 auto 20px;
+    max-width: 760px;
+  }
+
+  .catalog-highlight {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--color-brand-cyan);
+  }
+
+  .catalog-lead {
+    font-size: clamp(1rem, 1.7vw, 1.15rem);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    max-width: 620px;
+    margin: 0 auto 56px;
+  }
+
+  .catalog-empty-card {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 32px;
+    border-radius: 22px;
+    background: rgba(8, 18, 44, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-bevel-card);
+  }
+
+  .empty-pill {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-brand-cyan);
+    margin-bottom: 12px;
+  }
+
+  .empty-title {
+    font-size: 1.45rem;
+    font-weight: 600;
+    color: var(--color-text-white);
+    margin: 0 0 12px;
+  }
+
+  .empty-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin: 0 0 28px;
+  }
+
+  .empty-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-secondary,
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .btn-secondary {
+    color: #031528;
+    background: linear-gradient(180deg, #56d3ff 0%, #0aa3f8 100%);
+  }
+
+  .btn-ghost {
+    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .btn-secondary:hover,
+  .btn-ghost:hover {
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .catalog-hero {
+      padding: 132px 20px 80px;
+    }
+  }
+</style>

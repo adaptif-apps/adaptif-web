@@ -540,7 +540,11 @@ function mapItem(row: Record<string, any>): AcademyItem {
         ? landingRaw.faq.map((f: any) => ({ q: String(f?.q ?? ""), a: String(f?.a ?? "") }))
         : [],
       funnelVisibility: defaultFunnelVisibility(landingRaw.funnelVisibility),
-      funnel: landingRaw.funnel && typeof landingRaw.funnel === "object" ? landingRaw.funnel : undefined
+      funnel: landingRaw.funnel && typeof landingRaw.funnel === "object" ? landingRaw.funnel : undefined,
+      customPdfUrl:
+        typeof landingRaw.customPdfUrl === "string" && landingRaw.customPdfUrl.trim()
+          ? landingRaw.customPdfUrl.trim()
+          : undefined
     },
     slides: slidesRaw.map((s: any, idx: number) => ({
       id: String(s?.id ?? `slide-${idx + 1}`),

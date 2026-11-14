@@ -609,12 +609,31 @@ const { initialItems, initialSettings } = Astro.props;
 
       const pdfStatusEl = document.getElementById("acd-custom-pdf-status");
       const removePdfBtn = document.getElementById("btn-remove-custom-pdf");
-      const hasCustomPdf = Boolean(item.landingData?.customPdfUrl);
+      const customPdfUrl = item.landingData?.customPdfUrl?.trim() || "";
+      const hasCustomPdf = Boolean(customPdfUrl);
       if (pdfStatusEl) {
-        pdfStatusEl.textContent = hasCustomPdf ? "Custom PDF active (overrides AI slides)" : "Using AI-generated slides";
+        if (hasCustomPdf) {
+          const rawName = decodeURIComponent(customPdfUrl.split("/").pop()?.split("?")[0] || "custom.pdf");
+          const cleanName = rawName.replace(/^\d+-/, "");
+          pdfStatusEl.innerHTML = `Active PDF: <a href="${customPdfUrl}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;">${cleanName}</a>`;
+        } else {
+          pdfStatusEl.textContent = "Using AI-generated slides";
+        }
         pdfStatusEl.classList.toggle("is-active", hasCustomPdf);
       }
       if (removePdfBtn) removePdfBtn.hidden = !hasCustomPdf;
+      if (editSlidesLink) {
+        editSlidesLink.classList.toggle("is-disabled", hasCustomPdf);
+        if (hasCustomPdf) {
+          editSlidesLink.setAttribute("aria-disabled", "true");
+          editSlidesLink.setAttribute("title", "Disabled while Custom PDF is active");
+          editSlidesLink.href = "#";
+        } else {
+          editSlidesLink.removeAttribute("aria-disabled");
+          editSlidesLink.removeAttribute("title");
+          editSlidesLink.href = `/academy/${baseFolder}/${item.slug}/slides?edit=1`;
+        }
+      }
 
       toggleKindAndStatusUI(item.kind);
     }
@@ -1528,6 +1547,12 @@ const { initialItems, initialSettings } = Astro.props;
 
   .acd-btn-cyan-outline[hidden] {
     display: none !important;
+  }
+
+  .acd-btn-cyan-outline.is-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
   }
 
   .acd-modal-backdrop[hidden] {

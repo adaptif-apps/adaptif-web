@@ -602,17 +602,31 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
           </div>
 
           <div class="cf-modules-grid">
-            {pdfModules.map((mod, idx) => {
-              const rawTag = (mod.eyebrow || mod.layout || "Module").replace(/^\d+\s*[·•\-:]\s*/, "").trim();
-              const summaryText = mod.body || (mod.bullets || []).slice(0, 2).join(" · ");
+            {(item.landingData?.customPdfUrl?.trim()
+              ? (item.landingData?.customModules?.length
+                  ? item.landingData.customModules
+                  : pdfModules.map((mod) => ({
+                      tag: (mod.eyebrow || mod.layout || "Module").replace(/^\d+\s*[·•\-:]\s*/, "").trim(),
+                      title: mod.title,
+                      body: mod.body || (mod.bullets || []).slice(0, 2).join(" · ")
+                    })))
+              : pdfModules.map((mod) => ({
+                  tag: (mod.eyebrow || mod.layout || "Module").replace(/^\d+\s*[·•\-:]\s*/, "").trim(),
+                  title: mod.title,
+                  body: mod.body || (mod.bullets || []).slice(0, 2).join(" · ")
+                }))
+            ).map((mod, idx) => {
+              const isCustomPdf = Boolean(item.landingData?.customPdfUrl?.trim());
               return (
                 <article class="cf-module-card">
                   <div class="cf-module-top">
                     <span class="cf-module-num">Module {String(idx + 1).padStart(2, "0")}</span>
-                    <span class="cf-module-pill">{rawTag}</span>
+                    <span class="cf-module-pill" {...(isCustomPdf ? ed(`landingData.customModules.${idx}.tag`) : {})}>{mod.tag}</span>
                   </div>
-                  <h3 class="cf-module-title">{mod.title}</h3>
-                  {summaryText && <p class="cf-module-body">{summaryText}</p>}
+                  <h3 class="cf-module-title" {...(isCustomPdf ? ed(`landingData.customModules.${idx}.title`) : {})}>{mod.title}</h3>
+                  {(mod.body || (isCustomPdf && isEditMode)) && (
+                    <p class="cf-module-body" {...(isCustomPdf ? ed(`landingData.customModules.${idx}.body`) : {})}>{mod.body || "Module summary..."}</p>
+                  )}
                 </article>
               );
             })}

@@ -154,6 +154,7 @@ export interface AcademyLandingData {
   funnelVisibility?: FunnelVisibility;
   funnel?: Partial<CourseFunnelData>;
   customPdfUrl?: string;
+  customModules?: { tag: string; title: string; body: string }[];
 }
 
 export interface AcademyItem {
@@ -544,7 +545,14 @@ function mapItem(row: Record<string, any>): AcademyItem {
       customPdfUrl:
         typeof landingRaw.customPdfUrl === "string" && landingRaw.customPdfUrl.trim()
           ? landingRaw.customPdfUrl.trim()
-          : undefined
+          : undefined,
+      customModules: Array.isArray(landingRaw.customModules)
+        ? landingRaw.customModules.map((m: any) => ({
+            tag: String(m?.tag ?? "Module"),
+            title: String(m?.title ?? ""),
+            body: String(m?.body ?? "")
+          }))
+        : undefined
     },
     slides: slidesRaw.map((s: any, idx: number) => ({
       id: String(s?.id ?? `slide-${idx + 1}`),

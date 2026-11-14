@@ -2002,6 +2002,75 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
     height: 100%;
     object-fit: cover;
     display: block;
+    pointer-events: none;
+  }
+
+  .cf-ba-slider {
+    user-select: none;
+    touch-action: none;
+    cursor: ew-resize;
+    background: #060d1a;
+  }
+
+  .cf-ba-before-layer {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 calc(100% - var(--ba-pos, 50%)) 0 0);
+    pointer-events: none;
+  }
+
+  .cf-ba-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--ba-pos, 50%);
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cf-ba-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(72, 200, 255, 0.9);
+    box-shadow: 0 0 12px rgba(72, 200, 255, 0.7);
+  }
+
+  .cf-ba-knob {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(11, 21, 40, 0.85);
+    border: 1.5px solid #48c8ff;
+    box-shadow: 0 0 16px rgba(72, 200, 255, 0.55);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cf-ba-edit-actions {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    z-index: 4;
+  }
+
+  .cf-ba-edit-actions .cf-img-edit-btn {
+    position: static;
   }
 
   .cf-split-badges {

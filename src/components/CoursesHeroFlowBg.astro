@@ -13,10 +13,6 @@
     let height = 0;
     let dpr = 1;
     let rafId = 0;
-    let targetMouseX = 0;
-    let targetMouseY = 0;
-    let mouseX = 0;
-    let mouseY = 0;
 
     let seed = 42;
     const rand = () => {
@@ -111,17 +107,9 @@
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    const onPointerMove = (e: PointerEvent) => {
-      targetMouseX = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 0.08;
-      targetMouseY = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 0.06;
-    };
-    if (!prefersReducedMotion) {
-      window.addEventListener("pointermove", onPointerMove, { passive: true });
-    }
-
     const project = (nx: number, ny: number, nz: number, t: number) => {
-      const driftX = Math.sin(t * 0.24 + ny * 2.0) * 0.025 + mouseX / nz;
-      const driftY = Math.cos(t * 0.2 + nx * 2.0) * 0.02 + mouseY / nz;
+      const driftX = Math.sin(t * 0.24 + ny * 2.0) * 0.025;
+      const driftY = Math.cos(t * 0.2 + nx * 2.0) * 0.02;
       const perspective = 1.38 / (nz + 0.55);
       const cx = width * 0.5;
       const cy = height * 0.44;
@@ -152,8 +140,6 @@
 
     const drawFrame = (timeMs: number) => {
       const t = prefersReducedMotion ? 0 : timeMs * 0.001;
-      mouseX += (targetMouseX - mouseX) * 0.04;
-      mouseY += (targetMouseY - mouseY) * 0.04;
 
       ctx.clearRect(0, 0, width, height);
 
@@ -274,7 +260,6 @@
       () => {
         cancelAnimationFrame(rafId);
         ro.disconnect();
-        window.removeEventListener("pointermove", onPointerMove);
       },
       { once: true }
     );

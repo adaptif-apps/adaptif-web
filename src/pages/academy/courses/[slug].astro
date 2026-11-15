@@ -757,6 +757,10 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
             <div class="cf-closing-copy">
               <span class="section-eyebrow" {...ed("landingData.funnel.closingCta.eyebrow")}>{closingCta.eyebrow}</span>
               <h2 class="cf-closing-title" {...ed("landingData.funnel.closingCta.title")}>{closingCta.title}</h2>
+              <div class="cf-closing-price">
+                <span class="cf-closing-price-val">{item.priceLabel || "$49"}</span>
+                <span class="cf-closing-price-meta">USD · One-time payment</span>
+              </div>
               <p class="cf-closing-body" {...ed("landingData.funnel.closingCta.body")}>{closingCta.body}</p>
               <ul class="cf-closing-list">
                 {closingCta.checklist.map((line, idx) => (
@@ -790,6 +794,12 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
                 ) : (
                   <span class="tool-locked-pill">Stripe Checkout URL not configured yet</span>
                 )}
+              </div>
+              <div class="cf-closing-trust">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span>100% Secure Checkout</span>
               </div>
             </div>
           </div>
@@ -2625,10 +2635,11 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
   /* Closing Banner */
   .cf-closing-card {
     display: grid;
-    grid-template-columns: 0.85fr 1.15fr;
+    grid-template-columns: 0.95fr 1.05fr;
     gap: 32px;
-    align-items: center;
-    padding: 30px;
+    align-items: stretch;
+    padding: 0;
+    overflow: hidden;
     border-radius: 24px;
     border: 1px solid rgba(72, 200, 255, 0.3);
     background: linear-gradient(135deg, rgba(14, 46, 78, 0.72), rgba(5, 16, 28, 0.92));
@@ -2636,10 +2647,55 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
   }
 
   .cf-closing-visual {
-    border-radius: 16px;
+    position: relative;
+    border-radius: 0;
     overflow: hidden;
-    aspect-ratio: 553 / 346;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    aspect-ratio: 16 / 9;
+    height: 100%;
+    border: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .cf-closing-copy {
+    padding: 32px 32px 32px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .cf-closing-price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 2px 0 14px;
+  }
+
+  .cf-closing-price-val {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--cyan-primary);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .cf-closing-price-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .cf-closing-trust {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 14px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  .cf-closing-trust svg {
+    color: var(--cyan-primary);
+    flex-shrink: 0;
   }
 
   .cf-closing-visual img {

@@ -8,6 +8,38 @@ import CoursesHeroFlowBg from "../../../components/CoursesHeroFlowBg.astro";
 export const prerender = false;
 
 const courses = await listAcademyItems({ kind: "course", includeUnpublished: false });
+
+async function getPdfPageCount(url: string): Promise<number | null> {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(2500) });
+    if (!res.ok) return null;
+    const buf = await res.arrayBuffer();
+    const text = new TextDecoder("latin1").decode(buf);
+    const matches = text.match(/\/Type\s*\/Page\b(?!s)/g);
+    return matches && matches.length > 0 ? matches.length : null;
+  } catch {
+    return null;
+  }
+}
+
+const coursesWithCounts = await Promise.all(
+  courses.map(async (course) => {
+    const customPdfUrl = course.landingData?.customPdfUrl;
+    if (customPdfUrl) {
+      const pdfPages = await getPdfPageCount(customPdfUrl);
+      return {
+        ...course,
+        displayCount: pdfPages ?? course.slides.length,
+        displayUnit: pdfPages ? "pages" : "slides",
+      };
+    }
+    return {
+      ...course,
+      displayCount: course.slides.length,
+      displayUnit: "slides",
+    };
+  })
+);
 ---
 
 <Layout
@@ -34,9 +66,9 @@ const courses = await listAcademyItems({ kind: "course", includeUnpublished: fal
           In-depth systems with online slide decks, printable PDFs, and included templates, mockups, or micro-apps.
         </p>
 
-        {courses.length > 0 ? (
+        {coursesWithCounts.length > 0 ? (
           <div class="catalog-grid">
-            {courses.map((course, idx) => (
+            {coursesWithCounts.map((course, idx) => (
               <a
                 href={`/academy/courses/${course.slug}`}
                 class="catalog-card"
@@ -58,7 +90,7 @@ const courses = await listAcademyItems({ kind: "course", includeUnpublished: fal
                     <div class="tool-pill">+ Includes: {course.toolName}</div>
                   )}
                   <div class="card-footer">
-                    <span>{course.slides.length} slides · PDF + Tool</span>
+                    <span>{course.displayCount} {course.displayUnit} · PDF + Tool</span>
                     <span class="card-link">View Course →</span>
                   </div>
                 </div>

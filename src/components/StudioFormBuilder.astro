@@ -162,10 +162,6 @@ const { initialConfig } = Astro.props;
             <span class="acd-label-row">Description</span>
             <textarea rows="3" data-cfg="step1Subtitle">{initialConfig.step1Subtitle}</textarea>
           </label>
-          <label class="acd-field">
-            <span class="acd-label-row">Button Text</span>
-            <input type="text" data-cfg="step1Cta" value={initialConfig.step1Cta} />
-          </label>
         </div>
 
         <div id="fb-insp-step2-fields" class="fb-insp-fields" hidden>
@@ -185,10 +181,6 @@ const { initialConfig } = Astro.props;
             <span class="acd-label-row">Description</span>
             <textarea rows="3" data-cfg="step2Subtitle">{initialConfig.step2Subtitle}</textarea>
           </label>
-          <label class="acd-field">
-            <span class="acd-label-row">Button Text</span>
-            <input type="text" data-cfg="step2Cta" value={initialConfig.step2Cta} />
-          </label>
         </div>
 
         <div id="fb-insp-confirm-fields" class="fb-insp-fields" hidden>
@@ -204,15 +196,29 @@ const { initialConfig } = Astro.props;
             <span class="acd-label-row">Message</span>
             <textarea rows="3" data-cfg="confirmSubtitle">{initialConfig.confirmSubtitle}</textarea>
           </label>
-          <label class="acd-field">
-            <span class="acd-label-row">Button Text</span>
-            <input type="text" data-cfg="confirmCta" value={initialConfig.confirmCta} />
-          </label>
         </div>
 
         <p class="field-hint" style="margin-top: 6px;">
-          Click any field on the left to edit its title, placeholder, type, or column layout.
+          Click any field or the CTA button on the left to edit its properties.
         </p>
+      </div>
+
+      <!-- Button Inspector (shown when CTA button is selected) -->
+      <div id="fb-insp-button" class="fb-insp-body" hidden>
+        <div class="fb-insp-head">
+          <div>
+            <span class="acd-section-kicker">Button Inspector</span>
+            <h3 class="fb-insp-title">CTA Button</h3>
+          </div>
+          <button type="button" class="fb-mini-btn" id="btn-fb-deselect-btn">Done</button>
+        </div>
+
+        <div class="fb-insp-fields">
+          <label class="acd-field">
+            <span class="acd-label-row">Button Text</span>
+            <input type="text" id="fb-btn-text-input" placeholder="e.g. Tell us about your project" />
+          </label>
+        </div>
       </div>
 
       <!-- Field Inspector (shown when a field is selected) -->
@@ -633,6 +639,11 @@ const { initialConfig } = Astro.props;
       inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
 
+  .fb-root[data-mode="edit"] .fb-bc-cta-btn.is-selected {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+  }
+
   .fb-bc-success {
     text-align: center;
     padding: 12px 8px;
@@ -834,7 +845,11 @@ const { initialConfig } = Astro.props;
 
   // Inspector elements
   const inspForm = document.getElementById("fb-insp-form") as HTMLElement | null;
+  const inspButton = document.getElementById("fb-insp-button") as HTMLElement | null;
   const inspField = document.getElementById("fb-insp-field") as HTMLElement | null;
+  const btnTextInput = document.getElementById("fb-btn-text-input") as HTMLInputElement | null;
+  let selectionMode: "container" | "button" | "field" = "container";
+
   const inspFieldName = document.getElementById("fb-insp-field-name") as HTMLElement | null;
   const fLabel = document.getElementById("fb-f-label") as HTMLInputElement | null;
   const fPh = document.getElementById("fb-f-placeholder") as HTMLInputElement | null;
@@ -855,15 +870,39 @@ const { initialConfig } = Astro.props;
     if (fReqLbl) fReqLbl.textContent = on ? "Required" : "Optional";
   }
 
+  function getActiveCtaKey(): "step1Cta" | "step2Cta" | "confirmCta" {
+    const s = root?.dataset.step;
+    return s === "2" ? "step2Cta" : s === "confirm" ? "confirmCta" : "step1Cta";
+  }
+
+  function syncCtaSelectionRing() {
+    ["fb-cta-1", "fb-cta-2", "fb-cta-confirm"].forEach((id) => {
+      document.getElementById(id)?.classList.toggle("is-selected", selectionMode === "button");
+    });
+  }
+
   function populateFieldInspector() {
-    const field = fields.find((x) => x.id === selectedFieldId);
-    if (!field) {
-      if (inspForm) inspForm.hidden = false;
+    const field = selectionMode === "field" ? fields.find((x) => x.id === selectedFieldId) : null;
+    if (selectionMode === "button") {
+      if (inspForm) inspForm.hidden = true;
       if (inspField) inspField.hidden = true;
+      if (inspButton) inspButton.hidden = false;
+      if (btnTextInput) btnTextInput.value = config[getActiveCtaKey()] || "";
+      syncCtaSelectionRing();
+      return;
+    }
+    if (!field) {
+      selectionMode = "container";
+      if (inspForm) inspForm.hidden = false;
+      if (inspButton) inspButton.hidden = true;
+      if (inspField) inspField.hidden = true;
+      syncCtaSelectionRing();
       return;
     }
     if (inspForm) inspForm.hidden = true;
+    if (inspButton) inspButton.hidden = true;
     if (inspField) inspField.hidden = false;
+    syncCtaSelectionRing();
     if (inspFieldName) inspFieldName.textContent = field.label || field.id;
     if (fLabel) fLabel.value = field.label || "";
     if (fPh) fPh.value = field.placeholder || "";
@@ -892,9 +931,26 @@ const { initialConfig } = Astro.props;
 
   function selectField(id: string | null) {
     selectedFieldId = id;
+    selectionMode = id ? "field" : "container";
     renderCanvas();
     populateFieldInspector();
   }
+
+  function selectButton() {
+    selectedFieldId = null;
+    selectionMode = "button";
+    renderCanvas();
+    populateFieldInspector();
+  }
+
+  btnTextInput?.addEventListener("input", () => {
+    const key = getActiveCtaKey();
+    config[key] = btnTextInput.value;
+    const viewEl = document.getElementById(`fb-view-${key}`);
+    if (viewEl) viewEl.textContent = btnTextInput.value;
+  });
+
+  document.getElementById("btn-fb-deselect-btn")?.addEventListener("click", () => selectField(null));
 
   function getSelectedField() {
     return fields.find((x) => x.id === selectedFieldId) || null;
@@ -990,7 +1046,7 @@ const { initialConfig } = Astro.props;
   stageEl?.addEventListener("click", (e) => {
     if (root?.dataset.mode !== "edit") return;
     const target = e.target as HTMLElement;
-    if (!target.closest(".fb-bc-field")) {
+    if (!target.closest(".fb-bc-field") && !target.closest(".fb-bc-cta-btn")) {
       selectField(null);
     }
   });
@@ -1072,15 +1128,30 @@ const { initialConfig } = Astro.props;
     btn.addEventListener("click", () => setStep((btn as HTMLElement).dataset.fbStep as any));
   });
 
-  document.getElementById("fb-cta-1")?.addEventListener("click", () => {
-    if (root?.dataset.mode === "preview") setStep("2");
+  document.getElementById("fb-cta-1")?.addEventListener("click", (e) => {
+    if (root?.dataset.mode === "preview") {
+      setStep("2");
+    } else {
+      e.stopPropagation();
+      selectButton();
+    }
   });
   document.getElementById("fb-back-2")?.addEventListener("click", () => setStep("1"));
-  document.getElementById("fb-cta-2")?.addEventListener("click", () => {
-    if (root?.dataset.mode === "preview") setStep("confirm");
+  document.getElementById("fb-cta-2")?.addEventListener("click", (e) => {
+    if (root?.dataset.mode === "preview") {
+      setStep("confirm");
+    } else {
+      e.stopPropagation();
+      selectButton();
+    }
   });
-  document.getElementById("fb-cta-confirm")?.addEventListener("click", () => {
-    if (root?.dataset.mode === "preview") setStep("1");
+  document.getElementById("fb-cta-confirm")?.addEventListener("click", (e) => {
+    if (root?.dataset.mode === "preview") {
+      setStep("1");
+    } else {
+      e.stopPropagation();
+      selectButton();
+    }
   });
 
   document.getElementById("btn-fb-add-field")?.addEventListener("click", () => {

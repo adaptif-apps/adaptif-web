@@ -29,6 +29,7 @@ export interface AcFieldItem {
 
 export interface ActiveCampaignConfig {
   enabled: boolean;
+  syncedForms: string[];
   apiUrl: string;
   apiKey: string;
   listId: string;
@@ -43,6 +44,7 @@ export interface ActiveCampaignConfig {
 
 export const defaultActiveCampaignConfig: ActiveCampaignConfig = {
   enabled: false,
+  syncedForms: ["book-call"],
   apiUrl: "",
   apiKey: "",
   listId: "",
@@ -101,6 +103,9 @@ function mergeConfig(raw: unknown): ActiveCampaignConfig {
 
   return {
     enabled: Boolean(obj.enabled ?? false),
+    syncedForms: Array.isArray(obj.syncedForms)
+      ? obj.syncedForms.map(String).filter(Boolean)
+      : ["book-call"],
     apiUrl: typeof obj.apiUrl === "string" ? normalizeUrl(obj.apiUrl) : "",
     apiKey: typeof obj.apiKey === "string" ? obj.apiKey.trim() : "",
     listId: typeof obj.listId === "string" ? obj.listId.trim() : "",

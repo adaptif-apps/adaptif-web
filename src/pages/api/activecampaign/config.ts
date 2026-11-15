@@ -31,6 +31,7 @@ export const PUT: APIRoute = async ({ request }) => {
     const body = await request.json();
     const saved = await saveActiveCampaignConfig({
       enabled: body?.enabled,
+      syncedForms: Array.isArray(body?.syncedForms) ? body.syncedForms : undefined,
       apiUrl: body?.apiUrl,
       apiKey: typeof body?.apiKey === "string" && body.apiKey.trim() ? body.apiKey.trim() : undefined,
       listId: body?.listId,

@@ -9,6 +9,7 @@ export const GET: APIRoute = async () => {
     return new Response(
       JSON.stringify({
         enabled: cfg.enabled,
+        syncedForms: cfg.syncedForms,
         hasApiKey: Boolean(cfg.apiKey),
         listId: cfg.listId,
         cachedLists: cfg.cachedLists,
@@ -30,6 +31,7 @@ export const POST: APIRoute = async ({ request }) => {
     const body = await request.json();
     const saved = await saveKlaviyoConfig({
       enabled: Boolean(body?.enabled),
+      syncedForms: Array.isArray(body?.syncedForms) ? body.syncedForms : undefined,
       apiKey: typeof body?.apiKey === "string" ? body.apiKey : undefined,
       listId: typeof body?.listId === "string" ? body.listId : undefined,
     });
@@ -38,6 +40,7 @@ export const POST: APIRoute = async ({ request }) => {
       JSON.stringify({
         ok: true,
         enabled: saved.enabled,
+        syncedForms: saved.syncedForms,
         hasApiKey: Boolean(saved.apiKey),
         listId: saved.listId,
         cachedLists: saved.cachedLists,

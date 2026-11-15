@@ -2,6 +2,7 @@
 interface Props {
   initialKlaviyo: {
     enabled: boolean;
+    syncedForms: string[];
     hasApiKey: boolean;
     listId: string;
     cachedLists: Array<{ id: string; name: string }>;
@@ -35,15 +36,29 @@ const { initialKlaviyo } = Astro.props;
         <span class="acd-section-kicker">Connection</span>
         <h2 class="bc-cms-card-title" style="margin: 4px 0;">1. Connect Your Account</h2>
         <p class="field-hint" style="margin: 0;">
-          Toggle Active to sync leads from the selected form into Klaviyo automatically.
+          Toggle Active to sync leads from the selected forms into Klaviyo automatically.
         </p>
       </div>
       <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
         <div class="ac-form-picker">
-          <label for="klv-form-selector" class="ac-form-picker-label">Form</label>
-          <select id="klv-form-selector" class="studio-select">
-            <option value="book-call">Book a Call</option>
-          </select>
+          <span class="ac-form-picker-label">Forms</span>
+          <div class="studio-multiselect" id="klv-forms-multiselect">
+            <button type="button" class={`studio-dropdown-trigger ${initialKlaviyo.syncedForms.length ? "has-value" : ""}`} aria-expanded="false">
+              <span class="studio-dropdown-value" data-ms-summary>
+                {initialKlaviyo.syncedForms.includes("book-call") ? "Book a Call" : "No forms selected"}
+              </span>
+              <svg class="studio-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="studio-dropdown-menu" hidden>
+              <label class="studio-ms-option">
+                <input type="checkbox" value="book-call" data-label="Book a Call" checked={initialKlaviyo.syncedForms.includes("book-call")} />
+                <span class="studio-ms-box" aria-hidden="true"></span>
+                <span>Book a Call</span>
+              </label>
+            </div>
+          </div>
         </div>
         <label class={`studio-toggle-pill ${initialKlaviyo.enabled ? "is-active" : "is-inactive"}`} id="klv-toggle-pill">
           <input type="checkbox" class="studio-toggle-chk" id="klv-enabled-toggle" checked={initialKlaviyo.enabled} />
@@ -264,6 +279,106 @@ const { initialKlaviyo } = Astro.props;
     font-size: 0.8rem;
     color: #94a3b8;
   }
+
+  .bc-cms-card-title {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #7dd3fc;
+    margin: 0 0 16px;
+  }
+
+  .field-hint {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #64748b;
+  }
+
+  .acd-label-link {
+    color: #48c8ff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(72, 200, 255, 0.45);
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+  }
+
+  .acd-label-link:hover {
+    color: #9ce2ff;
+    text-decoration-color: rgba(156, 226, 255, 0.85);
+  }
+
+  .studio-multiselect {
+    position: relative;
+    width: 100%;
+  }
+
+  .studio-multiselect.is-open {
+    z-index: 80;
+  }
+
+  .studio-multiselect .studio-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    min-width: 200px;
+    z-index: 60;
+    padding: 6px;
+    border-radius: 12px;
+    background: #0a1834;
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    box-shadow: 0 14px 32px rgba(2, 8, 22, 0.72);
+  }
+
+  .studio-ms-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 0.84rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease;
+  }
+
+  .studio-ms-option:hover {
+    background: rgba(72, 200, 255, 0.12);
+  }
+
+  .studio-ms-option input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .studio-ms-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 5px;
+    border: 1px solid rgba(72, 200, 255, 0.45);
+    background: rgba(18, 44, 88, 0.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .studio-ms-option input:checked + .studio-ms-box {
+    background: #48c8ff;
+    border-color: #48c8ff;
+  }
+
+  .studio-ms-option input:checked + .studio-ms-box::after {
+    content: "";
+    width: 5px;
+    height: 9px;
+    border: solid #031528;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-0.5px, -0.5px);
+  }
 </style>
 
 <script>
@@ -291,6 +406,65 @@ const { initialKlaviyo } = Astro.props;
     klvPill?.classList.toggle("is-active", on);
     klvPill?.classList.toggle("is-inactive", !on);
   });
+
+  function initMultiSelect(root: HTMLElement | null) {
+    if (!root || root.dataset.msBound === "1") return;
+    root.dataset.msBound = "1";
+    const trigger = root.querySelector(".studio-dropdown-trigger") as HTMLButtonElement | null;
+    const menu = root.querySelector(".studio-dropdown-menu") as HTMLElement | null;
+    const summary = root.querySelector("[data-ms-summary]") as HTMLElement | null;
+    const checkboxes = Array.from(root.querySelectorAll('input[type="checkbox"]')) as HTMLInputElement[];
+
+    function syncSummary() {
+      const checked = checkboxes.filter((c) => c.checked);
+      if (summary) {
+        if (checked.length === 0) {
+          summary.textContent = "No forms selected";
+        } else if (checked.length === 1) {
+          summary.textContent = checked[0].dataset.label || checked[0].value;
+        } else {
+          summary.textContent = `${checked.length} forms selected`;
+        }
+      }
+      trigger?.classList.toggle("has-value", checked.length > 0);
+    }
+
+    trigger?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = !root.classList.contains("is-open");
+      document.querySelectorAll(".studio-multiselect.is-open").forEach((el) => {
+        if (el !== root) {
+          el.classList.remove("is-open");
+          el.querySelector(".studio-dropdown-menu")?.setAttribute("hidden", "");
+          el.querySelector(".studio-dropdown-trigger")?.setAttribute("aria-expanded", "false");
+        }
+      });
+      root.classList.toggle("is-open", willOpen);
+      if (menu) menu.hidden = !willOpen;
+      trigger.setAttribute("aria-expanded", String(willOpen));
+    });
+
+    checkboxes.forEach((cb) => cb.addEventListener("change", syncSummary));
+    document.addEventListener("click", (e) => {
+      if (!root.contains(e.target as Node)) {
+        root.classList.remove("is-open");
+        if (menu) menu.hidden = true;
+        trigger?.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    syncSummary();
+  }
+
+  w.__STUDIO_INIT_MULTISELECT__ = initMultiSelect;
+  w.__STUDIO_GET_MULTISELECT_VALUES__ = (root: HTMLElement | null): string[] => {
+    if (!root) return [];
+    return Array.from(root.querySelectorAll('input[type="checkbox"]:checked')).map(
+      (el) => (el as HTMLInputElement).value
+    );
+  };
+
+  initMultiSelect(document.getElementById("klv-forms-multiselect"));
 
   document.getElementById("btn-test-klaviyo")?.addEventListener("click", async () => {
     const btn = document.getElementById("btn-test-klaviyo") as HTMLButtonElement | null;
@@ -340,6 +514,7 @@ const { initialKlaviyo } = Astro.props;
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           enabled: Boolean(klvToggle?.checked),
+          syncedForms: w.__STUDIO_GET_MULTISELECT_VALUES__?.(document.getElementById("klv-forms-multiselect")) ?? ["book-call"],
           apiKey: keyInput?.value.trim() || undefined,
           listId: listSel?.value || "",
         }),

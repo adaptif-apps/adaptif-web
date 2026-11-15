@@ -10,6 +10,7 @@ export interface KlaviyoListItem {
 
 export interface KlaviyoConfig {
   enabled: boolean;
+  syncedForms: string[];
   apiKey: string;
   listId: string;
   cachedLists: KlaviyoListItem[];
@@ -19,6 +20,7 @@ export interface KlaviyoConfig {
 
 export const defaultKlaviyoConfig: KlaviyoConfig = {
   enabled: false,
+  syncedForms: ["book-call"],
   apiKey: "",
   listId: "",
   cachedLists: [],
@@ -60,6 +62,9 @@ function mergeKlaviyoConfig(raw: unknown): KlaviyoConfig {
   const obj = raw && typeof raw === "object" ? (raw as Record<string, any>) : {};
   return {
     enabled: Boolean(obj.enabled ?? false),
+    syncedForms: Array.isArray(obj.syncedForms)
+      ? obj.syncedForms.map(String).filter(Boolean)
+      : ["book-call"],
     apiKey: typeof obj.apiKey === "string" ? obj.apiKey.trim() : "",
     listId: typeof obj.listId === "string" ? obj.listId.trim() : "",
     cachedLists: Array.isArray(obj.cachedLists) ? obj.cachedLists : [],

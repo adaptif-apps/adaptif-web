@@ -34,6 +34,7 @@ const [
 
 const initialKlaviyoState = {
   enabled: rawKlaviyoConfig.enabled,
+  syncedForms: rawKlaviyoConfig.syncedForms,
   hasApiKey: Boolean(rawKlaviyoConfig.apiKey),
   listId: rawKlaviyoConfig.listId,
   cachedLists: rawKlaviyoConfig.cachedLists,
@@ -41,8 +42,19 @@ const initialKlaviyoState = {
   lastSyncedAt: rawKlaviyoConfig.lastSyncedAt,
 };
 
+function getAcDeveloperUrl(apiUrl: string): string {
+  try {
+    const u = new URL(apiUrl.trim());
+    const m = u.hostname.match(/^([^.]+)\.api-[^.]+/i);
+    if (m) return `https://${m[1]}.activehosted.com/app/settings/developer`;
+    if (u.hostname.endsWith(".activehosted.com")) return `https://${u.hostname}/app/settings/developer`;
+  } catch {}
+  return "https://www.activecampaign.com/login";
+}
+
 const initialAcState = {
   enabled: rawAcConfig.enabled,
+  syncedForms: rawAcConfig.syncedForms,
   apiUrl: rawAcConfig.apiUrl,
   hasApiKey: Boolean(rawAcConfig.apiKey),
   listId: rawAcConfig.listId,
@@ -54,6 +66,8 @@ const initialAcState = {
   cachedFields: rawAcConfig.cachedFields,
   lastSyncedAt: rawAcConfig.lastSyncedAt,
 };
+
+const acDeveloperUrl = getAcDeveloperUrl(initialAcState.apiUrl);
 
 const tagPresets = [
   "Branding",
@@ -564,10 +578,24 @@ const tagPresets = [
                 </div>
                 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
                   <div class="ac-form-picker">
-                    <label for="ac-form-selector" class="ac-form-picker-label">Form</label>
-                    <select id="ac-form-selector" class="studio-select">
-                      <option value="book-call">Book a Call</option>
-                    </select>
+                    <span class="ac-form-picker-label">Forms</span>
+                    <div class="studio-multiselect" id="ac-forms-multiselect">
+                      <button type="button" class={`studio-dropdown-trigger ${initialAcState.syncedForms.length ? "has-value" : ""}`} aria-expanded="false">
+                        <span class="studio-dropdown-value" data-ms-summary>
+                          {initialAcState.syncedForms.includes("book-call") ? "Book a Call" : "No forms selected"}
+                        </span>
+                        <svg class="studio-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                      <div class="studio-dropdown-menu" hidden>
+                        <label class="studio-ms-option">
+                          <input type="checkbox" value="book-call" data-label="Book a Call" checked={initialAcState.syncedForms.includes("book-call")} />
+                          <span class="studio-ms-box" aria-hidden="true"></span>
+                          <span>Book a Call</span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                   <label class={`studio-toggle-pill ${initialAcState.enabled ? "is-active" : "is-inactive"}`} id="ac-toggle-pill">
                     <input type="checkbox" class="studio-toggle-chk" id="ac-enabled" checked={initialAcState.enabled} />
@@ -579,7 +607,11 @@ const tagPresets = [
 
               <div class="acd-settings-grid" style="margin-top: 18px;">
                 <label class="acd-field">
-                  <span class="acd-label-row">Account API URL</span>
+                  <span class="acd-label-row">
+                    <a id="ac-api-url-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="acd-label-link">
+                      Account API URL ↗
+                    </a>
+                  </span>
                   <input
                     type="url"
                     id="ac-api-url"
@@ -588,7 +620,11 @@ const tagPresets = [
                   />
                 </label>
                 <label class="acd-field">
-                  <span class="acd-label-row">API Key</span>
+                  <span class="acd-label-row">
+                    <a id="ac-api-key-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="acd-label-link">
+                      API Key ↗
+                    </a>
+                  </span>
                   <input
                     type="password"
                     id="ac-api-key"
@@ -1153,22 +1189,20 @@ const tagPresets = [
 
           const w = window as any;
           if (target === "klaviyo") {
-            ["klv-form-selector", "klv-list-id"].forEach((id) => {
-              const sel = document.getElementById(id) as HTMLSelectElement | null;
-              if (sel) {
-                w.__STUDIO_ENHANCE_SELECT__?.(sel);
-                w.__STUDIO_SYNC_SELECT__?.(sel);
-              }
-            });
+            const sel = document.getElementById("klv-list-id") as HTMLSelectElement | null;
+            if (sel) {
+              w.__STUDIO_ENHANCE_SELECT__?.(sel);
+              w.__STUDIO_SYNC_SELECT__?.(sel);
+            }
+            w.__STUDIO_INIT_MULTISELECT__?.(document.getElementById("klv-forms-multiselect"));
           }
           if (target === "activecampaign") {
-            ["ac-form-selector", "ac-list-id"].forEach((id) => {
-              const sel = document.getElementById(id) as HTMLSelectElement | null;
-              if (sel) {
-                w.__STUDIO_ENHANCE_SELECT__?.(sel);
-                w.__STUDIO_SYNC_SELECT__?.(sel);
-              }
-            });
+            const sel = document.getElementById("ac-list-id") as HTMLSelectElement | null;
+            if (sel) {
+              w.__STUDIO_ENHANCE_SELECT__?.(sel);
+              w.__STUDIO_SYNC_SELECT__?.(sel);
+            }
+            w.__STUDIO_INIT_MULTISELECT__?.(document.getElementById("ac-forms-multiselect"));
           }
           if (target === "book-call") {
             ["fb-new-type", "fb-new-step"].forEach((id) => {
@@ -1320,14 +1354,6 @@ const tagPresets = [
       const acSaveBtn = document.getElementById("btn-save-ac") as HTMLButtonElement | null;
       const acTestBtn = document.getElementById("btn-ac-test") as HTMLButtonElement | null;
       const acTestEmailEl = document.getElementById("ac-test-email") as HTMLInputElement | null;
-      const acFormSelector = document.getElementById("ac-form-selector") as HTMLSelectElement | null;
-
-      acFormSelector?.addEventListener("change", () => {
-        const selectedForm = acFormSelector.value;
-        document.querySelectorAll<HTMLElement>("[data-ac-form-panel]").forEach((panel) => {
-          panel.hidden = panel.dataset.acFormPanel !== selectedForm;
-        });
-      });
 
       const acFullNameSelect = document.getElementById("ac-map-fullname") as HTMLSelectElement | null;
       const acFieldMapIds: [string, keyof typeof acState.mapping][] = [
@@ -1541,6 +1567,7 @@ const tagPresets = [
 
         return {
           enabled: Boolean(acEnabledEl?.checked),
+          syncedForms: (window as any).__STUDIO_GET_MULTISELECT_VALUES__?.(document.getElementById("ac-forms-multiselect")) ?? ["book-call"],
           apiUrl: acApiUrlEl?.value.trim() || "",
           apiKey: acApiKeyEl?.value.trim() || "",
           listId: acListSelectEl?.value || "",
@@ -1549,6 +1576,22 @@ const tagPresets = [
           mapping,
         };
       }
+
+      (window as any).__STUDIO_INIT_MULTISELECT__?.(document.getElementById("ac-forms-multiselect"));
+
+      const acUrlLinkEl = document.getElementById("ac-api-url-link") as HTMLAnchorElement | null;
+      const acKeyLinkEl = document.getElementById("ac-api-key-link") as HTMLAnchorElement | null;
+      acApiUrlEl?.addEventListener("input", () => {
+        let nextHref = "https://www.activecampaign.com/login";
+        try {
+          const u = new URL(acApiUrlEl.value.trim());
+          const m = u.hostname.match(/^([^.]+)\.api-[^.]+/i);
+          if (m) nextHref = `https://${m[1]}.activehosted.com/app/settings/developer`;
+          else if (u.hostname.endsWith(".activehosted.com")) nextHref = `https://${u.hostname}/app/settings/developer`;
+        } catch {}
+        if (acUrlLinkEl) acUrlLinkEl.href = nextHref;
+        if (acKeyLinkEl) acKeyLinkEl.href = nextHref;
+      });
 
       acSyncBtn?.addEventListener("click", async () => {
         acSyncBtn.disabled = true;

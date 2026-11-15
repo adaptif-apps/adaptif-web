@@ -48,13 +48,22 @@ export const POST: APIRoute = async ({ request }) => {
         getBookCallConfig(),
       ]);
 
-      if (acConfig.enabled && acConfig.apiUrl && acConfig.apiKey) {
+      if (
+        acConfig.enabled &&
+        acConfig.syncedForms.includes("book-call") &&
+        acConfig.apiUrl &&
+        acConfig.apiKey
+      ) {
         await syncLeadToActiveCampaign(submission, acConfig, formConfig.fields).catch((err) => {
           console.error("[book-call/submit] ActiveCampaign sync failed:", err);
         });
       }
 
-      if (klaviyoConfig.enabled && klaviyoConfig.apiKey) {
+      if (
+        klaviyoConfig.enabled &&
+        klaviyoConfig.syncedForms.includes("book-call") &&
+        klaviyoConfig.apiKey
+      ) {
         await syncLeadToKlaviyo(submission, klaviyoConfig).catch((err) => {
           console.error("[book-call/submit] Klaviyo sync failed:", err);
         });

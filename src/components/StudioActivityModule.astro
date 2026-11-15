@@ -1,0 +1,563 @@
+---
+---
+
+<div id="module-activity" hidden>
+  <header class="studio-header">
+    <div>
+      <p class="studio-eyebrow">CRM · LEADS &amp; PURCHASES</p>
+      <h1 class="studio-title">Activity <span>&amp; Sales</span></h1>
+      <p class="studio-subtitle">
+        Unified log of everyone who booked a call, purchased a subscription plan, or bought a course.
+      </p>
+    </div>
+    <div class="studio-header-actions">
+      <button type="button" class="acd-btn-ghost" id="btn-refresh-activity">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+          <polyline points="21 3 21 9 15 9" />
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <section class="studio-card act-toolbar-card">
+    <div class="act-toolbar">
+      <div class="act-filter-pills" role="tablist" aria-label="Filter activity by type">
+        <button type="button" class="act-pill is-active" data-act-filter="all">
+          All <span class="act-pill-count" id="act-count-all">0</span>
+        </button>
+        <button type="button" class="act-pill" data-act-filter="book_call">
+          Book a Call <span class="act-pill-count" id="act-count-book_call">0</span>
+        </button>
+        <button type="button" class="act-pill" data-act-filter="plan">
+          Plans <span class="act-pill-count" id="act-count-plan">0</span>
+        </button>
+        <button type="button" class="act-pill" data-act-filter="course">
+          Courses <span class="act-pill-count" id="act-count-course">0</span>
+        </button>
+      </div>
+
+      <div class="act-search-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input
+          type="search"
+          id="act-search-input"
+          placeholder="Search name, email, plan, or course..."
+          aria-label="Search activity"
+        />
+      </div>
+    </div>
+
+    <div class="act-table-wrap">
+      <table class="act-table">
+        <thead>
+          <tr>
+            <th>Contact</th>
+            <th>Type</th>
+            <th>Plan / Course / Topic</th>
+            <th>Details &amp; Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th class="act-col-actions"></th>
+          </tr>
+        </thead>
+        <tbody id="act-table-body">
+          <tr>
+            <td colspan="7" class="act-empty-cell">Loading activity...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<style is:global>
+  .act-toolbar-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .act-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .act-filter-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .act-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(110, 195, 255, 0.18);
+    background: rgba(10, 22, 39, 0.65);
+    color: rgba(215, 232, 250, 0.78);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .act-pill:hover {
+    border-color: rgba(72, 200, 255, 0.42);
+    color: #ffffff;
+  }
+
+  .act-pill.is-active {
+    background: rgba(72, 200, 255, 0.15);
+    border-color: rgba(72, 200, 255, 0.55);
+    color: #8ee2ff;
+  }
+
+  .act-pill-count {
+    font-size: 0.7rem;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    color: inherit;
+  }
+
+  .act-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 250px;
+    flex: 1;
+    max-width: 340px;
+  }
+
+  .act-search-wrap svg {
+    position: absolute;
+    left: 12px;
+    color: rgba(168, 195, 226, 0.58);
+    pointer-events: none;
+  }
+
+  .act-search-wrap input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(110, 195, 255, 0.2);
+    background: rgba(6, 15, 28, 0.72);
+    color: #f4f9ff;
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.16s ease;
+  }
+
+  .act-search-wrap input:focus {
+    border-color: rgba(72, 200, 255, 0.55);
+  }
+
+  .act-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgba(110, 195, 255, 0.14);
+    border-radius: 14px;
+    background: rgba(4, 11, 22, 0.6);
+  }
+
+  .act-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.83rem;
+  }
+
+  .act-table th {
+    padding: 12px 14px;
+    font-size: 0.71rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(176, 204, 234, 0.7);
+    border-bottom: 1px solid rgba(110, 195, 255, 0.14);
+    background: rgba(9, 20, 38, 0.75);
+    white-space: nowrap;
+  }
+
+  .act-table td {
+    padding: 13px 14px;
+    border-bottom: 1px solid rgba(110, 195, 255, 0.09);
+    color: #e9f3ff;
+    vertical-align: top;
+  }
+
+  .act-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .act-table tbody tr:hover {
+    background: rgba(72, 200, 255, 0.04);
+  }
+
+  .act-contact-name {
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+  }
+
+  .act-contact-email {
+    font-size: 0.76rem;
+    color: rgba(168, 198, 230, 0.74);
+    margin-top: 2px;
+    word-break: break-word;
+  }
+
+  .act-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.71rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+
+  .act-type-badge.is-book_call {
+    background: rgba(120, 175, 255, 0.14);
+    border: 1px solid rgba(120, 175, 255, 0.35);
+    color: #9dc5ff;
+  }
+
+  .act-type-badge.is-plan {
+    background: rgba(168, 85, 247, 0.16);
+    border: 1px solid rgba(168, 85, 247, 0.42);
+    color: #d8b4fe;
+  }
+
+  .act-type-badge.is-course {
+    background: rgba(72, 200, 255, 0.15);
+    border: 1px solid rgba(72, 200, 255, 0.4);
+    color: #7ee0ff;
+  }
+
+  .act-item-title {
+    font-weight: 600;
+    color: #f8fbff;
+    line-height: 1.35;
+  }
+
+  .act-detail-text {
+    font-size: 0.78rem;
+    color: rgba(190, 214, 238, 0.8);
+    line-height: 1.45;
+    max-width: 280px;
+  }
+
+  .act-amount {
+    font-weight: 700;
+    color: #6ee7b7;
+    font-size: 0.86rem;
+  }
+
+  .act-mode-pill {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: rgba(250, 204, 21, 0.14);
+    border: 1px solid rgba(250, 204, 21, 0.35);
+    color: #fde047;
+  }
+
+  .act-status-select {
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(110, 195, 255, 0.24);
+    background: rgba(8, 19, 34, 0.85);
+    color: #e9f3ff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .act-paid-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.71rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    background: rgba(52, 211, 153, 0.14);
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    color: #6ee7b7;
+  }
+
+  .act-date {
+    font-size: 0.76rem;
+    color: rgba(176, 204, 234, 0.76);
+    white-space: nowrap;
+  }
+
+  .act-col-actions {
+    width: 44px;
+    text-align: right;
+  }
+
+  .act-del-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(180, 200, 224, 0.55);
+    border-radius: 8px;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .act-del-btn:hover {
+    color: #fca5a5;
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(248, 113, 113, 0.3);
+  }
+
+  .act-empty-cell {
+    text-align: center;
+    padding: 36px 16px !important;
+    color: rgba(168, 195, 226, 0.65) !important;
+    font-size: 0.84rem;
+  }
+</style>
+
+<script>
+  type ActivityItem = {
+    uid: string;
+    id: number;
+    type: "book_call" | "plan" | "course";
+    contactName: string;
+    contactEmail: string;
+    itemName: string;
+    detail: string;
+    amountCents: number | null;
+    currency: string;
+    status: string;
+    livemode: boolean;
+    createdAt: string;
+    meta: Record<string, string>;
+  };
+
+  let allActivity: ActivityItem[] = [];
+  let activeFilter: "all" | "book_call" | "plan" | "course" = "all";
+  let searchQuery = "";
+  let activityLoaded = false;
+
+  const esc = (str: string) =>
+    String(str ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  function formatMoney(cents: number | null, currency: string) {
+    if (cents === null || !Number.isFinite(cents)) return "";
+    const amount = cents / 100;
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: (currency || "usd").toUpperCase(),
+      }).format(amount);
+    } catch {
+      return `$${amount.toFixed(2)}`;
+    }
+  }
+
+  function formatDate(iso: string) {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  function renderActivityTable() {
+    const tbody = document.getElementById("act-table-body");
+    if (!tbody) return;
+
+    const q = searchQuery.trim().toLowerCase();
+    const filtered = allActivity.filter((item) => {
+      if (activeFilter !== "all" && item.type !== activeFilter) return false;
+      if (!q) return true;
+      const haystack = `${item.contactName} ${item.contactEmail} ${item.itemName} ${item.detail}`.toLowerCase();
+      return haystack.includes(q);
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="act-empty-cell">No matching records yet.</td></tr>`;
+      return;
+    }
+
+    const typeLabels: Record<string, string> = {
+      book_call: "Book a Call",
+      plan: "Plan",
+      course: "Course",
+    };
+
+    tbody.innerHTML = filtered
+      .map((item) => {
+        const contactHtml = `
+          <div class="act-contact-name">${esc(item.contactName || "—")}</div>
+          <div class="act-contact-email">${esc(item.contactEmail || "—")}</div>
+        `;
+
+        const typeBadge = `<span class="act-type-badge is-${item.type}">${typeLabels[item.type] || item.type}</span>`;
+
+        let detailHtml = "";
+        if (item.type === "book_call") {
+          const lines: string[] = [];
+          if (item.meta.timeline) lines.push(`Timeline: ${esc(item.meta.timeline)}`);
+          if (item.meta.budgetRange) lines.push(`Budget: ${esc(item.meta.budgetRange)}`);
+          if (item.meta.projectGoal) lines.push(`Goal: ${esc(item.meta.projectGoal)}`);
+          if (item.meta.notes) lines.push(`Notes: ${esc(item.meta.notes)}`);
+          detailHtml = `<div class="act-detail-text">${lines.join("<br/>") || "—"}</div>`;
+        } else {
+          const money = formatMoney(item.amountCents, item.currency);
+          const testPill = item.livemode ? "" : `<span class="act-mode-pill">Test</span>`;
+          detailHtml = `<span class="act-amount">${esc(money || "$0.00")}</span>${testPill}`;
+        }
+
+        const statusHtml =
+          item.type === "book_call"
+            ? `<select class="act-status-select" data-act-status-id="${item.id}" aria-label="Lead status">
+                <option value="new" ${item.status === "new" ? "selected" : ""}>New</option>
+                <option value="contacted" ${item.status === "contacted" ? "selected" : ""}>Contacted</option>
+                <option value="closed" ${item.status === "closed" ? "selected" : ""}>Closed</option>
+              </select>`
+            : `<span class="act-paid-badge">${esc(item.status || "paid")}</span>`;
+
+        return `
+          <tr>
+            <td>${contactHtml}</td>
+            <td>${typeBadge}</td>
+            <td><div class="act-item-title">${esc(item.itemName || "—")}</div></td>
+            <td>${detailHtml}</td>
+            <td>${statusHtml}</td>
+            <td class="act-date">${esc(formatDate(item.createdAt))}</td>
+            <td class="act-col-actions">
+              <button type="button" class="act-del-btn" data-act-del-type="${item.type}" data-act-del-id="${item.id}" title="Delete record" aria-label="Delete record">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
+              </button>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+  }
+
+  async function loadActivity() {
+    const tbody = document.getElementById("act-table-body");
+    if (tbody && !activityLoaded) {
+      tbody.innerHTML = `<tr><td colspan="7" class="act-empty-cell">Loading activity...</td></tr>`;
+    }
+    try {
+      const res = await fetch("/api/studio/activity");
+      if (!res.ok) throw new Error("Failed to load activity");
+      const data = await res.json();
+      allActivity = Array.isArray(data.items) ? data.items : [];
+      activityLoaded = true;
+
+      const counts = data.counts || {};
+      (["all", "book_call", "plan", "course"] as const).forEach((k) => {
+        const el = document.getElementById(`act-count-${k}`);
+        if (el) el.textContent = String(counts[k] ?? 0);
+      });
+
+      renderActivityTable();
+    } catch (err) {
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="7" class="act-empty-cell">Could not load activity records.</td></tr>`;
+      }
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-act-filter]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeFilter = (btn.dataset.actFilter as typeof activeFilter) || "all";
+      document.querySelectorAll("[data-act-filter]").forEach((b) => {
+        b.classList.toggle("is-active", b === btn);
+      });
+      renderActivityTable();
+    });
+  });
+
+  document.getElementById("act-search-input")?.addEventListener("input", (e) => {
+    searchQuery = (e.target as HTMLInputElement).value;
+    renderActivityTable();
+  });
+
+  document.getElementById("btn-refresh-activity")?.addEventListener("click", () => {
+    loadActivity();
+  });
+
+  document.getElementById("act-table-body")?.addEventListener("change", async (e) => {
+    const sel = (e.target as HTMLElement).closest<HTMLSelectElement>("[data-act-status-id]");
+    if (!sel) return;
+    const id = Number(sel.dataset.actStatusId);
+    const status = sel.value;
+    try {
+      const res = await fetch("/api/studio/activity", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      const item = allActivity.find((i) => i.type === "book_call" && i.id === id);
+      if (item) item.status = status;
+    } catch {
+      loadActivity();
+    }
+  });
+
+  document.getElementById("act-table-body")?.addEventListener("click", async (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-act-del-id]");
+    if (!btn) return;
+    const type = btn.dataset.actDelType;
+    const id = Number(btn.dataset.actDelId);
+    if (!type || !id) return;
+    try {
+      const res = await fetch("/api/studio/activity", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, id }),
+      });
+      if (res.ok) {
+        await loadActivity();
+      }
+    } catch {}
+  });
+
+  window.addEventListener("studio:refresh-activity", () => {
+    loadActivity();
+  });
+</script>

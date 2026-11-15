@@ -4,6 +4,7 @@ import { getBookCallConfig } from "../lib/bookCallDb";
 import { getActiveCampaignConfig } from "../lib/activeCampaignDb";
 import { listAcademyItems, getAcademySettings } from "../lib/academyDb";
 import StudioAcademyModule from "../components/StudioAcademyModule.astro";
+import StudioActivityModule from "../components/StudioActivityModule.astro";
 import "../styles/tokens.css";
 
 export const prerender = false;
@@ -84,6 +85,20 @@ const tagPresets = [
             <div class="nav-dropdown-items">
               <button type="button" class="nav-item is-active" data-module-tab="portfolio" aria-current="page">
                 <span>Portfolio</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="nav-dropdown is-open" data-nav-group="crm">
+            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
+              <span>CRM</span>
+              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+            <div class="nav-dropdown-items">
+              <button type="button" class="nav-item" data-module-tab="activity">
+                <span>Activity &amp; Sales</span>
               </button>
             </div>
           </div>
@@ -692,6 +707,8 @@ const tagPresets = [
           initialItems={initialAcademyItems}
           initialSettings={initialAcademySettings}
         />
+
+        <StudioActivityModule />
       </main>
     </div>
 
@@ -1159,6 +1176,7 @@ const tagPresets = [
           }
           const activeCampaignModule = document.getElementById("module-activecampaign");
           const academyModule = document.getElementById("module-academy");
+          const activityModule = document.getElementById("module-activity");
           const generalInfoModule = document.getElementById("module-general-info");
           const paymentModule = document.getElementById("module-payment");
           const aiConfigModule = document.getElementById("module-ai-config");
@@ -1172,11 +1190,15 @@ const tagPresets = [
           if (bookCallModule) bookCallModule.hidden = target !== "book-call";
           if (activeCampaignModule) activeCampaignModule.hidden = target !== "activecampaign";
           if (academyModule) academyModule.hidden = target !== "academy";
+          if (activityModule) activityModule.hidden = target !== "activity";
           if (generalInfoModule) generalInfoModule.hidden = target !== "general-info";
           if (paymentModule) paymentModule.hidden = target !== "payment";
           if (aiConfigModule) aiConfigModule.hidden = target !== "ai-config";
 
           const w = window as any;
+          if (target === "activity") {
+            window.dispatchEvent(new CustomEvent("studio:refresh-activity"));
+          }
           if (target === "general-info") {
             window.dispatchEvent(new CustomEvent("academy:refresh-general-info"));
           }

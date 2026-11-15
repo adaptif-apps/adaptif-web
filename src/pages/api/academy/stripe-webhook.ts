@@ -6,6 +6,7 @@ import {
   getAcademyItemBySlug,
   getAcademyWebhookSecret
 } from "../../../lib/academyDb";
+import { recordStripePurchase } from "../../../lib/activityDb";
 
 export const prerender = false;
 
@@ -52,9 +53,17 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const session = event?.data?.object || {};
-    const courseId = session?.metadata?.course_id || session?.client_reference_id || "";
+    const stripeSessionId = String(session?.id || event?.id || `evt_${Date.now()}`);
+    const clientRef = String(session?.client_reference_id || "");
+    const courseId =
+      session?.metadata?.course_id || (!clientRef.startsWith("plan:") ? clientRef : "");
     const courseSlug = session?.metadata?.course_slug || "";
-    const customerEmail = session?.customer_details?.email || session?.customer_email || "";
+    const customerName = String(session?.customer_details?.name || "");
+    const customerEmail = String(session?.customer_details?.email || session?.customer_email || "");
+    const amountCents = Number(session?.amount_total ?? 0);
+    const currency = String(session?.currency || "usd");
+    const paymentStatus = String(session?.payment_status || "paid");
+    const livemode = Boolean(event?.livemode);
 
     const item = courseId
       ? await getAcademyItemById(String(courseId))
@@ -63,11 +72,52 @@ export const POST: APIRoute = async ({ request }) => {
         : null;
 
     if (!item) {
-      return new Response(JSON.stringify({ received: true, warning: "No matching course found" }), {
+      const explicitPlanName =
+        session?.metadata?.plan_name ||
+        session?.metadata?.plan ||
+        (clientRef.startsWith("plan:") ? clientRef.slice(5) : "");
+      const isPlan =
+        Boolean(explicitPlanName) ||
+        session?.metadata?.purchase_type === "plan" ||
+        session?.mode === "subscription";
+
+      if (isPlan) {
+        const planName = String(explicitPlanName || "Subscription Plan").trim();
+        await recordStripePurchase({
+          stripeSessionId,
+          purchaseType: "plan",
+          itemName: planName,
+          customerName,
+          customerEmail,
+          amountCents,
+          currency,
+          paymentStatus,
+          livemode
+        });
+        return new Response(
+          JSON.stringify({ received: true, recorded: "plan", planName }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(JSON.stringify({ received: true, warning: "No matching course or plan found" }), {
         status: 200,
         headers: { "Content-Type": "application/json" }
       });
     }
+
+    await recordStripePurchase({
+      stripeSessionId,
+      purchaseType: "course",
+      itemName: item.title,
+      itemSlug: item.slug,
+      customerName,
+      customerEmail,
+      amountCents,
+      currency,
+      paymentStatus,
+      livemode
+    });
 
     const token = await createAccessToken(item.id, String(customerEmail), "stripe_webhook");
     const reqUrl = new URL(request.url);

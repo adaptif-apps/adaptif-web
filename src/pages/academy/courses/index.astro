@@ -11,12 +11,22 @@ const courses = await listAcademyItems({ kind: "course", includeUnpublished: fal
 
 async function getPdfPageCount(url: string): Promise<number | null> {
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(2500) });
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
     if (!res.ok) return null;
     const buf = await res.arrayBuffer();
     const text = new TextDecoder("latin1").decode(buf);
-    const matches = text.match(/\/Type\s*\/Page\b(?!s)/g);
-    return matches && matches.length > 0 ? matches.length : null;
+
+    // 1. Check root /Pages dictionary /Count N (works even when individual /Page objects are in compressed ObjStm)
+    const pagesCounts = [...text.matchAll(/\/Type\s*\/Pages\b[\s\S]{0,200}?\/Count\s+(\d+)/g)]
+      .map((m) => parseInt(m[1], 10))
+      .filter((n) => Number.isFinite(n) && n > 0);
+    if (pagesCounts.length > 0) {
+      return Math.max(...pagesCounts);
+    }
+
+    // 2. Fallback: count uncompressed /Type /Page objects
+    const pageMatches = text.match(/\/Type\s*\/Page\b(?!s)/g);
+    return pageMatches && pageMatches.length > 0 ? pageMatches.length : null;
   } catch {
     return null;
   }

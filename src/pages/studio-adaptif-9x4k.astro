@@ -148,7 +148,7 @@ const tagPresets = [
             </button>
             <div class="nav-dropdown-items">
               <button type="button" class="nav-item" data-module-tab="book-call">
-                <span>Book a Call</span>
+                <span id="nav-book-call-label">{initialBookCallConfig.formName}</span>
               </button>
             </div>
           </div>
@@ -372,8 +372,8 @@ const tagPresets = [
         <div id="module-book-call" hidden>
           <header class="studio-header">
             <div>
-              <p class="studio-eyebrow">Lead Capture</p>
-              <h1 class="studio-title">Book a Call <span>Form</span></h1>
+              <p class="studio-eyebrow">Form</p>
+              <h1 class="studio-title" id="bc-header-form-name">{initialBookCallConfig.formName}</h1>
             </div>
           </header>
 

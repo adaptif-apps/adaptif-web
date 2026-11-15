@@ -8,14 +8,28 @@ export interface FormField {
   type: FormFieldType;
   placeholder: string;
   required: boolean;
-  step: 1 | 2;
+  step: number;
+  width?: "half" | "full";
   options: string[];
   acFieldId?: string;
   klaviyoKey?: string;
   locked?: boolean;
 }
 
+export interface FormStep {
+  id: string;
+  kind: "fields" | "confirmation";
+  eyebrow: string;
+  title: string;
+  titleHighlight: string;
+  titleSuffix: string;
+  subtitle: string;
+  privacyNote: string;
+  cta: string;
+}
+
 export interface BookCallConfig {
+  formName: string;
   step1Eyebrow: string;
   step1Title: string;
   step1TitleHighlight: string;
@@ -51,6 +65,7 @@ export interface BookCallConfig {
   successEyebrow: string;
   successTitle: string;
   successMessage: string;
+  steps?: FormStep[];
   fields: FormField[];
 }
 
@@ -149,6 +164,7 @@ export const defaultBookCallFields: FormField[] = [
 ];
 
 export const defaultBookCallConfig: BookCallConfig = {
+  formName: "Book a Call",
   step1Eyebrow: "FREE STRATEGY CALL",
   step1Title: "Let's see how",
   step1TitleHighlight: "Adaptif",
@@ -280,7 +296,8 @@ function normalizeFields(rawFields: unknown): FormField[] {
     const label = String(f.label ?? "").trim();
     if (!id || !label) continue;
     const type = validTypes.has(f.type as FormFieldType) ? (f.type as FormFieldType) : "text";
-    const step = Number(f.step) === 1 ? 1 : 2;
+    const step = Math.max(1, Math.floor(Number(f.step) || 1));
+    const width = f.width === "full" ? "full" : "half";
     const options = Array.isArray(f.options)
       ? f.options.map((o) => String(o).trim()).filter(Boolean)
       : [];
@@ -290,7 +307,8 @@ function normalizeFields(rawFields: unknown): FormField[] {
       type,
       placeholder: String(f.placeholder ?? ""),
       required: Boolean(f.required) || id === "fullName" || id === "workEmail",
-      step: id === "fullName" || id === "workEmail" ? 1 : step,
+      step,
+      width,
       options,
       acFieldId: typeof f.acFieldId === "string" && f.acFieldId.trim() ? f.acFieldId.trim() : undefined,
       klaviyoKey: typeof f.klaviyoKey === "string" && f.klaviyoKey.trim() ? f.klaviyoKey.trim() : undefined,
@@ -309,12 +327,81 @@ function mergeConfig(raw: unknown): BookCallConfig {
       ? (obj[k] as unknown[]).map((v) => String(v).trim()).filter(Boolean)
       : fallback;
 
+  const step1Eyebrow = str("step1Eyebrow", defaultBookCallConfig.step1Eyebrow);
+  const step1Title = str("step1Title", defaultBookCallConfig.step1Title);
+  const step1TitleHighlight = str("step1TitleHighlight", defaultBookCallConfig.step1TitleHighlight);
+  const step1TitleSuffix = str("step1TitleSuffix", defaultBookCallConfig.step1TitleSuffix);
+  const step1Subtitle = str("step1Subtitle", defaultBookCallConfig.step1Subtitle);
+  const privacyNote = str("privacyNote", defaultBookCallConfig.privacyNote);
+  const step1Cta = str("step1Cta", defaultBookCallConfig.step1Cta);
+
+  const step2Eyebrow = str("step2Eyebrow", defaultBookCallConfig.step2Eyebrow);
+  const step2Title = str("step2Title", defaultBookCallConfig.step2Title);
+  const step2Subtitle = str("step2Subtitle", defaultBookCallConfig.step2Subtitle);
+  const step2Cta = str("step2Cta", defaultBookCallConfig.step2Cta);
+
+  const successEyebrow = str("successEyebrow", defaultBookCallConfig.successEyebrow);
+  const successTitle = str("successTitle", defaultBookCallConfig.successTitle);
+  const successMessage = str("successMessage", defaultBookCallConfig.successMessage);
+
+  const defaultSteps: FormStep[] = [
+    {
+      id: "step_1",
+      kind: "fields",
+      eyebrow: step1Eyebrow,
+      title: step1Title,
+      titleHighlight: step1TitleHighlight,
+      titleSuffix: step1TitleSuffix,
+      subtitle: step1Subtitle,
+      privacyNote,
+      cta: step1Cta,
+    },
+    {
+      id: "step_2",
+      kind: "fields",
+      eyebrow: step2Eyebrow,
+      title: step2Title,
+      titleHighlight: "",
+      titleSuffix: "",
+      subtitle: step2Subtitle,
+      privacyNote: "",
+      cta: step2Cta,
+    },
+    {
+      id: "step_3",
+      kind: "confirmation",
+      eyebrow: successEyebrow,
+      title: successTitle,
+      titleHighlight: "",
+      titleSuffix: "",
+      subtitle: successMessage,
+      privacyNote: "",
+      cta: "Back to website",
+    },
+  ];
+
+  const steps: FormStep[] =
+    Array.isArray(obj.steps) && obj.steps.length > 0
+      ? (obj.steps as any[]).map((s, idx) => ({
+          id: typeof s?.id === "string" && s.id ? s.id : `step_${idx + 1}`,
+          kind: s?.kind === "confirmation" ? "confirmation" : "fields",
+          eyebrow: String(s?.eyebrow ?? ""),
+          title: String(s?.title ?? ""),
+          titleHighlight: String(s?.titleHighlight ?? ""),
+          titleSuffix: String(s?.titleSuffix ?? ""),
+          subtitle: String(s?.subtitle ?? ""),
+          privacyNote: String(s?.privacyNote ?? ""),
+          cta: String(s?.cta ?? "Continue"),
+        }))
+      : defaultSteps;
+
   return {
-    step1Eyebrow: str("step1Eyebrow", defaultBookCallConfig.step1Eyebrow),
-    step1Title: str("step1Title", defaultBookCallConfig.step1Title),
-    step1TitleHighlight: str("step1TitleHighlight", defaultBookCallConfig.step1TitleHighlight),
-    step1TitleSuffix: str("step1TitleSuffix", defaultBookCallConfig.step1TitleSuffix),
-    step1Subtitle: str("step1Subtitle", defaultBookCallConfig.step1Subtitle),
+    formName: str("formName", defaultBookCallConfig.formName),
+    step1Eyebrow,
+    step1Title,
+    step1TitleHighlight,
+    step1TitleSuffix,
+    step1Subtitle,
     nameLabel: str("nameLabel", defaultBookCallConfig.nameLabel),
     namePlaceholder: str("namePlaceholder", defaultBookCallConfig.namePlaceholder),
     emailLabel: str("emailLabel", defaultBookCallConfig.emailLabel),
@@ -345,6 +432,7 @@ function mergeConfig(raw: unknown): BookCallConfig {
     successEyebrow: str("successEyebrow", defaultBookCallConfig.successEyebrow),
     successTitle: str("successTitle", defaultBookCallConfig.successTitle),
     successMessage: str("successMessage", defaultBookCallConfig.successMessage),
+    steps,
     fields: normalizeFields(obj.fields),
   };
 }

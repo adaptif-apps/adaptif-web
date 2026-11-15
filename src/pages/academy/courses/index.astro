@@ -3,6 +3,7 @@ import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
 import { listAcademyItems } from "../../../lib/academyDb";
+import CoursesHeroFlowBg from "../../../components/CoursesHeroFlowBg.astro";
 
 export const prerender = false;
 
@@ -16,6 +17,9 @@ const courses = await listAcademyItems({ kind: "course", includeUnpublished: fal
   <Header />
   <main class="catalog-main">
     <section class="catalog-hero is-visible">
+      <div class="courses-hero-bg" aria-hidden="true">
+        <CoursesHeroFlowBg />
+      </div>
       <div class="catalog-container">
         <div class="catalog-breadcrumb">
           <a href="/academy">Academy</a>
@@ -23,7 +27,6 @@ const courses = await listAcademyItems({ kind: "course", includeUnpublished: fal
           <span>Courses</span>
         </div>
 
-        <span class="catalog-eyebrow">Pro Systems</span>
         <h1 class="catalog-heading">
           Courses built <span class="catalog-highlight">for execution.</span>
         </h1>
@@ -33,8 +36,12 @@ const courses = await listAcademyItems({ kind: "course", includeUnpublished: fal
 
         {courses.length > 0 ? (
           <div class="catalog-grid">
-            {courses.map((course) => (
-              <a href={`/academy/courses/${course.slug}`} class="catalog-card">
+            {courses.map((course, idx) => (
+              <a
+                href={`/academy/courses/${course.slug}`}
+                class="catalog-card"
+                style={`--card-delay: ${0.22 + idx * 0.08}s;`}
+              >
                 {course.coverImage && (
                   <div class="card-media">
                     <img src={course.coverImage} alt={course.title} loading="lazy" />
@@ -86,16 +93,67 @@ const courses = await listAcademyItems({ kind: "course", includeUnpublished: fal
   }
 
   .catalog-hero {
+    position: relative;
+    overflow: hidden;
     padding: 156px 24px 110px;
-    background:
-      radial-gradient(ellipse 65% 45% at 50% 0%, rgba(72, 200, 255, 0.14) 0%, transparent 70%),
-      var(--color-void);
+    background: var(--color-void, #010307);
+  }
+
+  .courses-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 540px;
+    pointer-events: none;
+    z-index: 0;
+    -webkit-mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 52%, transparent 100%);
+  }
+
+  .courses-hero-bg :global(.courses-hero-flow-canvas) {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 
   .catalog-container {
+    position: relative;
+    z-index: 1;
     max-width: 1120px;
     margin: 0 auto;
     text-align: center;
+  }
+
+  @keyframes catalogFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .catalog-breadcrumb {
+    opacity: 0;
+    animation: catalogFadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.04s forwards;
+  }
+
+  .catalog-heading {
+    opacity: 0;
+    animation: catalogFadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+  }
+
+  .catalog-lead {
+    opacity: 0;
+    animation: catalogFadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.16s forwards;
+  }
+
+  .catalog-card {
+    opacity: 0;
+    animation: catalogFadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--card-delay, 0.22s) forwards;
   }
 
   .catalog-breadcrumb {

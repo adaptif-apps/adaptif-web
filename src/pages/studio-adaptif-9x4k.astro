@@ -539,21 +539,25 @@ const tagPresets = [
         <div id="module-activecampaign" hidden>
           <header class="studio-header">
             <div>
-              <p class="studio-eyebrow">Integrations</p>
+              <p class="studio-eyebrow">INTEGRATIONS · CRM</p>
               <h1 class="studio-title">ActiveCampaign <span>Sync</span></h1>
+              <p class="studio-subtitle">
+                Connect ActiveCampaign to sync leads, lists, tags, and Form Builder custom fields automatically.
+              </p>
             </div>
             <div class="studio-header-actions">
-              <button type="submit" form="ac-cms-form" class="btn-primary" id="btn-save-ac">
+              <button type="submit" form="ac-cms-form" class="acd-btn-cyan" id="btn-save-ac">
                 Save Integration
               </button>
             </div>
           </header>
 
           <form id="ac-cms-form" class="bc-cms-form">
-            <section class="bc-cms-card">
+            <section class="studio-card acd-card" style="padding: 20px;">
               <div class="ac-card-head">
                 <div>
-                  <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">1. Connect Your Account</h2>
+                  <span class="acd-section-kicker">Connection</span>
+                  <h2 class="bc-cms-card-title" style="margin: 4px 0;">1. Connect Your Account</h2>
                   <p class="field-hint" style="margin: 0;">
                     Enter your ActiveCampaign Developer API URL &amp; Key. Form Builder fields sync automatically.
                   </p>
@@ -561,40 +565,41 @@ const tagPresets = [
                 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
                   <div class="ac-form-picker">
                     <label for="ac-form-selector" class="ac-form-picker-label">Form</label>
-                    <select id="ac-form-selector" class="ac-select">
+                    <select id="ac-form-selector" class="studio-select">
                       <option value="book-call">Book a Call</option>
                     </select>
                   </div>
-                  <label class="toggle-wrap">
-                    <input type="checkbox" id="ac-enabled" checked={initialAcState.enabled} />
-                    <span id="ac-enabled-label">{initialAcState.enabled ? "Active" : "Inactive"}</span>
+                  <label class={`studio-toggle-pill ${initialAcState.enabled ? "is-active" : "is-inactive"}`} id="ac-toggle-pill">
+                    <input type="checkbox" class="studio-toggle-chk" id="ac-enabled" checked={initialAcState.enabled} />
+                    <span class="studio-switch" aria-hidden="true"></span>
+                    <span class="studio-toggle-text" id="ac-enabled-label">{initialAcState.enabled ? "Active" : "Inactive"}</span>
                   </label>
                 </div>
               </div>
 
-              <div class="bc-cms-grid" style="margin-top: 16px;">
-                <div class="form-field">
-                  <label for="ac-api-url">Account API URL</label>
+              <div class="acd-settings-grid" style="margin-top: 18px;">
+                <label class="acd-field">
+                  <span class="acd-label-row">Account API URL</span>
                   <input
                     type="url"
                     id="ac-api-url"
                     value={initialAcState.apiUrl}
                     placeholder="https://youraccount.api-us1.com"
                   />
-                </div>
-                <div class="form-field">
-                  <label for="ac-api-key">API Key</label>
+                </label>
+                <label class="acd-field">
+                  <span class="acd-label-row">API Key</span>
                   <input
                     type="password"
                     id="ac-api-key"
                     placeholder={initialAcState.hasApiKey ? "Saved (leave blank to keep current key)" : "Paste your ActiveCampaign API key..."}
                     autocomplete="off"
                   />
-                </div>
+                </label>
               </div>
 
-              <div class="ac-sync-bar">
-                <button type="button" class="btn-secondary" id="btn-ac-sync-meta">
+              <div class="ac-sync-bar" style="margin-top: 18px;">
+                <button type="button" class="studio-btn-ghost" id="btn-ac-sync-meta">
                   Connect &amp; Fetch Fields
                 </button>
                 <span class="ac-sync-status" id="ac-sync-status">
@@ -605,32 +610,34 @@ const tagPresets = [
               </div>
             </section>
 
-            <section class="bc-cms-card">
-              <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">2. Lists, Tags &amp; Live Test</h2>
+            <section class="studio-card acd-card" style="padding: 20px;">
+              <span class="acd-section-kicker">Audience &amp; Testing</span>
+              <h2 class="bc-cms-card-title" style="margin: 4px 0;">2. Lists, Tags &amp; Live Test</h2>
               <p class="field-hint" style="margin: 0 0 16px;">
-                Choose which list and tags are applied automatically whenever someone submits Book a Call.
+                Choose which list and tags are applied automatically whenever someone submits the selected form.
               </p>
 
-              <div class="bc-cms-grid">
-                <div class="form-field">
-                  <label for="ac-list-id">Subscribe to List</label>
-                  <select id="ac-list-id" class="ac-select"></select>
+              <div class="acd-settings-grid">
+                <div class="acd-field">
+                  <span class="acd-label-row">Subscribe to List</span>
+                  <select id="ac-list-id" class="studio-select"></select>
                 </div>
 
-                <div class="form-field" style="justify-content: flex-end;">
-                  <label class="toggle-wrap" style="padding-bottom: 10px;">
-                    <input type="checkbox" id="ac-tag-help-topic" checked={initialAcState.tagFromHelpTopic} />
-                    <span>Also auto-tag with selected "Help Topic"</span>
+                <div class="acd-field" style="justify-content: flex-end;">
+                  <label class="studio-toggle-pill is-inactive" id="ac-tag-help-pill" style="align-self: flex-start;">
+                    <input type="checkbox" class="studio-toggle-chk" id="ac-tag-help-topic" checked={initialAcState.tagFromHelpTopic} />
+                    <span class="studio-switch" aria-hidden="true"></span>
+                    <span class="studio-toggle-text" style="min-width: auto;">Auto-tag with "Help Topic"</span>
                   </label>
                 </div>
               </div>
 
-              <div class="form-field" style="margin-top: 14px;">
-                <label>Apply Tags on Submit (click to toggle)</label>
+              <div class="acd-field" style="margin-top: 16px;">
+                <span class="acd-label-row">Apply Tags on Submit (click to toggle)</span>
                 <div class="ac-tags-chips" id="ac-tags-chips"></div>
               </div>
 
-              <div class="ac-test-bar">
+              <div class="ac-test-bar" style="margin-top: 16px;">
                 <input
                   type="email"
                   id="ac-test-email"
@@ -638,7 +645,7 @@ const tagPresets = [
                   value="test-lead@adaptif.studio"
                   placeholder="test-lead@yourdomain.com"
                 />
-                <button type="button" class="btn-secondary" id="btn-ac-test">
+                <button type="button" class="studio-btn-ghost" id="btn-ac-test">
                   Send Test Lead
                 </button>
               </div>
@@ -1155,11 +1162,13 @@ const tagPresets = [
             });
           }
           if (target === "activecampaign") {
-            const sel = document.getElementById("ac-form-selector") as HTMLSelectElement | null;
-            if (sel) {
-              w.__STUDIO_ENHANCE_SELECT__?.(sel);
-              w.__STUDIO_SYNC_SELECT__?.(sel);
-            }
+            ["ac-form-selector", "ac-list-id"].forEach((id) => {
+              const sel = document.getElementById(id) as HTMLSelectElement | null;
+              if (sel) {
+                w.__STUDIO_ENHANCE_SELECT__?.(sel);
+                w.__STUDIO_SYNC_SELECT__?.(sel);
+              }
+            });
           }
           if (target === "book-call") {
             ["fb-new-type", "fb-new-step"].forEach((id) => {
@@ -1284,9 +1293,13 @@ const tagPresets = [
       const acState = (window as any).__INITIAL_AC_STATE__ || {};
       const acForm = document.getElementById("ac-cms-form") as HTMLFormElement | null;
       const acEnabledEl = document.getElementById("ac-enabled") as HTMLInputElement | null;
+      const acTogglePillEl = document.getElementById("ac-toggle-pill");
       const acEnabledLabelEl = document.getElementById("ac-enabled-label");
       acEnabledEl?.addEventListener("change", () => {
-        if (acEnabledLabelEl) acEnabledLabelEl.textContent = acEnabledEl.checked ? "Active" : "Inactive";
+        const on = acEnabledEl.checked;
+        if (acEnabledLabelEl) acEnabledLabelEl.textContent = on ? "Active" : "Inactive";
+        acTogglePillEl?.classList.toggle("is-active", on);
+        acTogglePillEl?.classList.toggle("is-inactive", !on);
       });
       const acApiUrlEl = document.getElementById("ac-api-url") as HTMLInputElement | null;
       const acApiKeyEl = document.getElementById("ac-api-key") as HTMLInputElement | null;
@@ -1296,6 +1309,14 @@ const tagPresets = [
       const acListSelectEl = document.getElementById("ac-list-id") as HTMLSelectElement | null;
       const acTagChipsEl = document.getElementById("ac-tags-chips");
       const acTagHelpTopicEl = document.getElementById("ac-tag-help-topic") as HTMLInputElement | null;
+      const acTagHelpPillEl = document.getElementById("ac-tag-help-pill");
+      const syncTagHelpPill = () => {
+        const on = Boolean(acTagHelpTopicEl?.checked);
+        acTagHelpPillEl?.classList.toggle("is-active", on);
+        acTagHelpPillEl?.classList.toggle("is-inactive", !on);
+      };
+      syncTagHelpPill();
+      acTagHelpTopicEl?.addEventListener("change", syncTagHelpPill);
       const acSaveBtn = document.getElementById("btn-save-ac") as HTMLButtonElement | null;
       const acTestBtn = document.getElementById("btn-ac-test") as HTMLButtonElement | null;
       const acTestEmailEl = document.getElementById("ac-test-email") as HTMLInputElement | null;

@@ -29,10 +29,11 @@ const { initialKlaviyo } = Astro.props;
     </div>
   </header>
 
-  <section class="bc-cms-card">
+  <section class="studio-card acd-card" style="padding: 20px;">
     <div class="ac-card-head">
       <div>
-        <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">1. Connect Your Account</h2>
+        <span class="acd-section-kicker">Connection</span>
+        <h2 class="bc-cms-card-title" style="margin: 4px 0;">1. Connect Your Account</h2>
         <p class="field-hint" style="margin: 0;">
           Toggle Active to sync leads from the selected form into Klaviyo automatically.
         </p>
@@ -40,18 +41,19 @@ const { initialKlaviyo } = Astro.props;
       <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
         <div class="ac-form-picker">
           <label for="klv-form-selector" class="ac-form-picker-label">Form</label>
-          <select id="klv-form-selector" class="ac-select">
+          <select id="klv-form-selector" class="studio-select">
             <option value="book-call">Book a Call</option>
           </select>
         </div>
-        <label class="toggle-wrap">
-          <input type="checkbox" id="klv-enabled-toggle" checked={initialKlaviyo.enabled} />
-          <span id="klv-enabled-label">{initialKlaviyo.enabled ? "Active" : "Inactive"}</span>
+        <label class={`studio-toggle-pill ${initialKlaviyo.enabled ? "is-active" : "is-inactive"}`} id="klv-toggle-pill">
+          <input type="checkbox" class="studio-toggle-chk" id="klv-enabled-toggle" checked={initialKlaviyo.enabled} />
+          <span class="studio-switch" aria-hidden="true"></span>
+          <span class="studio-toggle-text" id="klv-enabled-label">{initialKlaviyo.enabled ? "Active" : "Inactive"}</span>
         </label>
       </div>
     </div>
 
-    <div class="acd-settings-grid" style="margin-top: 16px;">
+    <div class="acd-settings-grid" style="margin-top: 18px;">
       <label class="acd-field">
         <span class="acd-label-row">
           Private API Key (pk_...)
@@ -77,8 +79,8 @@ const { initialKlaviyo } = Astro.props;
       </div>
     </div>
 
-    <div class="ac-sync-bar">
-      <button type="button" class="btn-secondary" id="btn-test-klaviyo">
+    <div class="ac-sync-bar" style="margin-top: 18px;">
+      <button type="button" class="studio-btn-ghost" id="btn-test-klaviyo">
         Test Connection &amp; Sync Lists
       </button>
       <span class="ac-sync-status" id="klv-sync-status">
@@ -89,6 +91,78 @@ const { initialKlaviyo } = Astro.props;
     </div>
   </section>
 </div>
+
+<style is:global>
+  .studio-toggle-pill {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 13px 7px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    background: rgba(72, 200, 255, 0.1);
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+
+  .studio-toggle-pill.is-active {
+    border-color: rgba(52, 211, 153, 0.48);
+    background: rgba(52, 211, 153, 0.12);
+  }
+
+  .studio-toggle-chk {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .studio-switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(72, 200, 255, 0.24);
+    border: 1px solid rgba(72, 200, 255, 0.55);
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .studio-switch::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #67d4ff;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+
+  .studio-toggle-chk:checked + .studio-switch {
+    background: rgba(52, 211, 153, 0.28);
+    border-color: rgba(52, 211, 153, 0.72);
+  }
+
+  .studio-toggle-chk:checked + .studio-switch::after {
+    transform: translateX(16px);
+    background: #34d399;
+  }
+
+  .studio-toggle-text {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #7ee0ff;
+    min-width: 50px;
+  }
+
+  .studio-toggle-pill.is-active .studio-toggle-text {
+    color: #6ee7b7;
+  }
+</style>
 
 <script>
   const w = window as any;
@@ -107,9 +181,13 @@ const { initialKlaviyo } = Astro.props;
   }
 
   const klvToggle = document.getElementById("klv-enabled-toggle") as HTMLInputElement | null;
+  const klvPill = document.getElementById("klv-toggle-pill");
   const klvLabel = document.getElementById("klv-enabled-label");
   klvToggle?.addEventListener("change", () => {
-    if (klvLabel) klvLabel.textContent = klvToggle.checked ? "Active" : "Inactive";
+    const on = klvToggle.checked;
+    if (klvLabel) klvLabel.textContent = on ? "Active" : "Inactive";
+    klvPill?.classList.toggle("is-active", on);
+    klvPill?.classList.toggle("is-inactive", !on);
   });
 
   document.getElementById("btn-test-klaviyo")?.addEventListener("click", async () => {

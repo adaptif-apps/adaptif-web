@@ -392,7 +392,9 @@ const academyItems: AcademyItem[] = [
                           </svg>
                         )}
                       </div>
+                      {item.badge && (
                       <span class:list={["academy-badge", { "is-pro": item.badge === "Pro" }]}>{item.badge}</span>
+                    )}
                     </div>
                     <div class="academy-info">
                       <div class="academy-title-row">
@@ -633,7 +635,9 @@ const academyItems: AcademyItem[] = [
                       <div class="mobile-why-us-content">
                         <div class="mobile-why-us-header">
                           <span class="mobile-why-us-title">{item.title}</span>
+                          {item.badge && (
                           <span class:list={["academy-badge mobile-badge", { "is-pro": item.badge === "Pro" }]}>{item.badge}</span>
+                        )}
                         </div>
                         <span class="mobile-why-us-desc">{item.desc}</span>
                       </div>

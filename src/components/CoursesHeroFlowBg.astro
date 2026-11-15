@@ -106,11 +106,12 @@
       const driftY = Math.cos(t * 0.22 + nx * 2.0) * 0.02;
       const perspective = 1.35 / (nz + 0.55);
       const cx = width * 0.5;
-      const cy = height * 0.42;
-      const scale = Math.min(width, height * 1.45) * 0.56;
+      const cy = height * 0.44;
+      const scaleX = width * 0.54;
+      const scaleY = height * 0.48;
       return {
-        x: cx + (nx + driftX) * scale * perspective,
-        y: cy + (ny + driftY) * scale * perspective,
+        x: cx + (nx + driftX) * scaleX * perspective,
+        y: cy + (ny + driftY) * scaleY * perspective,
         depth: perspective,
       };
     };

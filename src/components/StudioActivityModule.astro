@@ -11,7 +11,7 @@
       </p>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-ghost" id="btn-refresh-activity">
+      <button type="button" class="studio-btn-ghost" id="btn-refresh-activity">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 12a9 9 0 1 1-2.64-6.36" />
           <polyline points="21 3 21 9 15 9" />
@@ -76,6 +76,28 @@
 </div>
 
 <style is:global>
+  .studio-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(110, 195, 255, 0.24);
+    background: rgba(10, 22, 39, 0.72);
+    color: #e6f2ff;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .studio-btn-ghost:hover {
+    border-color: rgba(72, 200, 255, 0.55);
+    background: rgba(72, 200, 255, 0.14);
+    color: #ffffff;
+  }
+
   .act-toolbar-card {
     padding: 20px;
     display: flex;
@@ -143,14 +165,15 @@
 
   .act-search-wrap svg {
     position: absolute;
-    left: 12px;
-    color: rgba(168, 195, 226, 0.58);
+    left: 13px;
+    color: rgba(168, 195, 226, 0.62);
     pointer-events: none;
+    z-index: 1;
   }
 
-  .act-search-wrap input {
+  .act-search-wrap input[type="search"] {
     width: 100%;
-    padding: 8px 12px 8px 34px;
+    padding: 9px 14px 9px 38px !important;
     border-radius: 10px;
     border: 1px solid rgba(110, 195, 255, 0.2);
     background: rgba(6, 15, 28, 0.72);
@@ -473,6 +496,12 @@
         `;
       })
       .join("");
+
+    const w = window as any;
+    tbody.querySelectorAll<HTMLSelectElement>(".act-status-select").forEach((sel) => {
+      w.__STUDIO_ENHANCE_SELECT__?.(sel);
+      w.__STUDIO_SYNC_SELECT__?.(sel);
+    });
   }
 
   async function loadActivity() {

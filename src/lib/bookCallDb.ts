@@ -1,5 +1,20 @@
 import { neon } from "@neondatabase/serverless";
 
+export type FormFieldType = "text" | "email" | "url" | "textarea" | "select";
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: FormFieldType;
+  placeholder: string;
+  required: boolean;
+  step: 1 | 2;
+  options: string[];
+  acFieldId?: string;
+  klaviyoKey?: string;
+  locked?: boolean;
+}
+
 export interface BookCallConfig {
   step1Eyebrow: string;
   step1Title: string;
@@ -36,7 +51,102 @@ export interface BookCallConfig {
   successEyebrow: string;
   successTitle: string;
   successMessage: string;
+  fields: FormField[];
 }
+
+export const defaultBookCallFields: FormField[] = [
+  {
+    id: "fullName",
+    label: "What's your full name?",
+    type: "text",
+    placeholder: "Your full name",
+    required: true,
+    step: 1,
+    options: [],
+    locked: true,
+  },
+  {
+    id: "workEmail",
+    label: "What's your work email?",
+    type: "email",
+    placeholder: "you@company.com",
+    required: true,
+    step: 1,
+    options: [],
+    locked: true,
+  },
+  {
+    id: "helpTopic",
+    label: "What would you like help with?",
+    type: "select",
+    placeholder: "Select an option...",
+    required: false,
+    step: 1,
+    options: [
+      "Dedicated Creative Team",
+      "Brand Identity & Visual System",
+      "Web Design & Development",
+      "Motion, Video & Ad Creative",
+      "AI Production & Automation",
+      "Full Stack Creative Subscription",
+    ],
+  },
+  {
+    id: "projectGoal",
+    label: "What is the main goal of your project?",
+    type: "text",
+    placeholder: "e.g. New website, improve brand, email automation workflow",
+    required: false,
+    step: 2,
+    options: [],
+  },
+  {
+    id: "referenceLink",
+    label: "Do you have a website or relevant link to share?",
+    type: "url",
+    placeholder: "Paste a website, social profile, or reference link",
+    required: false,
+    step: 2,
+    options: [],
+  },
+  {
+    id: "timeline",
+    label: "What is your ideal timeline?",
+    type: "select",
+    placeholder: "Select a timeline",
+    required: false,
+    step: 2,
+    options: [
+      "Immediately / This week",
+      "Within 2–4 weeks",
+      "1–2 months",
+      "Flexible / Exploring",
+    ],
+  },
+  {
+    id: "budgetRange",
+    label: "What budget range are you considering?",
+    type: "select",
+    placeholder: "This helps us recommend the right approach",
+    required: false,
+    step: 2,
+    options: [
+      "$4,000 – $6,000 / mo",
+      "$6,000 – $10,000 / mo",
+      "$10,000+ / mo",
+      "Not sure yet",
+    ],
+  },
+  {
+    id: "notes",
+    label: "Is there anything else we should know before the call?",
+    type: "textarea",
+    placeholder: "Share any context, questions, or requirements you'd like us to know...",
+    required: false,
+    step: 2,
+    options: [],
+  },
+];
 
 export const defaultBookCallConfig: BookCallConfig = {
   step1Eyebrow: "FREE STRATEGY CALL",
@@ -94,6 +204,7 @@ export const defaultBookCallConfig: BookCallConfig = {
   successTitle: "We've got your details",
   successMessage:
     "Thanks for sharing your project. Our team will reach out shortly to confirm your strategy call.",
+  fields: defaultBookCallFields,
 };
 
 function getDatabaseUrl(): string | undefined {
@@ -139,8 +250,14 @@ export async function ensureBookCallSchema(): Promise<void> {
         timeline TEXT NOT NULL DEFAULT '',
         budget_range TEXT NOT NULL DEFAULT '',
         notes TEXT NOT NULL DEFAULT '',
+        extra_fields JSONB NOT NULL DEFAULT '{}'::jsonb,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
+    `;
+
+    await sql`
+      ALTER TABLE book_call_submissions
+      ADD COLUMN IF NOT EXISTS extra_fields JSONB NOT NULL DEFAULT '{}'::jsonb
     `;
   })().catch((err) => {
     schemaReadyPromise = null;
@@ -148,6 +265,39 @@ export async function ensureBookCallSchema(): Promise<void> {
   });
 
   return schemaReadyPromise;
+}
+
+function normalizeFields(rawFields: unknown): FormField[] {
+  if (!Array.isArray(rawFields) || rawFields.length === 0) {
+    return defaultBookCallFields.map((f) => ({ ...f, options: [...f.options] }));
+  }
+  const validTypes = new Set<FormFieldType>(["text", "email", "url", "textarea", "select"]);
+  const parsed: FormField[] = [];
+  for (const item of rawFields) {
+    if (!item || typeof item !== "object") continue;
+    const f = item as Record<string, unknown>;
+    const id = String(f.id ?? "").trim();
+    const label = String(f.label ?? "").trim();
+    if (!id || !label) continue;
+    const type = validTypes.has(f.type as FormFieldType) ? (f.type as FormFieldType) : "text";
+    const step = Number(f.step) === 1 ? 1 : 2;
+    const options = Array.isArray(f.options)
+      ? f.options.map((o) => String(o).trim()).filter(Boolean)
+      : [];
+    parsed.push({
+      id,
+      label,
+      type,
+      placeholder: String(f.placeholder ?? ""),
+      required: Boolean(f.required) || id === "fullName" || id === "workEmail",
+      step: id === "fullName" || id === "workEmail" ? 1 : step,
+      options,
+      acFieldId: typeof f.acFieldId === "string" && f.acFieldId.trim() ? f.acFieldId.trim() : undefined,
+      klaviyoKey: typeof f.klaviyoKey === "string" && f.klaviyoKey.trim() ? f.klaviyoKey.trim() : undefined,
+      locked: id === "fullName" || id === "workEmail" || Boolean(f.locked),
+    });
+  }
+  return parsed.length > 0 ? parsed : defaultBookCallFields.map((f) => ({ ...f, options: [...f.options] }));
 }
 
 function mergeConfig(raw: unknown): BookCallConfig {
@@ -195,6 +345,7 @@ function mergeConfig(raw: unknown): BookCallConfig {
     successEyebrow: str("successEyebrow", defaultBookCallConfig.successEyebrow),
     successTitle: str("successTitle", defaultBookCallConfig.successTitle),
     successMessage: str("successMessage", defaultBookCallConfig.successMessage),
+    fields: normalizeFields(obj.fields),
   };
 }
 
@@ -238,14 +389,16 @@ export interface BookCallSubmissionInput {
   timeline?: string;
   budgetRange?: string;
   notes?: string;
+  extraFields?: Record<string, string>;
 }
 
 export async function createBookCallSubmission(input: BookCallSubmissionInput): Promise<{ id: number }> {
   await ensureBookCallSchema();
   const sql = getSql();
+  const extraJson = JSON.stringify(input.extraFields ?? {});
   const rows = await sql`
     INSERT INTO book_call_submissions (
-      full_name, work_email, help_topic, project_goal, reference_link, timeline, budget_range, notes
+      full_name, work_email, help_topic, project_goal, reference_link, timeline, budget_range, notes, extra_fields
     ) VALUES (
       ${input.fullName.trim()},
       ${input.workEmail.trim()},
@@ -254,7 +407,8 @@ export async function createBookCallSubmission(input: BookCallSubmissionInput): 
       ${(input.referenceLink ?? "").trim()},
       ${(input.timeline ?? "").trim()},
       ${(input.budgetRange ?? "").trim()},
-      ${(input.notes ?? "").trim()}
+      ${(input.notes ?? "").trim()},
+      ${extraJson}::jsonb
     )
     RETURNING id
   `;

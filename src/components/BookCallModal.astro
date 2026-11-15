@@ -102,6 +102,8 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
           </div>
         </div>
 
+        <div class="bc-extra-fields" id="bc-step1-extra-fields"></div>
+
         <p class="bc-error" id="bc-step1-error" role="alert" hidden></p>
 
         <div class="bc-footer">
@@ -230,6 +232,8 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
             placeholder={defaultBookCallConfig.notesPlaceholder}
           ></textarea>
         </div>
+
+        <div class="bc-extra-fields" id="bc-step2-extra-fields"></div>
 
         <p class="bc-error" id="bc-step2-error" role="alert" hidden></p>
 
@@ -441,6 +445,106 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
       setText("bc-success-eyebrow", cfg.successEyebrow);
       setText("bc-success-title", cfg.successTitle);
       setText("bc-success-message", cfg.successMessage);
+
+      // Sync Form Builder fields (visibility + custom fields)
+      if (Array.isArray(cfg.fields)) {
+        const byId = new Map<string, any>(cfg.fields.map((f: any) => [f.id, f]));
+        const toggleCore = (el: HTMLElement | null, id: string) => {
+          const wrap = el?.closest<HTMLElement>(".bc-field");
+          if (wrap) wrap.hidden = !byId.has(id);
+        };
+        toggleCore(helpTopicEl, "helpTopic");
+        toggleCore(projectGoalEl, "projectGoal");
+        toggleCore(referenceLinkEl, "referenceLink");
+        toggleCore(timelineEl, "timeline");
+        toggleCore(budgetEl, "budgetRange");
+        toggleCore(notesEl, "notes");
+
+        const coreIds = new Set([
+          "fullName",
+          "workEmail",
+          "helpTopic",
+          "projectGoal",
+          "referenceLink",
+          "timeline",
+          "budgetRange",
+          "notes",
+        ]);
+        const escHtml = (s: string) =>
+          String(s ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+
+        const renderExtra = (containerId: string, stepNum: number) => {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+          const customFields = cfg.fields.filter((f: any) => !coreIds.has(f.id) && Number(f.step) === stepNum);
+          container.innerHTML = customFields
+            .map((f: any) => {
+              const reqTag = f.required ? `<span class="bc-required">*Required</span>` : "";
+              if (f.type === "textarea") {
+                return `
+                  <div class="bc-field bc-field--full">
+                    <label class="bc-label" for="bc-extra-${escHtml(f.id)}">
+                      <span>${escHtml(f.label)}</span>${reqTag}
+                    </label>
+                    <textarea id="bc-extra-${escHtml(f.id)}" class="bc-textarea bc-extra-input" data-extra-id="${escHtml(f.id)}" data-extra-label="${escHtml(f.label)}" ${f.required ? "required" : ""} rows="3" placeholder="${escHtml(f.placeholder || "")}"></textarea>
+                  </div>
+                `;
+              }
+              if (f.type === "select") {
+                const ph = f.placeholder || "Select an option...";
+                const opts = Array.isArray(f.options) ? f.options : [];
+                return `
+                  <div class="bc-field bc-field--full">
+                    <label class="bc-label">
+                      <span>${escHtml(f.label)}</span>${reqTag}
+                    </label>
+                    <div class="bc-dropdown bc-extra-dropdown" data-placeholder="${escHtml(ph)}">
+                      <input type="hidden" class="bc-extra-input" data-extra-id="${escHtml(f.id)}" data-extra-label="${escHtml(f.label)}" ${f.required ? "required" : ""} value="" />
+                      <button type="button" class="bc-dropdown-trigger is-placeholder" aria-haspopup="listbox" aria-expanded="false">
+                        <span class="bc-dropdown-value">${escHtml(ph)}</span>
+                        <svg class="bc-select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                      </button>
+                      <ul class="bc-dropdown-menu" role="listbox" hidden>
+                        ${opts
+                          .map(
+                            (opt: string) => `
+                          <li class="bc-dropdown-option" role="option" aria-selected="false" data-value="${escHtml(opt)}" tabindex="-1">
+                            <span>${escHtml(opt)}</span>
+                            <svg class="bc-option-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
+                          </li>
+                        `
+                          )
+                          .join("")}
+                      </ul>
+                    </div>
+                  </div>
+                `;
+              }
+              const inputType = f.type === "email" ? "email" : f.type === "url" ? "url" : "text";
+              return `
+                <div class="bc-field bc-field--full">
+                  <label class="bc-label" for="bc-extra-${escHtml(f.id)}">
+                    <span>${escHtml(f.label)}</span>${reqTag}
+                  </label>
+                  <input type="${inputType}" id="bc-extra-${escHtml(f.id)}" class="bc-input bc-extra-input" data-extra-id="${escHtml(f.id)}" data-extra-label="${escHtml(f.label)}" ${f.required ? "required" : ""} placeholder="${escHtml(f.placeholder || "")}" />
+                </div>
+              `;
+            })
+            .join("");
+
+          container.querySelectorAll<HTMLElement>(".bc-extra-dropdown").forEach((dd) => {
+            if (!allDropdowns.includes(dd)) allDropdowns.push(dd);
+            wireDropdown(dd);
+          });
+        };
+
+        renderExtra("bc-step1-extra-fields", 1);
+        renderExtra("bc-step2-extra-fields", 2);
+      }
     }
 
     async function refreshConfig() {
@@ -545,6 +649,15 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
         workEmailEl.focus();
         return;
       }
+      const missingStep1 = Array.from(
+        formStep1.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(".bc-extra-input[required]")
+      ).find((el) => !el.value.trim());
+      if (missingStep1) {
+        step1ErrorEl.textContent = `Please fill in "${missingStep1.dataset.extraLabel || "required field"}".`;
+        step1ErrorEl.hidden = false;
+        missingStep1.focus();
+        return;
+      }
       setStep("2");
       projectGoalEl.focus({ preventScroll: true });
     });
@@ -556,6 +669,24 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
 
     formStep2.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const missingStep2 = Array.from(
+        formStep2.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(".bc-extra-input[required]")
+      ).find((el) => !el.value.trim());
+      if (missingStep2) {
+        step2ErrorEl.textContent = `Please fill in "${missingStep2.dataset.extraLabel || "required field"}".`;
+        step2ErrorEl.hidden = false;
+        missingStep2.focus();
+        return;
+      }
+
+      const extraFields: Record<string, string> = {};
+      modal.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(".bc-extra-input").forEach((el) => {
+        const key = el.dataset.extraId;
+        if (key && el.value.trim()) {
+          extraFields[key] = el.value.trim();
+        }
+      });
+
       submitBtn.disabled = true;
       step2ErrorEl.hidden = true;
 
@@ -572,6 +703,7 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
             timeline: timelineEl.value,
             budgetRange: budgetEl.value,
             notes: notesEl.value.trim(),
+            extraFields,
           }),
         });
         const data = await res.json();

@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
-import { createBookCallSubmission } from "../../../lib/bookCallDb";
+import { createBookCallSubmission, getBookCallConfig } from "../../../lib/bookCallDb";
 import { getActiveCampaignConfig, syncLeadToActiveCampaign } from "../../../lib/activeCampaignDb";
+import { getActiveCrmProvider, getKlaviyoConfig, syncLeadToKlaviyo } from "../../../lib/klaviyoDb";
 
 export const prerender = false;
 
@@ -17,6 +18,14 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    const rawExtra = body?.extraFields && typeof body.extraFields === "object" ? body.extraFields : {};
+    const extraFields: Record<string, string> = {};
+    for (const [k, v] of Object.entries(rawExtra)) {
+      if (v !== undefined && v !== null && String(v).trim()) {
+        extraFields[String(k)] = String(v).trim();
+      }
+    }
+
     const submission = {
       fullName,
       workEmail,
@@ -26,18 +35,37 @@ export const POST: APIRoute = async ({ request }) => {
       timeline: String(body?.timeline ?? ""),
       budgetRange: String(body?.budgetRange ?? ""),
       notes: String(body?.notes ?? ""),
+      extraFields,
     };
 
     const result = await createBookCallSubmission(submission);
 
-    // Sync to ActiveCampaign if enabled (non-blocking for lead capture)
+    // Sync to active CRM provider(s) (non-blocking for lead capture)
     try {
-      const acConfig = await getActiveCampaignConfig();
-      if (acConfig.enabled && acConfig.apiUrl && acConfig.apiKey) {
-        await syncLeadToActiveCampaign(submission, acConfig);
+      const [provider, formConfig] = await Promise.all([
+        getActiveCrmProvider(),
+        getBookCallConfig(),
+      ]);
+
+      if (provider === "activecampaign" || provider === "both") {
+        const acConfig = await getActiveCampaignConfig();
+        if (acConfig.enabled && acConfig.apiUrl && acConfig.apiKey) {
+          await syncLeadToActiveCampaign(submission, acConfig, formConfig.fields).catch((err) => {
+            console.error("[book-call/submit] ActiveCampaign sync failed:", err);
+          });
+        }
       }
-    } catch (acErr) {
-      console.error("[book-call/submit] ActiveCampaign sync failed:", acErr);
+
+      if (provider === "klaviyo" || provider === "both") {
+        const klaviyoConfig = await getKlaviyoConfig();
+        if (klaviyoConfig.enabled && klaviyoConfig.apiKey) {
+          await syncLeadToKlaviyo(submission, klaviyoConfig).catch((err) => {
+            console.error("[book-call/submit] Klaviyo sync failed:", err);
+          });
+        }
+      }
+    } catch (crmErr) {
+      console.error("[book-call/submit] CRM sync failed:", crmErr);
     }
 
     return new Response(JSON.stringify({ ok: true, id: result.id }), {

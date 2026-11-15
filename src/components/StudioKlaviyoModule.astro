@@ -1,0 +1,250 @@
+---
+import type { CrmProvider } from "../lib/klaviyoDb";
+
+interface Props {
+  initialProvider: CrmProvider;
+  initialKlaviyo: {
+    enabled: boolean;
+    hasApiKey: boolean;
+    listId: string;
+    cachedLists: Array<{ id: string; name: string }>;
+    cachedProperties: string[];
+    lastSyncedAt: string;
+  };
+}
+
+const { initialProvider, initialKlaviyo } = Astro.props;
+---
+
+<div id="module-klaviyo" hidden>
+  <header class="studio-header">
+    <div>
+      <p class="studio-eyebrow">INTEGRATIONS · CRM</p>
+      <h1 class="studio-title">Klaviyo <span>Sync</span></h1>
+      <p class="studio-subtitle">
+        Connect Klaviyo with 1-click provider switching and automatic profile property creation.
+      </p>
+    </div>
+    <div class="studio-header-actions">
+      <button type="button" class="acd-btn-cyan" id="btn-save-klaviyo">
+        Save Klaviyo Settings
+      </button>
+    </div>
+  </header>
+
+  <section class="studio-card" style="margin-bottom: 18px; padding: 18px 20px;">
+    <div class="crm-switcher-row">
+      <div>
+        <p class="crm-switcher-label">Active CRM Provider (1-Click Switch)</p>
+        <p class="crm-switcher-sub">Choose where Book a Call leads and Form Builder fields sync.</p>
+      </div>
+      <div class="crm-provider-pills" data-crm-provider-group>
+        <button type="button" class={`crm-prov-btn ${initialProvider === "activecampaign" ? "is-active" : ""}`} data-crm-provider="activecampaign">ActiveCampaign</button>
+        <button type="button" class={`crm-prov-btn ${initialProvider === "klaviyo" ? "is-active" : ""}`} data-crm-provider="klaviyo">Klaviyo</button>
+        <button type="button" class={`crm-prov-btn ${initialProvider === "both" ? "is-active" : ""}`} data-crm-provider="both">Both</button>
+        <button type="button" class={`crm-prov-btn ${initialProvider === "none" ? "is-active" : ""}`} data-crm-provider="none">Off</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="studio-card" style="padding: 20px;">
+    <div class="acd-settings-grid">
+      <label class="acd-field">
+        <span class="acd-label-row">
+          Klaviyo Sync Status
+        </span>
+        <select id="klv-enabled" class="studio-select">
+          <option value="true" selected={initialKlaviyo.enabled}>Enabled (Sync Leads to Klaviyo)</option>
+          <option value="false" selected={!initialKlaviyo.enabled}>Disabled</option>
+        </select>
+      </label>
+
+      <label class="acd-field">
+        <span class="acd-label-row">
+          Private API Key (pk_...)
+          <a href="https://www.klaviyo.com/account#api-keys-tab" target="_blank" rel="noopener noreferrer" class="acd-inline-link">
+            Open Klaviyo API Keys ↗
+          </a>
+        </span>
+        <input
+          type="password"
+          id="klv-api-key"
+          placeholder={initialKlaviyo.hasApiKey ? "Saved (leave blank to keep)" : "pk_..."}
+        />
+      </label>
+
+      <div class="acd-field">
+        <span class="acd-label-row">Target List (Optional)</span>
+        <select id="klv-list-id" class="studio-select">
+          <option value="">Profile Only (No List)</option>
+          {initialKlaviyo.cachedLists.map((l) => (
+            <option value={l.id} selected={l.id === initialKlaviyo.listId}>{l.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="acd-field" style="justify-content: flex-end;">
+        <span class="acd-label-row">Connection &amp; Lists</span>
+        <button type="button" class="studio-btn-ghost" id="btn-test-klaviyo" style="align-self: flex-start;">
+          Test Connection &amp; Sync Lists
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style is:global>
+  .crm-switcher-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .crm-switcher-label {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #f4f9ff;
+  }
+
+  .crm-switcher-sub {
+    margin: 3px 0 0;
+    font-size: 0.78rem;
+    color: rgba(176, 204, 234, 0.75);
+  }
+
+  .crm-provider-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .crm-prov-btn {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(110, 195, 255, 0.22);
+    background: rgba(8, 19, 34, 0.72);
+    color: rgba(215, 232, 250, 0.8);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .crm-prov-btn:hover {
+    border-color: rgba(72, 200, 255, 0.5);
+    color: #ffffff;
+  }
+
+  .crm-prov-btn.is-active {
+    background: rgba(72, 200, 255, 0.18);
+    border-color: rgba(72, 200, 255, 0.65);
+    color: #8ee2ff;
+    box-shadow: 0 0 16px rgba(72, 200, 255, 0.16);
+  }
+</style>
+
+<script>
+  const w = window as any;
+
+  function toast(msg: string, isErr = false) {
+    if (typeof w.__SHOW_STUDIO_TOAST__ === "function") {
+      w.__SHOW_STUDIO_TOAST__(msg, isErr);
+    } else {
+      const el = document.getElementById("studio-toast");
+      if (el) {
+        el.textContent = msg;
+        el.classList.add("is-visible");
+        setTimeout(() => el.classList.remove("is-visible"), 2600);
+      }
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-crm-provider]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const provider = btn.dataset.crmProvider;
+      if (!provider) return;
+      try {
+        const res = await fetch("/api/integrations/provider", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ provider }),
+        });
+        if (!res.ok) throw new Error("Failed to switch provider");
+        document.querySelectorAll<HTMLButtonElement>("[data-crm-provider]").forEach((b) => {
+          b.classList.toggle("is-active", b.dataset.crmProvider === provider);
+        });
+        w.__ACTIVE_CRM_PROVIDER__ = provider;
+        toast(`Active CRM switched to ${provider}`);
+      } catch {
+        toast("Could not switch CRM provider", true);
+      }
+    });
+  });
+
+  document.getElementById("btn-test-klaviyo")?.addEventListener("click", async () => {
+    const btn = document.getElementById("btn-test-klaviyo") as HTMLButtonElement | null;
+    const keyInput = document.getElementById("klv-api-key") as HTMLInputElement | null;
+    const listSel = document.getElementById("klv-list-id") as HTMLSelectElement | null;
+    if (btn) btn.disabled = true;
+    try {
+      const res = await fetch("/api/klaviyo/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ apiKey: keyInput?.value.trim() || "" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Connection failed");
+      if (listSel && Array.isArray(data.lists)) {
+        const current = listSel.value;
+        listSel.innerHTML = `<option value="">Profile Only (No List)</option>` +
+          data.lists.map((l: any) => `<option value="${l.id}">${l.name}</option>`).join("");
+        listSel.value = current;
+        w.__STUDIO_SYNC_SELECT__?.(listSel);
+      }
+      if (keyInput) {
+        keyInput.value = "";
+        keyInput.placeholder = "Saved (leave blank to keep)";
+      }
+      toast(`Klaviyo connected (${(data.lists || []).length} lists synced)`);
+    } catch (err: any) {
+      toast(err?.message || "Klaviyo connection failed", true);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  document.getElementById("btn-save-klaviyo")?.addEventListener("click", async () => {
+    const btn = document.getElementById("btn-save-klaviyo") as HTMLButtonElement | null;
+    const enabledSel = document.getElementById("klv-enabled") as HTMLSelectElement | null;
+    const keyInput = document.getElementById("klv-api-key") as HTMLInputElement | null;
+    const listSel = document.getElementById("klv-list-id") as HTMLSelectElement | null;
+    if (btn) btn.disabled = true;
+    try {
+      const res = await fetch("/api/klaviyo/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          enabled: enabledSel?.value === "true",
+          apiKey: keyInput?.value.trim() || undefined,
+          listId: listSel?.value || "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Save failed");
+      if (keyInput && data.hasApiKey) {
+        keyInput.value = "";
+        keyInput.placeholder = "Saved (leave blank to keep)";
+      }
+      toast("Klaviyo settings saved!");
+    } catch (err: any) {
+      toast(err?.message || "Failed to save Klaviyo settings", true);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+</script>

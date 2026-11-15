@@ -1,0 +1,526 @@
+---
+import type { FormField } from "../lib/bookCallDb";
+
+interface Props {
+  initialFields: FormField[];
+}
+
+const { initialFields } = Astro.props;
+---
+
+<section class="studio-card fb-card" style="margin-bottom: 18px; padding: 20px;">
+  <div class="fb-header">
+    <div>
+      <p class="acd-section-kicker" style="margin: 0 0 4px;">Form Builder · Dynamic Fields</p>
+      <h2 class="fb-title">Fields &amp; CRM Sync</h2>
+      <p class="fb-sub">
+        Add, remove, or reorder fields. New fields auto-create in ActiveCampaign on save and sync automatically to Klaviyo.
+      </p>
+    </div>
+    <div class="fb-actions">
+      <button type="button" class="studio-btn-ghost" id="btn-pull-ac-fields">
+        Pull from ActiveCampaign
+      </button>
+      <button type="button" class="studio-btn-ghost" id="btn-pull-klv-fields">
+        Pull from Klaviyo
+      </button>
+      <button type="button" class="acd-btn-cyan" id="btn-save-form-builder">
+        Save Form Fields
+      </button>
+    </div>
+  </div>
+
+  <div class="fb-fields-list" id="fb-fields-list"></div>
+
+  <div class="fb-add-box">
+    <p class="fb-add-title">+ Add Custom Field</p>
+    <div class="fb-add-grid">
+      <input type="text" id="fb-new-label" placeholder="Field label (e.g. Company Size)" />
+      <select id="fb-new-type" class="studio-select">
+        <option value="text">Text</option>
+        <option value="email">Email</option>
+        <option value="url">URL</option>
+        <option value="textarea">Textarea</option>
+        <option value="select">Dropdown (Select)</option>
+      </select>
+      <select id="fb-new-step" class="studio-select">
+        <option value="1">Step 1 (Contact)</option>
+        <option value="2" selected>Step 2 (Project Details)</option>
+      </select>
+      <input type="text" id="fb-new-placeholder" placeholder="Placeholder text..." />
+    </div>
+    <div class="fb-add-row2">
+      <input
+        type="text"
+        id="fb-new-options"
+        placeholder="Dropdown options (comma-separated, e.g. 1-10, 11-50, 50+)"
+        hidden
+      />
+      <label class="fb-req-check">
+        <input type="checkbox" id="fb-new-required" />
+        <span>Required field</span>
+      </label>
+      <button type="button" class="acd-btn-cyan-outline" id="btn-fb-add-field">+ Add Field</button>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ initialFields }}>
+  window.__INITIAL_BOOK_CALL_FIELDS__ = initialFields;
+</script>
+
+<style is:global>
+  .fb-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .fb-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f4f9ff;
+  }
+
+  .fb-sub {
+    margin: 4px 0 0;
+    font-size: 0.79rem;
+    color: rgba(176, 204, 234, 0.78);
+  }
+
+  .fb-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .fb-fields-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .fb-field-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) 120px 100px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(110, 195, 255, 0.16);
+    background: rgba(6, 15, 28, 0.65);
+  }
+
+  @media (max-width: 960px) {
+    .fb-field-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .fb-field-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .fb-field-label-input {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(110, 195, 255, 0.18);
+    background: rgba(10, 22, 39, 0.75);
+    color: #ffffff;
+    font-size: 0.83rem;
+    font-weight: 600;
+  }
+
+  .fb-field-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    font-size: 0.71rem;
+    color: rgba(168, 195, 226, 0.72);
+  }
+
+  .fb-crm-pill {
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    background: rgba(72, 200, 255, 0.14);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    color: #8ee2ff;
+  }
+
+  .fb-badge-lock {
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 0.66rem;
+    font-weight: 700;
+    background: rgba(148, 163, 184, 0.14);
+    color: rgba(203, 213, 225, 0.85);
+  }
+
+  .fb-mini-select,
+  .fb-mini-input {
+    width: 100%;
+    padding: 6px 9px;
+    border-radius: 8px;
+    border: 1px solid rgba(110, 195, 255, 0.18);
+    background: rgba(10, 22, 39, 0.75);
+    color: #e9f3ff;
+    font-size: 0.78rem;
+  }
+
+  .fb-row-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fb-icon-btn {
+    padding: 5px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(110, 195, 255, 0.2);
+    background: rgba(10, 22, 39, 0.75);
+    color: rgba(215, 232, 250, 0.85);
+    font-size: 0.75rem;
+    cursor: pointer;
+  }
+
+  .fb-icon-btn:hover {
+    border-color: rgba(72, 200, 255, 0.55);
+    color: #ffffff;
+  }
+
+  .fb-icon-btn.is-danger:hover {
+    border-color: rgba(248, 113, 113, 0.5);
+    color: #fca5a5;
+  }
+
+  .fb-add-box {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px dashed rgba(95, 208, 255, 0.28);
+    background: rgba(6, 17, 32, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .fb-add-title {
+    margin: 0;
+    font-size: 0.79rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8ee2ff;
+  }
+
+  .fb-add-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.4fr;
+    gap: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .fb-add-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .fb-add-row2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .fb-add-row2 input[type="text"] {
+    flex: 1;
+    min-width: 220px;
+  }
+
+  .fb-req-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: rgba(215, 232, 250, 0.85);
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  type FormField = {
+    id: string;
+    label: string;
+    type: "text" | "email" | "url" | "textarea" | "select";
+    placeholder: string;
+    required: boolean;
+    step: 1 | 2;
+    options: string[];
+    acFieldId?: string;
+    klaviyoKey?: string;
+    locked?: boolean;
+  };
+
+  const w = window as any;
+  let fbFields: FormField[] = Array.isArray(w.__INITIAL_BOOK_CALL_FIELDS__)
+    ? structuredClone(w.__INITIAL_BOOK_CALL_FIELDS__)
+    : [];
+
+  const esc = (s: string) =>
+    String(s ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+
+  function toast(msg: string, isErr = false) {
+    if (typeof w.__SHOW_STUDIO_TOAST__ === "function") {
+      w.__SHOW_STUDIO_TOAST__(msg, isErr);
+    } else {
+      const el = document.getElementById("studio-toast");
+      if (el) {
+        el.textContent = msg;
+        el.classList.add("is-visible");
+        setTimeout(() => el.classList.remove("is-visible"), 2600);
+      }
+    }
+  }
+
+  function renderFieldsList() {
+    const listEl = document.getElementById("fb-fields-list");
+    if (!listEl) return;
+
+    listEl.innerHTML = fbFields
+      .map((f, idx) => {
+        const acBadge = f.acFieldId ? `<span class="fb-crm-pill">AC #${esc(f.acFieldId)}</span>` : "";
+        const klBadge = f.klaviyoKey ? `<span class="fb-crm-pill">Klaviyo: ${esc(f.klaviyoKey)}</span>` : "";
+        const lockBadge = f.locked ? `<span class="fb-badge-lock">Core</span>` : "";
+
+        return `
+          <div class="fb-field-row" data-fb-idx="${idx}">
+            <div class="fb-field-main">
+              <input type="text" class="fb-field-label-input" data-fb-prop="label" value="${esc(f.label)}" aria-label="Field label" />
+              <div class="fb-field-meta">
+                <code>${esc(f.id)}</code>
+                ${lockBadge}
+                ${acBadge}
+                ${klBadge}
+                <label style="display:inline-flex;align-items:center;gap:4px;margin-left:auto;cursor:pointer;">
+                  <input type="checkbox" data-fb-prop="required" ${f.required ? "checked" : ""} ${f.locked ? "disabled" : ""} />
+                  Required
+                </label>
+              </div>
+            </div>
+
+            <select class="fb-mini-select" data-fb-prop="type" ${f.locked ? "disabled" : ""}>
+              <option value="text" ${f.type === "text" ? "selected" : ""}>Text</option>
+              <option value="email" ${f.type === "email" ? "selected" : ""}>Email</option>
+              <option value="url" ${f.type === "url" ? "selected" : ""}>URL</option>
+              <option value="textarea" ${f.type === "textarea" ? "selected" : ""}>Textarea</option>
+              <option value="select" ${f.type === "select" ? "selected" : ""}>Dropdown</option>
+            </select>
+
+            <select class="fb-mini-select" data-fb-prop="step" ${f.locked ? "disabled" : ""}>
+              <option value="1" ${f.step === 1 ? "selected" : ""}>Step 1</option>
+              <option value="2" ${f.step === 2 ? "selected" : ""}>Step 2</option>
+            </select>
+
+            <input
+              type="text"
+              class="fb-mini-input"
+              data-fb-prop="${f.type === "select" ? "options" : "placeholder"}"
+              value="${esc(f.type === "select" ? (f.options || []).join(", ") : f.placeholder || "")}"
+              placeholder="${f.type === "select" ? "Option 1, Option 2..." : "Placeholder..."}"
+            />
+
+            <div class="fb-row-controls">
+              <button type="button" class="fb-icon-btn" data-fb-move="-1" title="Move up" ${idx === 0 ? "disabled" : ""}>↑</button>
+              <button type="button" class="fb-icon-btn" data-fb-move="1" title="Move down" ${idx === fbFields.length - 1 ? "disabled" : ""}>↓</button>
+              ${
+                f.locked
+                  ? ""
+                  : `<button type="button" class="fb-icon-btn is-danger" data-fb-del="${idx}" title="Remove field">✕</button>`
+              }
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  renderFieldsList();
+
+  const listEl = document.getElementById("fb-fields-list");
+  listEl?.addEventListener("input", (e) => {
+    const target = e.target as HTMLInputElement | HTMLSelectElement;
+    const row = target.closest<HTMLElement>("[data-fb-idx]");
+    if (!row) return;
+    const idx = Number(row.dataset.fbIdx);
+    const prop = target.dataset.fbProp;
+    if (!fbFields[idx] || !prop) return;
+
+    if (prop === "label") fbFields[idx].label = target.value;
+    if (prop === "placeholder") fbFields[idx].placeholder = target.value;
+    if (prop === "options") {
+      fbFields[idx].options = target.value
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+  });
+
+  listEl?.addEventListener("change", (e) => {
+    const target = e.target as HTMLInputElement | HTMLSelectElement;
+    const row = target.closest<HTMLElement>("[data-fb-idx]");
+    if (!row) return;
+    const idx = Number(row.dataset.fbIdx);
+    const prop = target.dataset.fbProp;
+    if (!fbFields[idx] || !prop) return;
+
+    if (prop === "required") fbFields[idx].required = (target as HTMLInputElement).checked;
+    if (prop === "step") fbFields[idx].step = Number(target.value) === 1 ? 1 : 2;
+    if (prop === "type") {
+      fbFields[idx].type = target.value as FormField["type"];
+      renderFieldsList();
+    }
+  });
+
+  listEl?.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>("button");
+    if (!btn) return;
+    const row = btn.closest<HTMLElement>("[data-fb-idx]");
+    if (!row) return;
+    const idx = Number(row.dataset.fbIdx);
+
+    if (btn.dataset.fbMove) {
+      const delta = Number(btn.dataset.fbMove);
+      const nextIdx = idx + delta;
+      if (nextIdx >= 0 && nextIdx < fbFields.length) {
+        const [moved] = fbFields.splice(idx, 1);
+        fbFields.splice(nextIdx, 0, moved);
+        renderFieldsList();
+      }
+      return;
+    }
+
+    if (btn.dataset.fbDel !== undefined) {
+      fbFields.splice(idx, 1);
+      renderFieldsList();
+    }
+  });
+
+  const newTypeEl = document.getElementById("fb-new-type") as HTMLSelectElement | null;
+  const newOptionsEl = document.getElementById("fb-new-options") as HTMLInputElement | null;
+  newTypeEl?.addEventListener("change", () => {
+    if (newOptionsEl) newOptionsEl.hidden = newTypeEl.value !== "select";
+  });
+
+  document.getElementById("btn-fb-add-field")?.addEventListener("click", () => {
+    const labelEl = document.getElementById("fb-new-label") as HTMLInputElement | null;
+    const stepEl = document.getElementById("fb-new-step") as HTMLSelectElement | null;
+    const phEl = document.getElementById("fb-new-placeholder") as HTMLInputElement | null;
+    const reqEl = document.getElementById("fb-new-required") as HTMLInputElement | null;
+
+    const label = labelEl?.value.trim() || "";
+    if (!label) {
+      toast("Enter a field label first", true);
+      return;
+    }
+
+    const baseId =
+      label
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 32) || `field_${Date.now()}`;
+
+    let id = baseId;
+    const existingIds = new Set(fbFields.map((f) => f.id));
+    while (existingIds.has(id)) id = `${id}_2`;
+
+    const type = (newTypeEl?.value || "text") as FormField["type"];
+    const options =
+      type === "select"
+        ? (newOptionsEl?.value || "")
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
+
+    fbFields.push({
+      id,
+      label,
+      type,
+      placeholder: phEl?.value.trim() || (type === "select" ? "Select an option..." : ""),
+      required: Boolean(reqEl?.checked),
+      step: stepEl?.value === "1" ? 1 : 2,
+      options,
+    });
+
+    if (labelEl) labelEl.value = "";
+    if (phEl) phEl.value = "";
+    if (newOptionsEl) newOptionsEl.value = "";
+    if (reqEl) reqEl.checked = false;
+
+    renderFieldsList();
+    toast(`Added "${label}". Click Save Form Fields to apply & sync.`);
+  });
+
+  document.getElementById("btn-save-form-builder")?.addEventListener("click", async () => {
+    const btn = document.getElementById("btn-save-form-builder") as HTMLButtonElement | null;
+    if (btn) btn.disabled = true;
+    try {
+      const res = await fetch("/api/book-call/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fields: fbFields }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to save fields");
+      if (Array.isArray(data?.config?.fields)) {
+        fbFields = data.config.fields;
+        renderFieldsList();
+      }
+      toast("Form fields saved & synced!");
+    } catch (err: any) {
+      toast(err?.message || "Failed to save form fields", true);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  async function pullFieldsFrom(provider: "activecampaign" | "klaviyo") {
+    try {
+      const res = await fetch("/api/forms/sync-fields", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ direction: "pull", provider }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Sync failed");
+      if (Array.isArray(data.fields)) {
+        fbFields = data.fields;
+        renderFieldsList();
+      }
+      toast(`Synced from ${provider === "activecampaign" ? "ActiveCampaign" : "Klaviyo"} (${data.addedCount || 0} new fields added).`);
+    } catch (err: any) {
+      toast(err?.message || "Could not pull fields", true);
+    }
+  }
+
+  document.getElementById("btn-pull-ac-fields")?.addEventListener("click", () => pullFieldsFrom("activecampaign"));
+  document.getElementById("btn-pull-klv-fields")?.addEventListener("click", () => pullFieldsFrom("klaviyo"));
+</script>

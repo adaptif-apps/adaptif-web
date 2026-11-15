@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import type { BookCallSubmissionInput } from "./bookCallDb";
+import type { BookCallSubmissionInput, FormField } from "./bookCallDb";
 
 export interface ActiveCampaignMapping {
   fullNameMode: "split" | "firstOnly" | "ignore";
@@ -262,7 +262,8 @@ async function resolveOrCreateTagId(baseUrl: string, apiKey: string, tagName: st
 
 export async function syncLeadToActiveCampaign(
   lead: BookCallSubmissionInput,
-  config: ActiveCampaignConfig
+  config: ActiveCampaignConfig,
+  formFields?: FormField[]
 ): Promise<{ contactId: string }> {
   const base = normalizeUrl(config.apiUrl);
   if (!base || !config.apiKey) {
@@ -289,6 +290,14 @@ export async function syncLeadToActiveCampaign(
     [config.mapping.budgetRangeFieldId, lead.budgetRange],
     [config.mapping.notesFieldId, lead.notes],
   ];
+
+  if (lead.extraFields && Array.isArray(formFields)) {
+    for (const f of formFields) {
+      if (f.acFieldId && lead.extraFields[f.id]) {
+        fieldPairs.push([f.acFieldId, lead.extraFields[f.id]]);
+      }
+    }
+  }
 
   const fieldValues = fieldPairs
     .filter(([fieldId, value]) => fieldId && value && value.trim().length > 0)
@@ -343,4 +352,88 @@ export async function syncLeadToActiveCampaign(
   }
 
   return { contactId };
+}
+
+export async function createActiveCampaignCustomField(
+  config: ActiveCampaignConfig,
+  field: Pick<FormField, "id" | "label" | "type" | "placeholder" | "options">
+): Promise<{ id: string; perstag: string }> {
+  const base = normalizeUrl(config.apiUrl);
+  if (!base || !config.apiKey) {
+    throw new Error("ActiveCampaign credentials are not configured.");
+  }
+
+  const acType =
+    field.type === "textarea"
+      ? "textarea"
+      : field.type === "select"
+        ? "dropdown"
+        : "text";
+
+  const perstag = field.id
+    .toUpperCase()
+    .replace(/[^A-Z0-9_]/g, "_")
+    .replace(/_+/g, "_")
+    .slice(0, 40);
+
+  const createRes = await acFetch(base, config.apiKey, "/api/3/fields", {
+    method: "POST",
+    body: JSON.stringify({
+      field: {
+        type: acType,
+        title: field.label.slice(0, 200),
+        descript: field.placeholder || "",
+        perstag: `ADAPTIF_${perstag}`,
+        visible: 1,
+      },
+    }),
+  });
+
+  const fieldId = String(createRes?.field?.id ?? "");
+  if (!fieldId) {
+    throw new Error("ActiveCampaign did not return a custom field ID.");
+  }
+
+  if (acType === "dropdown" && field.options.length > 0) {
+    await acFetch(base, config.apiKey, "/api/3/fieldOption/bulk", {
+      method: "POST",
+      body: JSON.stringify({
+        fieldOptions: field.options.map((opt, idx) => ({
+          field: fieldId,
+          label: opt,
+          value: opt,
+          orderid: idx + 1,
+        })),
+      }),
+    }).catch(() => {});
+  }
+
+  return { id: fieldId, perstag: String(createRes?.field?.perstag ?? perstag) };
+}
+
+export async function listActiveCampaignCustomFieldsWithOptions(config: ActiveCampaignConfig): Promise<
+  Array<{ id: string; title: string; type: string; perstag: string; options: string[] }>
+> {
+  const base = normalizeUrl(config.apiUrl);
+  if (!base || !config.apiKey) {
+    throw new Error("ActiveCampaign credentials are not configured.");
+  }
+
+  const res = await acFetch(base, config.apiKey, "/api/3/fields?limit=100");
+  const optionsByField = new Map<string, string[]>();
+  for (const opt of res?.fieldOptions ?? []) {
+    const fId = String(opt.field ?? "");
+    if (!fId) continue;
+    const arr = optionsByField.get(fId) ?? [];
+    arr.push(String(opt.label ?? opt.value ?? "").trim());
+    optionsByField.set(fId, arr.filter(Boolean));
+  }
+
+  return (res?.fields ?? []).map((f: any) => ({
+    id: String(f.id),
+    title: String(f.title ?? ""),
+    type: String(f.type ?? "text"),
+    perstag: String(f.perstag ?? ""),
+    options: optionsByField.get(String(f.id)) ?? [],
+  }));
 }

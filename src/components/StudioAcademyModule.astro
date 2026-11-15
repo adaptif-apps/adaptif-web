@@ -170,10 +170,18 @@ const { initialItems, initialSettings } = Astro.props;
       <label class="acd-field">
         <span class="acd-label-row">
           Stripe Webhook Secret (whsec_...)
+          <a
+            href="https://dashboard.stripe.com/webhooks"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="acd-inline-link"
+          >
+            Open Stripe Webhooks ↗
+          </a>
           <span class="acd-tip-wrap">
             <button type="button" class="acd-tip-btn" aria-label="Webhook secret info">?</button>
             <span class="acd-tip-box" role="tooltip">
-              Found in Stripe Dashboard → Developers → Webhooks → Signing secret. Required to verify <code>checkout.session.completed</code> events before emailing course access.
+              Found in Stripe Dashboard → Developers → Webhooks → Signing secret. Required to verify <code>checkout.session.completed</code> events before emailing course access and recording purchases.
             </span>
           </span>
         </span>
@@ -199,6 +207,29 @@ const { initialItems, initialSettings } = Astro.props;
           <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
         </div>
       </div>
+    </div>
+
+    <div class="acd-stripe-guide">
+      <p class="acd-stripe-guide-title">Quick Setup: Connect Your Live or Test Stripe Account</p>
+      <ol class="acd-stripe-guide-steps">
+        <li>
+          Open
+          <a href="https://dashboard.stripe.com/webhooks/create" target="_blank" rel="noopener noreferrer" class="acd-inline-link">
+            Stripe → Developers → Webhooks ↗
+          </a>
+          and click <strong>Add endpoint</strong> (or <strong>Add destination</strong>).
+        </li>
+        <li>
+          Paste the <strong>Stripe Webhook Endpoint</strong> URL above and select the event:
+          <span class="acd-event-chip">
+            <code>checkout.session.completed</code>
+            <button type="button" class="acd-chip-copy" id="btn-copy-stripe-event">Copy Event</button>
+          </span>
+        </li>
+        <li>
+          Copy the <strong>Signing secret (<code>whsec_...</code>)</strong> from Stripe, paste it into <strong>Stripe Webhook Secret</strong> above, and click <strong>Save Payment Settings</strong>.
+        </li>
+      </ol>
     </div>
   </section>
 </div>
@@ -964,6 +995,11 @@ const { initialItems, initialSettings } = Astro.props;
         navigator.clipboard?.writeText(webhookUrlInput.value);
         showStudioToast("Webhook URL copied!");
       }
+    });
+
+    document.getElementById("btn-copy-stripe-event")?.addEventListener("click", () => {
+      navigator.clipboard?.writeText("checkout.session.completed");
+      showStudioToast("Event name copied!");
     });
 
     async function refreshGeneralInfo() {
@@ -1945,6 +1981,86 @@ const { initialItems, initialSettings } = Astro.props;
     visibility: hidden;
     transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
     z-index: 220;
+  }
+
+  .acd-inline-link {
+    color: #5fd0ff;
+    font-size: 0.76rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: auto;
+    transition: color 0.15s ease;
+  }
+
+  .acd-inline-link:hover {
+    color: #9be4ff;
+    text-decoration: underline;
+  }
+
+  .acd-stripe-guide {
+    margin-top: 20px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(95, 208, 255, 0.2);
+    background: rgba(6, 17, 32, 0.65);
+  }
+
+  .acd-stripe-guide-title {
+    margin: 0 0 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #8ce0ff;
+  }
+
+  .acd-stripe-guide-steps {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.83rem;
+    line-height: 1.5;
+    color: rgba(215, 232, 250, 0.86);
+  }
+
+  .acd-stripe-guide-steps .acd-inline-link {
+    margin-left: 0;
+    font-size: 0.83rem;
+  }
+
+  .acd-event-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 6px;
+    padding: 2px 6px 2px 9px;
+    border-radius: 8px;
+    border: 1px solid rgba(95, 208, 255, 0.28);
+    background: rgba(11, 27, 48, 0.85);
+    vertical-align: middle;
+  }
+
+  .acd-event-chip code {
+    font-size: 0.77rem;
+    color: #9be4ff;
+  }
+
+  .acd-chip-copy {
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(95, 208, 255, 0.3);
+    background: rgba(72, 200, 255, 0.14);
+    color: #e6f6ff;
+    font-size: 0.71rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .acd-chip-copy:hover {
+    background: rgba(72, 200, 255, 0.26);
   }
 
   .acd-tip-box code {

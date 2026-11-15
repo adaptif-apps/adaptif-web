@@ -1043,7 +1043,7 @@ const tagPresets = [
             w.__STUDIO_INIT_MULTISELECT__?.(document.getElementById("ac-forms-multiselect"));
           }
           if (target === "book-call") {
-            ["fb-new-type", "fb-new-step"].forEach((id) => {
+            ["fb-f-type", "fb-f-step"].forEach((id) => {
               const sel = document.getElementById(id) as HTMLSelectElement | null;
               if (sel) {
                 w.__STUDIO_ENHANCE_SELECT__?.(sel);

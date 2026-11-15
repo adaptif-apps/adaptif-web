@@ -41,7 +41,7 @@ const { initialConfig } = Astro.props;
       <button type="button" class="studio-btn-ghost" id="btn-pull-klv-fields">
         Pull from Klaviyo
       </button>
-      <button type="button" class="studio-btn-ghost fb-edit-only" id="btn-fb-toggle-add">
+      <button type="button" class="studio-btn-ghost fb-edit-only" id="btn-fb-add-field">
         + Add Field
       </button>
       <button type="button" class="acd-btn-cyan" id="btn-save-form-builder">
@@ -50,126 +50,248 @@ const { initialConfig } = Astro.props;
     </div>
   </div>
 
-  <!-- Add / Edit Field Drawer (Edit Mode) -->
-  <div id="fb-field-drawer" class="studio-card acd-card fb-drawer" hidden>
-    <div class="fb-drawer-head">
-      <strong id="fb-drawer-title">Add New Field</strong>
-      <button type="button" class="fb-icon-btn" id="btn-fb-close-drawer" aria-label="Close">×</button>
-    </div>
-    <div class="fb-drawer-grid">
-      <label class="acd-field">
-        <span class="acd-label-row">Label</span>
-        <input type="text" id="fb-f-label" placeholder="e.g. Company Size" />
-      </label>
-      <label class="acd-field">
-        <span class="acd-label-row">Type</span>
-        <select id="fb-f-type" class="studio-select">
-          <option value="text">Text</option>
-          <option value="email">Email</option>
-          <option value="url">URL</option>
-          <option value="select">Dropdown</option>
-          <option value="textarea">Long Text</option>
-        </select>
-      </label>
-      <label class="acd-field">
-        <span class="acd-label-row">Placeholder</span>
-        <input type="text" id="fb-f-placeholder" placeholder="e.g. 10-50 employees" />
-      </label>
-      <label class="acd-field">
-        <span class="acd-label-row">Step</span>
-        <select id="fb-f-step" class="studio-select">
-          <option value="1">Step 1</option>
-          <option value="2">Step 2</option>
-        </select>
-      </label>
-      <label class="acd-field">
-        <span class="acd-label-row">Columns</span>
-        <select id="fb-f-width" class="studio-select">
-          <option value="half">2 Columns (Half)</option>
-          <option value="full">1 Column (Full)</option>
-        </select>
-      </label>
-      <label class="acd-field" style="justify-content: flex-end;">
-        <label class="studio-toggle-pill is-inactive" id="fb-f-req-pill" style="align-self: flex-start;">
-          <input type="checkbox" class="studio-toggle-chk" id="fb-f-required" />
-          <span class="studio-switch" aria-hidden="true"></span>
-          <span class="studio-toggle-text" id="fb-f-req-label">Optional</span>
-        </label>
-      </label>
-      <label class="acd-field fb-span-2" id="fb-f-options-wrap" hidden>
-        <span class="acd-label-row">Dropdown Options (comma-separated)</span>
-        <input type="text" id="fb-f-options" placeholder="Option A, Option B, Option C" />
-      </label>
-    </div>
-    <div class="fb-drawer-foot">
-      <button type="button" class="studio-btn-ghost" id="btn-fb-cancel-drawer">Cancel</button>
-      <button type="button" class="acd-btn-cyan" id="btn-fb-apply-field">Apply Field</button>
-    </div>
-  </div>
-
-  <!-- WYSIWYG Modal Preview / Editor -->
-  <div class="fb-stage">
-    <div class="fb-modal-frame">
-      <div class="fb-modal-progress">
-        <span class="fb-progress-dot" data-dot="1"></span>
-        <span class="fb-progress-dot" data-dot="2"></span>
-        <span class="fb-progress-dot" data-dot="confirm"></span>
-      </div>
-
-      <!-- STEP 1 -->
-      <div class="fb-step-panel" data-panel="1">
-        <div class="fb-modal-header">
-          <input type="text" class="fb-inline-eyebrow" data-cfg="step1Eyebrow" value={initialConfig.step1Eyebrow} />
-          <div class="fb-inline-title-row">
-            <input type="text" class="fb-inline-title" data-cfg="step1Title" value={initialConfig.step1Title} />
-            <input type="text" class="fb-inline-highlight" data-cfg="step1TitleHighlight" value={initialConfig.step1TitleHighlight} />
-          </div>
-          <textarea class="fb-inline-sub" data-cfg="step1Subtitle" rows="2">{initialConfig.step1Subtitle}</textarea>
-        </div>
-
-        <div class="fb-canvas-grid" id="fb-grid-1"></div>
-
-        <div class="fb-modal-footer">
-          <button type="button" class="acd-btn-cyan fb-cta-btn" id="fb-cta-1">
-            <input type="text" class="fb-inline-cta" data-cfg="step1Cta" value={initialConfig.step1Cta} />
-          </button>
-        </div>
-      </div>
-
-      <!-- STEP 2 -->
-      <div class="fb-step-panel" data-panel="2" hidden>
-        <div class="fb-modal-header">
-          <input type="text" class="fb-inline-eyebrow" data-cfg="step2Eyebrow" value={initialConfig.step2Eyebrow} />
-          <div class="fb-inline-title-row">
-            <input type="text" class="fb-inline-title" data-cfg="step2Title" value={initialConfig.step2Title} />
-            <input type="text" class="fb-inline-highlight" data-cfg="step2TitleHighlight" value={initialConfig.step2TitleHighlight} />
-          </div>
-          <textarea class="fb-inline-sub" data-cfg="step2Subtitle" rows="2">{initialConfig.step2Subtitle}</textarea>
-        </div>
-
-        <div class="fb-canvas-grid" id="fb-grid-2"></div>
-
-        <div class="fb-modal-footer fb-footer-split">
-          <button type="button" class="studio-btn-ghost" id="fb-back-2">← Back</button>
-          <button type="button" class="acd-btn-cyan fb-cta-btn" id="fb-cta-2">
-            <input type="text" class="fb-inline-cta" data-cfg="step2Cta" value={initialConfig.step2Cta} />
-          </button>
-        </div>
-      </div>
-
-      <!-- CONFIRMATION -->
-      <div class="fb-step-panel fb-confirm-panel" data-panel="confirm" hidden>
-        <div class="fb-confirm-icon">✓</div>
-        <div class="fb-inline-title-row" style="justify-content: center;">
-          <input type="text" class="fb-inline-title" style="text-align: center;" data-cfg="confirmTitle" value={initialConfig.confirmTitle} />
-          <input type="text" class="fb-inline-highlight" style="text-align: center;" data-cfg="confirmTitleHighlight" value={initialConfig.confirmTitleHighlight} />
-        </div>
-        <textarea class="fb-inline-sub" style="text-align: center; max-width: 460px; margin: 10px auto 22px;" data-cfg="confirmSubtitle" rows="2">{initialConfig.confirmSubtitle}</textarea>
-        <button type="button" class="acd-btn-cyan fb-cta-btn" id="fb-cta-confirm">
-          <input type="text" class="fb-inline-cta" data-cfg="confirmCta" value={initialConfig.confirmCta} />
+  <!-- 2-Column Builder Workspace -->
+  <div class="fb-workspace">
+    <!-- Left: Exact Front-End Modal Canvas -->
+    <div class="fb-stage" id="fb-stage">
+      <div class="fb-bc-card" id="fb-bc-card" data-step="1">
+        <button type="button" class="fb-bc-close" aria-label="Close modal" tabindex="-1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
         </button>
+
+        <!-- STEP 1 -->
+        <div class="fb-step-panel" data-panel="1">
+          <span class="fb-bc-eyebrow" id="fb-view-step1Eyebrow">{initialConfig.step1Eyebrow}</span>
+          <h2 class="fb-bc-title">
+            <span id="fb-view-step1Title">{initialConfig.step1Title}</span>{" "}
+            <span class="fb-bc-title-italic" id="fb-view-step1TitleHighlight">{initialConfig.step1TitleHighlight}</span>
+          </h2>
+          <p class="fb-bc-subtitle" id="fb-view-step1Subtitle">{initialConfig.step1Subtitle}</p>
+
+          <div class="fb-bc-grid" id="fb-grid-1"></div>
+
+          <div class="fb-bc-footer">
+            <div class="fb-bc-privacy">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              <span>We'll only use your details to coordinate your call. No spam.</span>
+            </div>
+            <button type="button" class="fb-bc-cta-btn" id="fb-cta-1">
+              <span id="fb-view-step1Cta">{initialConfig.step1Cta}</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="fb-step-panel" data-panel="2" hidden>
+          <span class="fb-bc-eyebrow" id="fb-view-step2Eyebrow">{initialConfig.step2Eyebrow}</span>
+          <h2 class="fb-bc-title">
+            <span id="fb-view-step2Title">{initialConfig.step2Title}</span>{" "}
+            <span class="fb-bc-title-italic" id="fb-view-step2TitleHighlight">{initialConfig.step2TitleHighlight}</span>
+          </h2>
+          <p class="fb-bc-subtitle" id="fb-view-step2Subtitle">{initialConfig.step2Subtitle}</p>
+
+          <div class="fb-bc-grid" id="fb-grid-2"></div>
+
+          <div class="fb-bc-footer">
+            <button type="button" class="fb-bc-back-btn" id="fb-back-2">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M11 18l-6-6 6-6" />
+              </svg>
+              Back
+            </button>
+            <button type="button" class="fb-bc-cta-btn" id="fb-cta-2">
+              <span id="fb-view-step2Cta">{initialConfig.step2Cta}</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- CONFIRMATION -->
+        <div class="fb-step-panel fb-bc-success" data-panel="confirm" hidden>
+          <div class="fb-bc-success-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+          </div>
+          <h2 class="fb-bc-title" style="padding-right: 0; text-align: center;">
+            <span id="fb-view-confirmTitle">{initialConfig.confirmTitle}</span>{" "}
+            <span class="fb-bc-title-italic" id="fb-view-confirmTitleHighlight">{initialConfig.confirmTitleHighlight}</span>
+          </h2>
+          <p class="fb-bc-subtitle fb-bc-subtitle--center" id="fb-view-confirmSubtitle">{initialConfig.confirmSubtitle}</p>
+          <button type="button" class="fb-bc-cta-btn" id="fb-cta-confirm">
+            <span id="fb-view-confirmCta">{initialConfig.confirmCta}</span>
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- Right: Contextual Inspector Panel (Edit Mode Only) -->
+    <aside class="studio-card acd-card fb-inspector fb-edit-only" id="fb-inspector">
+      <!-- Form General Options (shown when no field is selected) -->
+      <div id="fb-insp-form" class="fb-insp-body">
+        <div class="fb-insp-head">
+          <div>
+            <span class="acd-section-kicker">Form Options</span>
+            <h3 class="fb-insp-title" id="fb-insp-step-heading">Step 1 Settings</h3>
+          </div>
+        </div>
+
+        <div id="fb-insp-step1-fields" class="fb-insp-fields">
+          <label class="acd-field">
+            <span class="acd-label-row">Eyebrow</span>
+            <input type="text" data-cfg="step1Eyebrow" value={initialConfig.step1Eyebrow} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Title</span>
+            <input type="text" data-cfg="step1Title" value={initialConfig.step1Title} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Title Highlight (Italic)</span>
+            <input type="text" data-cfg="step1TitleHighlight" value={initialConfig.step1TitleHighlight} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Description</span>
+            <textarea rows="3" data-cfg="step1Subtitle">{initialConfig.step1Subtitle}</textarea>
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Button Text</span>
+            <input type="text" data-cfg="step1Cta" value={initialConfig.step1Cta} />
+          </label>
+        </div>
+
+        <div id="fb-insp-step2-fields" class="fb-insp-fields" hidden>
+          <label class="acd-field">
+            <span class="acd-label-row">Eyebrow</span>
+            <input type="text" data-cfg="step2Eyebrow" value={initialConfig.step2Eyebrow} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Title</span>
+            <input type="text" data-cfg="step2Title" value={initialConfig.step2Title} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Title Highlight (Italic)</span>
+            <input type="text" data-cfg="step2TitleHighlight" value={initialConfig.step2TitleHighlight} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Description</span>
+            <textarea rows="3" data-cfg="step2Subtitle">{initialConfig.step2Subtitle}</textarea>
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Button Text</span>
+            <input type="text" data-cfg="step2Cta" value={initialConfig.step2Cta} />
+          </label>
+        </div>
+
+        <div id="fb-insp-confirm-fields" class="fb-insp-fields" hidden>
+          <label class="acd-field">
+            <span class="acd-label-row">Title</span>
+            <input type="text" data-cfg="confirmTitle" value={initialConfig.confirmTitle} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Title Highlight (Italic)</span>
+            <input type="text" data-cfg="confirmTitleHighlight" value={initialConfig.confirmTitleHighlight} />
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Message</span>
+            <textarea rows="3" data-cfg="confirmSubtitle">{initialConfig.confirmSubtitle}</textarea>
+          </label>
+          <label class="acd-field">
+            <span class="acd-label-row">Button Text</span>
+            <input type="text" data-cfg="confirmCta" value={initialConfig.confirmCta} />
+          </label>
+        </div>
+
+        <p class="field-hint" style="margin-top: 6px;">
+          Click any field on the left to edit its title, placeholder, type, or column layout.
+        </p>
+      </div>
+
+      <!-- Field Inspector (shown when a field is selected) -->
+      <div id="fb-insp-field" class="fb-insp-body" hidden>
+        <div class="fb-insp-head">
+          <div>
+            <span class="acd-section-kicker">Field Inspector</span>
+            <h3 class="fb-insp-title" id="fb-insp-field-name">Field</h3>
+          </div>
+          <button type="button" class="fb-mini-btn" id="btn-fb-deselect">Done</button>
+        </div>
+
+        <div class="fb-insp-fields">
+          <label class="acd-field">
+            <span class="acd-label-row">Title / Label</span>
+            <input type="text" id="fb-f-label" placeholder="e.g. What's your full name?" />
+          </label>
+
+          <label class="acd-field">
+            <span class="acd-label-row">Placeholder</span>
+            <input type="text" id="fb-f-placeholder" placeholder="e.g. Your full name" />
+          </label>
+
+          <div class="fb-insp-row-2">
+            <label class="acd-field">
+              <span class="acd-label-row">Field Type</span>
+              <select id="fb-f-type" class="studio-select">
+                <option value="text">Text</option>
+                <option value="email">Email</option>
+                <option value="url">URL</option>
+                <option value="select">Dropdown</option>
+                <option value="textarea">Long Text</option>
+              </select>
+            </label>
+
+            <label class="acd-field">
+              <span class="acd-label-row">Step</span>
+              <select id="fb-f-step" class="studio-select">
+                <option value="1">Step 1</option>
+                <option value="2">Step 2</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="acd-field">
+            <span class="acd-label-row">Columns</span>
+            <div class="fb-col-segmented">
+              <button type="button" class="fb-col-btn" data-col-width="half">2 Cols (50%)</button>
+              <button type="button" class="fb-col-btn" data-col-width="full">1 Col (100%)</button>
+            </div>
+          </div>
+
+          <div class="acd-field">
+            <span class="acd-label-row">Move Position</span>
+            <div class="fb-col-segmented">
+              <button type="button" class="fb-col-btn" id="btn-fb-move-left">← Move Left</button>
+              <button type="button" class="fb-col-btn" id="btn-fb-move-right">Move Right →</button>
+            </div>
+          </div>
+
+          <label class="acd-field" id="fb-f-options-wrap" hidden>
+            <span class="acd-label-row">Dropdown Options (comma-separated)</span>
+            <textarea rows="3" id="fb-f-options" placeholder="Option A, Option B, Option C"></textarea>
+          </label>
+
+          <div class="fb-insp-bottom-row">
+            <label class="studio-toggle-pill is-inactive" id="fb-f-req-pill">
+              <input type="checkbox" class="studio-toggle-chk" id="fb-f-required" />
+              <span class="studio-switch" aria-hidden="true"></span>
+              <span class="studio-toggle-text" id="fb-f-req-label">Optional</span>
+            </label>
+
+            <button type="button" class="fb-mini-btn is-danger" id="btn-fb-delete-field">
+              Delete Field
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 </div>
 
@@ -238,316 +360,423 @@ const { initialConfig } = Astro.props;
     display: none !important;
   }
 
-  .fb-drawer {
-    padding: 20px !important;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .fb-drawer-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: #f8fafc;
-    font-size: 0.95rem;
-  }
-
-  .fb-drawer-grid {
+  /* 2-Column Workspace */
+  .fb-workspace {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 20px;
+    align-items: start;
   }
 
-  .fb-span-2 {
-    grid-column: span 2;
+  .fb-root[data-mode="preview"] .fb-workspace {
+    grid-template-columns: 1fr;
   }
 
-  @media (max-width: 820px) {
-    .fb-drawer-grid {
+  @media (max-width: 1080px) {
+    .fb-workspace {
       grid-template-columns: 1fr;
     }
-    .fb-span-2 {
-      grid-column: span 1;
-    }
-  }
-
-  .fb-drawer-foot {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
   }
 
   .fb-stage {
     display: flex;
     justify-content: center;
+    align-items: flex-start;
     padding: 8px 0 24px;
+    min-height: 520px;
   }
 
-  .fb-modal-frame {
+  /* Exact Front-End BookCallModal Card Styles */
+  .fb-bc-card {
+    position: relative;
     width: 100%;
-    max-width: 720px;
-    background: linear-gradient(165deg, rgba(12, 30, 62, 0.88) 0%, rgba(5, 14, 32, 0.96) 100%);
-    border: 1px solid rgba(72, 200, 255, 0.24);
-    border-radius: 24px;
-    padding: 32px;
+    max-width: 680px;
+    padding: clamp(26px, 4vw, 40px);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 82% 18%, rgba(56, 189, 248, 0.22) 0%, rgba(15, 42, 92, 0.18) 38%, transparent 72%),
+      linear-gradient(155deg, rgba(16, 39, 80, 0.96) 0%, rgba(8, 22, 48, 0.98) 65%, rgba(6, 15, 34, 0.99) 100%);
+    border: 1px solid rgba(72, 200, 255, 0.22);
     box-shadow:
-      0 24px 60px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(20px);
+      0 32px 90px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    transition: max-width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .fb-modal-progress {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 18px;
+  .fb-bc-card[data-step="2"] {
+    max-width: 780px;
   }
 
-  .fb-progress-dot {
-    height: 4px;
-    flex: 1;
+  .fb-bc-card[data-step="confirm"] {
+    max-width: 520px;
+  }
+
+  .fb-bc-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 34px;
+    height: 34px;
     border-radius: 999px;
-    background: rgba(72, 200, 255, 0.16);
-    transition: background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(226, 232, 240, 0.72);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: default;
   }
 
-  .fb-progress-dot.is-active {
-    background: #48c8ff;
-  }
-
-  .fb-modal-header {
-    margin-bottom: 22px;
-  }
-
-  .fb-inline-eyebrow {
-    width: 100%;
-    background: transparent !important;
-    border: 1px dashed transparent !important;
-    padding: 2px 4px !important;
-    font-size: 0.72rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.12em;
+  .fb-bc-eyebrow {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #48c8ff !important;
-    border-radius: 6px !important;
+    color: #48c8ff;
   }
 
-  .fb-inline-title-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: baseline;
-    margin: 4px 0 6px;
+  .fb-bc-title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2rem, 3.6vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: #ffffff;
+    margin: 10px 0 10px;
+    padding-right: 36px;
   }
 
-  .fb-inline-title,
-  .fb-inline-highlight {
-    background: transparent !important;
-    border: 1px dashed transparent !important;
-    padding: 2px 4px !important;
-    font-size: 1.55rem !important;
-    font-weight: 700 !important;
-    color: #f8fafc !important;
-    border-radius: 8px !important;
-    width: auto !important;
-    min-width: 120px;
-    flex: 1;
-  }
-
-  .fb-inline-highlight {
-    color: #48c8ff !important;
+  .fb-bc-title-italic {
     font-style: italic;
+    color: var(--color-brand-cyan, #48c8ff);
   }
 
-  .fb-inline-sub {
-    width: 100%;
-    background: transparent !important;
-    border: 1px dashed transparent !important;
-    padding: 4px !important;
-    font-size: 0.88rem !important;
-    color: #94a3b8 !important;
-    resize: none;
-    border-radius: 8px !important;
-    line-height: 1.5;
+  .fb-bc-subtitle {
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: rgba(203, 213, 225, 0.78);
+    margin: 0 0 24px;
+    max-width: 58ch;
   }
 
-  .fb-root[data-mode="edit"] .fb-inline-eyebrow:hover,
-  .fb-root[data-mode="edit"] .fb-inline-title:hover,
-  .fb-root[data-mode="edit"] .fb-inline-highlight:hover,
-  .fb-root[data-mode="edit"] .fb-inline-sub:hover {
-    border-color: rgba(72, 200, 255, 0.35) !important;
-    background: rgba(72, 200, 255, 0.05) !important;
+  .fb-bc-subtitle--center {
+    text-align: center;
+    margin-inline: auto;
   }
 
-  .fb-root[data-mode="preview"] .fb-inline-eyebrow,
-  .fb-root[data-mode="preview"] .fb-inline-title,
-  .fb-root[data-mode="preview"] .fb-inline-highlight,
-  .fb-root[data-mode="preview"] .fb-inline-sub,
-  .fb-root[data-mode="preview"] .fb-inline-cta {
-    pointer-events: none;
-  }
-
-  .fb-canvas-grid {
+  .fb-bc-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
   }
 
   @media (max-width: 640px) {
-    .fb-canvas-grid {
+    .fb-bc-grid {
       grid-template-columns: 1fr;
     }
   }
 
-  .fb-canvas-field {
+  .fb-bc-field {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: 10px;
-    border-radius: 14px;
-    border: 1px dashed rgba(72, 200, 255, 0.22);
-    background: rgba(10, 25, 52, 0.35);
-    transition: border-color 0.16s ease, background 0.16s ease;
+    gap: 7px;
+    border-radius: 12px;
+    transition: box-shadow 0.16s ease, background 0.16s ease;
   }
 
-  .fb-canvas-field.is-full {
+  .fb-bc-field.is-full {
     grid-column: span 2;
   }
 
   @media (max-width: 640px) {
-    .fb-canvas-field.is-full {
+    .fb-bc-field.is-full {
       grid-column: span 1;
     }
   }
 
-  .fb-root[data-mode="edit"] .fb-canvas-field:hover {
-    border-color: rgba(72, 200, 255, 0.55);
-    background: rgba(14, 34, 70, 0.52);
+  .fb-root[data-mode="edit"] .fb-bc-field {
+    cursor: pointer;
+    padding: 6px;
+    margin: -6px;
   }
 
-  .fb-root[data-mode="preview"] .fb-canvas-field {
-    padding: 0;
-    border: none;
-    background: transparent;
+  .fb-root[data-mode="edit"] .fb-bc-field:hover {
+    background: rgba(72, 200, 255, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(72, 200, 255, 0.28);
   }
 
-  .fb-field-controls {
+  .fb-root[data-mode="edit"] .fb-bc-field.is-selected {
+    background: rgba(72, 200, 255, 0.1);
+    box-shadow:
+      inset 0 0 0 1.5px #48c8ff,
+      0 0 18px rgba(72, 200, 255, 0.16);
+  }
+
+  .fb-bc-label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #7dd3fc;
+  }
+
+  .fb-bc-required {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: rgba(203, 213, 225, 0.62);
+  }
+
+  .fb-bc-input,
+  .fb-bc-textarea,
+  .fb-bc-select-box {
+    width: 100%;
+    font-family: var(--font-family-body);
+    font-size: 0.88rem;
+    color: #f8fafc;
+    background: rgba(18, 44, 88, 0.52);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    border-radius: 10px;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .fb-root[data-mode="edit"] .fb-bc-input,
+  .fb-root[data-mode="edit"] .fb-bc-textarea,
+  .fb-root[data-mode="edit"] .fb-bc-select-box {
+    pointer-events: none;
+  }
+
+  .fb-bc-input::placeholder,
+  .fb-bc-textarea::placeholder {
+    color: rgba(148, 163, 184, 0.62);
+  }
+
+  .fb-bc-textarea {
+    resize: vertical;
+    min-height: 92px;
+  }
+
+  .fb-bc-select-box {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 6px;
-    margin-bottom: 2px;
+    color: rgba(148, 163, 184, 0.68);
   }
 
-  .fb-root[data-mode="preview"] .fb-field-controls {
-    display: none;
-  }
-
-  .fb-field-ctrl-group {
+  .fb-bc-footer {
     display: flex;
     align-items: center;
-    gap: 4px;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .fb-bc-privacy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: rgba(148, 163, 184, 0.8);
+  }
+
+  .fb-bc-privacy svg {
+    color: #38bdf8;
+    flex-shrink: 0;
+  }
+
+  .fb-bc-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: rgba(203, 213, 225, 0.78);
+    padding: 8px 4px;
+    cursor: pointer;
+  }
+
+  .fb-bc-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, #5ce1ff 0%, #38bdf8 55%, #0ea5e9 100%);
+    color: #031528;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow:
+      0 0 24px rgba(56, 189, 248, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .fb-bc-cta-btn:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 32px rgba(56, 189, 248, 0.65),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .fb-bc-success {
+    text-align: center;
+    padding: 12px 8px;
+  }
+
+  .fb-bc-success-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(56, 189, 248, 0.14);
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    color: #38bdf8;
+    box-shadow: 0 0 26px rgba(56, 189, 248, 0.25);
+  }
+
+  /* Right Inspector Panel */
+  .fb-inspector {
+    padding: 20px !important;
+    position: sticky;
+    top: 20px;
+  }
+
+  .fb-insp-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .fb-insp-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.14);
+  }
+
+  .fb-insp-title {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .fb-insp-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fb-insp-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .fb-col-segmented {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .fb-col-btn {
+    appearance: none;
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    background: rgba(10, 25, 52, 0.55);
+    color: #94a3b8;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .fb-col-btn:hover:not(:disabled) {
+    border-color: rgba(72, 200, 255, 0.5);
+    color: #f8fafc;
+  }
+
+  .fb-col-btn.is-active {
+    background: rgba(72, 200, 255, 0.18);
+    border-color: rgba(72, 200, 255, 0.55);
+    color: #7ee0ff;
+  }
+
+  .fb-col-btn:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+
+  .fb-insp-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(72, 200, 255, 0.12);
   }
 
   .fb-mini-btn {
     appearance: none;
-    border: 1px solid rgba(72, 200, 255, 0.22);
-    background: rgba(6, 17, 36, 0.72);
-    color: #94a3b8;
+    border: 1px solid rgba(72, 200, 255, 0.25);
+    background: rgba(10, 25, 52, 0.65);
+    color: #cbd5e1;
     font-family: inherit;
-    font-size: 0.68rem;
+    font-size: 0.74rem;
     font-weight: 600;
-    padding: 3px 7px;
-    border-radius: 6px;
+    padding: 6px 11px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.14s ease;
   }
 
   .fb-mini-btn:hover {
     border-color: rgba(72, 200, 255, 0.55);
-    color: #f8fafc;
+    color: #ffffff;
   }
 
-  .fb-mini-btn.is-danger:hover {
-    border-color: rgba(248, 113, 113, 0.65);
+  .fb-mini-btn.is-danger {
+    border-color: rgba(248, 113, 113, 0.32);
     color: #fca5a5;
   }
 
-  .fb-canvas-label {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #cbd5e1;
-  }
-
-  .fb-req-star {
-    color: #48c8ff;
-    margin-left: 2px;
-  }
-
-  .fb-modal-footer {
-    margin-top: 24px;
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .fb-footer-split {
-    justify-content: space-between;
-  }
-
-  .fb-cta-btn {
-    padding: 8px 18px !important;
-  }
-
-  .fb-inline-cta {
-    background: transparent !important;
-    border: none !important;
-    color: #031528 !important;
-    font-weight: 700 !important;
-    font-size: 0.86rem !important;
-    text-align: center;
-    padding: 2px 4px !important;
-    width: auto !important;
-    min-width: 110px;
-  }
-
-  .fb-confirm-panel {
-    text-align: center;
-    padding: 24px 12px;
-  }
-
-  .fb-confirm-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: rgba(52, 211, 153, 0.16);
-    border: 1px solid rgba(52, 211, 153, 0.48);
-    color: #34d399;
-    font-size: 1.4rem;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 14px;
-  }
-
-  .fb-icon-btn {
-    appearance: none;
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    font-size: 1.25rem;
-    cursor: pointer;
-    line-height: 1;
+  .fb-mini-btn.is-danger:hover {
+    border-color: rgba(248, 113, 113, 0.68);
+    background: rgba(248, 113, 113, 0.12);
   }
 </style>
 
 <script>
   const w = window as any;
   const root = document.getElementById("studio-form-builder") as HTMLElement | null;
+  const stageEl = document.getElementById("fb-stage") as HTMLElement | null;
+  const cardEl = document.getElementById("fb-bc-card") as HTMLElement | null;
+
   let config: any = JSON.parse(JSON.stringify(w.__INITIAL_BOOK_CALL_CONFIG__ || {}));
   let fields: any[] = Array.isArray(config.fields) ? config.fields : [];
-  let editingFieldId: string | null = null;
+  let selectedFieldId: string | null = null;
 
   function toast(msg: string, isErr = false) {
     if (typeof w.__SHOW_STUDIO_TOAST__ === "function") {
@@ -562,25 +791,280 @@ const { initialConfig } = Astro.props;
       b.classList.toggle("is-active", (b as HTMLElement).dataset.fbMode === mode);
     });
     if (mode === "preview") {
-      const drawer = document.getElementById("fb-field-drawer");
-      if (drawer) drawer.hidden = true;
+      selectField(null);
     }
   }
 
   function setStep(step: "1" | "2" | "confirm") {
     if (!root) return;
     root.dataset.step = step;
+    if (cardEl) cardEl.dataset.step = step;
     root.querySelectorAll("[data-fb-step]").forEach((b) => {
       b.classList.toggle("is-active", (b as HTMLElement).dataset.fbStep === step);
     });
     root.querySelectorAll<HTMLElement>("[data-panel]").forEach((p) => {
       p.hidden = p.dataset.panel !== step;
     });
-    root.querySelectorAll<HTMLElement>("[data-dot]").forEach((d) => {
-      d.classList.toggle("is-active", d.dataset.dot === step);
+
+    const stepHeading = document.getElementById("fb-insp-step-heading");
+    const s1 = document.getElementById("fb-insp-step1-fields");
+    const s2 = document.getElementById("fb-insp-step2-fields");
+    const sc = document.getElementById("fb-insp-confirm-fields");
+    if (stepHeading) {
+      stepHeading.textContent =
+        step === "1" ? "Step 1 Settings" : step === "2" ? "Step 2 Settings" : "Confirmation Settings";
+    }
+    if (s1) s1.hidden = step !== "1";
+    if (s2) s2.hidden = step !== "2";
+    if (sc) sc.hidden = step !== "confirm";
+
+    selectField(null);
+  }
+
+  // Bind Form Options inputs -> config + live preview text
+  root?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-cfg]").forEach((el) => {
+    el.addEventListener("input", () => {
+      const key = el.dataset.cfg;
+      if (!key) return;
+      config[key] = el.value;
+      const viewEl = document.getElementById(`fb-view-${key}`);
+      if (viewEl) viewEl.textContent = el.value;
+    });
+  });
+
+  // Inspector elements
+  const inspForm = document.getElementById("fb-insp-form") as HTMLElement | null;
+  const inspField = document.getElementById("fb-insp-field") as HTMLElement | null;
+  const inspFieldName = document.getElementById("fb-insp-field-name") as HTMLElement | null;
+  const fLabel = document.getElementById("fb-f-label") as HTMLInputElement | null;
+  const fPh = document.getElementById("fb-f-placeholder") as HTMLInputElement | null;
+  const fType = document.getElementById("fb-f-type") as HTMLSelectElement | null;
+  const fStep = document.getElementById("fb-f-step") as HTMLSelectElement | null;
+  const fOptsWrap = document.getElementById("fb-f-options-wrap") as HTMLElement | null;
+  const fOpts = document.getElementById("fb-f-options") as HTMLTextAreaElement | null;
+  const fReq = document.getElementById("fb-f-required") as HTMLInputElement | null;
+  const fReqPill = document.getElementById("fb-f-req-pill");
+  const fReqLbl = document.getElementById("fb-f-req-label");
+  const delBtn = document.getElementById("btn-fb-delete-field") as HTMLButtonElement | null;
+  const moveLeftBtn = document.getElementById("btn-fb-move-left") as HTMLButtonElement | null;
+  const moveRightBtn = document.getElementById("btn-fb-move-right") as HTMLButtonElement | null;
+
+  function syncReqPill(on: boolean) {
+    fReqPill?.classList.toggle("is-active", on);
+    fReqPill?.classList.toggle("is-inactive", !on);
+    if (fReqLbl) fReqLbl.textContent = on ? "Required" : "Optional";
+  }
+
+  function populateFieldInspector() {
+    const field = fields.find((x) => x.id === selectedFieldId);
+    if (!field) {
+      if (inspForm) inspForm.hidden = false;
+      if (inspField) inspField.hidden = true;
+      return;
+    }
+    if (inspForm) inspForm.hidden = true;
+    if (inspField) inspField.hidden = false;
+    if (inspFieldName) inspFieldName.textContent = field.label || field.id;
+    if (fLabel) fLabel.value = field.label || "";
+    if (fPh) fPh.value = field.placeholder || "";
+    if (fType) {
+      fType.value = field.type || "text";
+      w.__STUDIO_SYNC_SELECT__?.(fType);
+    }
+    if (fStep) {
+      fStep.value = String(field.step || 1);
+      w.__STUDIO_SYNC_SELECT__?.(fStep);
+    }
+    if (fOpts) fOpts.value = Array.isArray(field.options) ? field.options.join(", ") : "";
+    if (fOptsWrap) fOptsWrap.hidden = field.type !== "select";
+    if (fReq) fReq.checked = Boolean(field.required);
+    syncReqPill(Boolean(field.required));
+
+    root?.querySelectorAll<HTMLElement>("[data-col-width]").forEach((b) => {
+      b.classList.toggle("is-active", b.dataset.colWidth === (field.width === "full" ? "full" : "half"));
+    });
+
+    if (delBtn) delBtn.hidden = Boolean(field.locked);
+    const idx = fields.findIndex((x) => x.id === field.id);
+    if (moveLeftBtn) moveLeftBtn.disabled = idx <= 0;
+    if (moveRightBtn) moveRightBtn.disabled = idx < 0 || idx >= fields.length - 1;
+  }
+
+  function selectField(id: string | null) {
+    selectedFieldId = id;
+    renderCanvas();
+    populateFieldInspector();
+  }
+
+  function getSelectedField() {
+    return fields.find((x) => x.id === selectedFieldId) || null;
+  }
+
+  // Live Inspector Listeners
+  fLabel?.addEventListener("input", () => {
+    const f = getSelectedField();
+    if (!f) return;
+    f.label = fLabel.value;
+    if (inspFieldName) inspFieldName.textContent = f.label || f.id;
+    renderCanvas();
+  });
+
+  fPh?.addEventListener("input", () => {
+    const f = getSelectedField();
+    if (!f) return;
+    f.placeholder = fPh.value;
+    renderCanvas();
+  });
+
+  fType?.addEventListener("change", () => {
+    const f = getSelectedField();
+    if (!f) return;
+    f.type = fType.value;
+    if (fOptsWrap) fOptsWrap.hidden = f.type !== "select";
+    renderCanvas();
+  });
+
+  fStep?.addEventListener("change", () => {
+    const f = getSelectedField();
+    if (!f) return;
+    f.step = Number(fStep.value) === 2 ? 2 : 1;
+    renderCanvas();
+  });
+
+  fOpts?.addEventListener("input", () => {
+    const f = getSelectedField();
+    if (!f) return;
+    f.options = fOpts.value
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    renderCanvas();
+  });
+
+  fReq?.addEventListener("change", () => {
+    const f = getSelectedField();
+    if (!f) return;
+    f.required = fReq.checked;
+    syncReqPill(f.required);
+    renderCanvas();
+  });
+
+  root?.querySelectorAll<HTMLElement>("[data-col-width]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const f = getSelectedField();
+      if (!f) return;
+      f.width = btn.dataset.colWidth === "full" ? "full" : "half";
+      populateFieldInspector();
+      renderCanvas();
+    });
+  });
+
+  moveLeftBtn?.addEventListener("click", () => {
+    const idx = fields.findIndex((x) => x.id === selectedFieldId);
+    if (idx > 0) {
+      [fields[idx - 1], fields[idx]] = [fields[idx], fields[idx - 1]];
+      populateFieldInspector();
+      renderCanvas();
+    }
+  });
+
+  moveRightBtn?.addEventListener("click", () => {
+    const idx = fields.findIndex((x) => x.id === selectedFieldId);
+    if (idx >= 0 && idx < fields.length - 1) {
+      [fields[idx + 1], fields[idx]] = [fields[idx], fields[idx + 1]];
+      populateFieldInspector();
+      renderCanvas();
+    }
+  });
+
+  delBtn?.addEventListener("click", () => {
+    const f = getSelectedField();
+    if (!f || f.locked) return;
+    fields = fields.filter((x) => x.id !== f.id);
+    selectField(null);
+  });
+
+  document.getElementById("btn-fb-deselect")?.addEventListener("click", () => selectField(null));
+
+  // Click on form card background or outside stage deselects field -> shows Form Options
+  stageEl?.addEventListener("click", (e) => {
+    if (root?.dataset.mode !== "edit") return;
+    const target = e.target as HTMLElement;
+    if (!target.closest(".fb-bc-field")) {
+      selectField(null);
+    }
+  });
+
+  function renderCanvas() {
+    const g1 = document.getElementById("fb-grid-1");
+    const g2 = document.getElementById("fb-grid-2");
+    if (!g1 || !g2) return;
+    g1.innerHTML = "";
+    g2.innerHTML = "";
+
+    fields.forEach((f) => {
+      const wrap = document.createElement("div");
+      wrap.className = `fb-bc-field ${f.width === "full" ? "is-full" : ""} ${
+        f.id === selectedFieldId ? "is-selected" : ""
+      }`;
+      wrap.addEventListener("click", (e) => {
+        if (root?.dataset.mode !== "edit") return;
+        e.stopPropagation();
+        selectField(f.id);
+      });
+
+      const lbl = document.createElement("label");
+      lbl.className = "fb-bc-label";
+      lbl.textContent = f.label || f.id;
+      if (f.required) {
+        const req = document.createElement("span");
+        req.className = "fb-bc-required";
+        req.textContent = "*Required";
+        lbl.appendChild(req);
+      }
+      wrap.appendChild(lbl);
+
+      if (f.type === "textarea") {
+        const ta = document.createElement("textarea");
+        ta.className = "fb-bc-textarea";
+        ta.rows = 3;
+        ta.placeholder = f.placeholder || "";
+        wrap.appendChild(ta);
+      } else if (f.type === "select") {
+        if (root?.dataset.mode === "preview") {
+          const sel = document.createElement("select");
+          sel.className = "fb-bc-input";
+          const ph = document.createElement("option");
+          ph.value = "";
+          ph.textContent = f.placeholder || "Select an option...";
+          sel.appendChild(ph);
+          (f.options || []).forEach((opt: string) => {
+            const o = document.createElement("option");
+            o.value = opt;
+            o.textContent = opt;
+            sel.appendChild(o);
+          });
+          wrap.appendChild(sel);
+        } else {
+          const box = document.createElement("div");
+          box.className = "fb-bc-select-box";
+          box.innerHTML = `<span>${f.placeholder || "Select an option..."}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+          wrap.appendChild(box);
+        }
+      } else {
+        const inp = document.createElement("input");
+        inp.className = "fb-bc-input";
+        inp.type = f.type || "text";
+        inp.placeholder = f.placeholder || "";
+        wrap.appendChild(inp);
+      }
+
+      (Number(f.step) === 2 ? g2 : g1).appendChild(wrap);
     });
   }
 
+  // Top bar bindings
   root?.querySelectorAll("[data-fb-mode]").forEach((btn) => {
     btn.addEventListener("click", () => setMode((btn as HTMLElement).dataset.fbMode as any));
   });
@@ -591,9 +1075,7 @@ const { initialConfig } = Astro.props;
   document.getElementById("fb-cta-1")?.addEventListener("click", () => {
     if (root?.dataset.mode === "preview") setStep("2");
   });
-  document.getElementById("fb-back-2")?.addEventListener("click", () => {
-    setStep("1");
-  });
+  document.getElementById("fb-back-2")?.addEventListener("click", () => setStep("1"));
   document.getElementById("fb-cta-2")?.addEventListener("click", () => {
     if (root?.dataset.mode === "preview") setStep("confirm");
   });
@@ -601,225 +1083,22 @@ const { initialConfig } = Astro.props;
     if (root?.dataset.mode === "preview") setStep("1");
   });
 
-  // Sync inline text inputs to config
-  root?.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[data-cfg]").forEach((el) => {
-    el.addEventListener("input", () => {
-      const key = el.dataset.cfg;
-      if (key) config[key] = el.value;
-    });
-  });
-
-  function renderCanvas() {
-    const g1 = document.getElementById("fb-grid-1");
-    const g2 = document.getElementById("fb-grid-2");
-    if (!g1 || !g2) return;
-    g1.innerHTML = "";
-    g2.innerHTML = "";
-
-    fields.forEach((f, idx) => {
-      const card = document.createElement("div");
-      card.className = `fb-canvas-field ${f.width === "full" ? "is-full" : ""}`;
-
-      const controls = document.createElement("div");
-      controls.className = "fb-field-controls";
-
-      const leftGrp = document.createElement("div");
-      leftGrp.className = "fb-field-ctrl-group";
-
-      const colBtn = document.createElement("button");
-      colBtn.type = "button";
-      colBtn.className = "fb-mini-btn";
-      colBtn.textContent = f.width === "full" ? "1 Col" : "2 Cols";
-      colBtn.title = "Toggle 1 or 2 columns";
-      colBtn.addEventListener("click", () => {
-        f.width = f.width === "full" ? "half" : "full";
-        renderCanvas();
-      });
-
-      const leftBtn = document.createElement("button");
-      leftBtn.type = "button";
-      leftBtn.className = "fb-mini-btn";
-      leftBtn.textContent = "←";
-      leftBtn.disabled = idx === 0;
-      leftBtn.addEventListener("click", () => {
-        if (idx > 0) {
-          [fields[idx - 1], fields[idx]] = [fields[idx], fields[idx - 1]];
-          renderCanvas();
-        }
-      });
-
-      const rightBtn = document.createElement("button");
-      rightBtn.type = "button";
-      rightBtn.className = "fb-mini-btn";
-      rightBtn.textContent = "→";
-      rightBtn.disabled = idx === fields.length - 1;
-      rightBtn.addEventListener("click", () => {
-        if (idx < fields.length - 1) {
-          [fields[idx + 1], fields[idx]] = [fields[idx], fields[idx + 1]];
-          renderCanvas();
-        }
-      });
-
-      leftGrp.append(colBtn, leftBtn, rightBtn);
-
-      const rightGrp = document.createElement("div");
-      rightGrp.className = "fb-field-ctrl-group";
-
-      const editBtn = document.createElement("button");
-      editBtn.type = "button";
-      editBtn.className = "fb-mini-btn";
-      editBtn.textContent = "Edit";
-      editBtn.addEventListener("click", () => openDrawer(f));
-      rightGrp.appendChild(editBtn);
-
-      if (!f.locked) {
-        const delBtn = document.createElement("button");
-        delBtn.type = "button";
-        delBtn.className = "fb-mini-btn is-danger";
-        delBtn.textContent = "×";
-        delBtn.addEventListener("click", () => {
-          fields = fields.filter((item) => item.id !== f.id);
-          renderCanvas();
-        });
-        rightGrp.appendChild(delBtn);
-      }
-
-      controls.append(leftGrp, rightGrp);
-      card.appendChild(controls);
-
-      const lbl = document.createElement("label");
-      lbl.className = "fb-canvas-label";
-      lbl.textContent = f.label || f.id;
-      if (f.required) {
-        const star = document.createElement("span");
-        star.className = "fb-req-star";
-        star.textContent = "*";
-        lbl.appendChild(star);
-      }
-      card.appendChild(lbl);
-
-      if (f.type === "textarea") {
-        const ta = document.createElement("textarea");
-        ta.rows = 3;
-        ta.placeholder = f.placeholder || "";
-        card.appendChild(ta);
-      } else if (f.type === "select") {
-        const sel = document.createElement("select");
-        sel.className = "studio-select";
-        const ph = document.createElement("option");
-        ph.value = "";
-        ph.textContent = f.placeholder || "Select an option...";
-        sel.appendChild(ph);
-        (f.options || []).forEach((opt: string) => {
-          const o = document.createElement("option");
-          o.value = opt;
-          o.textContent = opt;
-          sel.appendChild(o);
-        });
-        card.appendChild(sel);
-      } else {
-        const inp = document.createElement("input");
-        inp.type = f.type || "text";
-        inp.placeholder = f.placeholder || "";
-        card.appendChild(inp);
-      }
-
-      (Number(f.step) === 2 ? g2 : g1).appendChild(card);
-    });
-  }
-
-  const drawer = document.getElementById("fb-field-drawer") as HTMLElement | null;
-  const fLabel = document.getElementById("fb-f-label") as HTMLInputElement | null;
-  const fType = document.getElementById("fb-f-type") as HTMLSelectElement | null;
-  const fPh = document.getElementById("fb-f-placeholder") as HTMLInputElement | null;
-  const fStep = document.getElementById("fb-f-step") as HTMLSelectElement | null;
-  const fWidth = document.getElementById("fb-f-width") as HTMLSelectElement | null;
-  const fReq = document.getElementById("fb-f-required") as HTMLInputElement | null;
-  const fReqPill = document.getElementById("fb-f-req-pill");
-  const fReqLbl = document.getElementById("fb-f-req-label");
-  const fOptsWrap = document.getElementById("fb-f-options-wrap");
-  const fOpts = document.getElementById("fb-f-options") as HTMLInputElement | null;
-  const drawerTitle = document.getElementById("fb-drawer-title");
-
-  function syncReqPill() {
-    const on = Boolean(fReq?.checked);
-    fReqPill?.classList.toggle("is-active", on);
-    fReqPill?.classList.toggle("is-inactive", !on);
-    if (fReqLbl) fReqLbl.textContent = on ? "Required" : "Optional";
-  }
-  fReq?.addEventListener("change", syncReqPill);
-  fType?.addEventListener("change", () => {
-    if (fOptsWrap) fOptsWrap.hidden = fType.value !== "select";
-  });
-
-  function openDrawer(field?: any) {
-    editingFieldId = field ? field.id : null;
-    if (drawerTitle) drawerTitle.textContent = field ? `Edit Field: ${field.label}` : "Add New Field";
-    if (fLabel) fLabel.value = field?.label || "";
-    if (fType) fType.value = field?.type || "text";
-    if (fPh) fPh.value = field?.placeholder || "";
-    if (fStep) fStep.value = String(field?.step || (root?.dataset.step === "2" ? "2" : "1"));
-    if (fWidth) fWidth.value = field?.width || "half";
-    if (fReq) fReq.checked = Boolean(field?.required);
-    if (fOpts) fOpts.value = Array.isArray(field?.options) ? field.options.join(", ") : "";
-    if (fOptsWrap) fOptsWrap.hidden = (fType?.value || "text") !== "select";
-    syncReqPill();
-    if (drawer) drawer.hidden = false;
-  }
-
-  document.getElementById("btn-fb-toggle-add")?.addEventListener("click", () => openDrawer());
-  document.getElementById("btn-fb-close-drawer")?.addEventListener("click", () => {
-    if (drawer) drawer.hidden = true;
-  });
-  document.getElementById("btn-fb-cancel-drawer")?.addEventListener("click", () => {
-    if (drawer) drawer.hidden = true;
-  });
-
-  document.getElementById("btn-fb-apply-field")?.addEventListener("click", () => {
-    const label = fLabel?.value.trim() || "";
-    if (!label) {
-      toast("Please enter a field label.", true);
-      return;
-    }
-    const type = fType?.value || "text";
-    const options =
-      type === "select"
-        ? (fOpts?.value || "")
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : undefined;
-
-    if (editingFieldId) {
-      const target = fields.find((x) => x.id === editingFieldId);
-      if (target) {
-        target.label = label;
-        target.type = type;
-        target.placeholder = fPh?.value.trim() || "";
-        target.step = Number(fStep?.value || 1) as 1 | 2;
-        target.width = fWidth?.value === "full" ? "full" : "half";
-        target.required = Boolean(fReq?.checked);
-        target.options = options;
-      }
-    } else {
-      const slug = label
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "");
-      const id = `${slug || "field"}_${Date.now().toString(36).slice(-4)}`;
-      fields.push({
-        id,
-        label,
-        type,
-        placeholder: fPh?.value.trim() || "",
-        required: Boolean(fReq?.checked),
-        step: Number(fStep?.value || 1) as 1 | 2,
-        width: fWidth?.value === "full" ? "full" : "half",
-        options,
-      });
-    }
-    if (drawer) drawer.hidden = true;
-    renderCanvas();
+  document.getElementById("btn-fb-add-field")?.addEventListener("click", () => {
+    const activeStep = root?.dataset.step === "2" ? 2 : 1;
+    const id = `field_${Date.now().toString(36).slice(-5)}`;
+    const newField = {
+      id,
+      label: "New Field",
+      type: "text",
+      placeholder: "Enter value...",
+      required: false,
+      step: activeStep,
+      width: "half",
+    };
+    fields.push(newField);
+    setMode("edit");
+    if (root?.dataset.step === "confirm") setStep("1");
+    selectField(id);
   });
 
   document.getElementById("btn-save-form-builder")?.addEventListener("click", async () => {
@@ -853,6 +1132,7 @@ const { initialConfig } = Astro.props;
       if (Array.isArray(data.fields)) {
         fields = data.fields;
         renderCanvas();
+        populateFieldInspector();
       }
       toast(`Pulled ${data.added || 0} fields from ${provider === "activecampaign" ? "ActiveCampaign" : "Klaviyo"}`);
     } catch (err: any) {
@@ -862,6 +1142,10 @@ const { initialConfig } = Astro.props;
 
   document.getElementById("btn-pull-ac-fields")?.addEventListener("click", () => pullFromProvider("activecampaign"));
   document.getElementById("btn-pull-klv-fields")?.addEventListener("click", () => pullFromProvider("klaviyo"));
+
+  // Enhance inspector selects when Book a Call tab is active
+  if (fType) w.__STUDIO_ENHANCE_SELECT__?.(fType);
+  if (fStep) w.__STUDIO_ENHANCE_SELECT__?.(fStep);
 
   setMode("edit");
   setStep("1");

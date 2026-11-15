@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { createBookCallSubmission, getBookCallConfig } from "../../../lib/bookCallDb";
 import { getActiveCampaignConfig, syncLeadToActiveCampaign } from "../../../lib/activeCampaignDb";
-import { getActiveCrmProvider, getKlaviyoConfig, syncLeadToKlaviyo } from "../../../lib/klaviyoDb";
+import { getKlaviyoConfig, syncLeadToKlaviyo } from "../../../lib/klaviyoDb";
 
 export const prerender = false;
 
@@ -40,29 +40,24 @@ export const POST: APIRoute = async ({ request }) => {
 
     const result = await createBookCallSubmission(submission);
 
-    // Sync to active CRM provider(s) (non-blocking for lead capture)
+    // Sync to enabled CRM integrations (non-blocking for lead capture)
     try {
-      const [provider, formConfig] = await Promise.all([
-        getActiveCrmProvider(),
+      const [acConfig, klaviyoConfig, formConfig] = await Promise.all([
+        getActiveCampaignConfig(),
+        getKlaviyoConfig(),
         getBookCallConfig(),
       ]);
 
-      if (provider === "activecampaign" || provider === "both") {
-        const acConfig = await getActiveCampaignConfig();
-        if (acConfig.enabled && acConfig.apiUrl && acConfig.apiKey) {
-          await syncLeadToActiveCampaign(submission, acConfig, formConfig.fields).catch((err) => {
-            console.error("[book-call/submit] ActiveCampaign sync failed:", err);
-          });
-        }
+      if (acConfig.enabled && acConfig.apiUrl && acConfig.apiKey) {
+        await syncLeadToActiveCampaign(submission, acConfig, formConfig.fields).catch((err) => {
+          console.error("[book-call/submit] ActiveCampaign sync failed:", err);
+        });
       }
 
-      if (provider === "klaviyo" || provider === "both") {
-        const klaviyoConfig = await getKlaviyoConfig();
-        if (klaviyoConfig.enabled && klaviyoConfig.apiKey) {
-          await syncLeadToKlaviyo(submission, klaviyoConfig).catch((err) => {
-            console.error("[book-call/submit] Klaviyo sync failed:", err);
-          });
-        }
+      if (klaviyoConfig.enabled && klaviyoConfig.apiKey) {
+        await syncLeadToKlaviyo(submission, klaviyoConfig).catch((err) => {
+          console.error("[book-call/submit] Klaviyo sync failed:", err);
+        });
       }
     } catch (crmErr) {
       console.error("[book-call/submit] CRM sync failed:", crmErr);

@@ -549,34 +549,27 @@ const tagPresets = [
             </div>
           </header>
 
-          <section class="studio-card" style="margin-bottom: 18px; padding: 18px 20px;">
-            <div class="crm-switcher-row">
-              <div>
-                <p class="crm-switcher-label">Active CRM Provider (1-Click Switch)</p>
-                <p class="crm-switcher-sub">Choose where Book a Call leads and Form Builder fields sync.</p>
-              </div>
-              <div class="crm-provider-pills" data-crm-provider-group>
-                <button type="button" class={`crm-prov-btn ${initialCrmProvider === "activecampaign" ? "is-active" : ""}`} data-crm-provider="activecampaign">ActiveCampaign</button>
-                <button type="button" class={`crm-prov-btn ${initialCrmProvider === "klaviyo" ? "is-active" : ""}`} data-crm-provider="klaviyo">Klaviyo</button>
-                <button type="button" class={`crm-prov-btn ${initialCrmProvider === "both" ? "is-active" : ""}`} data-crm-provider="both">Both</button>
-                <button type="button" class={`crm-prov-btn ${initialCrmProvider === "none" ? "is-active" : ""}`} data-crm-provider="none">Off</button>
-              </div>
-            </div>
-          </section>
-
           <form id="ac-cms-form" class="bc-cms-form">
             <section class="bc-cms-card">
               <div class="ac-card-head">
                 <div>
                   <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">1. Connect Your Account</h2>
                   <p class="field-hint" style="margin: 0;">
-                    Enter your ActiveCampaign Developer API URL &amp; Key, then fetch your Lists, Tags, and Custom Fields automatically.
+                    Enter your ActiveCampaign Developer API URL &amp; Key. Form Builder fields sync automatically.
                   </p>
                 </div>
-                <label class="toggle-wrap">
-                  <input type="checkbox" id="ac-enabled" checked={initialAcState.enabled} />
-                  <span>Enable Sync</span>
-                </label>
+                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                  <div class="ac-form-picker">
+                    <label for="ac-form-selector" class="ac-form-picker-label">Form</label>
+                    <select id="ac-form-selector" class="ac-select">
+                      <option value="book-call">Book a Call</option>
+                    </select>
+                  </div>
+                  <label class="toggle-wrap">
+                    <input type="checkbox" id="ac-enabled" checked={initialAcState.enabled} />
+                    <span id="ac-enabled-label">{initialAcState.enabled ? "Active" : "Inactive"}</span>
+                  </label>
+                </div>
               </div>
 
               <div class="bc-cms-grid" style="margin-top: 16px;">
@@ -613,99 +606,7 @@ const tagPresets = [
             </section>
 
             <section class="bc-cms-card">
-              <div class="ac-card-head" style="margin-bottom: 16px;">
-                <div>
-                  <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">2. Visual Field Mapping</h2>
-                  <p class="field-hint" style="margin: 0;">
-                    Select which site form you want to map and match each field to its destination in ActiveCampaign.
-                  </p>
-                </div>
-                <div class="ac-form-picker">
-                  <label for="ac-form-selector" class="ac-form-picker-label">Form to map</label>
-                  <select id="ac-form-selector" class="ac-select">
-                    <option value="book-call">Book a Call</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="ac-map-table" data-ac-form-panel="book-call">
-                <div class="ac-map-head">
-                  <span>Book a Call Field</span>
-                  <span>ActiveCampaign Destination</span>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>Work Email</strong>
-                    <span>Step 1 • Required</span>
-                  </div>
-                  <div class="ac-map-locked">Contact Email (Always synced)</div>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>Full Name</strong>
-                    <span>Step 1 • Required</span>
-                  </div>
-                  <select id="ac-map-fullname" class="ac-select">
-                    <option value="split">Split into First Name + Last Name</option>
-                    <option value="firstOnly">Send full text as First Name</option>
-                    <option value="ignore">Do not sync</option>
-                  </select>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>What would you like help with?</strong>
-                    <span>Step 1 • Dropdown</span>
-                  </div>
-                  <select id="ac-map-help" class="ac-select" data-ac-field-select></select>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>Main Goal of Project</strong>
-                    <span>Step 2 • Text</span>
-                  </div>
-                  <select id="ac-map-goal" class="ac-select" data-ac-field-select></select>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>Website / Reference Link</strong>
-                    <span>Step 2 • URL</span>
-                  </div>
-                  <select id="ac-map-link" class="ac-select" data-ac-field-select></select>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>Ideal Timeline</strong>
-                    <span>Step 2 • Dropdown</span>
-                  </div>
-                  <select id="ac-map-timeline" class="ac-select" data-ac-field-select></select>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>Budget Range</strong>
-                    <span>Step 2 • Dropdown</span>
-                  </div>
-                  <select id="ac-map-budget" class="ac-select" data-ac-field-select></select>
-                </div>
-
-                <div class="ac-map-row">
-                  <div class="ac-map-source">
-                    <strong>Additional Notes</strong>
-                    <span>Step 2 • Textarea</span>
-                  </div>
-                  <select id="ac-map-notes" class="ac-select" data-ac-field-select></select>
-                </div>
-              </div>
-            </section>
-
-            <section class="bc-cms-card">
-              <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">3. Lists, Tags &amp; Live Test</h2>
+              <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">2. Lists, Tags &amp; Live Test</h2>
               <p class="field-hint" style="margin: 0 0 16px;">
                 Choose which list and tags are applied automatically whenever someone submits Book a Call.
               </p>
@@ -753,7 +654,6 @@ const tagPresets = [
         <StudioActivityModule />
 
         <StudioKlaviyoModule
-          initialProvider={initialCrmProvider}
           initialKlaviyo={initialKlaviyoState}
         />
       </main>
@@ -1246,13 +1146,20 @@ const tagPresets = [
 
           const w = window as any;
           if (target === "klaviyo") {
-            ["klv-enabled", "klv-list-id"].forEach((id) => {
+            ["klv-form-selector", "klv-list-id"].forEach((id) => {
               const sel = document.getElementById(id) as HTMLSelectElement | null;
               if (sel) {
                 w.__STUDIO_ENHANCE_SELECT__?.(sel);
                 w.__STUDIO_SYNC_SELECT__?.(sel);
               }
             });
+          }
+          if (target === "activecampaign") {
+            const sel = document.getElementById("ac-form-selector") as HTMLSelectElement | null;
+            if (sel) {
+              w.__STUDIO_ENHANCE_SELECT__?.(sel);
+              w.__STUDIO_SYNC_SELECT__?.(sel);
+            }
           }
           if (target === "book-call") {
             ["fb-new-type", "fb-new-step"].forEach((id) => {
@@ -1377,6 +1284,10 @@ const tagPresets = [
       const acState = (window as any).__INITIAL_AC_STATE__ || {};
       const acForm = document.getElementById("ac-cms-form") as HTMLFormElement | null;
       const acEnabledEl = document.getElementById("ac-enabled") as HTMLInputElement | null;
+      const acEnabledLabelEl = document.getElementById("ac-enabled-label");
+      acEnabledEl?.addEventListener("change", () => {
+        if (acEnabledLabelEl) acEnabledLabelEl.textContent = acEnabledEl.checked ? "Active" : "Inactive";
+      });
       const acApiUrlEl = document.getElementById("ac-api-url") as HTMLInputElement | null;
       const acApiKeyEl = document.getElementById("ac-api-key") as HTMLInputElement | null;
       const acSyncBtn = document.getElementById("btn-ac-sync-meta") as HTMLButtonElement | null;

@@ -1,8 +1,5 @@
 ---
-import type { CrmProvider } from "../lib/klaviyoDb";
-
 interface Props {
-  initialProvider: CrmProvider;
   initialKlaviyo: {
     enabled: boolean;
     hasApiKey: boolean;
@@ -13,7 +10,7 @@ interface Props {
   };
 }
 
-const { initialProvider, initialKlaviyo } = Astro.props;
+const { initialKlaviyo } = Astro.props;
 ---
 
 <div id="module-klaviyo" hidden>
@@ -22,43 +19,39 @@ const { initialProvider, initialKlaviyo } = Astro.props;
       <p class="studio-eyebrow">INTEGRATIONS · CRM</p>
       <h1 class="studio-title">Klaviyo <span>Sync</span></h1>
       <p class="studio-subtitle">
-        Connect Klaviyo with 1-click provider switching and automatic profile property creation.
+        Connect Klaviyo to sync leads and custom Form Builder fields automatically into profile properties.
       </p>
     </div>
     <div class="studio-header-actions">
       <button type="button" class="acd-btn-cyan" id="btn-save-klaviyo">
-        Save Klaviyo Settings
+        Save Integration
       </button>
     </div>
   </header>
 
-  <section class="studio-card" style="margin-bottom: 18px; padding: 18px 20px;">
-    <div class="crm-switcher-row">
+  <section class="bc-cms-card">
+    <div class="ac-card-head">
       <div>
-        <p class="crm-switcher-label">Active CRM Provider (1-Click Switch)</p>
-        <p class="crm-switcher-sub">Choose where Book a Call leads and Form Builder fields sync.</p>
+        <h2 class="bc-cms-card-title" style="margin-bottom: 4px;">1. Connect Your Account</h2>
+        <p class="field-hint" style="margin: 0;">
+          Toggle Active to sync leads from the selected form into Klaviyo automatically.
+        </p>
       </div>
-      <div class="crm-provider-pills" data-crm-provider-group>
-        <button type="button" class={`crm-prov-btn ${initialProvider === "activecampaign" ? "is-active" : ""}`} data-crm-provider="activecampaign">ActiveCampaign</button>
-        <button type="button" class={`crm-prov-btn ${initialProvider === "klaviyo" ? "is-active" : ""}`} data-crm-provider="klaviyo">Klaviyo</button>
-        <button type="button" class={`crm-prov-btn ${initialProvider === "both" ? "is-active" : ""}`} data-crm-provider="both">Both</button>
-        <button type="button" class={`crm-prov-btn ${initialProvider === "none" ? "is-active" : ""}`} data-crm-provider="none">Off</button>
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <div class="ac-form-picker">
+          <label for="klv-form-selector" class="ac-form-picker-label">Form</label>
+          <select id="klv-form-selector" class="ac-select">
+            <option value="book-call">Book a Call</option>
+          </select>
+        </div>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="klv-enabled-toggle" checked={initialKlaviyo.enabled} />
+          <span id="klv-enabled-label">{initialKlaviyo.enabled ? "Active" : "Inactive"}</span>
+        </label>
       </div>
     </div>
-  </section>
 
-  <section class="studio-card" style="padding: 20px;">
-    <div class="acd-settings-grid">
-      <label class="acd-field">
-        <span class="acd-label-row">
-          Klaviyo Sync Status
-        </span>
-        <select id="klv-enabled" class="studio-select">
-          <option value="true" selected={initialKlaviyo.enabled}>Enabled (Sync Leads to Klaviyo)</option>
-          <option value="false" selected={!initialKlaviyo.enabled}>Disabled</option>
-        </select>
-      </label>
-
+    <div class="acd-settings-grid" style="margin-top: 16px;">
       <label class="acd-field">
         <span class="acd-label-row">
           Private API Key (pk_...)
@@ -82,71 +75,20 @@ const { initialProvider, initialKlaviyo } = Astro.props;
           ))}
         </select>
       </div>
+    </div>
 
-      <div class="acd-field" style="justify-content: flex-end;">
-        <span class="acd-label-row">Connection &amp; Lists</span>
-        <button type="button" class="studio-btn-ghost" id="btn-test-klaviyo" style="align-self: flex-start;">
-          Test Connection &amp; Sync Lists
-        </button>
-      </div>
+    <div class="ac-sync-bar">
+      <button type="button" class="btn-secondary" id="btn-test-klaviyo">
+        Test Connection &amp; Sync Lists
+      </button>
+      <span class="ac-sync-status" id="klv-sync-status">
+        {initialKlaviyo.cachedLists.length > 0
+          ? `Synced • ${initialKlaviyo.cachedLists.length} lists`
+          : "Not synced yet"}
+      </span>
     </div>
   </section>
 </div>
-
-<style is:global>
-  .crm-switcher-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .crm-switcher-label {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #f4f9ff;
-  }
-
-  .crm-switcher-sub {
-    margin: 3px 0 0;
-    font-size: 0.78rem;
-    color: rgba(176, 204, 234, 0.75);
-  }
-
-  .crm-provider-pills {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .crm-prov-btn {
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(110, 195, 255, 0.22);
-    background: rgba(8, 19, 34, 0.72);
-    color: rgba(215, 232, 250, 0.8);
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.16s ease;
-  }
-
-  .crm-prov-btn:hover {
-    border-color: rgba(72, 200, 255, 0.5);
-    color: #ffffff;
-  }
-
-  .crm-prov-btn.is-active {
-    background: rgba(72, 200, 255, 0.18);
-    border-color: rgba(72, 200, 255, 0.65);
-    color: #8ee2ff;
-    box-shadow: 0 0 16px rgba(72, 200, 255, 0.16);
-  }
-</style>
 
 <script>
   const w = window as any;
@@ -164,32 +106,17 @@ const { initialProvider, initialKlaviyo } = Astro.props;
     }
   }
 
-  document.querySelectorAll<HTMLButtonElement>("[data-crm-provider]").forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const provider = btn.dataset.crmProvider;
-      if (!provider) return;
-      try {
-        const res = await fetch("/api/integrations/provider", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ provider }),
-        });
-        if (!res.ok) throw new Error("Failed to switch provider");
-        document.querySelectorAll<HTMLButtonElement>("[data-crm-provider]").forEach((b) => {
-          b.classList.toggle("is-active", b.dataset.crmProvider === provider);
-        });
-        w.__ACTIVE_CRM_PROVIDER__ = provider;
-        toast(`Active CRM switched to ${provider}`);
-      } catch {
-        toast("Could not switch CRM provider", true);
-      }
-    });
+  const klvToggle = document.getElementById("klv-enabled-toggle") as HTMLInputElement | null;
+  const klvLabel = document.getElementById("klv-enabled-label");
+  klvToggle?.addEventListener("change", () => {
+    if (klvLabel) klvLabel.textContent = klvToggle.checked ? "Active" : "Inactive";
   });
 
   document.getElementById("btn-test-klaviyo")?.addEventListener("click", async () => {
     const btn = document.getElementById("btn-test-klaviyo") as HTMLButtonElement | null;
     const keyInput = document.getElementById("klv-api-key") as HTMLInputElement | null;
     const listSel = document.getElementById("klv-list-id") as HTMLSelectElement | null;
+    const statusEl = document.getElementById("klv-sync-status");
     if (btn) btn.disabled = true;
     try {
       const res = await fetch("/api/klaviyo/test", {
@@ -201,7 +128,8 @@ const { initialProvider, initialKlaviyo } = Astro.props;
       if (!res.ok) throw new Error(data?.error || "Connection failed");
       if (listSel && Array.isArray(data.lists)) {
         const current = listSel.value;
-        listSel.innerHTML = `<option value="">Profile Only (No List)</option>` +
+        listSel.innerHTML =
+          `<option value="">Profile Only (No List)</option>` +
           data.lists.map((l: any) => `<option value="${l.id}">${l.name}</option>`).join("");
         listSel.value = current;
         w.__STUDIO_SYNC_SELECT__?.(listSel);
@@ -209,6 +137,9 @@ const { initialProvider, initialKlaviyo } = Astro.props;
       if (keyInput) {
         keyInput.value = "";
         keyInput.placeholder = "Saved (leave blank to keep)";
+      }
+      if (statusEl) {
+        statusEl.textContent = `Synced • ${(data.lists || []).length} lists`;
       }
       toast(`Klaviyo connected (${(data.lists || []).length} lists synced)`);
     } catch (err: any) {
@@ -220,7 +151,6 @@ const { initialProvider, initialKlaviyo } = Astro.props;
 
   document.getElementById("btn-save-klaviyo")?.addEventListener("click", async () => {
     const btn = document.getElementById("btn-save-klaviyo") as HTMLButtonElement | null;
-    const enabledSel = document.getElementById("klv-enabled") as HTMLSelectElement | null;
     const keyInput = document.getElementById("klv-api-key") as HTMLInputElement | null;
     const listSel = document.getElementById("klv-list-id") as HTMLSelectElement | null;
     if (btn) btn.disabled = true;
@@ -229,7 +159,7 @@ const { initialProvider, initialKlaviyo } = Astro.props;
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          enabled: enabledSel?.value === "true",
+          enabled: Boolean(klvToggle?.checked),
           apiKey: keyInput?.value.trim() || undefined,
           listId: listSel?.value || "",
         }),

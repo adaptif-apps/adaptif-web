@@ -5,7 +5,6 @@ import {
   getActiveCampaignConfig,
   listActiveCampaignCustomFieldsWithOptions,
 } from "../../../lib/activeCampaignDb";
-import { getActiveCrmProvider } from "../../../lib/klaviyoDb";
 
 export const prerender = false;
 
@@ -32,10 +31,9 @@ export const PUT: APIRoute = async ({ request }) => {
     const body = await request.json();
     let config = await saveBookCallConfig(body || {});
 
-    // Auto-push any newly added custom fields to ActiveCampaign when AC is active
+    // Auto-push any newly added custom fields to ActiveCampaign when AC is enabled
     try {
-      const provider = await getActiveCrmProvider();
-      if ((provider === "activecampaign" || provider === "both") && Array.isArray(config.fields)) {
+      if (Array.isArray(config.fields)) {
         const acConfig = await getActiveCampaignConfig();
         if (acConfig.enabled && acConfig.apiUrl && acConfig.apiKey) {
           const coreIds = new Set([

@@ -81,6 +81,18 @@ const { initialItems, initialSettings } = Astro.props;
 
         <div class="acd-field acd-span-2">
           <span class="acd-label-row">
+            Thumbnail Image (16:9)
+          </span>
+          <div class="acd-pdf-override-row">
+            <img id="acd-cover-preview" src="" alt="Thumbnail preview" style="width: 112px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; border: 1px solid rgba(156, 225, 255, 0.2); display: none;" />
+            <input type="file" id="acd-cover-img-input" accept="image/*" hidden />
+            <button type="button" class="acd-btn-glass" id="btn-upload-cover-img">Upload Thumbnail</button>
+            <span class="acd-pdf-status" id="acd-cover-img-status">No thumbnail set</span>
+          </div>
+        </div>
+
+        <div class="acd-field acd-span-2">
+          <span class="acd-label-row">
             Custom PDF Override (Optional)
             <span class="acd-tip-wrap">
               <button type="button" class="acd-tip-btn" aria-label="Custom PDF info">?</button>
@@ -574,6 +586,19 @@ const { initialItems, initialSettings } = Astro.props;
       el("acd-slug")!.value = item.slug || "";
       el("acd-category")!.value = item.category || "";
 
+      const activeCover = pendingCoverImage ?? item.coverImage ?? "";
+      if (coverPreviewEl) {
+        if (activeCover) {
+          coverPreviewEl.src = activeCover;
+          coverPreviewEl.style.display = "block";
+        } else {
+          coverPreviewEl.style.display = "none";
+        }
+      }
+      if (coverImgStatusEl) {
+        coverImgStatusEl.textContent = activeCover ? "Active thumbnail set" : "No thumbnail set";
+      }
+
       // Sync shared Course / Publishing fields in the unified generator block
       const setSharedVal = (id: string, val: string) => {
         const input = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
@@ -702,8 +727,45 @@ const { initialItems, initialSettings } = Astro.props;
 
     let pendingCustomPdfUrl: string | null | undefined = undefined;
     const customPdfInput = document.getElementById("acd-custom-pdf-input") as HTMLInputElement | null;
+    const coverImgInput = document.getElementById("acd-cover-img-input") as HTMLInputElement | null;
+    const uploadCoverImgBtn = document.getElementById("btn-upload-cover-img") as HTMLButtonElement | null;
+    const coverPreviewEl = document.getElementById("acd-cover-preview") as HTMLImageElement | null;
+    const coverImgStatusEl = document.getElementById("acd-cover-img-status");
+    let pendingCoverImage: string | undefined = undefined;
     const uploadCustomPdfBtn = document.getElementById("btn-upload-custom-pdf") as HTMLButtonElement | null;
     const removeCustomPdfBtn = document.getElementById("btn-remove-custom-pdf") as HTMLButtonElement | null;
+
+    uploadCoverImgBtn?.addEventListener("click", () => coverImgInput?.click());
+    coverImgInput?.addEventListener("change", async () => {
+      const file = coverImgInput.files?.[0];
+      coverImgInput.value = "";
+      if (!file || !selectedId || !uploadCoverImgBtn) return;
+
+      uploadCoverImgBtn.disabled = true;
+      uploadCoverImgBtn.textContent = "Uploading...";
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("folder", "academy");
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok || !data?.url) throw new Error(data?.error || "Thumbnail upload failed");
+
+        pendingCoverImage = data.url;
+        if (coverPreviewEl) {
+          coverPreviewEl.src = data.url;
+          coverPreviewEl.style.display = "block";
+        }
+        if (coverImgStatusEl) coverImgStatusEl.textContent = "New thumbnail ready — click Save Changes";
+        setDirty(true);
+        showStudioToast("Thumbnail uploaded — click Save Changes to apply!");
+      } catch (err: any) {
+        showStudioToast(err?.message || "Thumbnail upload failed");
+      } finally {
+        uploadCoverImgBtn.disabled = false;
+        uploadCoverImgBtn.textContent = "Upload Thumbnail";
+      }
+    });
 
     uploadCustomPdfBtn?.addEventListener("click", () => customPdfInput?.click());
     customPdfInput?.addEventListener("change", async () => {
@@ -799,7 +861,7 @@ const { initialItems, initialSettings } = Astro.props;
         category: el("acd-category")!.value.trim(),
         subtitle: item.subtitle,
         description: item.description,
-        coverImage: item.coverImage,
+        coverImage: pendingCoverImage ?? item.coverImage,
         priceLabel: item.kind === "course" ? genVal("gen-price") || item.priceLabel : "Free",
         accessMode: item.accessMode,
         stripeCheckoutUrl: item.kind === "course" ? genVal("gen-stripe-url") : "",
@@ -818,6 +880,7 @@ const { initialItems, initialSettings } = Astro.props;
       const data = await res.json();
       if (res.ok && data.item) {
         pendingCustomPdfUrl = undefined;
+        pendingCoverImage = undefined;
         setDirty(false);
         const idx = items.findIndex((i) => i.id === selectedId);
         if (idx !== -1) items[idx] = data.item;

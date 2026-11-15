@@ -13,6 +13,10 @@
     let height = 0;
     let dpr = 1;
     let rafId = 0;
+    let targetMouseX = 0;
+    let targetMouseY = 0;
+    let mouseX = 0;
+    let mouseY = 0;
 
     let seed = 42;
     const rand = () => {
@@ -26,6 +30,7 @@
       z: number;
       phase: number;
       radius: number;
+      isHub: boolean;
     }
 
     interface FlowLink {
@@ -34,6 +39,7 @@
       pulseOffset: number;
       pulseSpeed: number;
       hasPulse: boolean;
+      curveLift: number;
     }
 
     const nodes: FlowNode[] = [];
@@ -43,13 +49,14 @@
       for (let c = 0; c < cols; c++) {
         const nx = (c / (cols - 1) - 0.5) * 3.4 + (rand() - 0.5) * 0.24;
         const ny = (r / (rows - 1) - 0.5) * 2.3 + (rand() - 0.5) * 0.22;
-        const nz = 0.75 + rand() * 1.65;
+        const nz = 0.72 + (r / (rows - 1)) * 0.65 + rand() * 1.1;
         nodes.push({
           x: nx,
           y: ny,
           z: nz,
           phase: rand() * Math.PI * 2,
-          radius: 1.6 + rand() * 1.4,
+          radius: 1.5 + rand() * 1.4,
+          isHub: rand() > 0.72,
         });
       }
     }
@@ -63,8 +70,9 @@
           a: i,
           b: i + 1,
           pulseOffset: rand(),
-          pulseSpeed: 0.08 + rand() * 0.08,
-          hasPulse: rand() > 0.35,
+          pulseSpeed: 0.085 + rand() * 0.075,
+          hasPulse: rand() > 0.32,
+          curveLift: 10 + rand() * 10,
         });
       }
       if (row < rows - 1) {
@@ -72,17 +80,19 @@
           a: i,
           b: i + cols,
           pulseOffset: rand(),
-          pulseSpeed: 0.07 + rand() * 0.08,
-          hasPulse: rand() > 0.45,
+          pulseSpeed: 0.07 + rand() * 0.075,
+          hasPulse: rand() > 0.42,
+          curveLift: 8 + rand() * 10,
         });
       }
-      if (col < cols - 1 && row < rows - 1 && rand() > 0.58) {
+      if (col < cols - 1 && row < rows - 1 && rand() > 0.56) {
         links.push({
           a: i,
           b: i + cols + 1,
           pulseOffset: rand(),
-          pulseSpeed: 0.06 + rand() * 0.07,
-          hasPulse: rand() > 0.5,
+          pulseSpeed: 0.065 + rand() * 0.065,
+          hasPulse: rand() > 0.48,
+          curveLift: 12 + rand() * 10,
         });
       }
     }
@@ -101,10 +111,18 @@
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
+    const onPointerMove = (e: PointerEvent) => {
+      targetMouseX = (e.clientX / Math.max(1, window.innerWidth) - 0.5) * 0.08;
+      targetMouseY = (e.clientY / Math.max(1, window.innerHeight) - 0.5) * 0.06;
+    };
+    if (!prefersReducedMotion) {
+      window.addEventListener("pointermove", onPointerMove, { passive: true });
+    }
+
     const project = (nx: number, ny: number, nz: number, t: number) => {
-      const driftX = Math.sin(t * 0.25 + ny * 2.0) * 0.025;
-      const driftY = Math.cos(t * 0.22 + nx * 2.0) * 0.02;
-      const perspective = 1.35 / (nz + 0.55);
+      const driftX = Math.sin(t * 0.24 + ny * 2.0) * 0.025 + mouseX / nz;
+      const driftY = Math.cos(t * 0.2 + nx * 2.0) * 0.02 + mouseY / nz;
+      const perspective = 1.38 / (nz + 0.55);
       const cx = width * 0.5;
       const cy = height * 0.44;
       const scaleX = width * 0.54;
@@ -116,24 +134,45 @@
       };
     };
 
+    const bezierPoint = (
+      p1x: number,
+      p1y: number,
+      mx: number,
+      my: number,
+      p2x: number,
+      p2y: number,
+      u: number
+    ) => {
+      const inv = 1 - u;
+      return {
+        x: inv * inv * p1x + 2 * inv * u * mx + u * u * p2x,
+        y: inv * inv * p1y + 2 * inv * u * my + u * u * p2y,
+      };
+    };
+
     const drawFrame = (timeMs: number) => {
       const t = prefersReducedMotion ? 0 : timeMs * 0.001;
+      mouseX += (targetMouseX - mouseX) * 0.04;
+      mouseY += (targetMouseY - mouseY) * 0.04;
+
       ctx.clearRect(0, 0, width, height);
 
+      // Subtle top-down volumetric light
       const topGlow = ctx.createRadialGradient(
         width * 0.5,
         0,
         0,
         width * 0.5,
         0,
-        Math.max(width * 0.65, height * 0.6)
+        Math.max(width * 0.68, height * 0.62)
       );
-      topGlow.addColorStop(0, "rgba(72, 200, 255, 0.14)");
-      topGlow.addColorStop(0.45, "rgba(42, 130, 190, 0.06)");
+      topGlow.addColorStop(0, "rgba(72, 200, 255, 0.16)");
+      topGlow.addColorStop(0.42, "rgba(42, 130, 190, 0.065)");
       topGlow.addColorStop(1, "rgba(1, 3, 7, 0)");
       ctx.fillStyle = topGlow;
       ctx.fillRect(0, 0, width, height);
 
+      // Soft ambient depth wash behind hero title
       const glow = ctx.createRadialGradient(
         width * 0.5,
         height * 0.36,
@@ -142,8 +181,8 @@
         height * 0.36,
         Math.max(width, height) * 0.55
       );
-      glow.addColorStop(0, "rgba(72, 200, 255, 0.09)");
-      glow.addColorStop(0.55, "rgba(22, 82, 130, 0.035)");
+      glow.addColorStop(0, "rgba(72, 200, 255, 0.085)");
+      glow.addColorStop(0.55, "rgba(22, 82, 130, 0.03)");
       glow.addColorStop(1, "rgba(1, 3, 7, 0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, width, height);
@@ -152,6 +191,7 @@
         ...project(n.x, n.y, n.z, t),
         phase: n.phase,
         radius: n.radius,
+        isHub: n.isHub,
       }));
 
       ctx.lineWidth = 1;
@@ -159,10 +199,10 @@
         const p1 = projected[link.a];
         const p2 = projected[link.b];
         const avgDepth = (p1.depth + p2.depth) * 0.5;
-        const alpha = Math.min(0.24, Math.max(0.05, avgDepth * 0.16));
+        const alpha = Math.min(0.24, Math.max(0.045, avgDepth * 0.155));
 
         const midX = (p1.x + p2.x) * 0.5;
-        const midY = (p1.y + p2.y) * 0.5 - 12 * avgDepth;
+        const midY = (p1.y + p2.y) * 0.5 - link.curveLift * avgDepth;
 
         ctx.beginPath();
         ctx.moveTo(p1.x, p1.y);
@@ -170,24 +210,46 @@
         ctx.strokeStyle = `rgba(72, 200, 255, ${alpha.toFixed(3)})`;
         ctx.stroke();
 
+        // Traveling flow pulse with short fading comet trail
         if (link.hasPulse && !prefersReducedMotion) {
           const u = (t * link.pulseSpeed + link.pulseOffset) % 1;
-          const inv = 1 - u;
-          const px = inv * inv * p1.x + 2 * inv * u * midX + u * u * p2.x;
-          const py = inv * inv * p1.y + 2 * inv * u * midY + u * u * p2.y;
-          const pulseAlpha = Math.sin(u * Math.PI) * Math.min(0.45, avgDepth * 0.35);
+          const tailU = Math.max(0, u - 0.08);
+          const head = bezierPoint(p1.x, p1.y, midX, midY, p2.x, p2.y, u);
+          const tail = bezierPoint(p1.x, p1.y, midX, midY, p2.x, p2.y, tailU);
+          const pulseAlpha = Math.sin(u * Math.PI) * Math.min(0.48, avgDepth * 0.36);
+
+          const trailGrad = ctx.createLinearGradient(tail.x, tail.y, head.x, head.y);
+          trailGrad.addColorStop(0, "rgba(156, 225, 255, 0)");
+          trailGrad.addColorStop(1, `rgba(156, 225, 255, ${pulseAlpha.toFixed(3)})`);
 
           ctx.beginPath();
-          ctx.arc(px, py, 1.8 * avgDepth, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(156, 225, 255, ${pulseAlpha.toFixed(3)})`;
+          ctx.moveTo(tail.x, tail.y);
+          ctx.lineTo(head.x, head.y);
+          ctx.strokeStyle = trailGrad;
+          ctx.lineWidth = 1.6 * avgDepth;
+          ctx.stroke();
+          ctx.lineWidth = 1;
+
+          ctx.beginPath();
+          ctx.arc(head.x, head.y, 1.7 * avgDepth, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(210, 243, 255, ${pulseAlpha.toFixed(3)})`;
           ctx.fill();
         }
       }
 
       for (const p of projected) {
         const pulse = 0.75 + 0.25 * Math.sin(t * 1.4 + p.phase);
-        const nodeAlpha = Math.min(0.42, Math.max(0.1, p.depth * 0.28)) * pulse;
+        const nodeAlpha = Math.min(0.44, Math.max(0.1, p.depth * 0.28)) * pulse;
         const r = Math.max(1.1, p.radius * p.depth);
+
+        if (p.isHub) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r * 4.2, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(72, 200, 255, ${(nodeAlpha * 0.22).toFixed(3)})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          ctx.lineWidth = 1;
+        }
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, r * 2.6, 0, Math.PI * 2);
@@ -207,9 +269,14 @@
 
     rafId = requestAnimationFrame(drawFrame);
 
-    window.addEventListener("pagehide", () => {
-      cancelAnimationFrame(rafId);
-      ro.disconnect();
-    }, { once: true });
+    window.addEventListener(
+      "pagehide",
+      () => {
+        cancelAnimationFrame(rafId);
+        ro.disconnect();
+        window.removeEventListener("pointermove", onPointerMove);
+      },
+      { once: true }
+    );
   })();
 </script>

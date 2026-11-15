@@ -51,7 +51,7 @@ const { initialKlaviyo } = Astro.props;
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </button>
-            <div class="studio-dropdown-menu" hidden>
+            <div class="studio-dropdown-menu">
               <label class="studio-ms-option">
                 <input type="checkbox" value="book-call" data-label="Book a Call" checked={initialKlaviyo.syncedForms.includes("book-call")} />
                 <span class="studio-ms-box" aria-hidden="true"></span>
@@ -464,7 +464,9 @@ const { initialKlaviyo } = Astro.props;
     );
   };
 
-  initMultiSelect(document.getElementById("klv-forms-multiselect"));
+  document.querySelectorAll(".studio-multiselect").forEach((el) => {
+    initMultiSelect(el as HTMLElement);
+  });
 
   document.getElementById("btn-test-klaviyo")?.addEventListener("click", async () => {
     const btn = document.getElementById("btn-test-klaviyo") as HTMLButtonElement | null;

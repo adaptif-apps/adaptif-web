@@ -588,7 +588,7 @@ const tagPresets = [
                           <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                       </button>
-                      <div class="studio-dropdown-menu" hidden>
+                      <div class="studio-dropdown-menu">
                         <label class="studio-ms-option">
                           <input type="checkbox" value="book-call" data-label="Book a Call" checked={initialAcState.syncedForms.includes("book-call")} />
                           <span class="studio-ms-box" aria-hidden="true"></span>
@@ -2642,7 +2642,8 @@ const tagPresets = [
         border-color: rgba(72, 200, 255, 0.42);
       }
 
-      :global(.studio-dropdown.is-open .studio-dropdown-trigger) {
+      :global(.studio-dropdown.is-open .studio-dropdown-trigger),
+      :global(.studio-multiselect.is-open .studio-dropdown-trigger) {
         border-color: rgba(72, 200, 255, 0.58);
         background: rgba(18, 44, 88, 0.65);
         box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
@@ -2660,7 +2661,8 @@ const tagPresets = [
         transition: transform 0.2s ease;
       }
 
-      :global(.studio-dropdown.is-open .studio-dropdown-chevron) {
+      :global(.studio-dropdown.is-open .studio-dropdown-chevron),
+      :global(.studio-multiselect.is-open .studio-dropdown-chevron) {
         transform: rotate(180deg);
       }
 
@@ -2695,7 +2697,8 @@ const tagPresets = [
           visibility 0.2s;
       }
 
-      :global(.studio-dropdown.is-open .studio-dropdown-menu) {
+      :global(.studio-dropdown.is-open .studio-dropdown-menu),
+      :global(.studio-multiselect.is-open .studio-dropdown-menu) {
         opacity: 1;
         visibility: visible;
         pointer-events: auto;

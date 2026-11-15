@@ -630,31 +630,6 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
       </section>
     )}
 
-    <!-- 9. CURRICULUM MICRO-GRID -->
-    {(vis.curriculum || isEditMode) && curriculum.modules.length > 0 && (
-      <section class="cf-section" data-funnel-block="curriculum" hidden={!vis.curriculum}>
-        <div class="cf-container">
-          <div class="cf-section-head">
-            <span class="section-eyebrow" {...ed("landingData.funnel.curriculum.eyebrow")}>{curriculum.eyebrow}</span>
-            <h2 class="section-title" {...ed("landingData.funnel.curriculum.title")}>{curriculum.title}</h2>
-            <p class="section-sub" {...ed("landingData.funnel.curriculum.subtitle")}>{curriculum.subtitle}</p>
-          </div>
-
-          <div class="curriculum-grid">
-            {curriculum.modules.map((mod, idx) => (
-              <div class="curriculum-card">
-                <span class="curr-num" {...ed(`landingData.funnel.curriculum.modules.${idx}.tag`)}>{mod.tag || `0${idx + 1}`}</span>
-                <h3 class="curr-title" {...ed(`landingData.funnel.curriculum.modules.${idx}.title`)}>{mod.title}</h3>
-                {(mod.body || isEditMode) && (
-                  <p class="curr-body" {...ed(`landingData.funnel.curriculum.modules.${idx}.body`)}>{mod.body}</p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    )}
-
     <!-- 9B. COURSE MODULES (PDF / DECK BREAKDOWN) -->
     {(vis.modules || isEditMode) && pdfModules.length > 0 && (
       <section class="cf-section" data-funnel-block="modules" hidden={!vis.modules}>

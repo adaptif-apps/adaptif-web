@@ -660,11 +660,11 @@ const { initialItems, initialSettings } = Astro.props;
       const slidesPreview = document.getElementById("acd-preview-slides") as HTMLAnchorElement | null;
       if (editContentLink) {
         editContentLink.href = `/academy/${baseFolder}/${item.slug}?edit=1`;
-        editContentLink.hidden = item.kind !== "course";
+        editContentLink.hidden = false;
       }
       if (editSlidesLink) {
         editSlidesLink.href = `/academy/${baseFolder}/${item.slug}/slides?edit=1`;
-        editSlidesLink.hidden = item.kind !== "course";
+        editSlidesLink.hidden = false;
       }
       if (landingPreview) landingPreview.href = `/academy/${baseFolder}/${item.slug}`;
       if (slidesPreview) slidesPreview.href = `/academy/${baseFolder}/${item.slug}/slides?preview=1`;

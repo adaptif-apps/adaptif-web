@@ -180,6 +180,8 @@ function buildSystemPrompt(kind: AcademyKind): string {
     }`
     : "";
 
+  const targetSlideCount = isCourse ? 21 : 15;
+
   return `You are the Adaptif Academy Curriculum Architect.
 Synthesize all provided source files, images, YouTube transcripts, links, and manual notes into a structured JSON object for a ${isCourse ? "PRO COURSE (in-depth, specific, tactical execution system with high-converting sales funnel copy)" : "FREE GUIDE (concise, approachable, high-level playbook)"}.
 
@@ -191,7 +193,7 @@ Return ONLY valid JSON matching this exact schema:
   "category": "Short category like 'AI Workflows', 'Brand Systems', or 'Creative Automation'",
   "landingData": {
     "heroBadge": "${isCourse ? "Pro Course" : "Free Tactical Guide"}",
-    "readTime": "${isCourse ? "40 min deep-dive · 8 slides" : "10 min read · 6 slides"}",
+    "readTime": "${isCourse ? `45 min deep-dive · ${targetSlideCount} slides` : `15 min read · ${targetSlideCount} slides`}",
     "audience": "Specific target roles",
     "takeaways": ["4 to 5 concrete takeaways"],
     "faq": [{"q": "Question?", "a": "Clear answer."}]${courseFunnelSchema}
@@ -203,7 +205,8 @@ Return ONLY valid JSON matching this exact schema:
       "title": "Slide headline",
       "body": "1-2 concise sentences",
       "bullets": ["3-4 crisp points (leave empty array for quote)"],
-      "callout": "Optional short takeaway tip"
+      "callout": "Optional short takeaway tip",
+      "imagePlaceholder": "Optional short description of a helpful visual/diagram/screenshot when layout is 'split' (e.g. 'Diagram of the 4-step AI creative workflow')"
     }
   ]
 }
@@ -215,7 +218,8 @@ Rules:
 - First slide MUST use layout "cover".
 - Last slide MUST use layout "cta" (next-step implementation / launch checklist).
 - Middle slides should alternate between "bullets", "grid", "split", and "quote" for visual rhythm.
-- ${isCourse ? "Generate 10 to 14 deep, instructional slides covering the full methodology, parameters, prompts/templates, workflows, and checklists from the source material, plus 9 to 12 curriculum modules in funnel.curriculum.modules." : "Generate 5 to 6 clear, actionable slides."}
+- Include 5 to 6 "split" slides with a clear, descriptive "imagePlaceholder" where a visual diagram, mockup, or screenshot adds clarity.
+- Generate EXACTLY ${targetSlideCount} slides (${isCourse ? "covering the full methodology, parameters, prompts/templates, workflows, examples, and checklists from the source material, plus 9 to 12 curriculum modules in funnel.curriculum.modules" : "clear, actionable, tactical slides covering the core playbook, steps, examples, and checklist"}).
 - Keep each slide punchy and well-structured so every 16:9 slide and vector PDF page fits cleanly without overflowing.`;
 }
 
@@ -409,9 +413,10 @@ export const POST: APIRoute = async ({ request }) => {
 
       emit("progress", { percent: 85, label: "Saving course & slides to database..." });
 
+      const targetSlideCount = kind === "course" ? 21 : 15;
       const validLayouts: SlideLayout[] = ["cover", "split", "bullets", "grid", "quote", "cta"];
       let splitImgIdx = 0;
-      const slides: AcademySlide[] = Array.isArray(generated?.slides)
+      let slides: AcademySlide[] = Array.isArray(generated?.slides)
         ? generated.slides.map((s: any, idx: number) => {
             const layout = validLayouts.includes(s?.layout) ? s.layout : "bullets";
             let slideImg = typeof s?.image === "string" && s.image.startsWith("http") ? s.image : undefined;
@@ -419,6 +424,12 @@ export const POST: APIRoute = async ({ request }) => {
               slideImg = scrapedImageUrls[splitImgIdx % scrapedImageUrls.length];
               splitImgIdx++;
             }
+            const placeholder =
+              typeof s?.imagePlaceholder === "string" && s.imagePlaceholder.trim()
+                ? s.imagePlaceholder.trim()
+                : layout === "split" && !slideImg
+                  ? "Visual placeholder: Click to upload a diagram, mockup, or example"
+                  : undefined;
             return {
               id: `s-${idx + 1}`,
               layout,
@@ -427,10 +438,49 @@ export const POST: APIRoute = async ({ request }) => {
               body: String(s?.body ?? ""),
               bullets: Array.isArray(s?.bullets) ? s.bullets.map(String) : [],
               callout: s?.callout ? String(s.callout) : undefined,
-              ...(slideImg ? { image: slideImg } : {})
+              ...(slideImg ? { image: slideImg } : {}),
+              ...(placeholder ? { imagePlaceholder: placeholder } : {})
             };
           })
         : [];
+
+      // Enforce exact slide count (21 for courses, 15 for guides)
+      if (slides.length > targetSlideCount) {
+        const first = slides[0];
+        const last = slides[slides.length - 1];
+        const middle = slides.slice(1, targetSlideCount - 1);
+        slides = [first, ...middle, last];
+      } else if (slides.length > 0 && slides.length < targetSlideCount) {
+        const last = slides[slides.length - 1];
+        const base = slides.slice(0, -1);
+        const padLayouts: SlideLayout[] = ["bullets", "split", "grid"];
+        let padStep = 0;
+        while (base.length + 1 < targetSlideCount) {
+          padStep++;
+          const l = padLayouts[padStep % padLayouts.length];
+          base.push({
+            id: `s-pad-${padStep}`,
+            layout: l,
+            eyebrow: "EXECUTION FRAMEWORK",
+            title: `Action Step ${base.length}: Key Implementation Notes`,
+            body: "Apply this checkpoint to keep quality consistent and production moving smoothly.",
+            bullets: [
+              "Define clear inputs and reference assets before starting.",
+              "Review outputs against brand standards and target metrics.",
+              "Document repeatable prompts or templates for the team."
+            ],
+            ...(l === "split"
+              ? { imagePlaceholder: "Visual placeholder: Workflow example or reference screenshot" }
+              : {})
+          });
+        }
+        slides = [...base, last];
+      }
+      slides = slides.map((s, idx) => ({
+        ...s,
+        id: `s-${idx + 1}`,
+        layout: idx === 0 ? "cover" : idx === slides.length - 1 ? "cta" : s.layout
+      }));
 
       const status: AcademyStatus =
         body?.status === "published" || body?.status === "scheduled" ? body.status : "draft";

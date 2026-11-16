@@ -135,11 +135,60 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
           <div class="slide-glow" aria-hidden="true"></div>
           <div class="slide-header-row">
             <span class="slide-eyebrow" {...ed(idx, "eyebrow")}>{slide.eyebrow || item.category}</span>
-            <span class="slide-brand-mark">ADAPTIF ACADEMY</span>
+            <div class="slide-header-right">
+              {isEditMode && (
+                <button
+                  type="button"
+                  class:list={["asv-col-toggle-btn", { "is-remove": Boolean(slide.image || slide.imagePlaceholder) }]}
+                  data-toggle-img-col={idx}
+                >
+                  {slide.image || slide.imagePlaceholder ? "Remove Image Column" : "+ Add Image Column"}
+                </button>
+              )}
+              <span class="slide-brand-mark">ADAPTIF ACADEMY</span>
+            </div>
           </div>
 
-          <div class="slide-content-area">
-            {slide.layout === "cover" ? (
+          <div class="slide-content-area" data-slide-content={idx}>
+            {(slide.image || slide.imagePlaceholder) ? (
+              <div class="slide-split-wrap">
+                <div class="split-left">
+                  <h2 class="slide-title" {...ed(idx, "title")}>{slide.title}</h2>
+                  {(slide.body || isEditMode) && <p class="slide-body" {...ed(idx, "body")}>{slide.body}</p>}
+                  {slide.bullets.length > 0 && (
+                    <ul class="slide-bullet-list">
+                      {slide.bullets.map((b, bIdx) => (
+                        <li {...ed(idx, "bullet", bIdx)}>{b}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {(slide.callout || isEditMode) && <div class="slide-callout" {...ed(idx, "callout")}>{slide.callout}</div>}
+                </div>
+                <div class="split-right" data-split-right={idx}>
+                  {slide.image ? (
+                    <div class="split-img-box">
+                      <img src={slide.image} alt={slide.title} class="split-img" />
+                      {isEditMode && (
+                        <button type="button" class="asv-img-upload-pill" data-upload-slide-img={idx}>
+                          Change Image
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div class="split-img-placeholder" data-upload-slide-img={isEditMode ? idx : undefined}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                        <circle cx="9" cy="9" r="2" />
+                        <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                      </svg>
+                      <span class="ph-kicker">Visual Placeholder</span>
+                      <p class="ph-caption">{slide.imagePlaceholder}</p>
+                      {isEditMode && <span class="ph-cta">Click to Upload Image</span>}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : slide.layout === "cover" ? (
               <div class="slide-cover-wrap">
                 <h2 class="slide-title is-cover" {...ed(idx, "title")}>{slide.title}</h2>
                 {(slide.body || isEditMode) && <p class="slide-body is-cover" {...ed(idx, "body")}>{slide.body}</p>}
@@ -232,7 +281,32 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
         </div>
 
         <div class="slide-content-area">
-          {slide.layout === "cover" ? (
+          {(slide.image || slide.imagePlaceholder) ? (
+            <div class="slide-split-wrap">
+              <div class="split-left">
+                <h2 class="slide-title">{slide.title}</h2>
+                {slide.body && <p class="slide-body">{slide.body}</p>}
+                {slide.bullets.length > 0 && (
+                  <ul class="slide-bullet-list">
+                    {slide.bullets.map((b) => (
+                      <li>{b}</li>
+                    ))}
+                  </ul>
+                )}
+                {slide.callout && <div class="slide-callout">{slide.callout}</div>}
+              </div>
+              <div class="split-right">
+                {slide.image ? (
+                  <img src={slide.image} alt={slide.title} class="split-img" />
+                ) : (
+                  <div class="split-img-placeholder">
+                    <span class="ph-kicker">Visual Placeholder</span>
+                    <p class="ph-caption">{slide.imagePlaceholder}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : slide.layout === "cover" ? (
             <div class="slide-cover-wrap">
               <h2 class="slide-title is-cover">{slide.title}</h2>
               {slide.body && <p class="slide-body is-cover">{slide.body}</p>}
@@ -307,6 +381,9 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     ))}
   </section>
 
+  {isEditMode && (
+    <input type="file" id="slide-img-file-input" accept="image/*" hidden />
+  )}
   {isEditMode && (
     <div class="slide-edit-bar no-print" id="slide-edit-bar">
       <div class="slide-edit-info">
@@ -524,6 +601,8 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     const seed = JSON.parse(seedEl.textContent || "{}");
     const saveBtn = document.getElementById("btn-save-slides") as HTMLButtonElement | null;
     const toastEl = document.getElementById("slide-edit-toast");
+    const slideImgInput = document.getElementById("slide-img-file-input") as HTMLInputElement | null;
+    let activeImgSlideIdx: number | null = null;
 
     function showToast(msg: string) {
       if (!toastEl) return;
@@ -533,6 +612,116 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
         if (toastEl) toastEl.hidden = true;
       }, 2600);
     }
+
+    function renderSplitRightMarkup(slide: any, idx: number): string {
+      if (slide.image) {
+        return `
+          <div class="split-img-box">
+            <img src="${String(slide.image).replace(/"/g, "&quot;")}" alt="Slide visual" class="split-img" />
+            <button type="button" class="asv-img-upload-pill" data-upload-slide-img="${idx}">Change Image</button>
+          </div>
+        `;
+      }
+      const ph = String(slide.imagePlaceholder || "Click to upload a visual, diagram, or screenshot").replace(/</g, "&lt;");
+      return `
+        <div class="split-img-placeholder" data-upload-slide-img="${idx}">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            <circle cx="9" cy="9" r="2" />
+            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+          </svg>
+          <span class="ph-kicker">Visual Placeholder</span>
+          <p class="ph-caption">${ph}</p>
+          <span class="ph-cta">Click to Upload Image</span>
+        </div>
+      `;
+    }
+
+    // Add / Remove Image Column toggle on any slide
+    document.addEventListener("click", (e) => {
+      const toggleBtn = (e.target as HTMLElement | null)?.closest<HTMLButtonElement>("[data-toggle-img-col]");
+      if (!toggleBtn) return;
+      const idx = Number(toggleBtn.dataset.toggleImgCol);
+      const slide = seed.slides?.[idx];
+      const contentArea = document.querySelector<HTMLElement>(`[data-slide-content="${idx}"]`);
+      if (!slide || !contentArea) return;
+
+      const hasImgCol = Boolean(slide.image || slide.imagePlaceholder || contentArea.querySelector("[data-split-right]"));
+      if (hasImgCol) {
+        // Remove right image column & unwrap left content
+        delete slide.image;
+        delete slide.imagePlaceholder;
+        const splitWrap = contentArea.querySelector(".slide-split-wrap");
+        const splitLeft = splitWrap?.querySelector(".split-left");
+        if (splitWrap && splitLeft) {
+          const singleWrap = document.createElement("div");
+          singleWrap.className = "slide-bullets-wrap";
+          while (splitLeft.firstChild) singleWrap.appendChild(splitLeft.firstChild);
+          splitWrap.replaceWith(singleWrap);
+        }
+        toggleBtn.classList.remove("is-remove");
+        toggleBtn.textContent = "+ Add Image Column";
+        showToast("Image column removed (click Save Slides / PDF)");
+      } else {
+        // Add right image column
+        slide.imagePlaceholder = "Visual placeholder: Click to upload a diagram, mockup, or screenshot";
+        const existingWrap = contentArea.firstElementChild as HTMLElement | null;
+        const splitWrap = document.createElement("div");
+        splitWrap.className = "slide-split-wrap";
+        const splitLeft = document.createElement("div");
+        splitLeft.className = "split-left";
+        if (existingWrap) {
+          while (existingWrap.firstChild) splitLeft.appendChild(existingWrap.firstChild);
+        }
+        const splitRight = document.createElement("div");
+        splitRight.className = "split-right";
+        splitRight.dataset.splitRight = String(idx);
+        splitRight.innerHTML = renderSplitRightMarkup(slide, idx);
+        splitWrap.appendChild(splitLeft);
+        splitWrap.appendChild(splitRight);
+        contentArea.innerHTML = "";
+        contentArea.appendChild(splitWrap);
+        toggleBtn.classList.add("is-remove");
+        toggleBtn.textContent = "Remove Image Column";
+        showToast("Image column added — click placeholder to upload");
+      }
+    });
+
+    // Upload image directly onto slide placeholder / image box
+    document.addEventListener("click", (e) => {
+      const uploadTrigger = (e.target as HTMLElement | null)?.closest<HTMLElement>("[data-upload-slide-img]");
+      if (!uploadTrigger) return;
+      e.preventDefault();
+      e.stopPropagation();
+      activeImgSlideIdx = Number(uploadTrigger.dataset.uploadSlideImg);
+      slideImgInput?.click();
+    });
+
+    slideImgInput?.addEventListener("change", async () => {
+      const file = slideImgInput.files?.[0];
+      if (!file || activeImgSlideIdx === null) return;
+      const idx = activeImgSlideIdx;
+      const slide = seed.slides?.[idx];
+      if (!slide) return;
+      try {
+        showToast("Uploading image...");
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok || !data?.url) throw new Error(data?.error || "Upload failed");
+        slide.image = data.url;
+        const splitRight = document.querySelector<HTMLElement>(`[data-split-right="${idx}"]`);
+        if (splitRight) {
+          splitRight.innerHTML = renderSplitRightMarkup(slide, idx);
+        }
+        showToast("Image uploaded! Click Save Slides / PDF");
+      } catch (err: any) {
+        showToast(err?.message || "Image upload failed");
+      } finally {
+        slideImgInput.value = "";
+      }
+    });
 
     function collectEditedSlides() {
       const updated = JSON.parse(JSON.stringify(seed.slides || []));
@@ -1320,5 +1509,137 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
     font-size: 0.78rem;
     font-weight: 600;
     color: #4ade80;
+  }
+
+  .slide-header-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .asv-col-toggle-btn {
+    appearance: none;
+    padding: 5px 11px;
+    border-radius: 9999px;
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    background: rgba(56, 189, 248, 0.14);
+    color: #7fe2ff;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .asv-col-toggle-btn:hover {
+    background: rgba(56, 189, 248, 0.25);
+    color: #ffffff;
+  }
+
+  .asv-col-toggle-btn.is-remove {
+    border-color: rgba(248, 113, 113, 0.4);
+    background: rgba(239, 68, 68, 0.14);
+    color: #fca5a5;
+  }
+
+  .asv-col-toggle-btn.is-remove:hover {
+    background: rgba(239, 68, 68, 0.24);
+    color: #ffffff;
+  }
+
+  :global(.slide-split-wrap) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: 28px;
+    align-items: center;
+    width: 100%;
+  }
+
+  :global(.split-left) {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+
+  :global(.split-right) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  :global(.split-img-box) {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.asv-img-upload-pill) {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    appearance: none;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    border: 1px solid rgba(72, 200, 255, 0.55);
+    background: rgba(8, 13, 24, 0.9);
+    color: #7fe2ff;
+    font-size: 0.74rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  :global(.split-img-placeholder) {
+    width: 100%;
+    min-height: 220px;
+    padding: 24px 20px;
+    border-radius: 14px;
+    border: 1.5px dashed rgba(72, 200, 255, 0.38);
+    background: rgba(10, 18, 36, 0.55);
+    color: rgba(215, 232, 247, 0.78);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+  }
+
+  :global(.split-img-placeholder:hover) {
+    border-color: rgba(72, 200, 255, 0.75);
+    background: rgba(14, 28, 56, 0.68);
+  }
+
+  :global(.ph-kicker) {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #48c8ff;
+  }
+
+  :global(.ph-caption) {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    max-width: 280px;
+    color: rgba(248, 250, 252, 0.82);
+  }
+
+  :global(.ph-cta) {
+    margin-top: 4px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: #7fe2ff;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.35);
   }
 </style>

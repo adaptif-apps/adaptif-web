@@ -18,9 +18,12 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
-const isEditMode =
-  Astro.url.searchParams.get("edit") === "1" && hasValidStudioSession(Astro.cookies);
 const currentCmsPath = normalizeCmsPath(Astro.url.pathname);
+const isSlideDeckRoute = currentCmsPath.endsWith("/slides");
+const isEditMode =
+  Astro.url.searchParams.get("edit") === "1" &&
+  hasValidStudioSession(Astro.cookies) &&
+  !isSlideDeckRoute;
 
 if (isEditMode) {
   Astro.response.headers.set("Cache-Control", "no-store");

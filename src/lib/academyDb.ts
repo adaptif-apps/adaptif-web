@@ -14,6 +14,7 @@ export interface AcademySlide {
   body: string;
   bullets: string[];
   image?: string;
+  imagePlaceholder?: string;
   callout?: string;
 }
 
@@ -577,6 +578,7 @@ function mapItem(row: Record<string, any>): AcademyItem {
       body: String(s?.body ?? ""),
       bullets: Array.isArray(s?.bullets) ? s.bullets.map(String) : [],
       image: s?.image ? String(s.image) : undefined,
+      imagePlaceholder: s?.imagePlaceholder ? String(s.imagePlaceholder) : undefined,
       callout: s?.callout ? String(s.callout) : undefined
     })),
     sortOrder: Number(row.sort_order ?? 0),

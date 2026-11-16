@@ -15,10 +15,44 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
 <div id="module-blogs" hidden>
   <header class="studio-header">
     <div>
-      <p class="studio-eyebrow">AI Editorial Engine</p>
-      <h1 class="studio-title">Blog <span>Posts</span></h1>
+      <h1 class="studio-title">Blogs</h1>
     </div>
-    <div class="studio-header-actions">
+    <div class="studio-header-actions" id="blog-header-actions">
+      <div class="cms-header-dropdown" id="blog-actions-dropdown">
+        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm cms-dropdown-trigger" aria-expanded="false">
+          Actions ▾
+        </button>
+        <div class="cms-dropdown-menu" hidden>
+          <a
+            id="blog-edit-content-link"
+            href="/blog"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="cms-dropdown-item"
+          >
+            Edit Content ↗
+          </a>
+          <a
+            id="blog-live-link"
+            href="/blog"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="cms-dropdown-item"
+          >
+            View Post ↗
+          </a>
+        </div>
+      </div>
+
+      <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-blog-delete">
+        Delete
+      </button>
+      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-save">
+        Save Changes
+      </button>
+
+      <span class="studio-actions-divider" id="blog-actions-divider"></span>
+
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-new">
         + New Blog Post
       </button>
@@ -40,10 +74,87 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
       <div class="blog-studio-list" id="blog-studio-list"></div>
     </section>
 
-    <!-- Right Column: AI Generator + Basic Post Settings -->
+    <!-- Right Column: Title + Tabs (Settings & Assets | AI Generator) -->
     <div class="blog-editor-col">
-      <!-- Card 1: AI Blog Generator (matching Courses/Guides UX) -->
-      <section class="blog-cms-card" aria-label="AI Blog Generator">
+      <div class="cms-item-title-bar" id="blog-item-title-bar">
+        <input
+          type="text"
+          id="blog-f-title"
+          class="cms-item-title-input"
+          placeholder="Article headline..."
+          aria-label="Blog post title"
+        />
+        <span class="cms-status-badge" id="blog-item-status-badge">Draft</span>
+      </div>
+
+      <div class="cms-tabs-bar" id="blog-tabs-bar" role="tablist">
+        <button type="button" class="cms-tab-btn is-active" data-blog-tab="settings" role="tab" aria-selected="true">
+          Settings &amp; Assets
+        </button>
+        <button type="button" class="cms-tab-btn" data-blog-tab="generator" role="tab" aria-selected="false">
+          AI Generator
+        </button>
+      </div>
+
+      <!-- Tab 1: Post Settings & Metadata (First / Default) -->
+      <section class="blog-cms-card" id="blog-tab-settings" aria-label="Blog post settings">
+        <div id="blog-editor-empty" class="editor-empty" hidden>
+          Select a post on the left or click <strong>+ New Blog Post</strong> above.
+        </div>
+
+        <div id="blog-editor-body" class="blog-editor-body">
+          <div class="blog-form-grid">
+            <label class="blog-field">
+              <span>Slug (URL)</span>
+              <input type="text" id="blog-f-slug" class="blog-input" placeholder="article-slug" />
+            </label>
+            <label class="blog-field">
+              <span>Status</span>
+              <select id="blog-f-status" class="blog-input">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+            </label>
+            <label class="blog-field">
+              <span>Eyebrow</span>
+              <input type="text" id="blog-f-eyebrow" class="blog-input" placeholder="CREATIVE OPERATIONS" />
+            </label>
+            <label class="blog-field">
+              <span>Category</span>
+              <input type="text" id="blog-f-category" class="blog-input" placeholder="AI Workflows" />
+            </label>
+            <label class="blog-field">
+              <span>Read Time</span>
+              <input type="text" id="blog-f-readtime" class="blog-input" placeholder="5 min read" />
+            </label>
+            <label class="blog-field">
+              <span>Author</span>
+              <input type="text" id="blog-f-author" class="blog-input" placeholder="Adaptif Team" />
+            </label>
+            <label class="blog-field blog-span-2">
+              <span>Subtitle / Lead</span>
+              <textarea id="blog-f-subtitle" class="blog-textarea" rows="2"></textarea>
+            </label>
+            <label class="blog-field blog-span-2">
+              <span>Card Excerpt</span>
+              <textarea id="blog-f-excerpt" class="blog-textarea" rows="2"></textarea>
+            </label>
+            <div class="blog-field blog-span-2">
+              <span>Cover Image</span>
+              <div class="blog-upload-row">
+                <input type="url" id="blog-f-cover" class="blog-input" placeholder="https://... or upload" />
+                <label class="adaptif-btn adaptif-btn--dark adaptif-btn--sm blog-upload-lbl">
+                  <span>Upload Cover</span>
+                  <input type="file" id="blog-cover-file" accept="image/*" hidden />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: AI Blog Generator -->
+      <section class="blog-cms-card" id="blog-tab-generator" aria-label="AI Blog Generator" hidden>
         <div class="blog-dropzone" id="blog-ai-dropzone">
           <input type="file" id="blog-ai-files" accept=".txt,.md,.csv,.json,.pdf,.docx,.png,.jpg,.jpeg,.webp" multiple hidden />
           <div class="blog-dz-icon">↑</div>
@@ -103,98 +214,6 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
           <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-ai-run">
             ★ Generate
           </button>
-        </div>
-      </section>
-
-      <!-- Card 2: Post Settings & Live Edit Trigger -->
-      <section class="blog-cms-card" aria-label="Blog post settings">
-        <div id="blog-editor-empty" class="editor-empty" hidden>
-          Select a post on the left or click <strong>+ New Blog Post</strong> / <strong>★ Generate</strong>.
-        </div>
-
-        <div id="blog-editor-body" class="blog-editor-body">
-          <div class="editor-top-bar">
-            <div class="editor-meta-info">
-              <a
-                id="blog-edit-content-link"
-                href="/blog"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="adaptif-btn adaptif-btn--sm"
-              >
-                Edit Content ↗
-              </a>
-              <a
-                id="blog-live-link"
-                href="/blog"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="adaptif-btn adaptif-btn--dark adaptif-btn--sm"
-              >
-                View Post ↗
-              </a>
-            </div>
-            <div class="blog-top-actions">
-              <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-blog-delete">
-                Delete
-              </button>
-              <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-save">
-                Save Changes
-              </button>
-            </div>
-          </div>
-
-          <div class="blog-form-grid">
-            <label class="blog-field blog-span-2">
-              <span>Title</span>
-              <input type="text" id="blog-f-title" class="blog-input" placeholder="Article headline..." />
-            </label>
-            <label class="blog-field">
-              <span>Slug (URL)</span>
-              <input type="text" id="blog-f-slug" class="blog-input" placeholder="article-slug" />
-            </label>
-            <label class="blog-field">
-              <span>Status</span>
-              <select id="blog-f-status" class="blog-input">
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-              </select>
-            </label>
-            <label class="blog-field">
-              <span>Eyebrow</span>
-              <input type="text" id="blog-f-eyebrow" class="blog-input" placeholder="CREATIVE OPERATIONS" />
-            </label>
-            <label class="blog-field">
-              <span>Category</span>
-              <input type="text" id="blog-f-category" class="blog-input" placeholder="AI Workflows" />
-            </label>
-            <label class="blog-field">
-              <span>Read Time</span>
-              <input type="text" id="blog-f-readtime" class="blog-input" placeholder="5 min read" />
-            </label>
-            <label class="blog-field">
-              <span>Author</span>
-              <input type="text" id="blog-f-author" class="blog-input" placeholder="Adaptif Team" />
-            </label>
-            <label class="blog-field blog-span-2">
-              <span>Subtitle / Lead</span>
-              <textarea id="blog-f-subtitle" class="blog-textarea" rows="2"></textarea>
-            </label>
-            <label class="blog-field blog-span-2">
-              <span>Card Excerpt</span>
-              <textarea id="blog-f-excerpt" class="blog-textarea" rows="2"></textarea>
-            </label>
-            <div class="blog-field blog-span-2">
-              <span>Cover Image</span>
-              <div class="blog-upload-row">
-                <input type="url" id="blog-f-cover" class="blog-input" placeholder="https://... or upload" />
-                <label class="adaptif-btn adaptif-btn--dark adaptif-btn--sm blog-upload-lbl">
-                  <span>Upload Cover</span>
-                  <input type="file" id="blog-cover-file" accept="image/*" hidden />
-                </label>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </div>
@@ -428,6 +447,10 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     gap: 6px;
   }
 
+  .blog-ai-progress[hidden] {
+    display: none;
+  }
+
   .blog-ai-bar {
     height: 6px;
     border-radius: 999px;
@@ -501,21 +524,82 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
         selectedId = btn.dataset.blogId || null;
         renderPostList();
         loadSelectedPost();
+        switchBlogTab("settings");
       });
     });
   }
 
+  function switchBlogTab(tab: "settings" | "generator") {
+    document.querySelectorAll<HTMLButtonElement>("[data-blog-tab]").forEach((btn) => {
+      const active = btn.dataset.blogTab === tab;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    const settingsPanel = document.getElementById("blog-tab-settings");
+    const genPanel = document.getElementById("blog-tab-generator");
+    if (settingsPanel) settingsPanel.hidden = tab !== "settings";
+    if (genPanel) genPanel.hidden = tab !== "generator";
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-blog-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      switchBlogTab((btn.dataset.blogTab as "settings" | "generator") || "settings");
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>("#blog-header-actions .cms-header-dropdown").forEach((dd) => {
+    const trigger = dd.querySelector<HTMLButtonElement>(".cms-dropdown-trigger");
+    const menu = dd.querySelector<HTMLElement>(".cms-dropdown-menu");
+    trigger?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = !menu?.hidden;
+      document.querySelectorAll<HTMLElement>(".cms-header-dropdown .cms-dropdown-menu").forEach((m) => {
+        m.hidden = true;
+      });
+      document.querySelectorAll<HTMLButtonElement>(".cms-header-dropdown .cms-dropdown-trigger").forEach((t) => {
+        t.setAttribute("aria-expanded", "false");
+      });
+      if (menu && !isOpen) {
+        menu.hidden = false;
+        trigger.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
   function loadSelectedPost() {
     const post = getSelectedPost();
+    const titleBarEl = document.getElementById("blog-item-title-bar");
+    const statusBadgeEl = document.getElementById("blog-item-status-badge");
+    const actionsDd = document.getElementById("blog-actions-dropdown");
+    const delBtn = document.getElementById("btn-blog-delete");
+    const saveBtn = document.getElementById("btn-blog-save");
+    const dividerEl = document.getElementById("blog-actions-divider");
+
     if (!emptyEl || !bodyEl) return;
     if (!post) {
       emptyEl.hidden = false;
       bodyEl.hidden = true;
+      if (titleBarEl) titleBarEl.hidden = true;
+      if (actionsDd) actionsDd.hidden = true;
+      if (delBtn) delBtn.hidden = true;
+      if (saveBtn) saveBtn.hidden = true;
+      if (dividerEl) dividerEl.hidden = true;
       if (complementLabel) complementLabel.textContent = "Create as new post";
       return;
     }
     emptyEl.hidden = true;
     bodyEl.hidden = false;
+    if (titleBarEl) titleBarEl.hidden = false;
+    if (actionsDd) actionsDd.hidden = false;
+    if (delBtn) delBtn.hidden = false;
+    if (saveBtn) saveBtn.hidden = false;
+    if (dividerEl) dividerEl.hidden = false;
+
+    if (statusBadgeEl) {
+      const st = post.status || "draft";
+      statusBadgeEl.textContent = st === "published" ? "Published" : "Draft";
+      statusBadgeEl.className = `cms-status-badge is-${st}`;
+    }
 
     const setVal = (id: string, val: string) => {
       const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
@@ -635,6 +719,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
       selectedId = data.post.id;
       renderPostList();
       loadSelectedPost();
+      switchBlogTab("generator");
       w.__SHOW_STUDIO_TOAST__?.("Draft blog post created!");
     } catch (err: any) {
       w.__SHOW_STUDIO_TOAST__?.(err?.message || "Create failed", true);

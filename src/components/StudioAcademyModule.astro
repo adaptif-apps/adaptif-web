@@ -13,10 +13,42 @@ const { initialItems, initialSettings } = Astro.props;
 <div id="module-academy" hidden>
   <header class="studio-header">
     <div>
-      <p class="studio-eyebrow" id="acd-module-eyebrow">AI Curriculum Engine</p>
-      <h1 class="studio-title" id="acd-module-title">Generate <span>Course</span></h1>
+      <h1 class="studio-title" id="acd-module-title">Courses</h1>
     </div>
-    <div class="studio-header-actions">
+    <div class="studio-header-actions" id="acd-header-actions">
+      <div class="cms-header-dropdown" id="acd-edit-dropdown">
+        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm cms-dropdown-trigger" aria-expanded="false">
+          Edit ▾
+        </button>
+        <div class="cms-dropdown-menu" hidden>
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-content" class="cms-dropdown-item">
+            Edit Content ↗
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-slides" class="cms-dropdown-item">
+            Edit PDF / Slides ↗
+          </a>
+        </div>
+      </div>
+
+      <div class="cms-header-dropdown" id="acd-preview-dropdown">
+        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm cms-dropdown-trigger" aria-expanded="false">
+          Preview ▾
+        </button>
+        <div class="cms-dropdown-menu" hidden>
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="cms-dropdown-item">
+            Preview Landing ↗
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-slides" class="cms-dropdown-item">
+            Preview Slides / PDF ↗
+          </a>
+        </div>
+      </div>
+
+      <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-delete-acd-item">Delete</button>
+      <button type="submit" form="acd-editor-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-item" disabled>Save Changes</button>
+
+      <span class="studio-actions-divider" id="acd-actions-divider"></span>
+
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-guide">+ New Guide</button>
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-course">+ New Course</button>
     </div>
@@ -37,103 +69,186 @@ const { initialItems, initialSettings } = Astro.props;
       <div class="acd-studio-list" id="acd-studio-list"></div>
     </section>
 
-    <!-- Right Column: AI Generator + Settings -->
+    <!-- Right Column: Title + Tabs (Settings & Assets | AI Generator) -->
     <div class="acd-editor-col">
-      <!-- Card 1: AI Curriculum Engine -->
-      <section class="acd-glass-card" aria-label="AI Curriculum Engine">
-        <AcademyGeneratorModal initialSettings={initialSettings} />
+      <div class="cms-item-title-bar" id="acd-item-title-bar" hidden>
+        <input
+          type="text"
+          id="acd-item-title-input"
+          class="cms-item-title-input"
+          placeholder="Course title..."
+          aria-label="Item title"
+        />
+        <span class="cms-status-badge" id="acd-item-status-badge">Draft</span>
+      </div>
+
+      <div class="cms-tabs-bar" id="acd-tabs-bar" role="tablist">
+        <button type="button" class="cms-tab-btn is-active" data-acd-tab="settings" role="tab" aria-selected="true">
+          Settings &amp; Assets
+        </button>
+        <button type="button" class="cms-tab-btn" data-acd-tab="generator" role="tab" aria-selected="false">
+          AI Generator
+        </button>
+      </div>
+
+      <!-- Tab 1: Settings & Assets (First / Default) -->
+      <section class="acd-glass-card acd-settings-card" id="acd-tab-settings" aria-label="Course Settings and Assets">
+        <div class="acd-editor-shell">
+          <div class="acd-empty-editor" id="acd-empty-editor">
+            Select an item from the list on the left, or click <strong>+ New</strong> above.
+          </div>
+
+          <form id="acd-editor-form" hidden>
+            <div class="acd-form-grid">
+              <label class="acd-field">
+                <span class="acd-label-row">
+                  Slug (URL)
+                  <span class="acd-tip-wrap">
+                    <button type="button" class="acd-tip-btn" aria-label="Slug info">?</button>
+                    <span class="acd-tip-box" role="tooltip">
+                      Public URL path for this item (e.g. <code>/academy/courses/my-course</code>). Also used in your Stripe redirect URL.
+                    </span>
+                  </span>
+                </span>
+                <input type="text" id="acd-slug" required />
+              </label>
+
+              <label class="acd-field">
+                <span class="acd-label-row">
+                  Category
+                  <span class="acd-tip-wrap">
+                    <button type="button" class="acd-tip-btn" aria-label="Category info">?</button>
+                    <span class="acd-tip-box" role="tooltip">
+                      Topic badge shown in the Academy catalog, course hero breadcrumb, and slide deck cover.
+                    </span>
+                  </span>
+                </span>
+                <input type="text" id="acd-category" placeholder="AI Workflows" />
+              </label>
+
+              <label class="acd-field">
+                <span class="acd-label-row">
+                  Publishing Status
+                  <span class="acd-tip-wrap">
+                    <button type="button" class="acd-tip-btn" aria-label="Publishing Status info">?</button>
+                    <span class="acd-tip-box" role="tooltip">
+                      <strong>Private (Draft)</strong> hides the item from the public catalog while you edit; <strong>Public</strong> publishes immediately.
+                    </span>
+                  </span>
+                </span>
+                <select id="gen-status" class="ac-select">
+                  <option value="draft">Private (Draft — review before publishing)</option>
+                  <option value="published">Public (Publish immediately)</option>
+                  <option value="scheduled">Scheduled</option>
+                </select>
+              </label>
+
+              <label class="acd-field" id="gen-publish-at-wrap" hidden>
+                <span>Publish Date &amp; Time</span>
+                <input type="datetime-local" id="gen-publish-at" />
+              </label>
+            </div>
+
+            <!-- Course Pricing & Optional Micro-App (hidden for Guides) -->
+            <div class="gen-course-box" id="gen-course-fields" style="margin-top: 16px;">
+              <div class="gen-three-col">
+                <label class="gen-field">
+                  <span class="acd-label-row">
+                    Course Price
+                    <span class="acd-tip-wrap">
+                      <button type="button" class="acd-tip-btn" aria-label="Course Price info">?</button>
+                      <span class="acd-tip-box" role="tooltip">
+                        Display price shown on the course hero, badges, and Buy Course CTA button (e.g. <code>$49</code>).
+                      </span>
+                    </span>
+                  </span>
+                  <input type="text" id="gen-price" placeholder="$49" value="$49" />
+                </label>
+                <label class="gen-field gen-span-2">
+                  <span class="acd-label-row">
+                    Stripe Checkout Link
+                    <span class="acd-tip-wrap">
+                      <button type="button" class="acd-tip-btn" aria-label="Stripe Checkout Link info">?</button>
+                      <span class="acd-tip-box" role="tooltip">
+                        Paste your Stripe Payment Link URL. In Stripe → After payment, set Redirect URL to <code>/academy/courses/&lt;slug&gt;/slides?checkout=success</code>.
+                      </span>
+                    </span>
+                  </span>
+                  <input type="url" id="gen-stripe-url" placeholder="https://buy.stripe.com/..." />
+                </label>
+              </div>
+
+              <div class="gen-three-col" style="margin-top: 12px;">
+                <label class="gen-field">
+                  <span class="acd-label-row">
+                    Tool / Template Name (Optional)
+                    <span class="acd-tip-wrap">
+                      <button type="button" class="acd-tip-btn" aria-label="Tool Name info">?</button>
+                      <span class="acd-tip-box" role="tooltip">
+                        Optional companion asset included with the course (unlocked after purchase &amp; linked in the buyer email).
+                      </span>
+                    </span>
+                  </span>
+                  <input type="text" id="gen-tool-name" placeholder="Magnific Preset Pack" />
+                </label>
+                <label class="gen-field">
+                  <span>Tool Type (Optional)</span>
+                  <input type="text" id="gen-tool-type" placeholder="Template / Micro-App / Mockups" />
+                </label>
+                <label class="gen-field">
+                  <span class="acd-label-row">
+                    Tool / Micro-App URL (Optional)
+                    <span class="acd-tip-wrap">
+                      <button type="button" class="acd-tip-btn" aria-label="Tool URL info">?</button>
+                      <span class="acd-tip-box" role="tooltip">
+                        Destination URL for the included template or micro-app. Only visible to unlocked buyers.
+                      </span>
+                    </span>
+                  </span>
+                  <input type="url" id="gen-tool-url" placeholder="https://..." />
+                </label>
+              </div>
+            </div>
+
+            <div class="acd-form-grid" style="margin-top: 16px;">
+              <div class="acd-field">
+                <span class="acd-label-row">
+                  Thumbnail Image (16:9)
+                </span>
+                <div class="acd-pdf-override-row">
+                  <img id="acd-cover-preview" src="" alt="Thumbnail preview" style="width: 112px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; border: 1px solid rgba(156, 225, 255, 0.2); display: none;" />
+                  <input type="file" id="acd-cover-img-input" accept="image/*" hidden />
+                  <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-upload-cover-img">Upload Thumbnail</button>
+                  <span class="acd-pdf-status" id="acd-cover-img-status">No thumbnail set</span>
+                </div>
+              </div>
+
+              <div class="acd-field">
+                <span class="acd-label-row">
+                  Custom PDF Override (Optional)
+                  <span class="acd-tip-wrap">
+                    <button type="button" class="acd-tip-btn" aria-label="Custom PDF info">?</button>
+                    <span class="acd-tip-box" role="tooltip">
+                      Upload your own PDF to display it directly in the course PDF viewer instead of the AI-generated slides.
+                    </span>
+                  </span>
+                </span>
+                <div class="acd-pdf-override-row">
+                  <input type="file" id="acd-custom-pdf-input" accept="application/pdf,.pdf" hidden />
+                  <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-upload-custom-pdf">Upload Custom PDF</button>
+                  <span class="acd-pdf-status" id="acd-custom-pdf-status">Using AI-generated slides</span>
+                  <button type="button" class="acd-btn-danger" id="btn-remove-custom-pdf" hidden>Remove PDF</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </section>
 
-      <!-- Card 2: Course Settings & Assets -->
-      <section class="acd-glass-card acd-settings-card" aria-label="Course Settings and Assets">
-    <div class="acd-editor-shell">
-      <div class="acd-empty-editor" id="acd-empty-editor">
-        Select an item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
-      </div>
-
-      <form id="acd-editor-form" hidden>
-      <div class="acd-editor-topbar">
-        <div class="acd-editor-links">
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-content" class="acd-btn-cyan-outline">
-            Edit Content ↗
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-slides" class="acd-btn-cyan-outline">
-            Edit PDF / Slides ↗
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="acd-btn-glass">
-            Preview Landing ↗
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-slides" class="acd-btn-glass">
-            Preview Slides / PDF ↗
-          </a>
-        </div>
-      </div>
-
-      <div class="acd-form-grid">
-        <label class="acd-field">
-          <span class="acd-label-row">
-            Slug (URL)
-            <span class="acd-tip-wrap">
-              <button type="button" class="acd-tip-btn" aria-label="Slug info">?</button>
-              <span class="acd-tip-box" role="tooltip">
-                Public URL path for this item (e.g. <code>/academy/courses/my-course</code>). Also used in your Stripe redirect URL.
-              </span>
-            </span>
-          </span>
-          <input type="text" id="acd-slug" required />
-        </label>
-
-        <label class="acd-field">
-          <span class="acd-label-row">
-            Category
-            <span class="acd-tip-wrap">
-              <button type="button" class="acd-tip-btn" aria-label="Category info">?</button>
-              <span class="acd-tip-box" role="tooltip">
-                Topic badge shown in the Academy catalog, course hero breadcrumb, and slide deck cover.
-              </span>
-            </span>
-          </span>
-          <input type="text" id="acd-category" placeholder="AI Workflows" />
-        </label>
-
-        <div class="acd-field acd-span-2">
-          <span class="acd-label-row">
-            Thumbnail Image (16:9)
-          </span>
-          <div class="acd-pdf-override-row">
-            <img id="acd-cover-preview" src="" alt="Thumbnail preview" style="width: 112px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; border: 1px solid rgba(156, 225, 255, 0.2); display: none;" />
-            <input type="file" id="acd-cover-img-input" accept="image/*" hidden />
-            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-upload-cover-img">Upload Thumbnail</button>
-            <span class="acd-pdf-status" id="acd-cover-img-status">No thumbnail set</span>
-          </div>
-        </div>
-
-        <div class="acd-field acd-span-2">
-          <span class="acd-label-row">
-            Custom PDF Override (Optional)
-            <span class="acd-tip-wrap">
-              <button type="button" class="acd-tip-btn" aria-label="Custom PDF info">?</button>
-              <span class="acd-tip-box" role="tooltip">
-                Upload your own PDF to display it directly in the course PDF viewer instead of the AI-generated slides.
-              </span>
-            </span>
-          </span>
-          <div class="acd-pdf-override-row">
-            <input type="file" id="acd-custom-pdf-input" accept="application/pdf,.pdf" hidden />
-            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-upload-custom-pdf">Upload Custom PDF</button>
-            <span class="acd-pdf-status" id="acd-custom-pdf-status">Using AI-generated slides</span>
-            <button type="button" class="acd-btn-danger" id="btn-remove-custom-pdf" hidden>Remove PDF</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="acd-editor-footer">
-        <button type="button" class="acd-btn-danger" id="btn-delete-acd-item">Delete</button>
-        <button type="submit" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-item" disabled>Save Changes</button>
-      </div>
-    </form>
-    </div>
-  </section>
+      <!-- Tab 2: AI Curriculum Engine -->
+      <section class="acd-glass-card" id="acd-tab-generator" aria-label="AI Curriculum Engine" hidden>
+        <AcademyGeneratorModal initialSettings={initialSettings} />
+      </section>
     </div>
   </div>
 </div>
@@ -583,6 +698,7 @@ const { initialItems, initialSettings } = Astro.props;
             } catch {}
             renderSidebarLists();
             renderEditor();
+            switchAcdTab("settings");
           });
         });
       }
@@ -602,6 +718,52 @@ const { initialItems, initialSettings } = Astro.props;
       renderEditor();
     });
 
+    function switchAcdTab(tab: "settings" | "generator") {
+      document.querySelectorAll<HTMLButtonElement>("[data-acd-tab]").forEach((btn) => {
+        const active = btn.dataset.acdTab === tab;
+        btn.classList.toggle("is-active", active);
+        btn.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      const settingsPanel = document.getElementById("acd-tab-settings");
+      const genPanel = document.getElementById("acd-tab-generator");
+      if (settingsPanel) settingsPanel.hidden = tab !== "settings";
+      if (genPanel) genPanel.hidden = tab !== "generator";
+    }
+
+    document.querySelectorAll<HTMLButtonElement>("[data-acd-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        switchAcdTab((btn.dataset.acdTab as "settings" | "generator") || "settings");
+      });
+    });
+
+    // Header dropdowns (Edit / Preview)
+    document.querySelectorAll<HTMLElement>("#acd-header-actions .cms-header-dropdown").forEach((dd) => {
+      const trigger = dd.querySelector<HTMLButtonElement>(".cms-dropdown-trigger");
+      const menu = dd.querySelector<HTMLElement>(".cms-dropdown-menu");
+      trigger?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = !menu?.hidden;
+        document.querySelectorAll<HTMLElement>(".cms-header-dropdown .cms-dropdown-menu").forEach((m) => {
+          m.hidden = true;
+        });
+        document.querySelectorAll<HTMLButtonElement>(".cms-header-dropdown .cms-dropdown-trigger").forEach((t) => {
+          t.setAttribute("aria-expanded", "false");
+        });
+        if (menu && !isOpen) {
+          menu.hidden = false;
+          trigger.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+    document.addEventListener("click", () => {
+      document.querySelectorAll<HTMLElement>(".cms-header-dropdown .cms-dropdown-menu").forEach((m) => {
+        m.hidden = true;
+      });
+      document.querySelectorAll<HTMLButtonElement>(".cms-header-dropdown .cms-dropdown-trigger").forEach((t) => {
+        t.setAttribute("aria-expanded", "false");
+      });
+    });
+
     function toggleKindAndStatusUI(kind: string = "course") {
       if (prefsSectionEl) prefsSectionEl.hidden = kind !== "course";
 
@@ -610,30 +772,52 @@ const { initialItems, initialSettings } = Astro.props;
       if (newGuideBtn) newGuideBtn.hidden = kind !== "guide";
       if (newCourseBtn) newCourseBtn.hidden = kind !== "course";
 
-      if (titleHeaderEl && eyebrowHeaderEl && !selectedId) {
-        eyebrowHeaderEl.textContent = "AI Curriculum Engine";
-        if (kind === "course") {
-          titleHeaderEl.innerHTML = "Generate <span>Course</span>";
-        } else {
-          titleHeaderEl.innerHTML = "Generate <span>Guide</span>";
-        }
+      if (titleHeaderEl) {
+        titleHeaderEl.textContent = kind === "course" ? "Courses" : "Guides";
       }
     }
 
     function renderEditor() {
       const item = items.find((i) => i.id === selectedId);
-      const eyebrowEl = document.getElementById("acd-module-eyebrow");
-      const titleEl = document.getElementById("acd-module-title");
+      const titleBarEl = document.getElementById("acd-item-title-bar");
+      const itemTitleInput = el("acd-item-title-input") as HTMLInputElement | null;
+      const statusBadgeEl = document.getElementById("acd-item-status-badge");
+      const editDd = document.getElementById("acd-edit-dropdown");
+      const previewDd = document.getElementById("acd-preview-dropdown");
+      const delBtn = document.getElementById("btn-delete-acd-item");
+      const saveBtn = document.getElementById("btn-save-acd-item");
+      const dividerEl = document.getElementById("acd-actions-divider");
+
       if (!item || !formEl || !emptyEl) {
-        if (eyebrowEl) eyebrowEl.textContent = "AI Curriculum Engine";
-        if (titleEl) titleEl.innerHTML = "Generate <span>Course</span>";
+        if (titleHeaderEl) titleHeaderEl.textContent = activeKind === "course" ? "Courses" : "Guides";
+        if (titleBarEl) titleBarEl.hidden = true;
+        if (editDd) editDd.hidden = true;
+        if (previewDd) previewDd.hidden = true;
+        if (delBtn) delBtn.hidden = true;
+        if (saveBtn) saveBtn.hidden = true;
+        if (dividerEl) dividerEl.hidden = true;
         if (formEl) formEl.hidden = true;
         if (emptyEl) emptyEl.hidden = false;
         window.dispatchEvent(new CustomEvent("academy:selection-changed", { detail: { item: null } }));
         return;
       }
-      if (eyebrowEl) eyebrowEl.textContent = item.kind === "course" ? "AI Curriculum Engine · Course" : "AI Curriculum Engine · Guide";
-      if (titleEl) titleEl.textContent = item.title || (item.kind === "course" ? "Untitled Course" : "Untitled Guide");
+
+      if (titleBarEl) titleBarEl.hidden = false;
+      if (editDd) editDd.hidden = false;
+      if (previewDd) previewDd.hidden = false;
+      if (delBtn) delBtn.hidden = false;
+      if (saveBtn) saveBtn.hidden = false;
+      if (dividerEl) dividerEl.hidden = false;
+
+      if (itemTitleInput) {
+        itemTitleInput.value = item.title || "";
+        itemTitleInput.placeholder = item.kind === "course" ? "Course title..." : "Guide title...";
+      }
+      if (statusBadgeEl) {
+        const st = item.status || "draft";
+        statusBadgeEl.textContent = st === "published" ? "Published" : st === "scheduled" ? "Scheduled" : "Draft";
+        statusBadgeEl.className = `cms-status-badge is-${st}`;
+      }
 
       emptyEl.hidden = true;
       formEl.hidden = false;
@@ -766,6 +950,7 @@ const { initialItems, initialSettings } = Astro.props;
         selectedId = data.item.id;
         renderSidebarLists();
         renderEditor();
+        switchAcdTab("generator");
         showStudioToast(`Created new ${kind}!`);
       }
     }
@@ -882,6 +1067,7 @@ const { initialItems, initialSettings } = Astro.props;
       );
     });
 
+    document.getElementById("acd-item-title-input")?.addEventListener("input", () => setDirty(true));
     document.getElementById("acd-editor-form")?.addEventListener("input", () => setDirty(true));
     document.getElementById("acd-editor-form")?.addEventListener("change", () => setDirty(true));
     ["gen-price", "gen-stripe-url", "gen-tool-name", "gen-tool-type", "gen-tool-url", "gen-status", "gen-publish-at"].forEach((id) => {
@@ -911,7 +1097,7 @@ const { initialItems, initialSettings } = Astro.props;
         kind: item.kind,
         status: nextStatus,
         publishAt: nextStatus === "scheduled" && nextPublishAtRaw ? new Date(nextPublishAtRaw).toISOString() : null,
-        title: item.title,
+        title: el("acd-item-title-input")?.value.trim() || item.title,
         slug: el("acd-slug")!.value.trim(),
         category: el("acd-category")!.value.trim(),
         subtitle: item.subtitle,

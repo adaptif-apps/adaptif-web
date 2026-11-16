@@ -2,8 +2,14 @@
 import "../styles/global.css";
 import BookCallModal from "../components/BookCallModal.astro";
 import WhatsAppWidget from "../components/WhatsAppWidget.astro";
+import GlobalPageEditor from "../components/GlobalPageEditor.astro";
 import { getWhatsAppConfig } from "../lib/whatsappDb";
 import { getSeoConfig, resolvePageSeo } from "../lib/seoDb";
+import {
+  getPageContent,
+  listSitePagesForEditor,
+  normalizeCmsPath,
+} from "../lib/cmsContentDb";
 
 interface Props {
   title?: string;
@@ -11,10 +17,18 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const isEditMode = Astro.url.searchParams.get("edit") === "1";
+const currentCmsPath = normalizeCmsPath(Astro.url.pathname);
 
-const [whatsappConfig, seoConfig] = await Promise.all([
+if (isEditMode) {
+  Astro.response.headers.set("Cache-Control", "no-store");
+}
+
+const [whatsappConfig, seoConfig, cmsOverrides, cmsPages] = await Promise.all([
   getWhatsAppConfig(),
   getSeoConfig(),
+  getPageContent(currentCmsPath),
+  isEditMode ? listSitePagesForEditor() : Promise.resolve([]),
 ]);
 
 const seo = resolvePageSeo(seoConfig, Astro.url.pathname, { title, description });
@@ -88,6 +102,12 @@ const seo = resolvePageSeo(seoConfig, Astro.url.pathname, { title, description }
     <slot />
     <BookCallModal />
     <WhatsAppWidget config={whatsappConfig} />
+    <GlobalPageEditor
+      currentPath={currentCmsPath}
+      overrides={cmsOverrides}
+      isEditMode={isEditMode}
+      pages={cmsPages}
+    />
 
     <!-- Universal Section Staggered Entrance Observer -->
     <script>

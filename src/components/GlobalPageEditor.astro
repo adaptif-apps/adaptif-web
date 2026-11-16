@@ -1,0 +1,1051 @@
+---
+import type { CmsNavNode, CmsPageOverrides } from "../lib/cmsContentDb";
+
+interface Props {
+  currentPath: string;
+  overrides: CmsPageOverrides;
+  isEditMode: boolean;
+  pages?: CmsNavNode[];
+}
+
+const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
+---
+
+<script is:inline define:vars={{ currentPath, overrides, isEditMode, pages }}>
+  window.__ADAPTIF_CMS__ = {
+    currentPath,
+    overrides: overrides || {},
+    isEditMode: Boolean(isEditMode),
+    pages: pages || [],
+  };
+</script>
+
+<!-- Always apply saved CMS overrides to [data-cms-key] elements -->
+<script>
+  function setElementTextPreservingIcons(el: HTMLElement, newText: string) {
+    // If element has a dedicated text span or text nodes alongside an SVG, preserve the SVG
+    const svg = el.querySelector("svg");
+    if (svg) {
+      const textSpan = el.querySelector("span:not(:has(svg))");
+      if (textSpan && el.children.length <= 2) {
+        textSpan.textContent = newText;
+        return;
+      }
+      // Update first non-empty text node or prepend a text node
+      for (const node of Array.from(el.childNodes)) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+          node.textContent = newText + " ";
+          return;
+        }
+      }
+    }
+    el.textContent = newText;
+  }
+
+  function applyCmsOverrides() {
+    const data = (window as any).__ADAPTIF_CMS__;
+    if (!data || !data.overrides) return;
+    const map = data.overrides as Record<string, { text?: string; href?: string; src?: string; alt?: string }>;
+
+    document.querySelectorAll<HTMLElement>("[data-cms-key]").forEach((el) => {
+      const key = el.dataset.cmsKey;
+      if (!key || !map[key]) return;
+      const val = map[key];
+
+      if (el.tagName === "IMG") {
+        const img = el as HTMLImageElement;
+        if (val.src) img.src = val.src;
+        if (typeof val.alt === "string") img.alt = val.alt;
+        return;
+      }
+
+      if (typeof val.text === "string") {
+        setElementTextPreservingIcons(el, val.text);
+      }
+
+      if (typeof val.href === "string" && el.tagName === "A") {
+        (el as HTMLAnchorElement).setAttribute("href", val.href);
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyCmsOverrides);
+  } else {
+    applyCmsOverrides();
+  }
+  document.addEventListener("astro:page-load", applyCmsOverrides);
+</script>
+
+{isEditMode && (
+  <div id="gce-root" class="gce-root">
+    <!-- Top Floating Bar -->
+    <div class="gce-topbar" role="region" aria-label="Page Editor Toolbar">
+      <div class="gce-topbar-left">
+        <button
+          type="button"
+          class="adaptif-btn adaptif-btn--dark adaptif-btn--sm"
+          id="gce-toggle-drawer"
+          aria-expanded="false"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M9 3v18" />
+          </svg>
+          <span>Pages</span>
+        </button>
+
+        <span class="gce-path-pill">
+          Editing: <strong>{currentPath}</strong>
+        </span>
+
+        <span class="gce-dirty-pill" id="gce-dirty-pill" hidden>
+          ● Unsaved changes
+        </span>
+      </div>
+
+      <div class="gce-topbar-actions">
+        <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="gce-reset-btn">
+          Reset Page
+        </button>
+        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gce-exit-btn">
+          Exit Edit Mode
+        </button>
+        <button type="button" class="adaptif-btn adaptif-btn--sm" id="gce-save-btn">
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <!-- Retractable Left Pages Drawer -->
+    <aside class="gce-drawer" id="gce-drawer" aria-label="Site pages navigation">
+      <div class="gce-drawer-head">
+        <div>
+          <span class="gce-drawer-kicker">Site Map</span>
+          <h2 class="gce-drawer-title">Pages &amp; Sub-pages</h2>
+        </div>
+        <button type="button" class="gce-icon-close" id="gce-close-drawer" aria-label="Collapse pages panel">
+          ✕
+        </button>
+      </div>
+      <nav class="gce-drawer-nav" id="gce-drawer-nav"></nav>
+    </aside>
+
+    <!-- Retractable Edge Handle (when drawer is closed) -->
+    <button
+      type="button"
+      class="gce-edge-handle"
+      id="gce-edge-handle"
+      title="Open Pages Panel"
+      aria-label="Open Pages Panel"
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+      <span>Pages</span>
+    </button>
+
+    <!-- Floating Button / Link Popover -->
+    <div class="gce-popover" id="gce-link-popover" hidden role="dialog" aria-label="Edit button or link">
+      <div class="gce-popover-head">
+        <span id="gce-pop-kind">Edit Link / Button</span>
+        <button type="button" class="gce-icon-close" id="gce-pop-close" aria-label="Close">✕</button>
+      </div>
+      <div class="gce-popover-body">
+        <label class="gce-pop-field" id="gce-pop-text-wrap">
+          <span>Button / Link Text</span>
+          <input type="text" id="gce-pop-text" placeholder="Button text..." />
+        </label>
+        <label class="gce-pop-field" id="gce-pop-href-wrap">
+          <span>Destination URL (Link)</span>
+          <input type="text" id="gce-pop-href" placeholder="/pricing or https://..." />
+        </label>
+      </div>
+      <div class="gce-popover-foot">
+        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gce-pop-go">
+          Go to URL ↗
+        </button>
+        <button type="button" class="adaptif-btn adaptif-btn--sm" id="gce-pop-done">
+          Done
+        </button>
+      </div>
+    </div>
+
+    <!-- Floating Image Hover Trigger -->
+    <button type="button" class="gce-img-btn" id="gce-img-hover-btn" hidden>
+      Change Image
+    </button>
+    <input type="file" id="gce-img-file" accept="image/*" hidden />
+
+    <!-- Unsaved Changes Confirmation Modal -->
+    <div class="gce-modal-backdrop" id="gce-unsaved-modal" hidden>
+      <div class="gce-modal" role="dialog" aria-modal="true" aria-label="Unsaved changes">
+        <h3>Unsaved changes</h3>
+        <p>You have unsaved edits on this page. Would you like to save them before navigating away?</p>
+        <div class="gce-modal-actions">
+          <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gce-modal-cancel">
+            Cancel
+          </button>
+          <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="gce-modal-discard">
+            Discard &amp; Go
+          </button>
+          <button type="button" class="adaptif-btn adaptif-btn--sm" id="gce-modal-save-go">
+            Save &amp; Go
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="gce-toast" id="gce-toast" hidden></div>
+  </div>
+)}
+
+<style is:global>
+  body.gce-editing [data-cms-key]:not(img):not(a):not(button) {
+    outline: 1px dashed rgba(72, 200, 255, 0.38);
+    outline-offset: 4px;
+    border-radius: 4px;
+    cursor: text;
+    transition: outline-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  body.gce-editing [data-cms-key]:not(img):not(a):not(button):hover {
+    outline-color: rgba(72, 200, 255, 0.85);
+    background-color: rgba(72, 200, 255, 0.06);
+  }
+
+  body.gce-editing [data-cms-key]:not(img):not(a):not(button):focus {
+    outline: 2px solid #48c8ff;
+    background-color: rgba(72, 200, 255, 0.1);
+  }
+
+  body.gce-editing a[data-cms-key],
+  body.gce-editing button[data-cms-key],
+  body.gce-editing header a,
+  body.gce-editing footer a {
+    outline: 1px dashed rgba(72, 200, 255, 0.5);
+    outline-offset: 3px;
+    cursor: pointer !important;
+  }
+
+  body.gce-editing img[data-cms-key] {
+    outline: 2px dashed rgba(72, 200, 255, 0.55);
+    outline-offset: 3px;
+    cursor: pointer;
+  }
+</style>
+
+<style>
+  .gce-root {
+    font-family: var(--font-family-body, "DM Sans", sans-serif);
+  }
+
+  .gce-topbar {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: min(1120px, calc(100vw - 28px));
+    padding: 9px 14px;
+    border-radius: 9999px;
+    background: rgba(8, 13, 24, 0.92);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.58), 0 0 28px rgba(56, 189, 248, 0.18);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .gce-topbar-left,
+  .gce-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .gce-path-pill {
+    font-size: 12.5px;
+    color: rgba(248, 250, 252, 0.78);
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .gce-path-pill strong {
+    color: #7fe2ff;
+    font-weight: 600;
+  }
+
+  .gce-dirty-pill {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fbbf24;
+  }
+
+  /* Retractable Left Drawer */
+  .gce-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 290px;
+    z-index: 1520;
+    background: rgba(7, 11, 21, 0.97);
+    border-right: 1px solid rgba(72, 200, 255, 0.25);
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-105%);
+    transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .gce-drawer.is-open {
+    transform: translateX(0);
+  }
+
+  .gce-drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .gce-drawer-kicker {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #48c8ff;
+    margin-bottom: 3px;
+  }
+
+  .gce-drawer-title {
+    margin: 0;
+    font-family: var(--font-family-body, "DM Sans", sans-serif);
+    font-size: 15px;
+    font-weight: 600;
+    color: #f8fafc;
+    letter-spacing: -0.01em;
+  }
+
+  .gce-drawer-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 12px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .gce-icon-close {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gce-icon-close:hover {
+    color: #ffffff;
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .gce-edge-handle {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1490;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 10px 10px 7px;
+    border-radius: 0 12px 12px 0;
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    border-left: none;
+    background: rgba(8, 13, 24, 0.92);
+    color: #9ce1ff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 6px 8px 24px rgba(0, 0, 0, 0.45);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .gce-edge-handle:hover {
+    background: rgba(18, 44, 88, 0.95);
+    color: #ffffff;
+  }
+
+  /* Drawer dynamic items */
+  :global(.gce-nav-link) {
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    padding: 8px 11px;
+    border-radius: 9px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    transition: all 0.15s ease;
+  }
+
+  :global(.gce-nav-link:hover) {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+  }
+
+  :global(.gce-nav-link.is-current) {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: rgba(72, 200, 255, 0.4);
+    color: #7fe2ff;
+    font-weight: 600;
+  }
+
+  :global(.gce-nav-group) {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  :global(.gce-nav-row) {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  :global(.gce-nav-caret) {
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: #7dd3fc;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.18s ease, background-color 0.15s ease;
+  }
+
+  :global(.gce-nav-caret:hover) {
+    background: rgba(72, 200, 255, 0.12);
+  }
+
+  :global(.gce-nav-group.is-open > .gce-nav-row > .gce-nav-caret) {
+    transform: rotate(90deg);
+  }
+
+  :global(.gce-nav-children) {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 16px;
+    margin-left: 11px;
+    border-left: 1px solid rgba(72, 200, 255, 0.18);
+  }
+
+  :global(.gce-nav-group.is-open > .gce-nav-children) {
+    display: flex;
+  }
+
+  /* Link/Button Popover */
+  .gce-popover {
+    position: fixed;
+    z-index: 1550;
+    width: 320px;
+    border-radius: 16px;
+    background: rgba(8, 13, 24, 0.96);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    box-shadow: 0 22px 54px rgba(0, 0, 0, 0.68);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    padding: 14px;
+  }
+
+  .gce-popover[hidden] {
+    display: none !important;
+  }
+
+  .gce-popover-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #48c8ff;
+  }
+
+  .gce-popover-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .gce-pop-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .gce-pop-field span {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.78);
+  }
+
+  .gce-pop-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 11px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(4, 7, 14, 0.85);
+    color: #f8fafc;
+    font-size: 13px;
+  }
+
+  .gce-pop-field input:focus {
+    outline: none;
+    border-color: #48c8ff;
+  }
+
+  .gce-popover-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  /* Image hover button */
+  .gce-img-btn {
+    position: fixed;
+    z-index: 1510;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(72, 200, 255, 0.55);
+    background: rgba(8, 13, 24, 0.92);
+    color: #7fe2ff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+  }
+
+  .gce-img-btn[hidden] {
+    display: none !important;
+  }
+
+  /* Unsaved modal */
+  .gce-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1600;
+    background: rgba(2, 6, 14, 0.72);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .gce-modal-backdrop[hidden] {
+    display: none !important;
+  }
+
+  .gce-modal {
+    width: min(440px, 100%);
+    padding: 22px;
+    border-radius: 18px;
+    background: rgba(10, 15, 28, 0.98);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+  }
+
+  .gce-modal h3 {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body, "DM Sans", sans-serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .gce-modal p {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: rgba(248, 250, 252, 0.72);
+  }
+
+  .gce-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .gce-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1650;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: rgba(8, 13, 24, 0.95);
+    border: 1px solid rgba(72, 200, 255, 0.45);
+    color: #e0f2fe;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+  }
+
+  .gce-toast[hidden] {
+    display: none !important;
+  }
+
+  @media (max-width: 768px) {
+    .gce-topbar {
+      border-radius: 16px;
+      padding: 10px 12px;
+    }
+    .gce-path-pill {
+      display: none;
+    }
+  }
+</style>
+
+{isEditMode && (
+  <script>
+    (() => {
+      const cms = (window as any).__ADAPTIF_CMS__;
+      if (!cms || !cms.isEditMode) return;
+
+      document.body.classList.add("gce-editing");
+
+      const currentPath: string = cms.currentPath || "/";
+      const overrides: Record<string, { text?: string; href?: string; src?: string; alt?: string }> =
+        JSON.parse(JSON.stringify(cms.overrides || {}));
+      let isDirty = false;
+      let pendingNavUrl: string | null = null;
+
+      const dirtyPill = document.getElementById("gce-dirty-pill");
+      const saveBtn = document.getElementById("gce-save-btn") as HTMLButtonElement | null;
+      const resetBtn = document.getElementById("gce-reset-btn") as HTMLButtonElement | null;
+      const exitBtn = document.getElementById("gce-exit-btn") as HTMLButtonElement | null;
+      const toastEl = document.getElementById("gce-toast");
+
+      const drawer = document.getElementById("gce-drawer");
+      const toggleDrawerBtn = document.getElementById("gce-toggle-drawer");
+      const closeDrawerBtn = document.getElementById("gce-close-drawer");
+      const edgeHandle = document.getElementById("gce-edge-handle");
+      const drawerNav = document.getElementById("gce-drawer-nav");
+
+      const popover = document.getElementById("gce-link-popover");
+      const popKind = document.getElementById("gce-pop-kind");
+      const popTextWrap = document.getElementById("gce-pop-text-wrap");
+      const popText = document.getElementById("gce-pop-text") as HTMLInputElement | null;
+      const popHrefWrap = document.getElementById("gce-pop-href-wrap");
+      const popHref = document.getElementById("gce-pop-href") as HTMLInputElement | null;
+      const popGo = document.getElementById("gce-pop-go") as HTMLButtonElement | null;
+      const popDone = document.getElementById("gce-pop-done");
+      const popClose = document.getElementById("gce-pop-close");
+
+      const imgHoverBtn = document.getElementById("gce-img-hover-btn") as HTMLButtonElement | null;
+      const imgFileInput = document.getElementById("gce-img-file") as HTMLInputElement | null;
+
+      const unsavedModal = document.getElementById("gce-unsaved-modal");
+      const modalCancel = document.getElementById("gce-modal-cancel");
+      const modalDiscard = document.getElementById("gce-modal-discard");
+      const modalSaveGo = document.getElementById("gce-modal-save-go") as HTMLButtonElement | null;
+
+      function markDirty() {
+        isDirty = true;
+        if (dirtyPill) dirtyPill.hidden = false;
+      }
+
+      function clearDirty() {
+        isDirty = false;
+        if (dirtyPill) dirtyPill.hidden = true;
+      }
+
+      function showToast(msg: string) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.hidden = false;
+        setTimeout(() => {
+          if (toastEl) toastEl.hidden = true;
+        }, 2600);
+      }
+
+      function setDrawerOpen(open: boolean) {
+        drawer?.classList.toggle("is-open", open);
+        toggleDrawerBtn?.setAttribute("aria-expanded", open ? "true" : "false");
+        if (edgeHandle) edgeHandle.hidden = open;
+      }
+
+      toggleDrawerBtn?.addEventListener("click", () => {
+        setDrawerOpen(!drawer?.classList.contains("is-open"));
+      });
+      closeDrawerBtn?.addEventListener("click", () => setDrawerOpen(false));
+      edgeHandle?.addEventListener("click", () => setDrawerOpen(true));
+
+      function buildEditUrl(rawUrl: string): { url: string; isExternal: boolean } {
+        const trimmed = (rawUrl || "").trim();
+        if (!trimmed) return { url: "", isExternal: false };
+        if (trimmed.startsWith("#")) return { url: trimmed, isExternal: false };
+        if (/^https?:\/\//i.test(trimmed)) {
+          try {
+            const parsed = new URL(trimmed);
+            if (parsed.origin !== window.location.origin) {
+              return { url: trimmed, isExternal: true };
+            }
+            parsed.searchParams.set("edit", "1");
+            return { url: parsed.pathname + parsed.search + parsed.hash, isExternal: false };
+          } catch {
+            return { url: trimmed, isExternal: true };
+          }
+        }
+        const [base, hash] = trimmed.split("#");
+        const sep = base.includes("?") ? "&" : "?";
+        const withEdit = base.includes("edit=1") ? base : `${base}${sep}edit=1`;
+        return { url: hash ? `${withEdit}#${hash}` : withEdit, isExternal: false };
+      }
+
+      function navigateWithGuard(rawUrl: string) {
+        const { url, isExternal } = buildEditUrl(rawUrl);
+        if (!url) return;
+        if (isExternal) {
+          window.open(url, "_blank", "noopener,noreferrer");
+          return;
+        }
+        if (isDirty) {
+          pendingNavUrl = url;
+          if (unsavedModal) unsavedModal.hidden = false;
+          return;
+        }
+        window.location.href = url;
+      }
+
+      // Render left drawer pages tree
+      function renderNavNode(node: any): string {
+        const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+        const isCurrent = currentPath === node.path;
+        if (!hasChildren) {
+          return `<button type="button" class="gce-nav-link ${isCurrent ? "is-current" : ""}" data-nav-path="${node.path}">${node.label}</button>`;
+        }
+        const childHtml = node.children.map(renderNavNode).join("");
+        const containsCurrent = JSON.stringify(node).includes(`"path":"${currentPath}"`);
+        return `
+          <div class="gce-nav-group ${containsCurrent || node.path === "/academy" ? "is-open" : ""}">
+            <div class="gce-nav-row">
+              <button type="button" class="gce-nav-caret" aria-label="Toggle ${node.label}">▸</button>
+              <button type="button" class="gce-nav-link ${isCurrent ? "is-current" : ""}" data-nav-path="${node.path}">${node.label}</button>
+            </div>
+            <div class="gce-nav-children">${childHtml}</div>
+          </div>
+        `;
+      }
+
+      if (drawerNav) {
+        drawerNav.innerHTML = (cms.pages || []).map(renderNavNode).join("");
+        drawerNav.querySelectorAll<HTMLButtonElement>(".gce-nav-caret").forEach((caret) => {
+          caret.addEventListener("click", (e) => {
+            e.stopPropagation();
+            caret.closest(".gce-nav-group")?.classList.toggle("is-open");
+          });
+        });
+        drawerNav.querySelectorAll<HTMLButtonElement>("[data-nav-path]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const p = btn.dataset.navPath || "/";
+            navigateWithGuard(p);
+          });
+        });
+      }
+
+      // Inline text editing on non-link, non-image [data-cms-key]
+      function getCleanText(el: HTMLElement): string {
+        return (el.innerText || el.textContent || "").trim();
+      }
+
+      document.querySelectorAll<HTMLElement>("[data-cms-key]").forEach((el) => {
+        if (el.tagName === "IMG" || el.tagName === "A" || el.tagName === "BUTTON") return;
+        el.setAttribute("contenteditable", "true");
+        el.setAttribute("spellcheck", "false");
+        el.addEventListener("input", () => {
+          const key = el.dataset.cmsKey;
+          if (!key) return;
+          overrides[key] = { ...(overrides[key] || {}), text: el.textContent || "" };
+          markDirty();
+        });
+      });
+
+      // Link & Button Popover
+      let activeLinkEl: HTMLElement | null = null;
+
+      function openPopoverFor(el: HTMLElement) {
+        activeLinkEl = el;
+        if (!popover) return;
+        const isAnchor = el.tagName === "A";
+        const hasCmsKey = Boolean(el.dataset.cmsKey);
+        const currentText = getCleanText(el);
+        const currentHref = isAnchor ? (el as HTMLAnchorElement).getAttribute("href") || "" : "";
+
+        if (popKind) {
+          popKind.textContent = hasCmsKey
+            ? isAnchor
+              ? "Edit Link / Button"
+              : "Edit Button"
+            : "Link Navigation";
+        }
+        if (popTextWrap) popTextWrap.hidden = !hasCmsKey;
+        if (popText) popText.value = currentText;
+        if (popHrefWrap) popHrefWrap.hidden = !isAnchor;
+        if (popHref) popHref.value = currentHref;
+        if (popGo) popGo.hidden = !isAnchor || !currentHref;
+
+        const rect = el.getBoundingClientRect();
+        const top = Math.min(window.innerHeight - 230, Math.max(76, rect.bottom + 8));
+        const left = Math.min(window.innerWidth - 336, Math.max(12, rect.left));
+        popover.style.top = `${top}px`;
+        popover.style.left = `${left}px`;
+        popover.hidden = false;
+      }
+
+      function closePopover() {
+        if (popover) popover.hidden = true;
+        activeLinkEl = null;
+      }
+
+      popClose?.addEventListener("click", closePopover);
+      popDone?.addEventListener("click", closePopover);
+
+      popText?.addEventListener("input", () => {
+        if (!activeLinkEl || !popText) return;
+        const key = activeLinkEl.dataset.cmsKey;
+        if (!key) return;
+        const val = popText.value;
+        const svg = activeLinkEl.querySelector("svg");
+        if (svg) {
+          const span = activeLinkEl.querySelector("span:not(:has(svg))");
+          if (span && activeLinkEl.children.length <= 2) {
+            span.textContent = val;
+          } else {
+            for (const node of Array.from(activeLinkEl.childNodes)) {
+              if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+                node.textContent = val + " ";
+                break;
+              }
+            }
+          }
+        } else {
+          activeLinkEl.textContent = val;
+        }
+        overrides[key] = { ...(overrides[key] || {}), text: val };
+        markDirty();
+      });
+
+      popHref?.addEventListener("input", () => {
+        if (!activeLinkEl || !popHref || activeLinkEl.tagName !== "A") return;
+        const val = popHref.value.trim();
+        (activeLinkEl as HTMLAnchorElement).setAttribute("href", val || "#");
+        if (popGo) popGo.hidden = !val;
+        const key = activeLinkEl.dataset.cmsKey;
+        if (key) {
+          overrides[key] = { ...(overrides[key] || {}), href: val };
+          markDirty();
+        }
+      });
+
+      popGo?.addEventListener("click", () => {
+        const href = popHref?.value.trim() || "";
+        if (!href) return;
+        closePopover();
+        navigateWithGuard(href);
+      });
+
+      // Intercept clicks on editable buttons/links and navigation links
+      document.addEventListener(
+        "click",
+        (e) => {
+          const target = e.target as HTMLElement | null;
+          if (!target || target.closest("#gce-root")) return;
+
+          const clickable = target.closest<HTMLElement>("a, button[data-cms-key]");
+          if (!clickable) {
+            if (!target.closest("#gce-link-popover")) closePopover();
+            return;
+          }
+
+          if (clickable.tagName === "A" || clickable.dataset.cmsKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            openPopoverFor(clickable);
+          }
+        },
+        true
+      );
+
+      // Image editing
+      let activeImgEl: HTMLImageElement | null = null;
+
+      document.addEventListener("mouseover", (e) => {
+        const img = (e.target as HTMLElement | null)?.closest<HTMLImageElement>("img[data-cms-key]");
+        if (!img || !imgHoverBtn) return;
+        activeImgEl = img;
+        const r = img.getBoundingClientRect();
+        imgHoverBtn.style.top = `${Math.max(72, r.top + 10)}px`;
+        imgHoverBtn.style.left = `${Math.max(12, r.left + 10)}px`;
+        imgHoverBtn.hidden = false;
+      });
+
+      imgHoverBtn?.addEventListener("click", () => {
+        imgFileInput?.click();
+      });
+
+      document.addEventListener(
+        "click",
+        (e) => {
+          const img = (e.target as HTMLElement | null)?.closest<HTMLImageElement>("img[data-cms-key]");
+          if (!img) return;
+          e.preventDefault();
+          e.stopPropagation();
+          activeImgEl = img;
+          imgFileInput?.click();
+        },
+        true
+      );
+
+      imgFileInput?.addEventListener("change", async () => {
+        const file = imgFileInput.files?.[0];
+        if (!file || !activeImgEl) return;
+        const key = activeImgEl.dataset.cmsKey;
+        if (!key) return;
+        try {
+          showToast("Uploading image...");
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch("/api/upload", { method: "POST", body: fd });
+          const data = await res.json();
+          if (!res.ok || !data?.url) throw new Error(data?.error || "Upload failed");
+          activeImgEl.src = data.url;
+          overrides[key] = { ...(overrides[key] || {}), src: data.url };
+          markDirty();
+          showToast("Image updated (remember to Save Changes)");
+        } catch (err: any) {
+          showToast(err?.message || "Image upload failed");
+        } finally {
+          imgFileInput.value = "";
+        }
+      });
+
+      // Save / Reset / Exit
+      async function saveChanges(): Promise<boolean> {
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+        }
+        try {
+          const res = await fetch("/api/cms/content", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ path: currentPath, overrides }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data?.error || "Failed to save changes");
+          clearDirty();
+          showToast("Changes saved & live!");
+          return true;
+        } catch (err: any) {
+          showToast(err?.message || "Error saving changes");
+          return false;
+        } finally {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save Changes";
+          }
+        }
+      }
+
+      saveBtn?.addEventListener("click", saveChanges);
+
+      resetBtn?.addEventListener("click", async () => {
+        if (!confirm(`Reset all custom text/link/image edits on "${currentPath}" back to defaults?`)) {
+          return;
+        }
+        try {
+          const res = await fetch(`/api/cms/content?path=${encodeURIComponent(currentPath)}`, {
+            method: "DELETE",
+          });
+          if (!res.ok) throw new Error("Failed to reset page");
+          clearDirty();
+          window.location.reload();
+        } catch (err: any) {
+          showToast(err?.message || "Reset failed");
+        }
+      });
+
+      exitBtn?.addEventListener("click", () => {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("edit");
+        if (isDirty) {
+          pendingNavUrl = url.pathname + url.search + url.hash;
+          if (unsavedModal) unsavedModal.hidden = false;
+          return;
+        }
+        window.location.href = url.pathname + url.search + url.hash;
+      });
+
+      // Unsaved modal handlers
+      modalCancel?.addEventListener("click", () => {
+        pendingNavUrl = null;
+        if (unsavedModal) unsavedModal.hidden = true;
+      });
+
+      modalDiscard?.addEventListener("click", () => {
+        clearDirty();
+        if (unsavedModal) unsavedModal.hidden = true;
+        if (pendingNavUrl) window.location.href = pendingNavUrl;
+      });
+
+      modalSaveGo?.addEventListener("click", async () => {
+        const ok = await saveChanges();
+        if (ok && pendingNavUrl) {
+          if (unsavedModal) unsavedModal.hidden = true;
+          window.location.href = pendingNavUrl;
+        }
+      });
+    })();
+  </script>
+)}

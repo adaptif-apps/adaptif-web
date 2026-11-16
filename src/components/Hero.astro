@@ -12,18 +12,18 @@ import ReelGallery from "./ReelGallery.astro";
     <!-- Top Pill Badge -->
     <div class="hero-badge-wrapper">
       <div class="hero-badge">
-        <span class="badge-text desktop-only">AI-Driven Creative Department • Subscription Model</span>
-        <span class="badge-text mobile-only">AI Creative Department • Subscription</span>
+        <span class="badge-text desktop-only" data-cms-key="home.hero.badge">AI-Driven Creative Department • Subscription Model</span>
+        <span class="badge-text mobile-only" data-cms-key="home.hero.badgeMobile">AI Creative Department • Subscription</span>
       </div>
     </div>
 
     <!-- Main Typography Header -->
     <div class="hero-copy-wrapper">
-      <h1 class="hero-title">
+      <h1 class="hero-title" data-cms-key="home.hero.title">
         The fuel behind your <br class="br-desktop" />
         creative <span class="title-engine">engine</span>
       </h1>
-      <p class="hero-description">
+      <p class="hero-description" data-cms-key="home.hero.description">
         A subscription that plugs an AI‑driven creative department into your team:
         <strong>design</strong>, <strong>dev</strong> and <strong>marketing</strong>, 
         unlimited requests and revisions, rapid turnarounds and a single, predictable monthly cost.
@@ -32,7 +32,7 @@ import ReelGallery from "./ReelGallery.astro";
 
     <!-- Call to Actions -->
     <div class="hero-cta-group">
-      <a href="#contact" class="btn-primary-hero">
+      <a href="#contact" class="btn-primary-hero" data-cms-key="home.hero.ctaPrimary">
         <span class="btn-glow-aurora" aria-hidden="true"></span>
         <span class="btn-primary-content">
           <span>Book a Call</span>
@@ -42,7 +42,7 @@ import ReelGallery from "./ReelGallery.astro";
         </span>
       </a>
 
-      <a href="/pricing" class="btn-secondary-hero">
+      <a href="/pricing" class="btn-secondary-hero" data-cms-key="home.hero.ctaSecondary">
         <span>Get Started</span>
         <span class="btn-secondary-glow" aria-hidden="true"></span>
       </a>
@@ -52,17 +52,17 @@ import ReelGallery from "./ReelGallery.astro";
     <div class="hero-perks">
       <div class="perk-item">
         <svg class="perk-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>Agile 48-72h turnarounds</span>
+        <span data-cms-key="home.hero.perk1">Agile 48-72h turnarounds</span>
       </div>
       <div class="perk-separator">•</div>
       <div class="perk-item">
         <svg class="perk-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>Unlimited requests & revisions</span>
+        <span data-cms-key="home.hero.perk2">Unlimited requests & revisions</span>
       </div>
       <div class="perk-separator">•</div>
       <div class="perk-item">
         <svg class="perk-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>Pause or cancel anytime</span>
+        <span data-cms-key="home.hero.perk3">Pause or cancel anytime</span>
       </div>
     </div>
 

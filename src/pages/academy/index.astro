@@ -2,6 +2,8 @@
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+
+export const prerender = false;
 ---
 
 <Layout
@@ -12,11 +14,11 @@ import Footer from "../../components/Footer.astro";
   <main class="academy-main">
     <section class="academy-hero is-visible">
       <div class="academy-container">
-        <span class="academy-eyebrow">Adaptif Academy</span>
-        <h1 class="academy-heading">
+        <span class="academy-eyebrow" data-cms-key="academy.hero.eyebrow">Adaptif Academy</span>
+        <h1 class="academy-heading" data-cms-key="academy.hero.title">
           Systems &amp; playbooks <span class="academy-highlight">built to ship.</span>
         </h1>
-        <p class="academy-lead">
+        <p class="academy-lead" data-cms-key="academy.hero.description">
           Practical frameworks, interactive slide decks, downloadable PDFs, and ready-to-use creative tools from the Adaptif engine.
         </p>
 

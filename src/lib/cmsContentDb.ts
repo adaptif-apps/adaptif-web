@@ -3,6 +3,7 @@ import { listAcademyItems } from "./academyDb";
 
 export interface CmsFieldValue {
   text?: string;
+  html?: string;
   href?: string;
   src?: string;
   alt?: string;
@@ -59,6 +60,7 @@ function sanitizeOverrides(raw: unknown): CmsPageOverrides {
     if (!k || !val || typeof val !== "object") continue;
     const entry: CmsFieldValue = {};
     if (typeof val.text === "string") entry.text = val.text;
+    if (typeof val.html === "string") entry.html = val.html;
     if (typeof val.href === "string") entry.href = val.href.trim();
     if (typeof val.src === "string") entry.src = val.src.trim();
     if (typeof val.alt === "string") entry.alt = val.alt;

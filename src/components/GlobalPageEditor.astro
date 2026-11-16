@@ -78,7 +78,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
 
     function tagElementsInScope(container: HTMLElement, scope: string) {
       const candidates = container.querySelectorAll<HTMLElement>(
-        "h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, a, button, img, span.adaptif-eyebrow, span.eyebrow"
+        'h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, a, button, img, span, [class*="eyebrow"]'
       );
       candidates.forEach((el) => {
         if (el.dataset.cmsKey || isIgnored(el)) return;
@@ -99,7 +99,19 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
           return;
         }
 
-        // For text blocks, skip if it contains nested block-level editable elements or nested links/buttons that wrap everything
+        if (tag === "span" || el.className?.toString().includes("eyebrow")) {
+          // Skip spans inside headings, paragraphs, list items, links, buttons, or already-tagged parents
+          if (el.closest("h1, h2, h3, h4, h5, h6, p, li, a, button, [data-cms-key]")) return;
+          // Skip if it wraps other block/element nodes (except <br>)
+          const hasNonBrChild = Array.from(el.children).some((c) => c.tagName !== "BR");
+          if (hasNonBrChild) return;
+          const txt = (el.textContent || "").trim();
+          if (!txt) return;
+          el.dataset.cmsKey = nextKey(scope, "text");
+          return;
+        }
+
+        // For text blocks, skip if it contains nested block-level editable elements
         if (el.querySelector("h1, h2, h3, h4, h5, h6, p, ul, ol, section, article")) return;
         const txt = (el.textContent || "").trim();
         if (!txt) return;
@@ -126,7 +138,9 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
         return;
       }
 
-      if (typeof val.text === "string") {
+      if (typeof val.html === "string") {
+        el.innerHTML = val.html;
+      } else if (typeof val.text === "string") {
         setElementTextPreservingIcons(el, val.text);
       }
 
@@ -218,6 +232,19 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
       </svg>
       <span>Pages</span>
     </button>
+
+    <!-- Floating Title Color Toolbar (White vs Cyan Highlight) -->
+    <div class="gce-title-toolbar" id="gce-title-toolbar" hidden role="toolbar" aria-label="Title text color">
+      <span class="gce-tt-label">Title Style:</span>
+      <button type="button" class="gce-tt-btn is-white" id="gce-tt-white" title="Set selected text (or title) to White">
+        <span class="gce-tt-swatch is-white"></span>
+        <span>White</span>
+      </button>
+      <button type="button" class="gce-tt-btn is-cyan" id="gce-tt-cyan" title="Set selected text (or title) to Cyan Highlight">
+        <span class="gce-tt-swatch is-cyan"></span>
+        <span>Highlight</span>
+      </button>
+    </div>
 
     <!-- Floating Button / Link Popover -->
     <div class="gce-popover" id="gce-link-popover" hidden role="dialog" aria-label="Edit button or link">
@@ -718,6 +745,70 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
     display: none !important;
   }
 
+  /* Title Color Toolbar */
+  .gce-title-toolbar {
+    position: fixed;
+    z-index: 1545;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 9999px;
+    background: rgba(8, 13, 24, 0.96);
+    border: 1px solid rgba(72, 200, 255, 0.38);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .gce-title-toolbar[hidden] {
+    display: none !important;
+  }
+
+  .gce-tt-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(248, 250, 252, 0.6);
+    margin-right: 2px;
+  }
+
+  .gce-tt-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: #f8fafc;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .gce-tt-btn:hover {
+    border-color: rgba(72, 200, 255, 0.6);
+    background: rgba(72, 200, 255, 0.14);
+  }
+
+  .gce-tt-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .gce-tt-swatch.is-white {
+    background: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .gce-tt-swatch.is-cyan {
+    background: linear-gradient(135deg, #7fe2ff 0%, #48c8ff 50%, #1da5ff 100%);
+  }
+
   @media (max-width: 768px) {
     .gce-topbar {
       border-radius: 16px;
@@ -772,6 +863,11 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
       const modalCancel = document.getElementById("gce-modal-cancel");
       const modalDiscard = document.getElementById("gce-modal-discard");
       const modalSaveGo = document.getElementById("gce-modal-save-go") as HTMLButtonElement | null;
+
+      const titleToolbar = document.getElementById("gce-title-toolbar");
+      const ttWhiteBtn = document.getElementById("gce-tt-white");
+      const ttCyanBtn = document.getElementById("gce-tt-cyan");
+      let activeHeadingEl: HTMLElement | null = null;
 
       function markDirty() {
         isDirty = true;
@@ -882,6 +978,82 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
         return (el.innerText || el.textContent || "").trim();
       }
 
+      function isHeadingTag(el: HTMLElement): boolean {
+        return /^H[1-6]$/.test(el.tagName);
+      }
+
+      function positionTitleToolbar(heading: HTMLElement) {
+        if (!titleToolbar) return;
+        const r = heading.getBoundingClientRect();
+        const top = Math.max(12, r.top - 44);
+        const left = Math.min(window.innerWidth - 230, Math.max(12, r.left));
+        titleToolbar.style.top = `${top}px`;
+        titleToolbar.style.left = `${left}px`;
+        titleToolbar.hidden = false;
+      }
+
+      function applyTitleStyle(mode: "white" | "cyan") {
+        if (!activeHeadingEl) return;
+        const key = activeHeadingEl.dataset.cmsKey;
+        const sel = window.getSelection();
+        const hasRange =
+          sel &&
+          sel.rangeCount > 0 &&
+          !sel.getRangeAt(0).collapsed &&
+          activeHeadingEl.contains(sel.getRangeAt(0).commonAncestorContainer);
+
+        const wrapNode = (range: Range) => {
+          const frag = range.extractContents();
+          // Strip existing highlight/white wrappers inside fragment
+          frag.querySelectorAll("span.title-highlight, span.title-engine, span.academy-highlight, span[data-gce-color]").forEach((sp) => {
+            const parent = sp.parentNode;
+            while (sp.firstChild) parent?.insertBefore(sp.firstChild, sp);
+            parent?.removeChild(sp);
+          });
+
+          if (mode === "cyan") {
+            const span = document.createElement("span");
+            span.className = "title-highlight";
+            span.dataset.gceColor = "cyan";
+            span.appendChild(frag);
+            range.insertNode(span);
+          } else {
+            const span = document.createElement("span");
+            span.dataset.gceColor = "white";
+            span.style.color = "#ffffff";
+            span.style.webkitTextFillColor = "#ffffff";
+            span.style.background = "none";
+            span.style.filter = "none";
+            span.appendChild(frag);
+            range.insertNode(span);
+          }
+        };
+
+        if (hasRange && sel) {
+          wrapNode(sel.getRangeAt(0));
+        } else {
+          // Apply to entire heading if no text is selected
+          const range = document.createRange();
+          range.selectNodeContents(activeHeadingEl);
+          wrapNode(range);
+        }
+
+        if (key) {
+          overrides[key] = {
+            ...(overrides[key] || {}),
+            html: activeHeadingEl.innerHTML,
+            text: activeHeadingEl.textContent || "",
+          };
+          markDirty();
+        }
+      }
+
+      [ttWhiteBtn, ttCyanBtn].forEach((btn) => {
+        btn?.addEventListener("mousedown", (e) => e.preventDefault());
+      });
+      ttWhiteBtn?.addEventListener("click", () => applyTitleStyle("white"));
+      ttCyanBtn?.addEventListener("click", () => applyTitleStyle("cyan"));
+
       function bindInlineTextEditors() {
         (window as any).__ADAPTIF_ASSIGN_CMS_KEYS__?.();
         document.querySelectorAll<HTMLElement>("[data-cms-key]").forEach((el) => {
@@ -890,14 +1062,41 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
           el.dataset.gceBound = "1";
           el.setAttribute("contenteditable", "true");
           el.setAttribute("spellcheck", "false");
+
+          if (isHeadingTag(el)) {
+            el.addEventListener("focus", () => {
+              activeHeadingEl = el;
+              positionTitleToolbar(el);
+            });
+          }
+
           el.addEventListener("input", () => {
             const key = el.dataset.cmsKey;
             if (!key) return;
-            overrides[key] = { ...(overrides[key] || {}), text: el.textContent || "" };
+            if (isHeadingTag(el)) {
+              overrides[key] = {
+                ...(overrides[key] || {}),
+                html: el.innerHTML,
+                text: el.textContent || "",
+              };
+            } else {
+              overrides[key] = { ...(overrides[key] || {}), text: el.textContent || "" };
+            }
             markDirty();
           });
         });
       }
+
+      document.addEventListener("click", (e) => {
+        const t = e.target as HTMLElement | null;
+        if (!t) return;
+        if (t.closest("#gce-title-toolbar")) return;
+        const h = t.closest<HTMLElement>("h1[data-cms-key], h2[data-cms-key], h3[data-cms-key], h4[data-cms-key], h5[data-cms-key], h6[data-cms-key]");
+        if (!h && titleToolbar) {
+          titleToolbar.hidden = true;
+          activeHeadingEl = null;
+        }
+      });
 
       window.addEventListener("adaptif:cms-ready", bindInlineTextEditors);
       if (document.readyState === "loading") {

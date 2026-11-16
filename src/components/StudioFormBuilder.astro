@@ -120,6 +120,7 @@ const { initialConfig } = Astro.props;
             <span class="acd-section-kicker">Form Container</span>
             <h3 class="fb-insp-title" id="fb-insp-step-heading">Step 1</h3>
           </div>
+          <button type="button" class="fb-mini-btn is-danger" id="btn-fb-delete-step">Delete Step</button>
         </div>
 
         <div class="fb-insp-fields">
@@ -1003,6 +1004,10 @@ const { initialConfig } = Astro.props;
       if (stepHeading) stepHeading.textContent = `Step ${activeStepIdx + 1}`;
       if (formNameInput) formNameInput.value = config.formName || "Book a Call";
       const isConfirm = st.kind === "confirmation";
+      const fieldsStepCount = steps.filter((s) => s.kind === "fields").length;
+      const delStepBtn = document.getElementById("btn-fb-delete-step");
+      if (delStepBtn) delStepBtn.hidden = isConfirm || fieldsStepCount <= 1;
+
       if (stepEyebrowWrap) stepEyebrowWrap.hidden = isConfirm;
       if (stepSuffixWrap) stepSuffixWrap.hidden = isConfirm;
       if (stepPrivWrap) stepPrivWrap.hidden = isConfirm;
@@ -1301,6 +1306,27 @@ const { initialConfig } = Astro.props;
   // Top bar bindings
   root?.querySelectorAll("[data-fb-mode]").forEach((btn) => {
     btn.addEventListener("click", () => setMode((btn as HTMLElement).dataset.fbMode as any));
+  });
+
+  document.getElementById("btn-fb-delete-step")?.addEventListener("click", () => {
+    const st = getActiveStep();
+    const fieldsStepCount = steps.filter((s) => s.kind === "fields").length;
+    if (!st || st.kind === "confirmation" || fieldsStepCount <= 1) return;
+
+    const delNum = activeStepIdx + 1;
+    fields.forEach((f) => {
+      const s = Number(f.step) || 1;
+      if (s === delNum) {
+        f.step = Math.max(1, delNum - 1);
+      } else if (s > delNum) {
+        f.step = s - 1;
+      }
+    });
+
+    steps.splice(activeStepIdx, 1);
+    activeStepIdx = Math.max(0, Math.min(activeStepIdx, steps.length - 1));
+    syncFieldStepDropdown();
+    selectContainer();
   });
 
   document.getElementById("btn-fb-add-step")?.addEventListener("click", () => {

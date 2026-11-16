@@ -614,7 +614,7 @@ import { defaultBookCallConfig } from "../lib/bookCallDb";
       const actionable = target.closest<HTMLElement>("a, button");
       if (!actionable) return;
       const text = (actionable.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
-      if (actionable.hasAttribute("data-open-book-call") || text === "book a call") {
+      if (actionable.hasAttribute("data-open-book-call") || text === "book a call" || text === "book a demo") {
         // Ignore the submit button inside Step 2 itself
         if (actionable.id === "bc-submit-btn") return;
         e.preventDefault();

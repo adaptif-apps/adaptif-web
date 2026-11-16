@@ -985,12 +985,28 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
       function positionTitleToolbar(heading: HTMLElement) {
         if (!titleToolbar) return;
         const r = heading.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight - 64) {
+          titleToolbar.hidden = true;
+          return;
+        }
         const top = Math.max(12, r.top - 44);
         const left = Math.min(window.innerWidth - 230, Math.max(12, r.left));
         titleToolbar.style.top = `${top}px`;
         titleToolbar.style.left = `${left}px`;
         titleToolbar.hidden = false;
       }
+
+      const syncFloatingPositionsOnScroll = () => {
+        if (activeHeadingEl && document.activeElement === activeHeadingEl) {
+          positionTitleToolbar(activeHeadingEl);
+        }
+        if (imgHoverBtn && !imgHoverBtn.hidden) {
+          imgHoverBtn.hidden = true;
+        }
+      };
+
+      window.addEventListener("scroll", syncFloatingPositionsOnScroll, { passive: true });
+      window.addEventListener("resize", syncFloatingPositionsOnScroll, { passive: true });
 
       function findHighlightAncestor(node: Node | null, root: HTMLElement): HTMLElement | null {
         let cur: Node | null = node;

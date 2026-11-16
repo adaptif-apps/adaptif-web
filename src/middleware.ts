@@ -27,5 +27,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     console.error("[middleware] SEO redirect check failed:", err);
   }
 
-  return next();
+  const response = await next();
+  if (context.url.searchParams.get("edit") === "1") {
+    response.headers.set("Cache-Control", "no-store, private");
+  }
+  return response;
 });

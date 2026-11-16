@@ -20,151 +20,6 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
   };
 </script>
 
-<!-- Always apply saved CMS overrides to [data-cms-key] elements -->
-<script>
-  function setElementTextPreservingIcons(el: HTMLElement, newText: string) {
-    // If element has a dedicated text span or text nodes alongside an SVG, preserve the SVG
-    const svg = el.querySelector("svg");
-    if (svg) {
-      const textSpan = el.querySelector("span:not(:has(svg))");
-      if (textSpan && el.children.length <= 2) {
-        textSpan.textContent = newText;
-        return;
-      }
-      // Update first non-empty text node or prepend a text node
-      for (const node of Array.from(el.childNodes)) {
-        if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-          node.textContent = newText + " ";
-          return;
-        }
-      }
-    }
-    el.textContent = newText;
-  }
-
-  function assignAutoCmsKeys() {
-    const roots = document.querySelectorAll<HTMLElement>("header, main, footer");
-    let sectionIdx = 0;
-    const counters: Record<string, number> = {};
-
-    const nextKey = (scope: string, tag: string) => {
-      const prefix = `${scope}.${tag}`;
-      counters[prefix] = (counters[prefix] || 0) + 1;
-      return `auto.${prefix}.${counters[prefix]}`;
-    };
-
-    const isIgnored = (el: HTMLElement) => {
-      if (el.closest("#gce-root, #book-call-modal, #adaptif-whatsapp-fab, [aria-hidden='true'], script, style, noscript, svg")) {
-        return true;
-      }
-      return false;
-    };
-
-    roots.forEach((root) => {
-      const rootName = root.tagName.toLowerCase();
-      if (rootName === "main") {
-        // Assign per-section scope inside <main>
-        const sections = root.querySelectorAll<HTMLElement>(":scope > section, :scope > div");
-        const containers = sections.length > 0 ? Array.from(sections) : [root];
-        containers.forEach((sec) => {
-          sectionIdx += 1;
-          const scope = sec.id ? `s-${sec.id}` : `s${sectionIdx}`;
-          tagElementsInScope(sec, scope);
-        });
-      } else {
-        tagElementsInScope(root, rootName);
-      }
-    });
-
-    function tagElementsInScope(container: HTMLElement, scope: string) {
-      const candidates = container.querySelectorAll<HTMLElement>(
-        'h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, a, button, img, span, [class*="eyebrow"]'
-      );
-      candidates.forEach((el) => {
-        if (el.dataset.cmsKey || isIgnored(el)) return;
-        const tag = el.tagName.toLowerCase();
-
-        if (tag === "img") {
-          const img = el as HTMLImageElement;
-          if (!img.getAttribute("src")) return;
-          el.dataset.cmsKey = nextKey(scope, "img");
-          return;
-        }
-
-        if (tag === "a" || tag === "button") {
-          // Skip icon-only buttons with no text
-          const txt = (el.textContent || "").trim();
-          if (!txt && !el.getAttribute("href")) return;
-          el.dataset.cmsKey = nextKey(scope, tag);
-          return;
-        }
-
-        if (tag === "span" || el.className?.toString().includes("eyebrow")) {
-          // Skip spans inside headings, paragraphs, list items, links, buttons, or already-tagged parents
-          if (el.closest("h1, h2, h3, h4, h5, h6, p, li, a, button, [data-cms-key]")) return;
-          // Skip if it wraps other block/element nodes (except <br>)
-          const hasNonBrChild = Array.from(el.children).some((c) => c.tagName !== "BR");
-          if (hasNonBrChild) return;
-          const txt = (el.textContent || "").trim();
-          if (!txt) return;
-          el.dataset.cmsKey = nextKey(scope, "text");
-          return;
-        }
-
-        // For text blocks, skip if it contains nested block-level editable elements
-        if (el.querySelector("h1, h2, h3, h4, h5, h6, p, ul, ol, section, article")) return;
-        const txt = (el.textContent || "").trim();
-        if (!txt) return;
-        el.dataset.cmsKey = nextKey(scope, tag);
-      });
-    }
-  }
-
-  function applyCmsOverrides() {
-    assignAutoCmsKeys();
-    const data = (window as any).__ADAPTIF_CMS__;
-    if (!data || !data.overrides) return;
-    const map = data.overrides as Record<string, { text?: string; href?: string; src?: string; alt?: string }>;
-
-    document.querySelectorAll<HTMLElement>("[data-cms-key]").forEach((el) => {
-      const key = el.dataset.cmsKey;
-      if (!key || !map[key]) return;
-      const val = map[key];
-
-      if (el.tagName === "IMG") {
-        const img = el as HTMLImageElement;
-        if (val.src) img.src = val.src;
-        if (typeof val.alt === "string") img.alt = val.alt;
-        return;
-      }
-
-      if (typeof val.html === "string") {
-        el.innerHTML = val.html;
-      } else if (typeof val.text === "string") {
-        setElementTextPreservingIcons(el, val.text);
-      }
-
-      if (typeof val.href === "string" && el.tagName === "A") {
-        (el as HTMLAnchorElement).setAttribute("href", val.href);
-      }
-    });
-  }
-
-  (window as any).__ADAPTIF_ASSIGN_CMS_KEYS__ = assignAutoCmsKeys;
-
-  function runApplyCms() {
-    applyCmsOverrides();
-    window.dispatchEvent(new CustomEvent("adaptif:cms-ready"));
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", runApplyCms);
-  } else {
-    runApplyCms();
-  }
-  document.addEventListener("astro:page-load", runApplyCms);
-</script>
-
 {isEditMode && (
   <div id="gce-root" class="gce-root">
     <!-- Top Floating Bar -->
@@ -820,11 +675,143 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
   }
 </style>
 
-{isEditMode && (
-  <script>
-    (() => {
-      const cms = (window as any).__ADAPTIF_CMS__;
-      if (!cms || !cms.isEditMode) return;
+<script>
+  function setElementTextPreservingIcons(el: HTMLElement, newText: string) {
+    const svg = el.querySelector("svg");
+    if (svg) {
+      const textSpan = el.querySelector("span:not(:has(svg))");
+      if (textSpan && el.children.length <= 2) {
+        textSpan.textContent = newText;
+        return;
+      }
+      for (const node of Array.from(el.childNodes)) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
+          node.textContent = newText + " ";
+          return;
+        }
+      }
+    }
+    el.textContent = newText;
+  }
+
+  function assignAutoCmsKeys() {
+    const roots = document.querySelectorAll<HTMLElement>("header, main, footer");
+    let sectionIdx = 0;
+    const counters: Record<string, number> = {};
+
+    const nextKey = (scope: string, tag: string) => {
+      const prefix = `${scope}.${tag}`;
+      counters[prefix] = (counters[prefix] || 0) + 1;
+      return `auto.${prefix}.${counters[prefix]}`;
+    };
+
+    const isIgnored = (el: HTMLElement) =>
+      Boolean(
+        el.closest("#gce-root, #book-call-modal, #adaptif-whatsapp-fab, [aria-hidden='true'], script, style, noscript, svg")
+      );
+
+    function tagElementsInScope(container: HTMLElement, scope: string) {
+      const candidates = container.querySelectorAll<HTMLElement>(
+        'h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, a, button, img, span, [class*="eyebrow"]'
+      );
+      candidates.forEach((el) => {
+        if (el.dataset.cmsKey || isIgnored(el)) return;
+        const tag = el.tagName.toLowerCase();
+
+        if (tag === "img") {
+          const img = el as HTMLImageElement;
+          if (!img.getAttribute("src")) return;
+          el.dataset.cmsKey = nextKey(scope, "img");
+          return;
+        }
+
+        if (tag === "a" || tag === "button") {
+          const txt = (el.textContent || "").trim();
+          if (!txt && !el.getAttribute("href")) return;
+          el.dataset.cmsKey = nextKey(scope, tag);
+          return;
+        }
+
+        if (tag === "span" || el.className?.toString().includes("eyebrow")) {
+          if (el.closest("h1, h2, h3, h4, h5, h6, p, li, a, button, [data-cms-key]")) return;
+          const hasNonBrChild = Array.from(el.children).some((c) => c.tagName !== "BR");
+          if (hasNonBrChild) return;
+          const txt = (el.textContent || "").trim();
+          if (!txt) return;
+          el.dataset.cmsKey = nextKey(scope, "text");
+          return;
+        }
+
+        if (el.querySelector("h1, h2, h3, h4, h5, h6, p, ul, ol, section, article")) return;
+        const txt = (el.textContent || "").trim();
+        if (!txt) return;
+        el.dataset.cmsKey = nextKey(scope, tag);
+      });
+    }
+
+    roots.forEach((root) => {
+      const rootName = root.tagName.toLowerCase();
+      if (rootName === "main") {
+        const sections = root.querySelectorAll<HTMLElement>(":scope > section, :scope > div");
+        const containers = sections.length > 0 ? Array.from(sections) : [root];
+        containers.forEach((sec) => {
+          sectionIdx += 1;
+          const scope = sec.id ? `s-${sec.id}` : `s${sectionIdx}`;
+          tagElementsInScope(sec, scope);
+        });
+      } else {
+        tagElementsInScope(root, rootName);
+      }
+    });
+  }
+
+  function applyCmsOverrides() {
+    assignAutoCmsKeys();
+    const data = (window as any).__ADAPTIF_CMS__;
+    if (!data || !data.overrides) return;
+    const map = data.overrides as Record<string, { text?: string; html?: string; href?: string; src?: string; alt?: string }>;
+
+    document.querySelectorAll<HTMLElement>("[data-cms-key]").forEach((el) => {
+      const key = el.dataset.cmsKey;
+      if (!key || !map[key]) return;
+      const val = map[key];
+
+      if (el.tagName === "IMG") {
+        const img = el as HTMLImageElement;
+        if (val.src) img.src = val.src;
+        if (typeof val.alt === "string") img.alt = val.alt;
+        return;
+      }
+
+      if (typeof val.html === "string") {
+        el.innerHTML = val.html;
+      } else if (typeof val.text === "string") {
+        setElementTextPreservingIcons(el, val.text);
+      }
+
+      if (typeof val.href === "string" && el.tagName === "A") {
+        (el as HTMLAnchorElement).setAttribute("href", val.href);
+      }
+    });
+  }
+
+  (window as any).__ADAPTIF_ASSIGN_CMS_KEYS__ = assignAutoCmsKeys;
+
+  function runApplyCms() {
+    applyCmsOverrides();
+    window.dispatchEvent(new CustomEvent("adaptif:cms-ready"));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", runApplyCms);
+  } else {
+    runApplyCms();
+  }
+  document.addEventListener("astro:page-load", runApplyCms);
+
+  (() => {
+    const cms = (window as any).__ADAPTIF_CMS__;
+    if (!cms || !cms.isEditMode) return;
 
       document.body.classList.add("gce-editing");
 
@@ -1416,4 +1403,3 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
       });
     })();
   </script>
-)}

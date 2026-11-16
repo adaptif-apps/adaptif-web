@@ -136,6 +136,8 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
     });
   }
 
+  (window as any).__ADAPTIF_ASSIGN_CMS_KEYS__ = assignAutoCmsKeys;
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", applyCmsOverrides);
   } else {
@@ -282,6 +284,9 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
     outline-offset: 4px;
     border-radius: 4px;
     cursor: text;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    pointer-events: auto !important;
     transition: outline-color 0.15s ease, background-color 0.15s ease;
   }
 
@@ -872,17 +877,29 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
         return (el.innerText || el.textContent || "").trim();
       }
 
-      document.querySelectorAll<HTMLElement>("[data-cms-key]").forEach((el) => {
-        if (el.tagName === "IMG" || el.tagName === "A" || el.tagName === "BUTTON") return;
-        el.setAttribute("contenteditable", "true");
-        el.setAttribute("spellcheck", "false");
-        el.addEventListener("input", () => {
-          const key = el.dataset.cmsKey;
-          if (!key) return;
-          overrides[key] = { ...(overrides[key] || {}), text: el.textContent || "" };
-          markDirty();
+      function bindInlineTextEditors() {
+        (window as any).__ADAPTIF_ASSIGN_CMS_KEYS__?.();
+        document.querySelectorAll<HTMLElement>("[data-cms-key]").forEach((el) => {
+          if (el.tagName === "IMG" || el.tagName === "A" || el.tagName === "BUTTON") return;
+          if (el.dataset.gceBound === "1") return;
+          el.dataset.gceBound = "1";
+          el.setAttribute("contenteditable", "true");
+          el.setAttribute("spellcheck", "false");
+          el.addEventListener("input", () => {
+            const key = el.dataset.cmsKey;
+            if (!key) return;
+            overrides[key] = { ...(overrides[key] || {}), text: el.textContent || "" };
+            markDirty();
+          });
         });
-      });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bindInlineTextEditors);
+      } else {
+        bindInlineTextEditors();
+      }
+      document.addEventListener("astro:page-load", bindInlineTextEditors);
 
       // Link & Button Popover
       let activeLinkEl: HTMLElement | null = null;

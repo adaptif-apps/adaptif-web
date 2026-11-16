@@ -253,8 +253,8 @@ const tagPresets = [
         <div id="module-portfolio">
           <header class="studio-header">
             <div>
-              <p class="studio-eyebrow">Internal CMS</p>
-              <h1 class="studio-title">Portfolio <span>Showcase</span></h1>
+              <p class="studio-eyebrow">CMS</p>
+              <h1 class="studio-title">Portfolio</h1>
             </div>
             <div class="studio-header-actions">
               <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-add-brand">
@@ -408,8 +408,8 @@ const tagPresets = [
         <div id="module-book-call" hidden>
           <header class="studio-header">
             <div>
-              <p class="studio-eyebrow">Form</p>
-              <h1 class="studio-title" id="bc-header-form-name">{initialBookCallConfig.formName}</h1>
+              <p class="studio-eyebrow">FORMS</p>
+              <h1 class="studio-title" id="bc-header-form-name">Book a Call</h1>
             </div>
           </header>
 
@@ -422,8 +422,8 @@ const tagPresets = [
         <div id="module-activecampaign" hidden>
           <header class="studio-header">
             <div>
-              <p class="studio-eyebrow">INTEGRATIONS · CRM</p>
-              <h1 class="studio-title">ActiveCampaign <span>Sync</span></h1>
+              <p class="studio-eyebrow">INTEGRATIONS</p>
+              <h1 class="studio-title">ActiveCampaign</h1>
               <p class="studio-subtitle">
                 Connect ActiveCampaign to sync leads, lists, tags, and Form Builder custom fields automatically.
               </p>
@@ -2039,6 +2039,34 @@ const tagPresets = [
         border-color: rgba(72, 200, 255, 0.65);
         background: rgba(56, 189, 248, 0.24);
         color: #e0f2fe;
+      }
+
+      :global(.studio-link) {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        color: #7dd3fc;
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-decoration: none;
+        background: transparent;
+        border: 1px solid transparent;
+        transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      }
+
+      :global(.studio-link:hover:not(.is-disabled)) {
+        color: #e0f2fe;
+        background: rgba(72, 200, 255, 0.1);
+        border-color: rgba(72, 200, 255, 0.25);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+
+      :global(.studio-link.is-disabled) {
+        opacity: 0.42;
+        pointer-events: none;
       }
 
       :global(.cms-item-title-bar) {

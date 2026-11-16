@@ -13,8 +13,8 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
 <div id="module-whatsapp" hidden>
   <header class="studio-header">
     <div>
-      <p class="studio-eyebrow">Floating Widget</p>
-      <h1 class="studio-title">WhatsApp <span>Button</span></h1>
+      <p class="studio-eyebrow">INTEGRATIONS</p>
+      <h1 class="studio-title">WhatsApp</h1>
     </div>
     <div class="studio-header-actions">
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-whatsapp">
@@ -116,7 +116,7 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
           href={initialUrl || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          class:list={["adaptif-btn adaptif-btn--dark adaptif-btn--sm", { "is-disabled": !initialUrl }]}
+          class:list={["studio-link", { "is-disabled": !initialUrl }]}
         >
           Test WhatsApp Link ↗
         </a>

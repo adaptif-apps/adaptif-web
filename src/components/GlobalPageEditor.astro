@@ -992,6 +992,33 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
         titleToolbar.hidden = false;
       }
 
+      function findHighlightAncestor(node: Node | null, root: HTMLElement): HTMLElement | null {
+        let cur: Node | null = node;
+        while (cur && cur !== root) {
+          if (
+            cur instanceof HTMLElement &&
+            (cur.classList.contains("title-highlight") ||
+              cur.classList.contains("title-engine") ||
+              cur.classList.contains("academy-highlight") ||
+              cur.dataset.gceColor === "cyan")
+          ) {
+            return cur;
+          }
+          cur = cur.parentNode;
+        }
+        return null;
+      }
+
+      function stripHighlightSpans(container: ParentNode) {
+        container
+          .querySelectorAll("span.title-highlight, span.title-engine, span.academy-highlight, span[data-gce-color]")
+          .forEach((sp) => {
+            const parent = sp.parentNode;
+            while (sp.firstChild) parent?.insertBefore(sp.firstChild, sp);
+            parent?.removeChild(sp);
+          });
+      }
+
       function applyTitleStyle(mode: "white" | "cyan") {
         if (!activeHeadingEl) return;
         const key = activeHeadingEl.dataset.cmsKey;
@@ -1002,40 +1029,70 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
           !sel.getRangeAt(0).collapsed &&
           activeHeadingEl.contains(sel.getRangeAt(0).commonAncestorContainer);
 
-        const wrapNode = (range: Range) => {
-          const frag = range.extractContents();
-          // Strip existing highlight/white wrappers inside fragment
-          frag.querySelectorAll("span.title-highlight, span.title-engine, span.academy-highlight, span[data-gce-color]").forEach((sp) => {
-            const parent = sp.parentNode;
-            while (sp.firstChild) parent?.insertBefore(sp.firstChild, sp);
-            parent?.removeChild(sp);
-          });
+        const range = hasRange && sel ? sel.getRangeAt(0) : (() => {
+          const r = document.createRange();
+          r.selectNodeContents(activeHeadingEl!);
+          return r;
+        })();
 
-          if (mode === "cyan") {
-            const span = document.createElement("span");
-            span.className = "title-highlight";
-            span.dataset.gceColor = "cyan";
-            span.appendChild(frag);
-            range.insertNode(span);
-          } else {
-            const span = document.createElement("span");
-            span.dataset.gceColor = "white";
-            span.style.color = "#ffffff";
-            span.style.webkitTextFillColor = "#ffffff";
-            span.style.background = "none";
-            span.style.filter = "none";
-            span.appendChild(frag);
-            range.insertNode(span);
+        const startHl = findHighlightAncestor(range.startContainer, activeHeadingEl);
+        const endHl = findHighlightAncestor(range.endContainer, activeHeadingEl);
+
+        if (mode === "cyan") {
+          // Already inside a highlight span -> do NOT stack another highlight
+          if (startHl && startHl === endHl) {
+            return;
           }
-        };
-
-        if (hasRange && sel) {
-          wrapNode(sel.getRangeAt(0));
+          const frag = range.extractContents();
+          stripHighlightSpans(frag);
+          const span = document.createElement("span");
+          span.className = "title-highlight";
+          span.dataset.gceColor = "cyan";
+          span.appendChild(frag);
+          range.insertNode(span);
+          // Flatten any nested highlight spans just in case
+          span.querySelectorAll("span.title-highlight, span.title-engine, span.academy-highlight").forEach((inner) => {
+            const p = inner.parentNode;
+            while (inner.firstChild) p?.insertBefore(inner.firstChild, inner);
+            p?.removeChild(inner);
+          });
         } else {
-          // Apply to entire heading if no text is selected
-          const range = document.createRange();
-          range.selectNodeContents(activeHeadingEl);
-          wrapNode(range);
+          // mode === "white": unwrap highlight spans cleanly so white text has NO glow
+          if (startHl && startHl === endHl) {
+            // Split startHl around the selected range so the selected part becomes plain white text
+            const beforeRange = document.createRange();
+            beforeRange.setStart(startHl, 0);
+            beforeRange.setEnd(range.startContainer, range.startOffset);
+            const afterRange = document.createRange();
+            afterRange.setStart(range.endContainer, range.endOffset);
+            afterRange.setEnd(startHl, startHl.childNodes.length);
+
+            const beforeText = beforeRange.toString();
+            const selectedFrag = range.extractContents();
+            stripHighlightSpans(selectedFrag);
+            const afterText = afterRange.toString();
+
+            const parent = startHl.parentNode;
+            if (parent) {
+              if (beforeText) {
+                const bSpan = startHl.cloneNode(false) as HTMLElement;
+                bSpan.textContent = beforeText;
+                parent.insertBefore(bSpan, startHl);
+              }
+              parent.insertBefore(selectedFrag, startHl);
+              if (afterText) {
+                const aSpan = startHl.cloneNode(false) as HTMLElement;
+                aSpan.textContent = afterText;
+                parent.insertBefore(aSpan, startHl);
+              }
+              parent.removeChild(startHl);
+            }
+          } else {
+            const frag = range.extractContents();
+            stripHighlightSpans(frag);
+            range.insertNode(frag);
+          }
+          activeHeadingEl.normalize();
         }
 
         if (key) {

@@ -42,7 +42,74 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
     el.textContent = newText;
   }
 
+  function assignAutoCmsKeys() {
+    const roots = document.querySelectorAll<HTMLElement>("header, main, footer");
+    let sectionIdx = 0;
+    const counters: Record<string, number> = {};
+
+    const nextKey = (scope: string, tag: string) => {
+      const prefix = `${scope}.${tag}`;
+      counters[prefix] = (counters[prefix] || 0) + 1;
+      return `auto.${prefix}.${counters[prefix]}`;
+    };
+
+    const isIgnored = (el: HTMLElement) => {
+      if (el.closest("#gce-root, #book-call-modal, #adaptif-whatsapp-fab, [aria-hidden='true'], script, style, noscript, svg")) {
+        return true;
+      }
+      return false;
+    };
+
+    roots.forEach((root) => {
+      const rootName = root.tagName.toLowerCase();
+      if (rootName === "main") {
+        // Assign per-section scope inside <main>
+        const sections = root.querySelectorAll<HTMLElement>(":scope > section, :scope > div");
+        const containers = sections.length > 0 ? Array.from(sections) : [root];
+        containers.forEach((sec) => {
+          sectionIdx += 1;
+          const scope = sec.id ? `s-${sec.id}` : `s${sectionIdx}`;
+          tagElementsInScope(sec, scope);
+        });
+      } else {
+        tagElementsInScope(root, rootName);
+      }
+    });
+
+    function tagElementsInScope(container: HTMLElement, scope: string) {
+      const candidates = container.querySelectorAll<HTMLElement>(
+        "h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, a, button, img, span.adaptif-eyebrow, span.eyebrow"
+      );
+      candidates.forEach((el) => {
+        if (el.dataset.cmsKey || isIgnored(el)) return;
+        const tag = el.tagName.toLowerCase();
+
+        if (tag === "img") {
+          const img = el as HTMLImageElement;
+          if (!img.getAttribute("src")) return;
+          el.dataset.cmsKey = nextKey(scope, "img");
+          return;
+        }
+
+        if (tag === "a" || tag === "button") {
+          // Skip icon-only buttons with no text
+          const txt = (el.textContent || "").trim();
+          if (!txt && !el.getAttribute("href")) return;
+          el.dataset.cmsKey = nextKey(scope, tag);
+          return;
+        }
+
+        // For text blocks, skip if it contains nested block-level editable elements or nested links/buttons that wrap everything
+        if (el.querySelector("h1, h2, h3, h4, h5, h6, p, ul, ol, section, article")) return;
+        const txt = (el.textContent || "").trim();
+        if (!txt) return;
+        el.dataset.cmsKey = nextKey(scope, tag);
+      });
+    }
+  }
+
   function applyCmsOverrides() {
+    assignAutoCmsKeys();
     const data = (window as any).__ADAPTIF_CMS__;
     if (!data || !data.overrides) return;
     const map = data.overrides as Record<string, { text?: string; href?: string; src?: string; alt?: string }>;
@@ -202,6 +269,14 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
 )}
 
 <style is:global>
+  body.gce-editing {
+    padding-bottom: 64px !important;
+  }
+
+  body.gce-editing .wa-fab {
+    bottom: 82px !important;
+  }
+
   body.gce-editing [data-cms-key]:not(img):not(a):not(button) {
     outline: 1px dashed rgba(72, 200, 255, 0.38);
     outline-offset: 4px;
@@ -243,22 +318,20 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
 
   .gce-topbar {
     position: fixed;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 1500;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    width: min(1120px, calc(100vw - 28px));
-    padding: 9px 14px;
-    border-radius: 9999px;
-    background: rgba(8, 13, 24, 0.92);
-    border: 1px solid rgba(72, 200, 255, 0.35);
-    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.58), 0 0 28px rgba(56, 189, 248, 0.18);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    width: 100%;
+    padding: 10px 22px;
+    border-radius: 0;
+    background: #060a14;
+    border-top: 1px solid rgba(72, 200, 255, 0.35);
+    box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.65);
   }
 
   .gce-topbar-left,
@@ -294,7 +367,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
+    bottom: 58px;
     width: 290px;
     z-index: 1520;
     background: rgba(7, 11, 21, 0.97);
@@ -617,7 +690,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
 
   .gce-toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 76px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1650;
@@ -836,7 +909,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
         if (popGo) popGo.hidden = !isAnchor || !currentHref;
 
         const rect = el.getBoundingClientRect();
-        const top = Math.min(window.innerHeight - 230, Math.max(76, rect.bottom + 8));
+        const top = Math.min(window.innerHeight - 280, Math.max(16, rect.bottom + 8));
         const left = Math.min(window.innerWidth - 336, Math.max(12, rect.left));
         popover.style.top = `${top}px`;
         popover.style.left = `${left}px`;

@@ -17,8 +17,8 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title" id="acd-module-title">Generate <span>Course</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-cyan" id="btn-new-guide">+ New Guide</button>
-      <button type="button" class="acd-btn-cyan" id="btn-new-course">+ New Course</button>
+      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-guide">+ New Guide</button>
+      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-course">+ New Course</button>
     </div>
   </header>
 
@@ -86,7 +86,7 @@ const { initialItems, initialSettings } = Astro.props;
           <div class="acd-pdf-override-row">
             <img id="acd-cover-preview" src="" alt="Thumbnail preview" style="width: 112px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; border: 1px solid rgba(156, 225, 255, 0.2); display: none;" />
             <input type="file" id="acd-cover-img-input" accept="image/*" hidden />
-            <button type="button" class="acd-btn-glass" id="btn-upload-cover-img">Upload Thumbnail</button>
+            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-upload-cover-img">Upload Thumbnail</button>
             <span class="acd-pdf-status" id="acd-cover-img-status">No thumbnail set</span>
           </div>
         </div>
@@ -103,7 +103,7 @@ const { initialItems, initialSettings } = Astro.props;
           </span>
           <div class="acd-pdf-override-row">
             <input type="file" id="acd-custom-pdf-input" accept="application/pdf,.pdf" hidden />
-            <button type="button" class="acd-btn-glass" id="btn-upload-custom-pdf">Upload Custom PDF</button>
+            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-upload-custom-pdf">Upload Custom PDF</button>
             <span class="acd-pdf-status" id="acd-custom-pdf-status">Using AI-generated slides</span>
             <button type="button" class="acd-btn-danger" id="btn-remove-custom-pdf" hidden>Remove PDF</button>
           </div>
@@ -112,7 +112,7 @@ const { initialItems, initialSettings } = Astro.props;
 
       <div class="acd-editor-footer">
         <button type="button" class="acd-btn-danger" id="btn-delete-acd-item">Delete</button>
-        <button type="submit" class="acd-btn-cyan" id="btn-save-acd-item" disabled>Save Changes</button>
+        <button type="submit" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-item" disabled>Save Changes</button>
       </div>
     </form>
     </div>
@@ -128,7 +128,7 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title">Payment <span>Settings</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-cyan" id="btn-save-acd-settings">Save Preferences</button>
+      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-settings">Save Preferences</button>
     </div>
   </header>
 
@@ -204,7 +204,7 @@ const { initialItems, initialSettings } = Astro.props;
         </span>
         <div class="acd-copy-row">
           <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
-          <button type="button" class="acd-btn-glass" id="btn-copy-webhook">Copy</button>
+          <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-copy-webhook">Copy</button>
         </div>
       </div>
     </div>
@@ -242,7 +242,7 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title">AI <span>Engine</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-cyan" id="btn-save-ai-key">Save AI Configuration</button>
+      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-ai-key">Save AI Configuration</button>
     </div>
   </header>
 
@@ -323,7 +323,7 @@ const { initialItems, initialSettings } = Astro.props;
       <h1 class="studio-title">General <span>Info</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="acd-btn-glass" id="btn-refresh-general-info">Refresh Status</button>
+      <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-refresh-general-info">Refresh Status</button>
     </div>
   </header>
 
@@ -350,14 +350,14 @@ const { initialItems, initialSettings } = Astro.props;
           <span>Stripe Webhook Endpoint</span>
           <div class="acd-copy-row">
             <input type="text" id="gi-webhook-url" readonly value="/api/academy/stripe-webhook" />
-            <button type="button" class="acd-btn-glass" id="gi-copy-webhook">Copy</button>
+            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gi-copy-webhook">Copy</button>
           </div>
         </div>
         <div class="gi-row-col">
           <span>Stripe Redirect URL Pattern (After Payment)</span>
           <div class="acd-copy-row">
             <input type="text" id="gi-redirect-pattern" readonly value="/academy/courses/<slug>/slides?checkout=success" />
-            <button type="button" class="acd-btn-glass" id="gi-copy-redirect">Copy</button>
+            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gi-copy-redirect">Copy</button>
           </div>
         </div>
       </div>

@@ -17,7 +17,7 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
       <h1 class="studio-title">WhatsApp <span>Button</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="wa-btn-primary" id="btn-save-whatsapp">
+      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-whatsapp">
         Save WhatsApp Settings
       </button>
     </div>
@@ -116,7 +116,7 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
           href={initialUrl || "#"}
           target="_blank"
           rel="noopener noreferrer"
-          class:list={["wa-btn-glass", { "is-disabled": !initialUrl }]}
+          class:list={["adaptif-btn adaptif-btn--dark adaptif-btn--sm", { "is-disabled": !initialUrl }]}
         >
           Test WhatsApp Link ↗
         </a>

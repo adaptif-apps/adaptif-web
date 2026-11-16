@@ -10,7 +10,7 @@ import StudioActivityModule from "../components/StudioActivityModule.astro";
 import StudioKlaviyoModule from "../components/StudioKlaviyoModule.astro";
 import StudioFormBuilder from "../components/StudioFormBuilder.astro";
 import StudioWhatsAppModule from "../components/StudioWhatsAppModule.astro";
-import "../styles/tokens.css";
+import "../styles/global.css";
 
 export const prerender = false;
 
@@ -228,7 +228,7 @@ const tagPresets = [
               <h1 class="studio-title">Portfolio <span>Showcase</span></h1>
             </div>
             <div class="studio-header-actions">
-              <button type="button" class="btn-primary" id="btn-add-brand">
+              <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-add-brand">
                 + Add Brand
               </button>
             </div>
@@ -308,7 +308,7 @@ const tagPresets = [
                         id="tag-custom-input"
                         placeholder="Add custom tag and press Enter..."
                       />
-                      <button type="button" class="btn-secondary" id="btn-add-tag">Add</button>
+                      <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-add-tag">Add</button>
                     </div>
                     <div class="tag-presets" id="tag-presets">
                       {tagPresets.map((preset) => (
@@ -328,7 +328,7 @@ const tagPresets = [
                       <img id="thumb-preview-img" src="" alt="Thumbnail preview" />
                     </div>
                     <div class="thumb-controls">
-                      <label class="btn-secondary upload-label">
+                      <label class="adaptif-btn adaptif-btn--dark adaptif-btn--sm upload-label">
                         <input type="file" id="thumb-file-input" accept="image/*" hidden />
                         <span id="thumb-upload-text">Upload New Thumbnail</span>
                       </label>
@@ -352,7 +352,7 @@ const tagPresets = [
                         Up to 12 bento slots in the horizontal overlay (cycles automatically if fewer are uploaded).
                       </p>
                     </div>
-                    <label class="btn-secondary upload-label">
+                    <label class="adaptif-btn adaptif-btn--dark adaptif-btn--sm upload-label">
                       <input type="file" id="gallery-files-input" accept="image/*" multiple hidden />
                       <span id="gallery-upload-text">+ Upload Images</span>
                     </label>
@@ -363,10 +363,10 @@ const tagPresets = [
               </div>
 
               <div class="editor-footer">
-                <button type="button" class="btn-danger" id="btn-delete-brand">
+                <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-delete-brand">
                   Delete Brand
                 </button>
-                <button type="submit" class="btn-primary" id="btn-save-brand">
+                <button type="submit" class="adaptif-btn adaptif-btn--sm" id="btn-save-brand">
                   Save Changes
                 </button>
               </div>
@@ -400,7 +400,7 @@ const tagPresets = [
               </p>
             </div>
             <div class="studio-header-actions">
-              <button type="submit" form="ac-cms-form" class="acd-btn-cyan" id="btn-save-ac">
+              <button type="submit" form="ac-cms-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-ac">
                 Save Integration
               </button>
             </div>
@@ -475,7 +475,7 @@ const tagPresets = [
               </div>
 
               <div class="ac-sync-bar" style="margin-top: 18px;">
-                <button type="button" class="studio-btn-ghost" id="btn-ac-sync-meta">
+                <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-ac-sync-meta">
                   Connect &amp; Fetch Fields
                 </button>
                 <span class="ac-sync-status" id="ac-sync-status">
@@ -521,7 +521,7 @@ const tagPresets = [
                   value="test-lead@adaptif.studio"
                   placeholder="test-lead@yourdomain.com"
                 />
-                <button type="button" class="studio-btn-ghost" id="btn-ac-test">
+                <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-ac-test">
                   Send Test Lead
                 </button>
               </div>

@@ -6,6 +6,7 @@ import { getActiveCrmProvider, getKlaviyoConfig } from "../lib/klaviyoDb";
 import { listAcademyItems, getAcademySettings } from "../lib/academyDb";
 import { getWhatsAppConfig } from "../lib/whatsappDb";
 import { getSeoConfig } from "../lib/seoDb";
+import { listBlogPosts } from "../lib/blogDb";
 import { issueStudioSessionCookie } from "../lib/studioAuth";
 import StudioAcademyModule from "../components/StudioAcademyModule.astro";
 import StudioActivityModule from "../components/StudioActivityModule.astro";
@@ -13,6 +14,7 @@ import StudioKlaviyoModule from "../components/StudioKlaviyoModule.astro";
 import StudioFormBuilder from "../components/StudioFormBuilder.astro";
 import StudioWhatsAppModule from "../components/StudioWhatsAppModule.astro";
 import StudioSeoModule from "../components/StudioSeoModule.astro";
+import StudioBlogModule from "../components/StudioBlogModule.astro";
 import "../styles/global.css";
 
 export const prerender = false;
@@ -30,6 +32,7 @@ const [
   initialAcademySettings,
   initialWhatsAppConfig,
   initialSeoConfig,
+  initialBlogPosts,
 ] = await Promise.all([
   listProjects({ includeHidden: true }),
   getBookCallConfig(),
@@ -40,6 +43,7 @@ const [
   getAcademySettings(),
   getWhatsAppConfig(),
   getSeoConfig({ bypassCache: true }),
+  listBlogPosts({ includeDrafts: true }),
 ]);
 
 const initialKlaviyoState = {
@@ -142,6 +146,9 @@ const tagPresets = [
             <div class="nav-dropdown-items">
               <button type="button" class="nav-item is-active" data-module-tab="portfolio" aria-current="page">
                 <span>Portfolio</span>
+              </button>
+              <button type="button" class="nav-item" data-module-tab="blogs">
+                <span>Blogs</span>
               </button>
             </div>
           </div>
@@ -573,6 +580,11 @@ const tagPresets = [
         <StudioWhatsAppModule initialConfig={initialWhatsAppConfig} />
 
         <StudioSeoModule initialConfig={initialSeoConfig} />
+
+        <StudioBlogModule
+          initialPosts={initialBlogPosts}
+          academyItems={initialAcademyItems}
+        />
 
         <StudioActivityModule />
 
@@ -1082,6 +1094,7 @@ const tagPresets = [
           const aiConfigModule = document.getElementById("module-ai-config");
           const whatsappModule = document.getElementById("module-whatsapp");
           const seoModule = document.getElementById("module-seo");
+          const blogsModule = document.getElementById("module-blogs");
           moduleTabs.forEach((t) => {
             const active = t.dataset.moduleTab === target;
             t.classList.toggle("is-active", active);
@@ -1099,6 +1112,7 @@ const tagPresets = [
           if (aiConfigModule) aiConfigModule.hidden = target !== "ai-config";
           if (whatsappModule) whatsappModule.hidden = target !== "whatsapp";
           if (seoModule) seoModule.hidden = target !== "seo";
+          if (blogsModule) blogsModule.hidden = target !== "blogs";
 
           const w = window as any;
           if (target === "klaviyo") {

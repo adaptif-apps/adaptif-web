@@ -1,0 +1,318 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { listBlogPosts } from "../../lib/blogDb";
+
+export const prerender = false;
+
+const posts = await listBlogPosts({ includeDrafts: false });
+const categories = ["All", ...Array.from(new Set(posts.map((p) => p.category).filter(Boolean)))];
+---
+
+<Layout
+  title="Blog — Adaptif"
+  description="Insights, playbooks, and creative systems on AI workflows, design velocity, and brand growth."
+>
+  <Header />
+  <main class="blog-index-main">
+    <section class="blog-hero is-visible">
+      <div class="container">
+        <span class="adaptif-eyebrow" data-cms-key="blog.index.eyebrow">Adaptif Journal</span>
+        <h1 class="blog-hero-title" data-cms-key="blog.index.title">
+          Ideas, systems &amp; <span class="title-highlight">creative velocity.</span>
+        </h1>
+        <p class="blog-hero-lead" data-cms-key="blog.index.lead">
+          Deep dives on AI-driven design operations, high-converting funnels, and shipping brand work at 3x speed.
+        </p>
+
+        <div class="blog-toolbar">
+          <div class="blog-cats" role="tablist" aria-label="Filter blog categories">
+            {categories.map((cat, idx) => (
+              <button
+                type="button"
+                class:list={["blog-cat-pill", { "is-active": idx === 0 }]}
+                data-blog-cat={cat}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+          <input
+            type="search"
+            id="blog-search-input"
+            class="blog-search"
+            placeholder="Search articles..."
+            autocomplete="off"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="blog-grid-section is-visible">
+      <div class="container">
+        <div class="blog-grid" id="blog-cards-grid">
+          {posts.map((post) => (
+            <a
+              href={`/blog/${post.slug}`}
+              class="glass-panel blog-card"
+              data-post-cat={post.category}
+              data-post-search={`${post.title} ${post.subtitle} ${post.excerpt} ${post.category}`.toLowerCase()}
+            >
+              <div class="blog-card-media">
+                {post.coverImage ? (
+                  <img src={post.coverImage} alt={post.title} loading="lazy" />
+                ) : (
+                  <div class="blog-card-media-placeholder">
+                    <span>ADAPTIF BLOG</span>
+                  </div>
+                )}
+              </div>
+              <div class="blog-card-body">
+                <div class="blog-card-meta">
+                  <span class="adaptif-tag adaptif-tag--cyan">{post.category}</span>
+                  <span class="blog-read-time">{post.readTime}</span>
+                </div>
+                <h2 class="blog-card-title">{post.title}</h2>
+                <p class="blog-card-excerpt">{post.excerpt || post.subtitle}</p>
+                <span class="blog-card-cta">Read Article →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <p class="blog-empty-state" id="blog-empty-state" hidden={posts.length > 0}>
+          No matching articles found.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .blog-index-main {
+    min-height: 80vh;
+    padding-top: 130px;
+    padding-bottom: 90px;
+  }
+
+  .blog-hero {
+    padding: 20px 0 36px;
+  }
+
+  .blog-hero-title {
+    margin: 14px 0 16px;
+    font-size: clamp(2.5rem, 5vw, 4.2rem);
+    line-height: 1.04;
+    max-width: 820px;
+  }
+
+  .blog-hero-lead {
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    max-width: 660px;
+    margin-bottom: 32px;
+  }
+
+  .blog-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .blog-cats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .blog-cat-pill {
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(16, 22, 34, 0.6);
+    color: var(--color-text-secondary);
+    font-size: 0.84rem;
+    font-weight: 500;
+    transition: all 0.18s ease;
+  }
+
+  .blog-cat-pill:hover {
+    border-color: rgba(72, 200, 255, 0.4);
+    color: #ffffff;
+  }
+
+  .blog-cat-pill.is-active {
+    background: rgba(72, 200, 255, 0.16);
+    border-color: rgba(72, 200, 255, 0.55);
+    color: #7fe2ff;
+  }
+
+  .blog-search {
+    min-width: 240px;
+    padding: 10px 16px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(8, 13, 24, 0.78);
+    color: #f8fafc;
+    font-size: 0.88rem;
+  }
+
+  .blog-search:focus {
+    outline: none;
+    border-color: #48c8ff;
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .blog-card {
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s var(--ease-spring), border-color 0.25s ease;
+  }
+
+  .blog-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.42);
+  }
+
+  .blog-card[hidden] {
+    display: none !important;
+  }
+
+  .blog-card-media {
+    aspect-ratio: 16 / 10;
+    background: rgba(10, 16, 30, 0.9);
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .blog-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .blog-card:hover .blog-card-media img {
+    transform: scale(1.04);
+  }
+
+  .blog-card-media-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 0%, rgba(72, 200, 255, 0.2), rgba(5, 8, 16, 0.95));
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: rgba(127, 226, 255, 0.7);
+  }
+
+  .blog-card-body {
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .blog-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .blog-read-time {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+  }
+
+  .blog-card-title {
+    font-size: 1.45rem;
+    line-height: 1.15;
+    color: #ffffff;
+  }
+
+  .blog-card-excerpt {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .blog-card-cta {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #48c8ff;
+    margin-top: 4px;
+  }
+
+  .blog-empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 1024px) {
+    .blog-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+    .blog-search {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  let activeCat = "All";
+  const searchInput = document.getElementById("blog-search-input") as HTMLInputElement | null;
+  const emptyEl = document.getElementById("blog-empty-state");
+  const cards = Array.from(document.querySelectorAll<HTMLElement>(".blog-card"));
+
+  function filterPosts() {
+    const q = (searchInput?.value || "").trim().toLowerCase();
+    let visible = 0;
+    cards.forEach((card) => {
+      const cat = card.dataset.postCat || "";
+      const hay = card.dataset.postSearch || "";
+      const matchCat = activeCat === "All" || cat === activeCat;
+      const matchQ = !q || hay.includes(q);
+      const show = matchCat && matchQ;
+      card.hidden = !show;
+      if (show) visible++;
+    });
+    if (emptyEl) emptyEl.hidden = visible > 0;
+  }
+
+  document.querySelectorAll<HTMLButtonElement>("[data-blog-cat]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeCat = btn.dataset.blogCat || "All";
+      document.querySelectorAll<HTMLButtonElement>("[data-blog-cat]").forEach((b) => {
+        b.classList.toggle("is-active", b.dataset.blogCat === activeCat);
+      });
+      filterPosts();
+    });
+  });
+
+  searchInput?.addEventListener("input", filterPosts);
+</script>

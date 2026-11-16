@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getSeoConfig, SEO_MANAGED_PAGES } from "../lib/seoDb";
 import { listAcademyItems } from "../lib/academyDb";
+import { listBlogPosts } from "../lib/blogDb";
 
 export const prerender = false;
 
@@ -34,7 +35,10 @@ export const GET: APIRoute = async () => {
 
   if (config.allowIndexing && config.sitemapIncludeAcademy) {
     try {
-      const items = await listAcademyItems({ includeUnpublished: false });
+      const [items, posts] = await Promise.all([
+        listAcademyItems({ includeUnpublished: false }),
+        listBlogPosts({ includeDrafts: false }),
+      ]);
       for (const item of items) {
         const prefix = item.kind === "guide" ? "/academy/guides" : "/academy/courses";
         urls.push({
@@ -43,8 +47,16 @@ export const GET: APIRoute = async () => {
           changefreq: "weekly",
         });
       }
+      urls.push({ loc: `${baseUrl}/blog`, priority: "0.8", changefreq: "weekly" });
+      for (const post of posts) {
+        urls.push({
+          loc: `${baseUrl}/blog/${post.slug}`,
+          priority: "0.7",
+          changefreq: "weekly",
+        });
+      }
     } catch (err) {
-      console.error("[sitemap.xml] Failed to list academy items:", err);
+      console.error("[sitemap.xml] Failed to list academy/blog items:", err);
     }
   }
 

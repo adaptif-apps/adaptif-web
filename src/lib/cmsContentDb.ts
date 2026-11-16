@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { listAcademyItems } from "./academyDb";
+import { listBlogPosts } from "./blogDb";
 
 export interface CmsFieldValue {
   text?: string;
@@ -114,9 +115,13 @@ export async function resetPageContent(path: string): Promise<void> {
 export async function listSitePagesForEditor(): Promise<CmsNavNode[]> {
   let courseChildren: CmsNavNode[] = [];
   let guideChildren: CmsNavNode[] = [];
+  let blogChildren: CmsNavNode[] = [];
 
   try {
-    const items = await listAcademyItems({ includeUnpublished: true });
+    const [items, posts] = await Promise.all([
+      listAcademyItems({ includeUnpublished: true }),
+      listBlogPosts({ includeDrafts: true }),
+    ]);
     courseChildren = items
       .filter((i) => i.kind === "course")
       .map((i) => ({
@@ -129,8 +134,12 @@ export async function listSitePagesForEditor(): Promise<CmsNavNode[]> {
         label: i.title,
         path: `/academy/guides/${i.slug}`,
       }));
+    blogChildren = posts.map((p) => ({
+      label: p.title,
+      path: `/blog/${p.slug}`,
+    }));
   } catch (err) {
-    console.error("[cmsContentDb] Failed to load academy items for nav:", err);
+    console.error("[cmsContentDb] Failed to load academy/blog items for nav:", err);
   }
 
   return [
@@ -138,6 +147,11 @@ export async function listSitePagesForEditor(): Promise<CmsNavNode[]> {
     { label: "Pricing", path: "/pricing" },
     { label: "Our Work", path: "/our-work" },
     { label: "Dedicated Team", path: "/dedicated-team" },
+    {
+      label: "Blog",
+      path: "/blog",
+      children: blogChildren,
+    },
     {
       label: "Academy",
       path: "/academy",

@@ -504,29 +504,16 @@ const { initialItems, initialSettings } = Astro.props;
     }
 
     function activateAcademyModule() {
-      const portfolioModule = document.getElementById("module-portfolio");
-      const bookCallModule = document.getElementById("module-book-call");
-      const activeCampaignModule = document.getElementById("module-activecampaign");
       const academyModule = document.getElementById("module-academy");
-      const generalInfoModule = document.getElementById("module-general-info");
-      const paymentModule = document.getElementById("module-payment");
-      const aiConfigModule = document.getElementById("module-ai-config");
-      const whatsappModule = document.getElementById("module-whatsapp");
-      const seoModule = document.getElementById("module-seo");
 
       document.querySelectorAll<HTMLButtonElement>("[data-module-tab]").forEach((t) => {
         t.classList.remove("is-active");
         t.removeAttribute("aria-current");
       });
 
-      if (portfolioModule) portfolioModule.hidden = true;
-      if (bookCallModule) bookCallModule.hidden = true;
-      if (activeCampaignModule) activeCampaignModule.hidden = true;
-      if (generalInfoModule) generalInfoModule.hidden = true;
-      if (paymentModule) paymentModule.hidden = true;
-      if (aiConfigModule) aiConfigModule.hidden = true;
-      if (whatsappModule) whatsappModule.hidden = true;
-      if (seoModule) seoModule.hidden = true;
+      document.querySelectorAll<HTMLElement>(".studio-main > [id^='module-']").forEach((mod) => {
+        mod.hidden = mod.id !== "module-academy";
+      });
       if (academyModule) academyModule.hidden = false;
     }
 

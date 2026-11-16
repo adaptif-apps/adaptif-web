@@ -1,7 +1,11 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
 import AcademySlideViewer from "../../../../components/AcademySlideViewer.astro";
-import { getAcademyItemBySlug, verifyAccessToken } from "../../../../lib/academyDb";
+import {
+  buildSlidesFromLanding,
+  getAcademyItemBySlug,
+  verifyAccessToken,
+} from "../../../../lib/academyDb";
 
 export const prerender = false;
 
@@ -15,9 +19,12 @@ if (!item) {
 const queryToken = Astro.url.searchParams.get("access");
 const cookieToken = Astro.cookies.get(`adaptif_academy_${item.slug}`)?.value;
 const token = queryToken || cookieToken || "";
-const isUnlocked = await verifyAccessToken(item.id, token);
+const isUnlocked = token ? await verifyAccessToken(item.id, token) : false;
 
-if (!isUnlocked) {
+const isPreview = Astro.url.searchParams.get("preview") === "1";
+const isEditMode = Astro.url.searchParams.get("edit") === "1";
+
+if (!isUnlocked && !isPreview && !isEditMode) {
   return Astro.redirect(`/academy/guides/${item.slug}#unlock-form`);
 }
 
@@ -31,8 +38,18 @@ if (queryToken) {
 }
 
 const autoPrint = Astro.url.searchParams.get("print") === "1";
+const derivedItem = {
+  ...item,
+  slides: Array.isArray(item.slides) && item.slides.length > 0 ? item.slides : buildSlidesFromLanding(item),
+};
 ---
 
 <Layout title={`${item.title} — Slides | Adaptif Academy`} description={item.subtitle || item.description}>
-  <AcademySlideViewer item={item} backHref={`/academy/guides/${item.slug}`} autoPrint={autoPrint} />
+  <AcademySlideViewer
+    item={derivedItem}
+    backHref={`/academy/guides/${item.slug}`}
+    autoPrint={autoPrint}
+    isEditMode={isEditMode}
+    isPreview={isPreview}
+  />
 </Layout>

@@ -15,13 +15,10 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
 <div id="module-blogs" hidden>
   <header class="studio-header">
     <div>
-      <p class="studio-eyebrow">Internal CMS</p>
-      <h1 class="studio-title">Blog <span>Editorial</span></h1>
+      <p class="studio-eyebrow">AI Editorial Engine</p>
+      <h1 class="studio-title">Blog <span>Posts</span></h1>
     </div>
     <div class="studio-header-actions">
-      <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-blog-ai-open">
-        ✦ Generate with AI
-      </button>
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-new">
         + New Blog Post
       </button>
@@ -43,33 +40,110 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
       <div class="blog-studio-list" id="blog-studio-list"></div>
     </section>
 
-    <!-- Right Editor -->
-    <section class="blog-editor-panel" aria-label="Blog post editor">
-      <div id="blog-editor-empty" class="editor-empty" hidden>
-        Select a post or click <strong>+ New Blog Post</strong> / <strong>✦ Generate with AI</strong>.
-      </div>
-
-      <div id="blog-editor-body" class="blog-editor-body">
-        <div class="editor-top-bar">
-          <div class="editor-meta-info">
-            <span class="editor-mode-pill" id="blog-status-pill">Draft</span>
-            <a id="blog-live-link" href="/blog" target="_blank" rel="noopener noreferrer" class="editor-share-link">
-              View Post ↗
-            </a>
-          </div>
-          <div class="blog-top-actions">
-            <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-blog-delete">
-              Delete
-            </button>
-            <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-save">
-              Save Post
-            </button>
-          </div>
+    <!-- Right Column: AI Generator + Basic Post Settings -->
+    <div class="blog-editor-col">
+      <!-- Card 1: AI Blog Generator (matching Courses/Guides UX) -->
+      <section class="blog-cms-card" aria-label="AI Blog Generator">
+        <div class="blog-dropzone" id="blog-ai-dropzone">
+          <input type="file" id="blog-ai-files" accept=".txt,.md,.csv,.json,.pdf,.docx,.png,.jpg,.jpeg,.webp" multiple hidden />
+          <div class="blog-dz-icon">↑</div>
+          <p class="blog-dz-title">
+            Drag &amp; drop files here, or <button type="button" class="blog-dz-browse" id="btn-blog-ai-browse">browse</button>
+          </p>
+          <p class="blog-dz-sub">
+            Supports Docs (.txt/.md/.pdf/.docx) and Images — extracts context automatically
+          </p>
+          <div class="blog-dz-files" id="blog-ai-files-list"></div>
         </div>
 
-        <!-- Metadata Card -->
-        <div class="blog-cms-card">
-          <span class="blog-kicker">Article Details</span>
+        <div class="blog-form-grid" style="margin-top: 14px;">
+          <label class="blog-field">
+            <span>Informative Links (articles, docs — one per line)</span>
+            <textarea id="blog-ai-links" class="blog-textarea" rows="3" placeholder="https://..."></textarea>
+          </label>
+          <label class="blog-field">
+            <span>Manual Information &amp; Notes</span>
+            <textarea
+              id="blog-ai-prompt"
+              class="blog-textarea"
+              rows="3"
+              placeholder="Describe the topic, target audience, angle, and key takeaways..."
+            ></textarea>
+          </label>
+        </div>
+
+        <div class="blog-gen-options">
+          <label class="blog-field">
+            <span>Publishing Status</span>
+            <select id="blog-ai-status" class="blog-input">
+              <option value="draft">Save as Draft</option>
+              <option value="published">Public (Publish immediately)</option>
+            </select>
+          </label>
+          <label class="blog-field">
+            <span>Upsell Focus</span>
+            <select id="blog-ai-upsell-kind" class="blog-input">
+              <option value="plan">Adaptif Plan (/pricing)</option>
+              <option value="guide">Academy Guide</option>
+              <option value="course">Academy Course</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="blog-ai-progress" id="blog-ai-progress" hidden>
+          <div class="blog-ai-bar"><span id="blog-ai-bar-fill"></span></div>
+          <p id="blog-ai-status-txt">Starting...</p>
+        </div>
+
+        <div class="blog-gen-footer">
+          <label class="blog-toggle-pill">
+            <input type="checkbox" id="blog-ai-complement" />
+            <span id="blog-ai-complement-label">Create as new post</span>
+          </label>
+          <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-ai-run">
+            ★ Generate
+          </button>
+        </div>
+      </section>
+
+      <!-- Card 2: Post Settings & Live Edit Trigger -->
+      <section class="blog-cms-card" aria-label="Blog post settings">
+        <div id="blog-editor-empty" class="editor-empty" hidden>
+          Select a post on the left or click <strong>+ New Blog Post</strong> / <strong>★ Generate</strong>.
+        </div>
+
+        <div id="blog-editor-body" class="blog-editor-body">
+          <div class="editor-top-bar">
+            <div class="editor-meta-info">
+              <a
+                id="blog-edit-content-link"
+                href="/blog"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="adaptif-btn adaptif-btn--sm"
+              >
+                Edit Content ↗
+              </a>
+              <a
+                id="blog-live-link"
+                href="/blog"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="adaptif-btn adaptif-btn--dark adaptif-btn--sm"
+              >
+                View Post ↗
+              </a>
+            </div>
+            <div class="blog-top-actions">
+              <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-blog-delete">
+                Delete
+              </button>
+              <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-save">
+                Save Changes
+              </button>
+            </div>
+          </div>
+
           <div class="blog-form-grid">
             <label class="blog-field blog-span-2">
               <span>Title</span>
@@ -122,125 +196,9 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
             </div>
           </div>
         </div>
-
-        <!-- Sections & Columns Builder -->
-        <div class="blog-cms-card">
-          <div class="blog-card-head">
-            <div>
-              <span class="blog-kicker">Layout Builder</span>
-              <h2 class="blog-card-title">Sections, Columns &amp; Text Formatting</h2>
-            </div>
-            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-blog-add-section">
-              + Add Section
-            </button>
-          </div>
-          <div id="blog-sections-container" class="blog-sections-container"></div>
-        </div>
-
-        <!-- Upsell Banner Configurator -->
-        <div class="blog-cms-card">
-          <div class="blog-card-head">
-            <div>
-              <span class="blog-kicker">Conversion Banner</span>
-              <h2 class="blog-card-title">Upsell Banner (Guide / Course / Plan)</h2>
-            </div>
-            <label class="blog-toggle-pill">
-              <input type="checkbox" id="blog-u-enabled" />
-              <span>Show Upsell Banner</span>
-            </label>
-          </div>
-
-          <div class="blog-form-grid" id="blog-upsell-fields">
-            <label class="blog-field">
-              <span>Promote Type</span>
-              <select id="blog-u-kind" class="blog-input">
-                <option value="guide">Guide (Academy)</option>
-                <option value="course">Course (Academy)</option>
-                <option value="plan">Adaptif Plan (/pricing)</option>
-              </select>
-            </label>
-            <label class="blog-field" id="blog-u-target-wrap">
-              <span>Select Guide / Course</span>
-              <select id="blog-u-target" class="blog-input"></select>
-            </label>
-            <label class="blog-field" id="blog-u-plan-wrap" hidden>
-              <span>Select Plan</span>
-              <select id="blog-u-plan" class="blog-input">
-                <option value="Creative Plan">Creative Plan</option>
-                <option value="Full Stack Plan">Full Stack Plan</option>
-                <option value="Dedicated Team">Dedicated Team</option>
-              </select>
-            </label>
-            <label class="blog-field">
-              <span>Banner Eyebrow (Optional)</span>
-              <input type="text" id="blog-u-eyebrow" class="blog-input" placeholder="READY TO SCALE?" />
-            </label>
-            <label class="blog-field">
-              <span>CTA Button Text (Optional)</span>
-              <input type="text" id="blog-u-cta" class="blog-input" placeholder="Explore Plans" />
-            </label>
-            <label class="blog-field blog-span-2">
-              <span>Banner Headline (Optional override)</span>
-              <input type="text" id="blog-u-title" class="blog-input" placeholder="Leave blank to use linked item title" />
-            </label>
-            <label class="blog-field blog-span-2">
-              <span>Banner Description (Optional override)</span>
-              <textarea id="blog-u-desc" class="blog-textarea" rows="2"></textarea>
-            </label>
-            <label class="blog-field blog-span-2">
-              <span>CTA Link Override (Optional)</span>
-              <input type="text" id="blog-u-href" class="blog-input" placeholder="Leave blank to auto-link to Guide, Course, or /pricing" />
-            </label>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- AI Blog Generator Modal -->
-  <div class="blog-modal-backdrop" id="blog-ai-modal" hidden>
-    <div class="blog-modal" role="dialog" aria-modal="true" aria-label="AI Blog Generator">
-      <div class="blog-modal-head">
-        <div>
-          <span class="blog-kicker">AI Engine</span>
-          <h3>Generate Blog Post with AI</h3>
-        </div>
-        <button type="button" class="blog-icon-btn" id="btn-blog-ai-close">✕</button>
-      </div>
-      <div class="blog-modal-body">
-        <label class="blog-field">
-          <span>Topic, Angle &amp; Notes</span>
-          <textarea
-            id="blog-ai-prompt"
-            class="blog-textarea"
-            rows="4"
-            placeholder="Describe the blog topic, target audience, key points, and what Guide/Course/Plan to promote..."
-          ></textarea>
-        </label>
-        <label class="blog-field">
-          <span>Reference Links (one per line, optional)</span>
-          <textarea id="blog-ai-links" class="blog-textarea" rows="2" placeholder="https://..."></textarea>
-        </label>
-        <label class="blog-field">
-          <span>Publish Status</span>
-          <select id="blog-ai-status" class="blog-input">
-            <option value="draft">Save as Draft</option>
-            <option value="published">Publish Immediately</option>
-          </select>
-        </label>
-        <div class="blog-ai-progress" id="blog-ai-progress" hidden>
-          <div class="blog-ai-bar"><span id="blog-ai-bar-fill"></span></div>
-          <p id="blog-ai-status-txt">Starting...</p>
-        </div>
-      </div>
-      <div class="blog-modal-foot">
-        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-blog-ai-cancel">Cancel</button>
-        <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-ai-run">Generate Article</button>
-      </div>
+      </section>
     </div>
   </div>
-
-  <input type="file" id="blog-col-img-file" accept="image/*" hidden />
 </div>
 
 <script define:vars={{ initialPosts, guides, courses }}>
@@ -259,12 +217,19 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     align-items: start;
   }
 
+  .blog-editor-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+  }
+
   .blog-list-panel,
   .blog-cms-card {
     background: linear-gradient(180deg, rgba(16, 22, 34, 0.88) 0%, rgba(10, 14, 23, 0.94) 100%);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    padding: 18px;
+    padding: 20px;
   }
 
   .blog-studio-list {
@@ -316,43 +281,99 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     justify-content: space-between;
   }
 
+  .blog-dropzone {
+    border: 1.5px dashed rgba(72, 200, 255, 0.28);
+    border-radius: 14px;
+    background: rgba(5, 10, 22, 0.55);
+    padding: 22px 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .blog-dropzone.is-dragover {
+    border-color: #48c8ff;
+    background: rgba(56, 189, 248, 0.1);
+  }
+
+  .blog-dz-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.14);
+    color: #48c8ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .blog-dz-title {
+    margin: 0;
+    font-size: 13.5px;
+    color: #e2e8f0;
+  }
+
+  .blog-dz-browse {
+    background: none;
+    border: none;
+    color: #48c8ff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: inherit;
+    padding: 0;
+  }
+
+  .blog-dz-sub {
+    margin: 0;
+    font-size: 11.5px;
+    color: rgba(248, 250, 252, 0.48);
+  }
+
+  .blog-dz-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .blog-gen-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .blog-gen-footer {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .blog-toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #cbd5e1;
+    cursor: pointer;
+  }
+
   .blog-editor-body {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
   }
 
   .blog-top-actions {
     display: flex;
     gap: 8px;
-  }
-
-  .blog-kicker {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #38bdf8;
-    margin-bottom: 10px;
-  }
-
-  .blog-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-
-  .blog-card-title {
-    margin: 0;
-    font-family: var(--font-family-body, "DM Sans", sans-serif);
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: #f8fafc;
   }
 
   .blog-form-grid {
@@ -378,8 +399,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
   }
 
   .blog-input,
-  .blog-textarea,
-  :global(.bs-input) {
+  .blog-textarea {
     width: 100%;
     box-sizing: border-box;
     padding: 9px 12px;
@@ -401,182 +421,8 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     flex-shrink: 0;
   }
 
-  .blog-toggle-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    color: #e2e8f0;
-    cursor: pointer;
-  }
-
-  .blog-sections-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  :global(.bs-section-card) {
-    border: 1px solid rgba(72, 200, 255, 0.22);
-    border-radius: 14px;
-    background: rgba(5, 8, 15, 0.6);
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  :global(.bs-sec-head) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  :global(.bs-sec-title) {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: #7dd3fc;
-  }
-
-  :global(.bs-sec-controls) {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  :global(.bs-mini-btn) {
-    padding: 4px 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.06);
-    color: #e2e8f0;
-    font-size: 11.5px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  :global(.bs-mini-btn.is-active) {
-    background: rgba(56, 189, 248, 0.2);
-    border-color: rgba(72, 200, 255, 0.55);
-    color: #7fe2ff;
-  }
-
-  :global(.bs-mini-btn.is-danger) {
-    border-color: rgba(248, 113, 113, 0.35);
-    color: #fca5a5;
-  }
-
-  :global(.bs-cols-grid) {
-    display: grid;
-    gap: 12px;
-  }
-
-  :global(.bs-cols-grid.cols-1) {
-    grid-template-columns: 1fr;
-  }
-  :global(.bs-cols-grid.cols-2) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  :global(.bs-cols-grid.cols-3) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  :global(.bs-col-box) {
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 11px;
-    padding: 12px;
-    background: rgba(12, 18, 32, 0.65);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  :global(.bs-block-row) {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 8px;
-    border-radius: 8px;
-    background: rgba(4, 7, 14, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  :global(.bs-block-top) {
-    display: flex;
-    justify-content: space-between;
-    gap: 6px;
-  }
-
-  /* AI Modal */
-  .blog-modal-backdrop {
-    position: fixed;
-    inset: 0;
-    z-index: 1500;
-    background: rgba(2, 6, 14, 0.78);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-
-  .blog-modal-backdrop[hidden] {
-    display: none !important;
-  }
-
-  .blog-modal {
-    width: min(560px, 100%);
-    background: #0a101d;
-    border: 1px solid rgba(72, 200, 255, 0.3);
-    border-radius: 18px;
-    padding: 22px;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
-  }
-
-  .blog-modal-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-  }
-
-  .blog-modal-head h3 {
-    margin: 0;
-    font-size: 19px;
-    color: #fff;
-  }
-
-  .blog-icon-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: rgba(255, 255, 255, 0.06);
-    color: #cbd5e1;
-    cursor: pointer;
-  }
-
-  .blog-modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 18px;
-  }
-
-  .blog-modal-foot {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-  }
-
   .blog-ai-progress {
+    margin-top: 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -605,8 +451,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
 
   @media (max-width: 980px) {
     .blog-studio-workspace,
-    :global(.bs-cols-grid.cols-2),
-    :global(.bs-cols-grid.cols-3) {
+    .blog-gen-options {
       grid-template-columns: 1fr;
     }
   }
@@ -614,20 +459,18 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
 
 <script>
   const w = window as any;
-  const seed = w.__INITIAL_BLOG_STUDIO__ || { posts: [], guides: [], courses: [] };
+  const seed = w.__INITIAL_BLOG_STUDIO__ || { posts: [] };
   let posts: any[] = JSON.parse(JSON.stringify(seed.posts || []));
   let selectedId: string | null = posts[0]?.id || null;
+  let uploadedDocText = "";
 
   const listEl = document.getElementById("blog-studio-list");
   const searchEl = document.getElementById("blog-studio-search") as HTMLInputElement | null;
   const emptyEl = document.getElementById("blog-editor-empty");
   const bodyEl = document.getElementById("blog-editor-body");
-  const statusPill = document.getElementById("blog-status-pill");
+  const editContentLink = document.getElementById("blog-edit-content-link") as HTMLAnchorElement | null;
   const liveLink = document.getElementById("blog-live-link") as HTMLAnchorElement | null;
-  const sectionsContainer = document.getElementById("blog-sections-container");
-  const colImgInput = document.getElementById("blog-col-img-file") as HTMLInputElement | null;
-
-  let activeColImgTarget: { sIdx: number; cIdx: number } | null = null;
+  const complementLabel = document.getElementById("blog-ai-complement-label");
 
   function getSelectedPost() {
     return posts.find((p) => p.id === selectedId) || null;
@@ -662,234 +505,13 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     });
   }
 
-  function populateUpsellTargets(kind: string, currentSlug: string) {
-    const targetWrap = document.getElementById("blog-u-target-wrap");
-    const planWrap = document.getElementById("blog-u-plan-wrap");
-    const targetSel = document.getElementById("blog-u-target") as HTMLSelectElement | null;
-
-    if (kind === "plan") {
-      if (targetWrap) targetWrap.hidden = true;
-      if (planWrap) planWrap.hidden = false;
-      return;
-    }
-
-    if (targetWrap) targetWrap.hidden = false;
-    if (planWrap) planWrap.hidden = true;
-    if (!targetSel) return;
-
-    const list = kind === "course" ? seed.courses : seed.guides;
-    targetSel.innerHTML =
-      `<option value="">-- Select ${kind} --</option>` +
-      list
-        .map(
-          (it: any) =>
-            `<option value="${it.slug}" ${it.slug === currentSlug ? "selected" : ""}>${it.title}</option>`
-        )
-        .join("");
-  }
-
-  function renderSections() {
-    const post = getSelectedPost();
-    if (!sectionsContainer || !post) return;
-    post.sections = Array.isArray(post.sections) ? post.sections : [];
-
-    sectionsContainer.innerHTML = post.sections
-      .map((sec: any, sIdx: number) => {
-        const count = sec.columnsCount || 1;
-        const colsHtml = (sec.columns || []).slice(0, count).map((col: any, cIdx: number) => {
-          const type = col.type || "text";
-          let inner = "";
-          if (type === "text") {
-            const blocks = Array.isArray(col.blocks) ? col.blocks : [];
-            inner = `
-              <div class="bs-blocks">
-                ${blocks
-                  .map(
-                    (blk: any, bIdx: number) => `
-                  <div class="bs-block-row">
-                    <div class="bs-block-top">
-                      <select class="bs-input bs-blk-fmt" data-s="${sIdx}" data-c="${cIdx}" data-b="${bIdx}">
-                        <option value="eyebrow" ${blk.format === "eyebrow" ? "selected" : ""}>Eyebrow</option>
-                        <option value="title" ${blk.format === "title" ? "selected" : ""}>Title (White)</option>
-                        <option value="title_highlight" ${blk.format === "title_highlight" ? "selected" : ""}>Title Highlight (Cyan)</option>
-                        <option value="subtitle" ${blk.format === "subtitle" ? "selected" : ""}>Subtitle</option>
-                        <option value="paragraph" ${blk.format === "paragraph" ? "selected" : ""}>Paragraph</option>
-                        <option value="quote" ${blk.format === "quote" ? "selected" : ""}>Quote</option>
-                      </select>
-                      <button type="button" class="bs-mini-btn is-danger bs-del-blk" data-s="${sIdx}" data-c="${cIdx}" data-b="${bIdx}">✕</button>
-                    </div>
-                    <textarea class="bs-input bs-blk-txt" rows="${blk.format === "paragraph" ? 3 : 2}" data-s="${sIdx}" data-c="${cIdx}" data-b="${bIdx}">${(blk.text || "").replace(/</g, "&lt;")}</textarea>
-                  </div>
-                `
-                  )
-                  .join("")}
-                <button type="button" class="bs-mini-btn bs-add-blk" data-s="${sIdx}" data-c="${cIdx}">+ Add Text Block</button>
-              </div>
-            `;
-          } else if (type === "image") {
-            inner = `
-              <input type="url" class="bs-input bs-col-img" data-s="${sIdx}" data-c="${cIdx}" value="${(col.imageUrl || "").replace(/"/g, "&quot;")}" placeholder="Image URL..." />
-              <button type="button" class="bs-mini-btn bs-upload-col-img" data-s="${sIdx}" data-c="${cIdx}">Upload Image</button>
-              <input type="text" class="bs-input bs-col-cap" data-s="${sIdx}" data-c="${cIdx}" value="${(col.caption || "").replace(/"/g, "&quot;")}" placeholder="Caption (optional)" />
-            `;
-          } else {
-            inner = `
-              <input type="url" class="bs-input bs-col-vid" data-s="${sIdx}" data-c="${cIdx}" value="${(col.videoUrl || "").replace(/"/g, "&quot;")}" placeholder="YouTube, Vimeo, or MP4 URL..." />
-              <input type="text" class="bs-input bs-col-cap" data-s="${sIdx}" data-c="${cIdx}" value="${(col.caption || "").replace(/"/g, "&quot;")}" placeholder="Caption (optional)" />
-            `;
-          }
-
-          return `
-            <div class="bs-col-box">
-              <select class="bs-input bs-col-type" data-s="${sIdx}" data-c="${cIdx}">
-                <option value="text" ${type === "text" ? "selected" : ""}>Column: Text</option>
-                <option value="image" ${type === "image" ? "selected" : ""}>Column: Image</option>
-                <option value="video" ${type === "video" ? "selected" : ""}>Column: Video URL</option>
-              </select>
-              ${inner}
-            </div>
-          `;
-        }).join("");
-
-        return `
-          <div class="bs-section-card">
-            <div class="bs-sec-head">
-              <span class="bs-sec-title">Section ${sIdx + 1}</span>
-              <div class="bs-sec-controls">
-                ${[1, 2, 3]
-                  .map(
-                    (n) =>
-                      `<button type="button" class="bs-mini-btn bs-set-cols ${count === n ? "is-active" : ""}" data-s="${sIdx}" data-n="${n}">${n} Col${n > 1 ? "s" : ""}</button>`
-                  )
-                  .join("")}
-                <button type="button" class="bs-mini-btn bs-move-sec" data-s="${sIdx}" data-dir="-1">↑</button>
-                <button type="button" class="bs-mini-btn bs-move-sec" data-s="${sIdx}" data-dir="1">↓</button>
-                <button type="button" class="bs-mini-btn is-danger bs-del-sec" data-s="${sIdx}">Delete</button>
-              </div>
-            </div>
-            <div class="bs-cols-grid cols-${count}">${colsHtml}</div>
-          </div>
-        `;
-      })
-      .join("");
-
-    // Bind dynamic section events
-    sectionsContainer.querySelectorAll<HTMLButtonElement>(".bs-set-cols").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const sIdx = Number(btn.dataset.s);
-        const n = Number(btn.dataset.n) as 1 | 2 | 3;
-        const sec = post.sections[sIdx];
-        sec.columnsCount = n;
-        while (sec.columns.length < n) {
-          sec.columns.push({
-            id: `col-${Date.now()}-${sec.columns.length}`,
-            type: "text",
-            blocks: [{ id: `blk-${Date.now()}`, format: "paragraph", text: "" }],
-          });
-        }
-        renderSections();
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLButtonElement>(".bs-move-sec").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const sIdx = Number(btn.dataset.s);
-        const dir = Number(btn.dataset.dir);
-        const next = sIdx + dir;
-        if (next < 0 || next >= post.sections.length) return;
-        const [item] = post.sections.splice(sIdx, 1);
-        post.sections.splice(next, 0, item);
-        renderSections();
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLButtonElement>(".bs-del-sec").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        post.sections.splice(Number(btn.dataset.s), 1);
-        renderSections();
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLSelectElement>(".bs-col-type").forEach((sel) => {
-      sel.addEventListener("change", () => {
-        const sIdx = Number(sel.dataset.s);
-        const cIdx = Number(sel.dataset.c);
-        const col = post.sections[sIdx].columns[cIdx];
-        col.type = sel.value;
-        if (col.type === "text" && (!col.blocks || col.blocks.length === 0)) {
-          col.blocks = [{ id: `blk-${Date.now()}`, format: "paragraph", text: "" }];
-        }
-        renderSections();
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLButtonElement>(".bs-add-blk").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const sIdx = Number(btn.dataset.s);
-        const cIdx = Number(btn.dataset.c);
-        const col = post.sections[sIdx].columns[cIdx];
-        col.blocks = col.blocks || [];
-        col.blocks.push({ id: `blk-${Date.now()}`, format: "paragraph", text: "" });
-        renderSections();
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLButtonElement>(".bs-del-blk").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const sIdx = Number(btn.dataset.s);
-        const cIdx = Number(btn.dataset.c);
-        const bIdx = Number(btn.dataset.b);
-        post.sections[sIdx].columns[cIdx].blocks.splice(bIdx, 1);
-        renderSections();
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLSelectElement>(".bs-blk-fmt").forEach((sel) => {
-      sel.addEventListener("change", () => {
-        post.sections[Number(sel.dataset.s)].columns[Number(sel.dataset.c)].blocks[Number(sel.dataset.b)].format =
-          sel.value;
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLTextAreaElement>(".bs-blk-txt").forEach((ta) => {
-      ta.addEventListener("input", () => {
-        post.sections[Number(ta.dataset.s)].columns[Number(ta.dataset.c)].blocks[Number(ta.dataset.b)].text =
-          ta.value;
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLInputElement>(".bs-col-img").forEach((inp) => {
-      inp.addEventListener("input", () => {
-        post.sections[Number(inp.dataset.s)].columns[Number(inp.dataset.c)].imageUrl = inp.value;
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLInputElement>(".bs-col-vid").forEach((inp) => {
-      inp.addEventListener("input", () => {
-        post.sections[Number(inp.dataset.s)].columns[Number(inp.dataset.c)].videoUrl = inp.value;
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLInputElement>(".bs-col-cap").forEach((inp) => {
-      inp.addEventListener("input", () => {
-        post.sections[Number(inp.dataset.s)].columns[Number(inp.dataset.c)].caption = inp.value;
-      });
-    });
-
-    sectionsContainer.querySelectorAll<HTMLButtonElement>(".bs-upload-col-img").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        activeColImgTarget = { sIdx: Number(btn.dataset.s), cIdx: Number(btn.dataset.c) };
-        colImgInput?.click();
-      });
-    });
-  }
-
   function loadSelectedPost() {
     const post = getSelectedPost();
     if (!emptyEl || !bodyEl) return;
     if (!post) {
       emptyEl.hidden = false;
       bodyEl.hidden = true;
+      if (complementLabel) complementLabel.textContent = "Create as new post";
       return;
     }
     emptyEl.hidden = true;
@@ -911,49 +533,51 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     setVal("blog-f-excerpt", post.excerpt);
     setVal("blog-f-cover", post.coverImage);
 
-    if (statusPill) statusPill.textContent = post.status === "published" ? "Published" : "Draft";
+    if (editContentLink) editContentLink.href = `/blog/${post.slug}?edit=1`;
     if (liveLink) liveLink.href = `/blog/${post.slug}`;
-
-    const u = post.upsell || {};
-    const uEnabled = document.getElementById("blog-u-enabled") as HTMLInputElement | null;
-    if (uEnabled) uEnabled.checked = Boolean(u.enabled);
-    setVal("blog-u-kind", u.kind || "plan");
-    populateUpsellTargets(u.kind || "plan", u.targetSlug || "");
-    setVal("blog-u-plan", u.planName || "Creative Plan");
-    setVal("blog-u-eyebrow", u.eyebrow || "");
-    setVal("blog-u-cta", u.ctaLabel || "");
-    setVal("blog-u-title", u.title || "");
-    setVal("blog-u-desc", u.description || "");
-    setVal("blog-u-href", u.ctaHref || "");
-
-    renderSections();
+    if (complementLabel) complementLabel.textContent = `Complement & update: ${post.title}`;
   }
-
-  document.getElementById("blog-u-kind")?.addEventListener("change", (e) => {
-    const kind = (e.target as HTMLSelectElement).value;
-    populateUpsellTargets(kind, "");
-  });
 
   searchEl?.addEventListener("input", renderPostList);
 
-  document.getElementById("btn-blog-add-section")?.addEventListener("click", () => {
-    const post = getSelectedPost();
-    if (!post) return;
-    post.sections.push({
-      id: `sec-${Date.now()}`,
-      columnsCount: 1,
-      columns: [
-        {
-          id: `col-${Date.now()}`,
-          type: "text",
-          blocks: [{ id: `blk-${Date.now()}`, format: "paragraph", text: "" }],
-        },
-      ],
-    });
-    renderSections();
+  // Drag & drop text files for AI generator
+  const dz = document.getElementById("blog-ai-dropzone");
+  const fileInp = document.getElementById("blog-ai-files") as HTMLInputElement | null;
+  const filesList = document.getElementById("blog-ai-files-list");
+
+  document.getElementById("btn-blog-ai-browse")?.addEventListener("click", () => fileInp?.click());
+  dz?.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dz.classList.add("is-dragover");
+  });
+  dz?.addEventListener("dragleave", () => dz.classList.remove("is-dragover"));
+  dz?.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dz.classList.remove("is-dragover");
+    if (e.dataTransfer?.files) handleFiles(e.dataTransfer.files);
+  });
+  fileInp?.addEventListener("change", () => {
+    if (fileInp.files) handleFiles(fileInp.files);
   });
 
-  // Upload cover image
+  async function handleFiles(fileList: FileList) {
+    const names: string[] = [];
+    const chunks: string[] = [];
+    for (const f of Array.from(fileList)) {
+      names.push(f.name);
+      if (/\.(txt|md|csv|json)$/i.test(f.name)) {
+        chunks.push(`File (${f.name}):\n${await f.text()}`);
+      } else {
+        chunks.push(`Attached file: ${f.name}`);
+      }
+    }
+    uploadedDocText = chunks.join("\n\n");
+    if (filesList) {
+      filesList.innerHTML = names.map((n) => `<span class="adaptif-tag adaptif-tag--cyan">${n}</span>`).join("");
+    }
+  }
+
+  // Cover upload
   document.getElementById("blog-cover-file")?.addEventListener("change", async (e) => {
     const input = e.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -974,28 +598,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     }
   });
 
-  // Upload column image
-  colImgInput?.addEventListener("change", async () => {
-    const file = colImgInput.files?.[0];
-    const post = getSelectedPost();
-    if (!file || !post || !activeColImgTarget) return;
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok || !data?.url) throw new Error(data?.error || "Upload failed");
-      post.sections[activeColImgTarget.sIdx].columns[activeColImgTarget.cIdx].imageUrl = data.url;
-      renderSections();
-      w.__SHOW_STUDIO_TOAST__?.("Column image uploaded!");
-    } catch (err: any) {
-      w.__SHOW_STUDIO_TOAST__?.(err?.message || "Upload failed", true);
-    } finally {
-      colImgInput.value = "";
-    }
-  });
-
-  // New blank post
+  // New post
   document.getElementById("btn-blog-new")?.addEventListener("click", async () => {
     try {
       const res = await fetch("/api/blog/posts", {
@@ -1014,7 +617,11 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
                 {
                   id: `col-${Date.now()}`,
                   type: "text",
-                  blocks: [{ id: `blk-${Date.now()}`, format: "paragraph", text: "Start writing..." }],
+                  blocks: [
+                    { id: `blk-${Date.now()}-1`, format: "eyebrow", text: "SECTION KICKER" },
+                    { id: `blk-${Date.now()}-2`, format: "title", text: "Your section headline" },
+                    { id: `blk-${Date.now()}-3`, format: "paragraph", text: "Start writing your article..." },
+                  ],
                 },
               ],
             },
@@ -1034,43 +641,29 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     }
   });
 
-  // Save post
+  // Save post metadata
   document.getElementById("btn-blog-save")?.addEventListener("click", async () => {
     const post = getSelectedPost();
     if (!post) return;
     const val = (id: string) =>
       (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)?.value.trim() || "";
 
-    const payload = {
-      title: val("blog-f-title"),
-      slug: val("blog-f-slug"),
-      status: val("blog-f-status"),
-      eyebrow: val("blog-f-eyebrow"),
-      category: val("blog-f-category"),
-      readTime: val("blog-f-readtime"),
-      authorName: val("blog-f-author"),
-      subtitle: val("blog-f-subtitle"),
-      excerpt: val("blog-f-excerpt"),
-      coverImage: val("blog-f-cover"),
-      sections: post.sections,
-      upsell: {
-        enabled: Boolean((document.getElementById("blog-u-enabled") as HTMLInputElement | null)?.checked),
-        kind: val("blog-u-kind"),
-        targetSlug: val("blog-u-target"),
-        planName: val("blog-u-plan"),
-        eyebrow: val("blog-u-eyebrow"),
-        ctaLabel: val("blog-u-cta"),
-        title: val("blog-u-title"),
-        description: val("blog-u-desc"),
-        ctaHref: val("blog-u-href"),
-      },
-    };
-
     try {
       const res = await fetch(`/api/blog/posts/${post.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          title: val("blog-f-title"),
+          slug: val("blog-f-slug"),
+          status: val("blog-f-status"),
+          eyebrow: val("blog-f-eyebrow"),
+          category: val("blog-f-category"),
+          readTime: val("blog-f-readtime"),
+          authorName: val("blog-f-author"),
+          subtitle: val("blog-f-subtitle"),
+          excerpt: val("blog-f-excerpt"),
+          coverImage: val("blog-f-cover"),
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data?.post) throw new Error(data?.error || "Failed to save post");
@@ -1101,14 +694,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     }
   });
 
-  // AI Generator Modal
-  const aiModal = document.getElementById("blog-ai-modal");
-  const openAi = () => { if (aiModal) aiModal.hidden = false; };
-  const closeAi = () => { if (aiModal) aiModal.hidden = true; };
-  document.getElementById("btn-blog-ai-open")?.addEventListener("click", openAi);
-  document.getElementById("btn-blog-ai-close")?.addEventListener("click", closeAi);
-  document.getElementById("btn-blog-ai-cancel")?.addEventListener("click", closeAi);
-
+  // Generate with AI
   document.getElementById("btn-blog-ai-run")?.addEventListener("click", async () => {
     const runBtn = document.getElementById("btn-blog-ai-run") as HTMLButtonElement | null;
     const progWrap = document.getElementById("blog-ai-progress");
@@ -1128,7 +714,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
       const res = await fetch("/api/blog/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt, links, status }),
+        body: JSON.stringify({ prompt, links, docText: uploadedDocText, status }),
       });
       const reader = res.body?.getReader();
       if (!reader) throw new Error("Streaming not supported");
@@ -1155,7 +741,6 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
             selectedId = payload.post.id;
             renderPostList();
             loadSelectedPost();
-            closeAi();
             w.__SHOW_STUDIO_TOAST__?.("AI Blog Post generated!");
           } else if (ev === "error") {
             throw new Error(payload.error || "Generation failed");

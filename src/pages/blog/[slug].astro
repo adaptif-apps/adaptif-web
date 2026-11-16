@@ -3,18 +3,28 @@ import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
 import { getBlogPostBySlug } from "../../lib/blogDb";
-import { getAcademyItemBySlug } from "../../lib/academyDb";
+import { getAcademyItemBySlug, listAcademyItems } from "../../lib/academyDb";
 import { hasValidStudioSession } from "../../lib/studioAuth";
 
 export const prerender = false;
 
 const slug = Astro.params.slug || "";
 const isStudio = hasValidStudioSession(Astro.cookies);
+const isEditMode = isStudio && Astro.url.searchParams.get("edit") === "1";
+
+if (isEditMode) {
+  Astro.response.headers.set("Cache-Control", "no-store, private");
+}
+
 const post = await getBlogPostBySlug(slug, isStudio);
 
 if (!post) {
   return Astro.redirect("/blog");
 }
+
+const academyItems = isEditMode ? await listAcademyItems({ includeUnpublished: true }) : [];
+const guidesList = academyItems.filter((i) => i.kind === "guide").map((i) => ({ slug: i.slug, title: i.title }));
+const coursesList = academyItems.filter((i) => i.kind === "course").map((i) => ({ slug: i.slug, title: i.title }));
 
 function toEmbedUrl(raw: string): { kind: "iframe" | "video" | "none"; url: string } {
   const u = (raw || "").trim();
@@ -33,7 +43,6 @@ function toEmbedUrl(raw: string): { kind: "iframe" | "video" | "none"; url: stri
   return { kind: "iframe", url: u };
 }
 
-// Resolve linked Guide or Course for Upsell Banner
 let linkedItem: any = null;
 if (post.upsell?.enabled && post.upsell.targetSlug && (post.upsell.kind === "guide" || post.upsell.kind === "course")) {
   linkedItem = await getAcademyItemBySlug(post.upsell.targetSlug, post.upsell.kind, isStudio);
@@ -75,7 +84,7 @@ const upsellCta =
 
 <Layout title={`${post.title} — Adaptif Blog`} description={post.excerpt || post.subtitle}>
   <Header />
-  <main class="blog-post-main">
+  <main class:list={["blog-post-main", { "is-blog-editing": isEditMode }]}>
     <article class="blog-article">
       <header class="blog-post-header">
         <div class="container blog-narrow">
@@ -87,125 +96,681 @@ const upsellCta =
             <span>{post.readTime}</span>
           </div>
 
-          <span class="adaptif-eyebrow" data-cms-key={`blog.${post.slug}.eyebrow`}>
+          <span
+            class="adaptif-eyebrow"
+            id="bp-eyebrow"
+            contenteditable={isEditMode ? "true" : undefined}
+          >
             {post.eyebrow || post.category}
           </span>
-          <h1 class="blog-post-title" data-cms-key={`blog.${post.slug}.title`}>
+          <h1
+            class="blog-post-title"
+            id="bp-title"
+            contenteditable={isEditMode ? "true" : undefined}
+          >
             {post.title}
           </h1>
-          {post.subtitle && (
-            <p class="blog-post-subtitle" data-cms-key={`blog.${post.slug}.subtitle`}>
-              {post.subtitle}
+          {(post.subtitle || isEditMode) && (
+            <p
+              class="blog-post-subtitle"
+              id="bp-subtitle"
+              contenteditable={isEditMode ? "true" : undefined}
+            >
+              {post.subtitle || (isEditMode ? "Add a subtitle..." : "")}
             </p>
           )}
           <div class="blog-author-row">
             <span>By <strong>{post.authorName || "Adaptif Team"}</strong></span>
           </div>
 
-          {post.coverImage && (
-            <div class="blog-cover-wrap">
-              <img src={post.coverImage} alt={post.title} data-cms-key={`blog.${post.slug}.cover`} />
+          {(post.coverImage || isEditMode) && (
+            <div class="blog-cover-wrap" id="bp-cover-wrap">
+              {post.coverImage ? (
+                <img id="bp-cover-img" src={post.coverImage} alt={post.title} />
+              ) : (
+                <div class="blog-media-placeholder" id="bp-cover-placeholder">No cover image set</div>
+              )}
+              {isEditMode && (
+                <button type="button" class="bp-img-pill" id="btn-bp-cover-upload">
+                  Change Cover Image
+                </button>
+              )}
             </div>
           )}
         </div>
       </header>
 
-      <div class="container blog-narrow blog-sections-stack">
-        {post.sections.map((section) => (
-          <section class:list={["blog-section is-visible", `cols-${section.columnsCount}`]}>
-            {section.columns.map((col) => (
-              <div class="blog-col">
-                {col.type === "text" && (
-                  <div class="blog-text-col">
-                    {(col.blocks || []).map((blk) => {
-                      if (!blk.text) return null;
-                      if (blk.format === "eyebrow") {
-                        return <span class="adaptif-eyebrow">{blk.text}</span>;
-                      }
-                      if (blk.format === "title") {
-                        return <h2 class="blog-blk-title">{blk.text}</h2>;
-                      }
-                      if (blk.format === "title_highlight") {
-                        return <h2 class="blog-blk-title title-highlight">{blk.text}</h2>;
-                      }
-                      if (blk.format === "subtitle") {
-                        return <h3 class="blog-blk-subtitle">{blk.text}</h3>;
-                      }
-                      if (blk.format === "quote") {
-                        return <blockquote class="blog-blk-quote">{blk.text}</blockquote>;
-                      }
-                      return <p class="blog-blk-paragraph">{blk.text}</p>;
-                    })}
-                  </div>
-                )}
+      <div class="container blog-narrow">
+        <div id="bp-sections-stack" class="blog-sections-stack">
+          {!isEditMode && post.sections.map((section) => (
+            <section class:list={["blog-section is-visible", `cols-${section.columnsCount}`]}>
+              {section.columns.map((col) => (
+                <div class="blog-col">
+                  {col.type === "text" && (
+                    <div class="blog-text-col">
+                      {(col.blocks || []).map((blk) => {
+                        if (!blk.text) return null;
+                        if (blk.format === "eyebrow") return <span class="adaptif-eyebrow">{blk.text}</span>;
+                        if (blk.format === "title") return <h2 class="blog-blk-title">{blk.text}</h2>;
+                        if (blk.format === "title_highlight") return <h2 class="blog-blk-title title-highlight">{blk.text}</h2>;
+                        if (blk.format === "subtitle") return <h3 class="blog-blk-subtitle">{blk.text}</h3>;
+                        if (blk.format === "quote") return <blockquote class="blog-blk-quote">{blk.text}</blockquote>;
+                        return <p class="blog-blk-paragraph">{blk.text}</p>;
+                      })}
+                    </div>
+                  )}
 
-                {col.type === "image" && (
-                  <figure class="blog-media-col">
-                    {col.imageUrl ? (
-                      <img src={col.imageUrl} alt={col.imageAlt || col.caption || post.title} loading="lazy" />
-                    ) : (
-                      <div class="blog-media-placeholder">Image slot</div>
-                    )}
-                    {col.caption && <figcaption>{col.caption}</figcaption>}
-                  </figure>
-                )}
+                  {col.type === "image" && (
+                    <figure class="blog-media-col">
+                      {col.imageUrl ? (
+                        <img src={col.imageUrl} alt={col.imageAlt || col.caption || post.title} loading="lazy" />
+                      ) : (
+                        <div class="blog-media-placeholder">Image slot</div>
+                      )}
+                      {col.caption && <figcaption>{col.caption}</figcaption>}
+                    </figure>
+                  )}
 
-                {col.type === "video" && (
-                  <figure class="blog-media-col">
-                    {(() => {
-                      const vid = toEmbedUrl(col.videoUrl || "");
-                      if (vid.kind === "video") {
-                        return <video src={vid.url} controls playsinline class="blog-video-el"></video>;
-                      }
-                      if (vid.kind === "iframe") {
-                        return (
-                          <div class="blog-video-frame">
-                            <iframe
-                              src={vid.url}
-                              title={col.caption || "Embedded video"}
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowfullscreen
-                            ></iframe>
-                          </div>
-                        );
-                      }
-                      return <div class="blog-media-placeholder">No video URL set</div>;
-                    })()}
-                    {col.caption && <figcaption>{col.caption}</figcaption>}
-                  </figure>
-                )}
+                  {col.type === "video" && (
+                    <figure class="blog-media-col">
+                      {(() => {
+                        const vid = toEmbedUrl(col.videoUrl || "");
+                        if (vid.kind === "video") {
+                          return <video src={vid.url} controls playsinline class="blog-video-el"></video>;
+                        }
+                        if (vid.kind === "iframe") {
+                          return (
+                            <div class="blog-video-frame">
+                              <iframe
+                                src={vid.url}
+                                title={col.caption || "Embedded video"}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen
+                              ></iframe>
+                            </div>
+                          );
+                        }
+                        return <div class="blog-media-placeholder">No video URL set</div>;
+                      })()}
+                      {col.caption && <figcaption>{col.caption}</figcaption>}
+                    </figure>
+                  )}
+                </div>
+              ))}
+            </section>
+          ))}
+        </div>
+
+        {isEditMode && (
+          <div class="bp-add-section-row">
+            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-bp-add-section">
+              + Add Section
+            </button>
+          </div>
+        )}
+
+        {(post.upsell?.enabled || isEditMode) && (
+          <aside class:list={["glass-panel blog-upsell-banner", { "is-disabled-preview": isEditMode && !post.upsell?.enabled }]} id="bp-upsell-banner">
+            {isEditMode && (
+              <div class="bp-upsell-controls">
+                <label class="bp-check-pill">
+                  <input type="checkbox" id="bp-u-enabled" checked={Boolean(post.upsell?.enabled)} />
+                  <span>Show Upsell Banner</span>
+                </label>
+                <select id="bp-u-kind" class="bp-mini-select">
+                  <option value="guide" selected={post.upsell?.kind === "guide"}>Promote: Guide</option>
+                  <option value="course" selected={post.upsell?.kind === "course"}>Promote: Course</option>
+                  <option value="plan" selected={post.upsell?.kind === "plan" || !post.upsell?.kind}>Promote: Plan</option>
+                </select>
+                <select id="bp-u-target" class="bp-mini-select" hidden={post.upsell?.kind === "plan" || !post.upsell?.kind}></select>
+                <select id="bp-u-plan" class="bp-mini-select" hidden={post.upsell?.kind !== "plan" && Boolean(post.upsell?.kind)}>
+                  <option value="Creative Plan" selected={post.upsell?.planName === "Creative Plan"}>Creative Plan</option>
+                  <option value="Full Stack Plan" selected={post.upsell?.planName === "Full Stack Plan"}>Full Stack Plan</option>
+                  <option value="Dedicated Team" selected={post.upsell?.planName === "Dedicated Team"}>Dedicated Team</option>
+                </select>
               </div>
-            ))}
-          </section>
-        ))}
+            )}
 
-        {post.upsell?.enabled && (
-          <aside class="glass-panel blog-upsell-banner">
-            <div class="blog-upsell-copy">
-              <span class="adaptif-eyebrow">{upsellEyebrow}</span>
-              <h2 class="blog-upsell-title">{upsellTitle}</h2>
-              <p class="blog-upsell-desc">{upsellDesc}</p>
-            </div>
-            <div class="blog-upsell-actions">
-              <a href={upsellHref} class="adaptif-btn">
-                <span>{upsellCta}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </a>
+            <div class="blog-upsell-inner">
+              <div class="blog-upsell-copy">
+                <span
+                  class="adaptif-eyebrow"
+                  id="bp-u-eyebrow"
+                  contenteditable={isEditMode ? "true" : undefined}
+                >
+                  {upsellEyebrow}
+                </span>
+                <h2
+                  class="blog-upsell-title"
+                  id="bp-u-title"
+                  contenteditable={isEditMode ? "true" : undefined}
+                >
+                  {upsellTitle}
+                </h2>
+                <p
+                  class="blog-upsell-desc"
+                  id="bp-u-desc"
+                  contenteditable={isEditMode ? "true" : undefined}
+                >
+                  {upsellDesc}
+                </p>
+              </div>
+              <div class="blog-upsell-actions">
+                <a href={isEditMode ? "#" : upsellHref} class="adaptif-btn" id="bp-u-cta-btn">
+                  <span id="bp-u-cta" contenteditable={isEditMode ? "true" : undefined}>{upsellCta}</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </aside>
         )}
       </div>
     </article>
   </main>
+
+  {isEditMode && (
+    <div id="bp-editor-chrome">
+      <!-- Floating Text Format Toolbar -->
+      <div class="bp-fmt-toolbar" id="bp-fmt-toolbar" hidden role="toolbar" aria-label="Text block format">
+        <span class="bp-fmt-label">Format:</span>
+        <button type="button" class="bp-fmt-btn" data-fmt="eyebrow">Eyebrow</button>
+        <button type="button" class="bp-fmt-btn" data-fmt="title">Title</button>
+        <button type="button" class="bp-fmt-btn" data-fmt="title_highlight">Highlight</button>
+        <button type="button" class="bp-fmt-btn" data-fmt="subtitle">Subtitle</button>
+        <button type="button" class="bp-fmt-btn" data-fmt="paragraph">Paragraph</button>
+        <button type="button" class="bp-fmt-btn" data-fmt="quote">Quote</button>
+        <button type="button" class="bp-fmt-btn is-danger" id="bp-fmt-delete">✕</button>
+      </div>
+
+      <!-- Bottom Docked Editor Bar -->
+      <div class="bp-bottom-bar" id="bp-bottom-bar">
+        <div class="bp-bar-left">
+          <a href="/studio-adaptif-9x4k#blogs" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm">
+            ← Preferences
+          </a>
+          <span class="bp-path-pill">Editing Blog: <strong>/blog/{post.slug}</strong></span>
+          <span class="bp-dirty-pill" id="bp-dirty-pill" hidden>● Unsaved changes</span>
+        </div>
+        <div class="bp-bar-right">
+          <a href={`/blog/${post.slug}`} class="adaptif-btn adaptif-btn--dark adaptif-btn--sm">
+            View Post
+          </a>
+          <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-bp-save">
+            Save Changes
+          </button>
+        </div>
+      </div>
+
+      <input type="file" id="bp-img-upload-input" accept="image/*" hidden />
+      <div class="bp-toast" id="bp-toast" hidden></div>
+    </div>
+  )}
+
   <Footer />
 </Layout>
+
+{isEditMode && (
+  <script define:vars={{ post, guidesList, coursesList }}>
+    window.__BLOG_FRONT_EDITOR__ = { post, guidesList, coursesList };
+  </script>
+)}
+
+{isEditMode && (
+  <script>
+    (() => {
+      const seed = (window as any).__BLOG_FRONT_EDITOR__;
+      if (!seed || !seed.post) return;
+
+      const state = JSON.parse(JSON.stringify(seed.post));
+      state.sections = Array.isArray(state.sections) ? state.sections : [];
+      state.upsell = state.upsell || { enabled: false, kind: "plan", planName: "Creative Plan" };
+
+      const stackEl = document.getElementById("bp-sections-stack");
+      const dirtyPill = document.getElementById("bp-dirty-pill");
+      const toastEl = document.getElementById("bp-toast");
+      const imgInput = document.getElementById("bp-img-upload-input") as HTMLInputElement | null;
+      const fmtToolbar = document.getElementById("bp-fmt-toolbar");
+
+      let activeUploadTarget: { type: "cover" } | { type: "col"; sIdx: number; cIdx: number } | null = null;
+      let activeBlockTarget: { sIdx: number; cIdx: number; bIdx: number; el: HTMLElement } | null = null;
+
+      function markDirty() {
+        if (dirtyPill) dirtyPill.hidden = false;
+      }
+
+      function showToast(msg: string) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.hidden = false;
+        setTimeout(() => {
+          if (toastEl) toastEl.hidden = true;
+        }, 2500);
+      }
+
+      function toEmbed(raw: string): { kind: "iframe" | "video" | "none"; url: string } {
+        const u = (raw || "").trim();
+        if (!u) return { kind: "none", url: "" };
+        const yt = u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{6,})/);
+        if (yt) return { kind: "iframe", url: `https://www.youtube.com/embed/${yt[1]}` };
+        const vm = u.match(/vimeo\.com\/(\d+)/);
+        if (vm) return { kind: "iframe", url: `https://player.vimeo.com/video/${vm[1]}` };
+        if (/\.(mp4|webm|ogg)(\?|$)/i.test(u)) return { kind: "video", url: u };
+        return { kind: "iframe", url: u };
+      }
+
+      function esc(s: string): string {
+        return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      function blockTagAndClass(format: string): { tag: string; cls: string } {
+        if (format === "eyebrow") return { tag: "span", cls: "adaptif-eyebrow" };
+        if (format === "title") return { tag: "h2", cls: "blog-blk-title" };
+        if (format === "title_highlight") return { tag: "h2", cls: "blog-blk-title title-highlight" };
+        if (format === "subtitle") return { tag: "h3", cls: "blog-blk-subtitle" };
+        if (format === "quote") return { tag: "blockquote", cls: "blog-blk-quote" };
+        return { tag: "p", cls: "blog-blk-paragraph" };
+      }
+
+      function positionFmtToolbar(el: HTMLElement) {
+        if (!fmtToolbar) return;
+        const r = el.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight - 64) {
+          fmtToolbar.hidden = true;
+          return;
+        }
+        fmtToolbar.style.top = `${Math.max(12, r.top - 46)}px`;
+        fmtToolbar.style.left = `${Math.min(window.innerWidth - 460, Math.max(12, r.left))}px`;
+        fmtToolbar.hidden = false;
+      }
+
+      function renderSections() {
+        if (!stackEl) return;
+        stackEl.innerHTML = state.sections
+          .map((sec: any, sIdx: number) => {
+            const count = sec.columnsCount || 1;
+            const colsHtml = (sec.columns || []).slice(0, count).map((col: any, cIdx: number) => {
+              const type = col.type || "text";
+              let innerHtml = "";
+              if (type === "text") {
+                const blocks = Array.isArray(col.blocks) ? col.blocks : [];
+                innerHtml = `
+                  <div class="blog-text-col">
+                    ${blocks
+                      .map((blk: any, bIdx: number) => {
+                        const { tag, cls } = blockTagAndClass(blk.format);
+                        const txt = esc(blk.text || "Click to edit...");
+                        return `<${tag} class="${cls} bp-editable-block" contenteditable="true" data-s="${sIdx}" data-c="${cIdx}" data-b="${bIdx}">${txt}</${tag}>`;
+                      })
+                      .join("")}
+                    <button type="button" class="bp-mini-btn bp-add-blk" data-s="${sIdx}" data-c="${cIdx}">+ Add Text Block</button>
+                  </div>
+                `;
+              } else if (type === "image") {
+                innerHtml = `
+                  <figure class="blog-media-col">
+                    <div class="bp-media-box">
+                      ${col.imageUrl ? `<img src="${esc(col.imageUrl)}" alt="Column image" />` : `<div class="blog-media-placeholder">Click to Upload Image</div>`}
+                      <button type="button" class="bp-img-pill bp-col-upload" data-s="${sIdx}" data-c="${cIdx}">${col.imageUrl ? "Change Image" : "Upload Image"}</button>
+                    </div>
+                    <figcaption class="bp-caption-edit" contenteditable="true" data-s="${sIdx}" data-c="${cIdx}" data-cap="1">${esc(col.caption || "Add caption...")}</figcaption>
+                  </figure>
+                `;
+              } else {
+                const vid = toEmbed(col.videoUrl || "");
+                const preview =
+                  vid.kind === "video"
+                    ? `<video src="${esc(vid.url)}" controls class="blog-video-el"></video>`
+                    : vid.kind === "iframe"
+                      ? `<div class="blog-video-frame"><iframe src="${esc(vid.url)}" allowfullscreen></iframe></div>`
+                      : `<div class="blog-media-placeholder">Paste a YouTube, Vimeo, or MP4 URL below</div>`;
+                innerHtml = `
+                  <figure class="blog-media-col">
+                    ${preview}
+                    <input type="url" class="bp-video-url-inp" data-s="${sIdx}" data-c="${cIdx}" value="${esc(col.videoUrl || "")}" placeholder="https://youtube.com/watch?v=... or .mp4" />
+                    <figcaption class="bp-caption-edit" contenteditable="true" data-s="${sIdx}" data-c="${cIdx}" data-cap="1">${esc(col.caption || "Add caption...")}</figcaption>
+                  </figure>
+                `;
+              }
+
+              return `
+                <div class="blog-col bp-col-editable">
+                  <div class="bp-col-toolbar">
+                    <select class="bp-mini-select bp-col-type-sel" data-s="${sIdx}" data-c="${cIdx}">
+                      <option value="text" ${type === "text" ? "selected" : ""}>Column: Text</option>
+                      <option value="image" ${type === "image" ? "selected" : ""}>Column: Image</option>
+                      <option value="video" ${type === "video" ? "selected" : ""}>Column: Video URL</option>
+                    </select>
+                  </div>
+                  ${innerHtml}
+                </div>
+              `;
+            }).join("");
+
+            return `
+              <div class="bp-section-wrap">
+                <div class="bp-section-toolbar">
+                  <span class="bp-sec-badge">Section ${sIdx + 1}</span>
+                  <div class="bp-sec-btns">
+                    ${[1, 2, 3].map((n) => `<button type="button" class="bp-mini-btn bp-set-cols ${count === n ? "is-active" : ""}" data-s="${sIdx}" data-n="${n}">${n} Col${n > 1 ? "s" : ""}</button>`).join("")}
+                    <button type="button" class="bp-mini-btn bp-move-sec" data-s="${sIdx}" data-dir="-1">↑</button>
+                    <button type="button" class="bp-mini-btn bp-move-sec" data-s="${sIdx}" data-dir="1">↓</button>
+                    <button type="button" class="bp-mini-btn is-danger bp-del-sec" data-s="${sIdx}">Delete Section</button>
+                  </div>
+                </div>
+                <section class="blog-section is-visible cols-${count}">
+                  ${colsHtml}
+                </section>
+              </div>
+            `;
+          })
+          .join("");
+
+        bindSectionEvents();
+      }
+
+      function bindSectionEvents() {
+        if (!stackEl) return;
+
+        stackEl.querySelectorAll<HTMLButtonElement>(".bp-set-cols").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const sIdx = Number(btn.dataset.s);
+            const n = Number(btn.dataset.n) as 1 | 2 | 3;
+            const sec = state.sections[sIdx];
+            sec.columnsCount = n;
+            while (sec.columns.length < n) {
+              sec.columns.push({
+                id: `col-${Date.now()}-${sec.columns.length}`,
+                type: "text",
+                blocks: [{ id: `blk-${Date.now()}`, format: "paragraph", text: "New column text..." }],
+              });
+            }
+            markDirty();
+            renderSections();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLButtonElement>(".bp-move-sec").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const sIdx = Number(btn.dataset.s);
+            const next = sIdx + Number(btn.dataset.dir);
+            if (next < 0 || next >= state.sections.length) return;
+            const [item] = state.sections.splice(sIdx, 1);
+            state.sections.splice(next, 0, item);
+            markDirty();
+            renderSections();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLButtonElement>(".bp-del-sec").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.sections.splice(Number(btn.dataset.s), 1);
+            markDirty();
+            renderSections();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLSelectElement>(".bp-col-type-sel").forEach((sel) => {
+          sel.addEventListener("change", () => {
+            const sIdx = Number(sel.dataset.s);
+            const cIdx = Number(sel.dataset.c);
+            const col = state.sections[sIdx].columns[cIdx];
+            col.type = sel.value;
+            if (col.type === "text" && (!col.blocks || col.blocks.length === 0)) {
+              col.blocks = [{ id: `blk-${Date.now()}`, format: "paragraph", text: "New text block..." }];
+            }
+            markDirty();
+            renderSections();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLButtonElement>(".bp-add-blk").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const sIdx = Number(btn.dataset.s);
+            const cIdx = Number(btn.dataset.c);
+            state.sections[sIdx].columns[cIdx].blocks.push({
+              id: `blk-${Date.now()}`,
+              format: "paragraph",
+              text: "New text block...",
+            });
+            markDirty();
+            renderSections();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLElement>(".bp-editable-block").forEach((el) => {
+          const sIdx = Number(el.dataset.s);
+          const cIdx = Number(el.dataset.c);
+          const bIdx = Number(el.dataset.b);
+          el.addEventListener("focus", () => {
+            activeBlockTarget = { sIdx, cIdx, bIdx, el };
+            const curFmt = state.sections[sIdx]?.columns[cIdx]?.blocks[bIdx]?.format || "paragraph";
+            fmtToolbar?.querySelectorAll<HTMLButtonElement>("[data-fmt]").forEach((b) => {
+              b.classList.toggle("is-active", b.dataset.fmt === curFmt);
+            });
+            positionFmtToolbar(el);
+          });
+          el.addEventListener("input", () => {
+            state.sections[sIdx].columns[cIdx].blocks[bIdx].text = el.textContent || "";
+            markDirty();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLButtonElement>(".bp-col-upload").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            activeUploadTarget = { type: "col", sIdx: Number(btn.dataset.s), cIdx: Number(btn.dataset.c) };
+            imgInput?.click();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLInputElement>(".bp-video-url-inp").forEach((inp) => {
+          inp.addEventListener("change", () => {
+            const sIdx = Number(inp.dataset.s);
+            const cIdx = Number(inp.dataset.c);
+            state.sections[sIdx].columns[cIdx].videoUrl = inp.value.trim();
+            markDirty();
+            renderSections();
+          });
+        });
+
+        stackEl.querySelectorAll<HTMLElement>(".bp-caption-edit").forEach((el) => {
+          el.addEventListener("input", () => {
+            const sIdx = Number(el.dataset.s);
+            const cIdx = Number(el.dataset.c);
+            state.sections[sIdx].columns[cIdx].caption = el.textContent || "";
+            markDirty();
+          });
+        });
+      }
+
+      // Format toolbar handlers
+      fmtToolbar?.querySelectorAll<HTMLButtonElement>("[data-fmt]").forEach((btn) => {
+        btn.addEventListener("mousedown", (e) => e.preventDefault());
+        btn.addEventListener("click", () => {
+          if (!activeBlockTarget) return;
+          const { sIdx, cIdx, bIdx } = activeBlockTarget;
+          state.sections[sIdx].columns[cIdx].blocks[bIdx].format = btn.dataset.fmt;
+          markDirty();
+          renderSections();
+          if (fmtToolbar) fmtToolbar.hidden = true;
+        });
+      });
+
+      document.getElementById("bp-fmt-delete")?.addEventListener("mousedown", (e) => e.preventDefault());
+      document.getElementById("bp-fmt-delete")?.addEventListener("click", () => {
+        if (!activeBlockTarget) return;
+        const { sIdx, cIdx, bIdx } = activeBlockTarget;
+        state.sections[sIdx].columns[cIdx].blocks.splice(bIdx, 1);
+        activeBlockTarget = null;
+        if (fmtToolbar) fmtToolbar.hidden = true;
+        markDirty();
+        renderSections();
+      });
+
+      // Header text edits
+      ["bp-eyebrow", "bp-title", "bp-subtitle"].forEach((id) => {
+        document.getElementById(id)?.addEventListener("input", markDirty);
+      });
+
+      document.getElementById("btn-bp-cover-upload")?.addEventListener("click", () => {
+        activeUploadTarget = { type: "cover" };
+        imgInput?.click();
+      });
+
+      imgInput?.addEventListener("change", async () => {
+        const file = imgInput.files?.[0];
+        if (!file || !activeUploadTarget) return;
+        try {
+          showToast("Uploading image...");
+          const fd = new FormData();
+          fd.append("file", file);
+          const res = await fetch("/api/upload", { method: "POST", body: fd });
+          const data = await res.json();
+          if (!res.ok || !data?.url) throw new Error(data?.error || "Upload failed");
+          if (activeUploadTarget.type === "cover") {
+            state.coverImage = data.url;
+            const img = document.getElementById("bp-cover-img") as HTMLImageElement | null;
+            if (img) img.src = data.url;
+          } else {
+            const { sIdx, cIdx } = activeUploadTarget;
+            state.sections[sIdx].columns[cIdx].imageUrl = data.url;
+            renderSections();
+          }
+          markDirty();
+          showToast("Image uploaded!");
+        } catch (err: any) {
+          showToast(err?.message || "Upload failed");
+        } finally {
+          imgInput.value = "";
+        }
+      });
+
+      // Add Section
+      document.getElementById("btn-bp-add-section")?.addEventListener("click", () => {
+        state.sections.push({
+          id: `sec-${Date.now()}`,
+          columnsCount: 1,
+          columns: [
+            {
+              id: `col-${Date.now()}`,
+              type: "text",
+              blocks: [
+                { id: `blk-${Date.now()}-1`, format: "title", text: "New Section Title" },
+                { id: `blk-${Date.now()}-2`, format: "paragraph", text: "Write your section content here..." },
+              ],
+            },
+          ],
+        });
+        markDirty();
+        renderSections();
+      });
+
+      // Upsell Banner controls
+      const uEnabled = document.getElementById("bp-u-enabled") as HTMLInputElement | null;
+      const uKind = document.getElementById("bp-u-kind") as HTMLSelectElement | null;
+      const uTarget = document.getElementById("bp-u-target") as HTMLSelectElement | null;
+      const uPlan = document.getElementById("bp-u-plan") as HTMLSelectElement | null;
+      const uBanner = document.getElementById("bp-upsell-banner");
+
+      function syncUpsellTargets() {
+        const kind = uKind?.value || "plan";
+        if (uTarget) uTarget.hidden = kind === "plan";
+        if (uPlan) uPlan.hidden = kind !== "plan";
+        if (!uTarget || kind === "plan") return;
+        const list = kind === "course" ? seed.coursesList : seed.guidesList;
+        uTarget.innerHTML =
+          `<option value="">-- Select ${kind} --</option>` +
+          (list || [])
+            .map(
+              (it: any) =>
+                `<option value="${it.slug}" ${it.slug === state.upsell?.targetSlug ? "selected" : ""}>${it.title}</option>`
+            )
+            .join("");
+      }
+
+      uEnabled?.addEventListener("change", () => {
+        state.upsell.enabled = Boolean(uEnabled.checked);
+        uBanner?.classList.toggle("is-disabled-preview", !state.upsell.enabled);
+        markDirty();
+      });
+      uKind?.addEventListener("change", () => {
+        state.upsell.kind = uKind.value;
+        syncUpsellTargets();
+        markDirty();
+      });
+      uTarget?.addEventListener("change", () => {
+        state.upsell.targetSlug = uTarget.value;
+        markDirty();
+      });
+      uPlan?.addEventListener("change", () => {
+        state.upsell.planName = uPlan.value;
+        markDirty();
+      });
+      ["bp-u-eyebrow", "bp-u-title", "bp-u-desc", "bp-u-cta"].forEach((id) => {
+        document.getElementById(id)?.addEventListener("input", markDirty);
+      });
+      document.getElementById("bp-u-cta-btn")?.addEventListener("click", (e) => e.preventDefault());
+
+      syncUpsellTargets();
+      renderSections();
+
+      // Save all changes
+      document.getElementById("btn-bp-save")?.addEventListener("click", async () => {
+        const saveBtn = document.getElementById("btn-bp-save") as HTMLButtonElement | null;
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = "Saving...";
+        }
+        try {
+          const payload = {
+            eyebrow: document.getElementById("bp-eyebrow")?.textContent?.trim() || state.eyebrow,
+            title: document.getElementById("bp-title")?.textContent?.trim() || state.title,
+            subtitle: document.getElementById("bp-subtitle")?.textContent?.trim() || "",
+            coverImage: state.coverImage,
+            sections: state.sections,
+            upsell: {
+              ...state.upsell,
+              enabled: Boolean(uEnabled?.checked),
+              kind: uKind?.value || "plan",
+              targetSlug: uTarget?.value || "",
+              planName: uPlan?.value || "Creative Plan",
+              eyebrow: document.getElementById("bp-u-eyebrow")?.textContent?.trim() || "",
+              title: document.getElementById("bp-u-title")?.textContent?.trim() || "",
+              description: document.getElementById("bp-u-desc")?.textContent?.trim() || "",
+              ctaLabel: document.getElementById("bp-u-cta")?.textContent?.trim() || "",
+            },
+          };
+          const res = await fetch(`/api/blog/posts/${state.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data?.error || "Save failed");
+          if (dirtyPill) dirtyPill.hidden = true;
+          showToast("Blog post saved & live!");
+        } catch (err: any) {
+          showToast(err?.message || "Error saving post");
+        } finally {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save Changes";
+          }
+        }
+      });
+    })();
+  </script>
+)}
 
 <style>
   .blog-post-main {
     padding-top: 130px;
     padding-bottom: 90px;
+  }
+
+  .blog-post-main.is-blog-editing {
+    padding-bottom: 120px;
   }
 
   .blog-narrow {
@@ -250,6 +815,7 @@ const upsellCta =
   }
 
   .blog-cover-wrap {
+    position: relative;
     border-radius: 22px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -270,36 +836,36 @@ const upsellCta =
     gap: 44px;
   }
 
-  .blog-section {
+  :global(.blog-section) {
     display: grid;
     gap: 28px;
     align-items: start;
   }
 
-  .blog-section.cols-1 {
+  :global(.blog-section.cols-1) {
     grid-template-columns: 1fr;
   }
 
-  .blog-section.cols-2 {
+  :global(.blog-section.cols-2) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .blog-section.cols-3 {
+  :global(.blog-section.cols-3) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .blog-text-col {
+  :global(.blog-text-col) {
     display: flex;
     flex-direction: column;
     gap: 14px;
   }
 
-  .blog-blk-title {
+  :global(.blog-blk-title) {
     font-size: clamp(1.85rem, 3vw, 2.55rem);
     line-height: 1.08;
   }
 
-  .blog-blk-subtitle {
+  :global(.blog-blk-subtitle) {
     font-family: var(--font-family-body);
     font-size: 1.25rem;
     font-weight: 600;
@@ -308,13 +874,13 @@ const upsellCta =
     letter-spacing: -0.02em;
   }
 
-  .blog-blk-paragraph {
+  :global(.blog-blk-paragraph) {
     font-size: 1.02rem;
     line-height: 1.72;
     color: rgba(248, 250, 252, 0.82);
   }
 
-  .blog-blk-quote {
+  :global(.blog-blk-quote) {
     margin: 6px 0;
     padding: 16px 20px;
     border-left: 3px solid #48c8ff;
@@ -326,21 +892,21 @@ const upsellCta =
     color: #e0f2fe;
   }
 
-  .blog-media-col {
+  :global(.blog-media-col) {
     margin: 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  .blog-media-col img,
-  .blog-video-el {
+  :global(.blog-media-col img),
+  :global(.blog-video-el) {
     width: 100%;
     border-radius: 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .blog-video-frame {
+  :global(.blog-video-frame) {
     position: relative;
     padding-top: 56.25%;
     border-radius: 16px;
@@ -349,7 +915,7 @@ const upsellCta =
     background: #050811;
   }
 
-  .blog-video-frame iframe {
+  :global(.blog-video-frame iframe) {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -357,13 +923,13 @@ const upsellCta =
     border: 0;
   }
 
-  .blog-media-col figcaption {
+  :global(.blog-media-col figcaption) {
     font-size: 0.84rem;
     color: var(--color-text-secondary);
     text-align: center;
   }
 
-  .blog-media-placeholder {
+  :global(.blog-media-placeholder) {
     padding: 48px 20px;
     border-radius: 16px;
     border: 1.5px dashed rgba(72, 200, 255, 0.3);
@@ -373,18 +939,25 @@ const upsellCta =
   }
 
   .blog-upsell-banner {
-    margin-top: 16px;
+    margin-top: 36px;
     padding: 32px;
     border-radius: 22px;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(72, 200, 255, 0.18), transparent 55%),
+      linear-gradient(135deg, rgba(16, 28, 52, 0.9), rgba(7, 12, 24, 0.96));
+    border: 1px solid rgba(72, 200, 255, 0.32);
+  }
+
+  .blog-upsell-banner.is-disabled-preview {
+    opacity: 0.5;
+  }
+
+  .blog-upsell-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 24px;
     flex-wrap: wrap;
-    background:
-      radial-gradient(circle at 0% 0%, rgba(72, 200, 255, 0.18), transparent 55%),
-      linear-gradient(135deg, rgba(16, 28, 52, 0.9), rgba(7, 12, 24, 0.96));
-    border: 1px solid rgba(72, 200, 255, 0.32);
   }
 
   .blog-upsell-copy {
@@ -404,9 +977,258 @@ const upsellCta =
     color: var(--color-text-secondary);
   }
 
+  /* Frontend Edit Mode Chrome */
+  .is-blog-editing [contenteditable="true"] {
+    outline: 1px dashed rgba(72, 200, 255, 0.38);
+    outline-offset: 4px;
+    border-radius: 4px;
+    cursor: text;
+  }
+
+  .is-blog-editing [contenteditable="true"]:focus {
+    outline: 2px solid #48c8ff;
+    background: rgba(72, 200, 255, 0.07);
+  }
+
+  :global(.bp-section-wrap) {
+    border: 1px dashed rgba(72, 200, 255, 0.25);
+    border-radius: 18px;
+    padding: 16px;
+    background: rgba(8, 13, 24, 0.35);
+  }
+
+  :global(.bp-section-toolbar) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-wrap: wrap;
+  }
+
+  :global(.bp-sec-badge) {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #48c8ff;
+  }
+
+  :global(.bp-sec-btns) {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  :global(.bp-mini-btn) {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  :global(.bp-mini-btn.is-active) {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: #48c8ff;
+    color: #7fe2ff;
+  }
+
+  :global(.bp-mini-btn.is-danger) {
+    border-color: rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+  }
+
+  :global(.bp-col-editable) {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(5, 8, 15, 0.45);
+  }
+
+  :global(.bp-col-toolbar) {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+
+  :global(.bp-mini-select) {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    background: rgba(8, 13, 24, 0.9);
+    color: #e2e8f0;
+    font-size: 12px;
+  }
+
+  :global(.bp-media-box) {
+    position: relative;
+  }
+
+  :global(.bp-img-pill) {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(72, 200, 255, 0.55);
+    background: rgba(8, 13, 24, 0.92);
+    color: #7fe2ff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  :global(.bp-video-url-inp) {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 11px;
+    border-radius: 8px;
+    border: 1px solid rgba(72, 200, 255, 0.28);
+    background: rgba(5, 8, 15, 0.85);
+    color: #f8fafc;
+    font-size: 12.5px;
+  }
+
+  .bp-add-section-row {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .bp-upsell-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .bp-check-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    color: #e2e8f0;
+    cursor: pointer;
+  }
+
+  .bp-fmt-toolbar {
+    position: fixed;
+    z-index: 1560;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(8, 13, 24, 0.96);
+    border: 1px solid rgba(72, 200, 255, 0.42);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+  }
+
+  .bp-fmt-toolbar[hidden] {
+    display: none !important;
+  }
+
+  .bp-fmt-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(248, 250, 252, 0.55);
+    margin-right: 2px;
+  }
+
+  .bp-fmt-btn {
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: #f8fafc;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .bp-fmt-btn.is-active {
+    background: rgba(56, 189, 248, 0.24);
+    border-color: #48c8ff;
+    color: #7fe2ff;
+  }
+
+  .bp-fmt-btn.is-danger {
+    border-color: rgba(248, 113, 113, 0.4);
+    color: #fca5a5;
+  }
+
+  .bp-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 22px;
+    background: #060a14;
+    border-top: 1px solid rgba(72, 200, 255, 0.35);
+    box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.65);
+  }
+
+  .bp-bar-left,
+  .bp-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .bp-path-pill {
+    font-size: 12.5px;
+    color: rgba(248, 250, 252, 0.78);
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .bp-path-pill strong {
+    color: #7fe2ff;
+  }
+
+  .bp-dirty-pill {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fbbf24;
+  }
+
+  .bp-toast {
+    position: fixed;
+    bottom: 74px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1650;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: rgba(8, 13, 24, 0.96);
+    border: 1px solid rgba(72, 200, 255, 0.45);
+    color: #e0f2fe;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .bp-toast[hidden] {
+    display: none !important;
+  }
+
   @media (max-width: 820px) {
-    .blog-section.cols-2,
-    .blog-section.cols-3 {
+    :global(.blog-section.cols-2),
+    :global(.blog-section.cols-3) {
       grid-template-columns: 1fr;
     }
   }

@@ -22,13 +22,30 @@ const { initialItems, initialSettings } = Astro.props;
     </div>
   </header>
 
-  <!-- Card 1: AI Curriculum Engine -->
-  <section class="acd-glass-card" aria-label="AI Curriculum Engine">
-    <AcademyGeneratorModal initialSettings={initialSettings} />
-  </section>
+  <div class="acd-studio-workspace">
+    <!-- Left List: Courses or Guides -->
+    <section class="acd-list-panel" aria-label="Academy items list">
+      <div class="panel-search-wrap">
+        <input
+          type="search"
+          id="acd-studio-search"
+          class="panel-search"
+          placeholder="Search items..."
+          autocomplete="off"
+        />
+      </div>
+      <div class="acd-studio-list" id="acd-studio-list"></div>
+    </section>
 
-  <!-- Card 2: Course Settings & Assets -->
-  <section class="acd-glass-card acd-settings-card" aria-label="Course Settings and Assets">
+    <!-- Right Column: AI Generator + Settings -->
+    <div class="acd-editor-col">
+      <!-- Card 1: AI Curriculum Engine -->
+      <section class="acd-glass-card" aria-label="AI Curriculum Engine">
+        <AcademyGeneratorModal initialSettings={initialSettings} />
+      </section>
+
+      <!-- Card 2: Course Settings & Assets -->
+      <section class="acd-glass-card acd-settings-card" aria-label="Course Settings and Assets">
     <div class="acd-editor-shell">
       <div class="acd-empty-editor" id="acd-empty-editor">
         Select an item from the <strong>Courses</strong> or <strong>Guides</strong> dropdown in the sidebar, or create a new one above.
@@ -117,7 +134,8 @@ const { initialItems, initialSettings } = Astro.props;
     </form>
     </div>
   </section>
-
+    </div>
+  </div>
 </div>
 
 <!-- General Payment & Stripe Access Control Module (Left Sidebar: Payment) -->
@@ -517,6 +535,10 @@ const { initialItems, initialSettings } = Astro.props;
       if (academyModule) academyModule.hidden = false;
     }
 
+    let activeKind: "course" | "guide" = "course";
+    const acdListEl = document.getElementById("acd-studio-list");
+    const acdSearchEl = document.getElementById("acd-studio-search") as HTMLInputElement | null;
+
     function renderSidebarLists() {
       const courses = items.filter((i) => i.kind === "course");
       const guides = items.filter((i) => i.kind === "guide");
@@ -524,50 +546,61 @@ const { initialItems, initialSettings } = Astro.props;
       if (sidebarCoursesCount) sidebarCoursesCount.textContent = String(courses.length);
       if (sidebarGuidesCount) sidebarGuidesCount.textContent = String(guides.length);
 
-      const renderGroup = (container: HTMLElement | null, groupItems: any[], kind: "course" | "guide") => {
-        if (!container) return;
-        const listHtml = groupItems
-          .map((it) => {
-            const isActive = it.id === selectedId && !document.getElementById("module-academy")?.hidden;
-            const dotClass =
-              it.status === "published" ? "is-live" : it.status === "scheduled" ? "is-scheduled" : "is-draft";
-            return `
-              <button
-                type="button"
-                class="nav-item nav-academy-item ${isActive ? "is-active" : ""}"
-                data-sidebar-academy-id="${it.id}"
-                title="${escapeHtml(it.title)}"
-              >
-                <span class="nav-acd-label">
-                  <span class="nav-acd-dot ${dotClass}" aria-hidden="true"></span>
-                  <span class="nav-acd-title">${escapeHtml(it.title)}</span>
-                </span>
-              </button>
-            `;
-          })
-          .join("");
+      if (acdSearchEl) {
+        acdSearchEl.placeholder = activeKind === "course" ? "Search courses..." : "Search guides...";
+      }
 
-        container.innerHTML =
-          listHtml || `<div class="nav-acd-empty">No ${kind}s yet</div>`;
+      if (acdListEl) {
+        const q = (acdSearchEl?.value || "").trim().toLowerCase();
+        const pool = activeKind === "course" ? courses : guides;
+        const filtered = pool.filter(
+          (it) => !q || (it.title || "").toLowerCase().includes(q) || (it.category || "").toLowerCase().includes(q)
+        );
+        acdListEl.innerHTML =
+          filtered
+            .map((it) => {
+              const isActive = it.id === selectedId;
+              const statusLabel =
+                it.status === "published" ? "● Published" : it.status === "scheduled" ? "◷ Scheduled" : "○ Draft";
+              const slidesCount = Array.isArray(it.slides) ? it.slides.length : 0;
+              return `
+                <button type="button" class="acd-list-item ${isActive ? "is-active" : ""}" data-acd-item-id="${it.id}">
+                  <span class="acd-li-title">${escapeHtml(it.title)}</span>
+                  <span class="acd-li-meta">
+                    <span>${statusLabel}</span>
+                    <span>${slidesCount} slides</span>
+                  </span>
+                </button>
+              `;
+            })
+            .join("") || `<div class="nav-acd-empty">No ${activeKind}s yet</div>`;
 
-        container.querySelectorAll<HTMLButtonElement>("[data-sidebar-academy-id]").forEach((btn) => {
+        acdListEl.querySelectorAll<HTMLButtonElement>("[data-acd-item-id]").forEach((btn) => {
           btn.addEventListener("click", () => {
-            selectedId = btn.dataset.sidebarAcademyId || null;
+            selectedId = btn.dataset.acdItemId || null;
             try {
-              localStorage.setItem("adaptif_studio_tab", "academy");
               if (selectedId) localStorage.setItem("adaptif_studio_academy_id", selectedId);
-              history.replaceState(null, "", "#academy");
             } catch {}
-            activateAcademyModule();
             renderSidebarLists();
             renderEditor();
           });
         });
-      };
-
-      renderGroup(sidebarCoursesList, courses, "course");
-      renderGroup(sidebarGuidesList, guides, "guide");
+      }
     }
+
+    acdSearchEl?.addEventListener("input", renderSidebarLists);
+
+    window.addEventListener("academy:select-kind", (e: any) => {
+      const k = e?.detail?.kind === "guide" ? "guide" : "course";
+      activeKind = k;
+      const cur = items.find((i) => i.id === selectedId);
+      if (!cur || cur.kind !== activeKind) {
+        selectedId = items.find((i) => i.kind === activeKind)?.id || null;
+      }
+      toggleKindAndStatusUI(activeKind);
+      renderSidebarLists();
+      renderEditor();
+    });
 
     function toggleKindAndStatusUI(kind: string = "course") {
       if (prefsSectionEl) prefsSectionEl.hidden = kind !== "course";
@@ -1113,6 +1146,82 @@ const { initialItems, initialSettings } = Astro.props;
 </script>
 
 <style>
+  .acd-studio-workspace {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .acd-list-panel {
+    background: linear-gradient(180deg, rgba(16, 22, 34, 0.88) 0%, rgba(10, 14, 23, 0.94) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 18px;
+  }
+
+  .acd-studio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 12px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  :global(.acd-list-item) {
+    appearance: none;
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(5, 8, 15, 0.45);
+    color: #cbd5e1;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: all 0.15s ease;
+  }
+
+  :global(.acd-list-item:hover) {
+    border-color: rgba(72, 200, 255, 0.3);
+    color: #fff;
+  }
+
+  :global(.acd-list-item.is-active) {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: rgba(72, 200, 255, 0.5);
+    color: #fff;
+  }
+
+  :global(.acd-li-title) {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  :global(.acd-li-meta) {
+    font-size: 11px;
+    color: rgba(248, 250, 252, 0.52);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .acd-editor-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  @media (max-width: 980px) {
+    .acd-studio-workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .acd-glass-card {
     background: var(--glass-bg-card, rgba(8, 18, 44, 0.65));
     backdrop-filter: var(--glass-blur-md, blur(24px));

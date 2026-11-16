@@ -150,6 +150,12 @@ const tagPresets = [
               <button type="button" class="nav-item" data-module-tab="blogs">
                 <span>Blogs</span>
               </button>
+              <button type="button" class="nav-item" data-module-tab="courses">
+                <span>Courses</span>
+              </button>
+              <button type="button" class="nav-item" data-module-tab="guides">
+                <span>Guides</span>
+              </button>
             </div>
           </div>
 
@@ -199,26 +205,6 @@ const tagPresets = [
                 <span>WhatsApp</span>
               </button>
             </div>
-          </div>
-
-          <div class="nav-dropdown is-open" data-nav-group="courses">
-            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
-              <span>Courses</span>
-              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </button>
-            <div class="nav-dropdown-items" id="sidebar-courses-list"></div>
-          </div>
-
-          <div class="nav-dropdown is-open" data-nav-group="guides">
-            <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
-              <span>Guides</span>
-              <svg class="nav-dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m6 9 6 6 6-6" />
-              </svg>
-            </button>
-            <div class="nav-dropdown-items" id="sidebar-guides-list"></div>
           </div>
 
           <div class="nav-dropdown is-open" data-nav-group="settings">
@@ -1105,7 +1091,15 @@ const tagPresets = [
           if (bookCallModule) bookCallModule.hidden = target !== "book-call";
           if (activeCampaignModule) activeCampaignModule.hidden = target !== "activecampaign";
           if (klaviyoModule) klaviyoModule.hidden = target !== "klaviyo";
-          if (academyModule) academyModule.hidden = target !== "academy";
+          const isAcademyTab = target === "academy" || target === "courses" || target === "guides";
+          if (academyModule) academyModule.hidden = !isAcademyTab;
+          if (target === "courses" || target === "guides") {
+            window.dispatchEvent(
+              new CustomEvent("academy:select-kind", {
+                detail: { kind: target === "courses" ? "course" : "guide" },
+              })
+            );
+          }
           if (activityModule) activityModule.hidden = target !== "activity";
           if (generalInfoModule) generalInfoModule.hidden = target !== "general-info";
           if (paymentModule) paymentModule.hidden = target !== "payment";

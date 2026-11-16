@@ -1,6 +1,7 @@
 ---
 import { FUNNEL_BLOCKS, type AcademyItem, type AcademySettings } from "../lib/academyDb";
 import AcademyGeneratorModal from "./AcademyGeneratorModal.astro";
+import StudioHeader from "./StudioHeader.astro";
 
 interface Props {
   initialItems: AcademyItem[];
@@ -11,12 +12,8 @@ const { initialItems, initialSettings } = Astro.props;
 ---
 
 <div id="module-academy" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">CMS</p>
-      <h1 class="studio-title" id="acd-module-title">Courses</h1>
-    </div>
-    <div class="studio-header-actions" id="acd-header-actions">
+  <StudioHeader eyebrow="CMS" title="Courses" titleId="acd-module-title" actionsId="acd-header-actions">
+    <Fragment slot="actions">
       <div class="cms-header-dropdown" id="acd-edit-dropdown">
         <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
           Edit ▾
@@ -52,8 +49,8 @@ const { initialItems, initialSettings } = Astro.props;
 
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-guide">+ New Guide</button>
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-course">+ New Course</button>
-    </div>
-  </header>
+    </Fragment>
+  </StudioHeader>
 
   <div class="acd-studio-workspace">
     <!-- Left List: Courses or Guides -->
@@ -256,15 +253,9 @@ const { initialItems, initialSettings } = Astro.props;
 
 <!-- General Payment & Stripe Access Control Module (Left Sidebar: Payment) -->
 <div id="module-payment" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">CONFIGURATION</p>
-      <h1 class="studio-title">Payment</h1>
-    </div>
-    <div class="studio-header-actions">
-      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-settings">Save Preferences</button>
-    </div>
-  </header>
+  <StudioHeader eyebrow="CONFIGURATION" title="Payment">
+    <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-settings">Save Preferences</button>
+  </StudioHeader>
 
   <section class="acd-glass-card acd-prefs-card" aria-label="Course Access & Stripe Preferences">
     <div class="acd-prefs-head">
@@ -370,15 +361,9 @@ const { initialItems, initialSettings } = Astro.props;
 
 <!-- AI Engine Configuration Module (Left Sidebar: AI Engine) -->
 <div id="module-ai-config" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">CONFIGURATION</p>
-      <h1 class="studio-title">AI Engine</h1>
-    </div>
-    <div class="studio-header-actions">
-      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-ai-key">Save AI Configuration</button>
-    </div>
-  </header>
+  <StudioHeader eyebrow="CONFIGURATION" title="AI Engine">
+    <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-ai-key">Save AI Configuration</button>
+  </StudioHeader>
 
   <section class="acd-glass-card acd-prefs-card" aria-label="AI Engine Configuration">
     <div class="acd-prefs-head">
@@ -451,15 +436,9 @@ const { initialItems, initialSettings } = Astro.props;
 
 <!-- General Info / System Overview Module (Left Sidebar: General Info) -->
 <div id="module-general-info" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">CONFIGURATION</p>
-      <h1 class="studio-title">General Info</h1>
-    </div>
-    <div class="studio-header-actions">
-      <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-refresh-general-info">Refresh Status</button>
-    </div>
-  </header>
+  <StudioHeader eyebrow="CONFIGURATION" title="General Info">
+    <button slot="actions" type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-refresh-general-info">Refresh Status</button>
+  </StudioHeader>
 
   <div class="gi-grid">
     <!-- Card 1: Stripe & Checkout Flow -->

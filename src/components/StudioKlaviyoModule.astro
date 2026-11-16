@@ -1,4 +1,6 @@
 ---
+import StudioHeader from "./StudioHeader.astro";
+
 interface Props {
   initialKlaviyo: {
     enabled: boolean;
@@ -15,20 +17,15 @@ const { initialKlaviyo } = Astro.props;
 ---
 
 <div id="module-klaviyo" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">INTEGRATIONS</p>
-      <h1 class="studio-title">Klaviyo</h1>
-      <p class="studio-subtitle">
-        Connect Klaviyo to sync leads and custom Form Builder fields automatically into profile properties.
-      </p>
-    </div>
-    <div class="studio-header-actions">
-      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-klaviyo">
-        Save Integration
-      </button>
-    </div>
-  </header>
+  <StudioHeader
+    eyebrow="INTEGRATIONS"
+    title="Klaviyo"
+    subtitle="Connect Klaviyo to sync leads and custom Form Builder fields automatically into profile properties."
+  >
+    <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-klaviyo">
+      Save Integration
+    </button>
+  </StudioHeader>
 
   <section class="studio-card acd-card" style="padding: 20px;">
     <div class="ac-card-head">

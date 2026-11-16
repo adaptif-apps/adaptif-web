@@ -1,5 +1,6 @@
 ---
 import { buildWhatsAppUrl, type WhatsAppConfig } from "../lib/whatsappDb";
+import StudioHeader from "./StudioHeader.astro";
 
 interface Props {
   initialConfig: WhatsAppConfig;
@@ -11,17 +12,11 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
 ---
 
 <div id="module-whatsapp" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">INTEGRATIONS</p>
-      <h1 class="studio-title">WhatsApp</h1>
-    </div>
-    <div class="studio-header-actions">
-      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-whatsapp">
-        Save WhatsApp Settings
-      </button>
-    </div>
-  </header>
+  <StudioHeader eyebrow="INTEGRATIONS" title="WhatsApp">
+    <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-whatsapp">
+      Save WhatsApp Settings
+    </button>
+  </StudioHeader>
 
   <div class="wa-studio-grid">
     <section class="wa-glass-card" aria-label="WhatsApp Floating Button Configuration">

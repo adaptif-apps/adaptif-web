@@ -15,6 +15,7 @@ import StudioFormBuilder from "../components/StudioFormBuilder.astro";
 import StudioWhatsAppModule from "../components/StudioWhatsAppModule.astro";
 import StudioSeoModule from "../components/StudioSeoModule.astro";
 import StudioBlogModule from "../components/StudioBlogModule.astro";
+import StudioHeader from "../components/StudioHeader.astro";
 import "../styles/global.css";
 
 export const prerender = false;
@@ -251,17 +252,11 @@ const tagPresets = [
       <!-- Main Workspace -->
       <main class="studio-main">
         <div id="module-portfolio">
-          <header class="studio-header">
-            <div>
-              <p class="studio-eyebrow">CMS</p>
-              <h1 class="studio-title">Portfolio</h1>
-            </div>
-            <div class="studio-header-actions">
-              <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-add-brand">
-                + Add Brand
-              </button>
-            </div>
-          </header>
+          <StudioHeader eyebrow="CMS" title="Portfolio">
+            <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-add-brand">
+              + Add Brand
+            </button>
+          </StudioHeader>
 
           <div class="studio-workspace">
           <!-- Left List: Brands -->
@@ -406,12 +401,7 @@ const tagPresets = [
 
         <!-- Book a Call Form Module -->
         <div id="module-book-call" hidden>
-          <header class="studio-header">
-            <div>
-              <p class="studio-eyebrow">FORMS</p>
-              <h1 class="studio-title" id="bc-header-form-name">Book a Call</h1>
-            </div>
-          </header>
+          <StudioHeader eyebrow="FORMS" title="Book a Call" titleId="bc-header-form-name" />
 
           <StudioFormBuilder initialConfig={initialBookCallConfig} />
 
@@ -420,20 +410,15 @@ const tagPresets = [
 
         <!-- ActiveCampaign Integration Module -->
         <div id="module-activecampaign" hidden>
-          <header class="studio-header">
-            <div>
-              <p class="studio-eyebrow">INTEGRATIONS</p>
-              <h1 class="studio-title">ActiveCampaign</h1>
-              <p class="studio-subtitle">
-                Connect ActiveCampaign to sync leads, lists, tags, and Form Builder custom fields automatically.
-              </p>
-            </div>
-            <div class="studio-header-actions">
-              <button type="submit" form="ac-cms-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-ac">
-                Save Integration
-              </button>
-            </div>
-          </header>
+          <StudioHeader
+            eyebrow="INTEGRATIONS"
+            title="ActiveCampaign"
+            subtitle="Connect ActiveCampaign to sync leads, lists, tags, and Form Builder custom fields automatically."
+          >
+            <button slot="actions" type="submit" form="ac-cms-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-ac">
+              Save Integration
+            </button>
+          </StudioHeader>
 
           <form id="ac-cms-form" class="bc-cms-form">
             <section class="studio-card acd-card" style="padding: 20px;">
@@ -1415,9 +1400,30 @@ const tagPresets = [
         sync();
       }
 
-      document.querySelectorAll("select.ac-select, select.studio-select").forEach((el) => {
-        enhanceStudioSelect(el as HTMLSelectElement);
-      });
+      const studioMainEl = document.querySelector(".studio-main");
+      const enhanceAllStudioSelects = () => {
+        (studioMainEl || document).querySelectorAll("select:not([data-native-select])").forEach((el) => {
+          enhanceStudioSelect(el as HTMLSelectElement);
+        });
+      };
+      enhanceAllStudioSelects();
+
+      if (studioMainEl) {
+        const selectObserver = new MutationObserver((mutations) => {
+          for (const m of mutations) {
+            for (const node of m.addedNodes) {
+              if (node instanceof HTMLSelectElement && !node.hasAttribute("data-native-select")) {
+                enhanceStudioSelect(node);
+              } else if (node instanceof Element) {
+                node.querySelectorAll("select:not([data-native-select])").forEach((s) => {
+                  enhanceStudioSelect(s as HTMLSelectElement);
+                });
+              }
+            }
+          }
+        });
+        selectObserver.observe(studioMainEl, { childList: true, subtree: true });
+      }
 
       (window as any).__STUDIO_ENHANCE_SELECT__ = enhanceStudioSelect;
       (window as any).__STUDIO_SYNC_SELECT__ = syncStudioDropdown;
@@ -2831,9 +2837,8 @@ const tagPresets = [
         font-weight: 500;
       }
 
-      :global(select.ac-select.is-enhanced-native),
-      :global(select.studio-select.is-enhanced-native) {
-        display: none;
+      :global(select.is-enhanced-native) {
+        display: none !important;
       }
 
       :global(.studio-dropdown) {

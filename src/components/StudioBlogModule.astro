@@ -1,6 +1,7 @@
 ---
 import type { BlogPost } from "../lib/blogDb";
 import type { AcademyItem } from "../lib/academyDb";
+import StudioHeader from "./StudioHeader.astro";
 
 interface Props {
   initialPosts: BlogPost[];
@@ -13,12 +14,8 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
 ---
 
 <div id="module-blogs" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">CMS</p>
-      <h1 class="studio-title">Blogs</h1>
-    </div>
-    <div class="studio-header-actions" id="blog-header-actions">
+  <StudioHeader eyebrow="CMS" title="Blogs" actionsId="blog-header-actions">
+    <Fragment slot="actions">
       <div class="cms-header-dropdown" id="blog-actions-dropdown">
         <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
           Actions ▾
@@ -57,8 +54,8 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-blog-new">
         + New Blog Post
       </button>
-    </div>
-  </header>
+    </Fragment>
+  </StudioHeader>
 
   <div class="blog-studio-workspace">
     <!-- Left List -->
@@ -604,7 +601,10 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
 
     const setVal = (id: string, val: string) => {
       const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
-      if (el) el.value = val || "";
+      if (el) {
+        el.value = val || "";
+        if (el instanceof HTMLSelectElement) w.__STUDIO_SYNC_SELECT__?.(el);
+      }
     };
 
     setVal("blog-f-title", post.title);

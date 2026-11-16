@@ -1,25 +1,21 @@
 ---
+import StudioHeader from "./StudioHeader.astro";
 ---
 
 <div id="module-activity" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">CRM</p>
-      <h1 class="studio-title">Activity &amp; Sales</h1>
-      <p class="studio-subtitle">
-        Unified log of everyone who booked a call, purchased a subscription plan, or bought a course.
-      </p>
-    </div>
-    <div class="studio-header-actions">
-      <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-refresh-activity">
+  <StudioHeader
+    eyebrow="CRM"
+    title="Activity & Sales"
+    subtitle="Unified log of everyone who booked a call, purchased a subscription plan, or bought a course."
+  >
+    <button slot="actions" type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-refresh-activity">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 12a9 9 0 1 1-2.64-6.36" />
           <polyline points="21 3 21 9 15 9" />
         </svg>
         Refresh
       </button>
-    </div>
-  </header>
+  </StudioHeader>
 
   <section class="studio-card act-toolbar-card">
     <div class="act-toolbar">

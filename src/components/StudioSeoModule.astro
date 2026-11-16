@@ -1,5 +1,6 @@
 ---
 import { SEO_MANAGED_PAGES, type SeoConfig } from "../lib/seoDb";
+import StudioHeader from "./StudioHeader.astro";
 
 interface Props {
   initialConfig: SeoConfig;
@@ -9,12 +10,8 @@ const { initialConfig } = Astro.props;
 ---
 
 <div id="module-seo" hidden>
-  <header class="studio-header">
-    <div>
-      <p class="studio-eyebrow">CONFIGURATION</p>
-      <h1 class="studio-title">SEO</h1>
-    </div>
-    <div class="studio-header-actions">
+  <StudioHeader eyebrow="CONFIGURATION" title="SEO">
+    <Fragment slot="actions">
       <a
         href="/sitemap.xml"
         target="_blank"
@@ -34,8 +31,8 @@ const { initialConfig } = Astro.props;
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-seo">
         Save SEO Settings
       </button>
-    </div>
-  </header>
+    </Fragment>
+  </StudioHeader>
 
   <!-- Sub-tabs inside SEO -->
   <div class="seo-subtabs" role="tablist" aria-label="SEO sections">

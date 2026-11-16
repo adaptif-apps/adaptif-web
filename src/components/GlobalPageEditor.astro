@@ -138,12 +138,17 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
 
   (window as any).__ADAPTIF_ASSIGN_CMS_KEYS__ = assignAutoCmsKeys;
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", applyCmsOverrides);
-  } else {
+  function runApplyCms() {
     applyCmsOverrides();
+    window.dispatchEvent(new CustomEvent("adaptif:cms-ready"));
   }
-  document.addEventListener("astro:page-load", applyCmsOverrides);
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", runApplyCms);
+  } else {
+    runApplyCms();
+  }
+  document.addEventListener("astro:page-load", runApplyCms);
 </script>
 
 {isEditMode && (
@@ -894,6 +899,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
         });
       }
 
+      window.addEventListener("adaptif:cms-ready", bindInlineTextEditors);
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", bindInlineTextEditors);
       } else {

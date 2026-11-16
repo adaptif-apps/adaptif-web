@@ -392,6 +392,9 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
       </div>
       <div class="slide-edit-actions">
         <span class="slide-edit-toast" id="slide-edit-toast" hidden>Saved!</span>
+        <a href={`${Astro.url.pathname}?preview=1`} class="btn-viewer-ghost">
+          Preview Mode
+        </a>
         <button type="button" class="btn-download-pdf" id="btn-save-slides">
           Save Slides / PDF
         </button>
@@ -862,8 +865,10 @@ const ed = (slideIdx: number, field: string, bulletIdx?: number): Record<string,
 
   .topbar-title {
     margin: 0;
+    font-family: var(--font-family-body, "DM Sans", sans-serif);
     font-size: 0.95rem;
     font-weight: 600;
+    letter-spacing: -0.01em;
     color: #f8fafc;
     overflow: hidden;
     text-overflow: ellipsis;

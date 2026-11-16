@@ -755,7 +755,44 @@ const { initialConfig } = Astro.props;
 
   let config: any = JSON.parse(JSON.stringify(w.__INITIAL_BOOK_CALL_CONFIG__ || {}));
   let fields: any[] = Array.isArray(config.fields) ? config.fields : [];
-  let steps: any[] = Array.isArray(config.steps) && config.steps.length > 0 ? config.steps : [];
+  let steps: any[] =
+    Array.isArray(config.steps) && config.steps.length > 0
+      ? config.steps
+      : [
+          {
+            id: "step_1",
+            kind: "fields",
+            eyebrow: config.step1Eyebrow || "FREE STRATEGY CALL",
+            title: config.step1Title || "Let's see how",
+            titleHighlight: config.step1TitleHighlight ?? "Adaptif",
+            titleSuffix: config.step1TitleSuffix ?? "can help",
+            subtitle: config.step1Subtitle || "",
+            privacyNote: config.privacyNote || "We'll only use your details to coordinate your call. No spam.",
+            cta: config.step1Cta || "Tell us about your project",
+          },
+          {
+            id: "step_2",
+            kind: "fields",
+            eyebrow: config.step2Eyebrow || "THIS IS OPTIONAL",
+            title: config.step2Title || "Help us prepare for your call",
+            titleHighlight: "",
+            titleSuffix: "",
+            subtitle: config.step2Subtitle || "",
+            privacyNote: "",
+            cta: config.step2Cta || "Book a Call",
+          },
+          {
+            id: "step_3",
+            kind: "confirmation",
+            eyebrow: config.successEyebrow || "CALL REQUESTED",
+            title: config.successTitle || "We've got your details",
+            titleHighlight: "",
+            titleSuffix: "",
+            subtitle: config.successMessage || "",
+            privacyNote: "",
+            cta: "Back to website",
+          },
+        ];
   let activeStepIdx = 0;
   let selectedFieldId: string | null = null;
   let selectionMode: "container" | "button" | "field" = "container";

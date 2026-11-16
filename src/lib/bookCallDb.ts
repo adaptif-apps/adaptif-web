@@ -97,6 +97,7 @@ export const defaultBookCallFields: FormField[] = [
     placeholder: "Select an option...",
     required: false,
     step: 1,
+    width: "full",
     options: [
       "Dedicated Creative Team",
       "Brand Identity & Visual System",
@@ -159,7 +160,47 @@ export const defaultBookCallFields: FormField[] = [
     placeholder: "Share any context, questions, or requirements you'd like us to know...",
     required: false,
     step: 2,
+    width: "full",
     options: [],
+  },
+];
+
+export const defaultBookCallSteps: FormStep[] = [
+  {
+    id: "step_1",
+    kind: "fields",
+    eyebrow: "FREE STRATEGY CALL",
+    title: "Let's see how",
+    titleHighlight: "Adaptif",
+    titleSuffix: "can help",
+    subtitle:
+      "Designers, strategists, motion artists, web builders and producers, every creative role available under one subscription.",
+    privacyNote: "We'll only use your details to coordinate your call. No spam.",
+    cta: "Tell us about your project",
+  },
+  {
+    id: "step_2",
+    kind: "fields",
+    eyebrow: "THIS IS OPTIONAL",
+    title: "Help us prepare for your call",
+    titleHighlight: "",
+    titleSuffix: "",
+    subtitle:
+      "Answer a few quick questions so we can make the most of our time together. This is optional.",
+    privacyNote: "",
+    cta: "Book a Call",
+  },
+  {
+    id: "step_3",
+    kind: "confirmation",
+    eyebrow: "CALL REQUESTED",
+    title: "We've got your details",
+    titleHighlight: "",
+    titleSuffix: "",
+    subtitle:
+      "Thanks for sharing your project. Our team will reach out shortly to confirm your strategy call.",
+    privacyNote: "",
+    cta: "Back to website",
   },
 ];
 
@@ -220,6 +261,7 @@ export const defaultBookCallConfig: BookCallConfig = {
   successTitle: "We've got your details",
   successMessage:
     "Thanks for sharing your project. Our team will reach out shortly to confirm your strategy call.",
+  steps: defaultBookCallSteps,
   fields: defaultBookCallFields,
 };
 
@@ -297,7 +339,8 @@ function normalizeFields(rawFields: unknown): FormField[] {
     if (!id || !label) continue;
     const type = validTypes.has(f.type as FormFieldType) ? (f.type as FormFieldType) : "text";
     const step = Math.max(1, Math.floor(Number(f.step) || 1));
-    const width = f.width === "full" ? "full" : "half";
+    const width =
+      f.width === "full" || (!f.width && (id === "helpTopic" || id === "notes")) ? "full" : "half";
     const options = Array.isArray(f.options)
       ? f.options.map((o) => String(o).trim()).filter(Boolean)
       : [];

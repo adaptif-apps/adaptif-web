@@ -1313,7 +1313,7 @@ const tagPresets = [
         sync();
       }
 
-      document.querySelectorAll("select.ac-select").forEach((el) => {
+      document.querySelectorAll("select.ac-select, select.studio-select").forEach((el) => {
         enhanceStudioSelect(el as HTMLSelectElement);
       });
 
@@ -1743,6 +1743,20 @@ const tagPresets = [
         flex-direction: column;
         gap: 22px;
         min-width: 0;
+      }
+
+      @media (min-width: 1081px) {
+        .studio-main:has(#module-book-call:not([hidden])) {
+          height: 100vh;
+          overflow: hidden;
+        }
+      }
+
+      #module-book-call:not([hidden]) {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
       }
 
       :global(.studio-header) {

@@ -256,6 +256,8 @@ const { initialConfig } = Astro.props;
   .fb-root {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    min-height: 0;
     gap: 18px;
   }
 
@@ -330,23 +332,26 @@ const { initialConfig } = Astro.props;
     display: none !important;
   }
 
-  /* 2-Column Workspace with Fixed-Height Scrollable Right Inspector */
+  /* 2-Column Workspace with Full-Height Scrollable Right Inspector */
   .fb-workspace {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 330px;
     gap: 20px;
     align-items: stretch;
-    height: 640px;
+    flex: 1;
+    min-height: 0;
   }
 
   .fb-root[data-mode="preview"] .fb-workspace {
     grid-template-columns: 1fr;
-    height: auto;
+    flex: 1;
+    min-height: 0;
   }
 
   @media (max-width: 1080px) {
     .fb-workspace {
       grid-template-columns: 1fr;
+      flex: none;
       height: auto;
     }
   }
@@ -1031,11 +1036,13 @@ const { initialConfig } = Astro.props;
     if (fPh) fPh.value = field.placeholder || "";
     if (fType) {
       fType.value = field.type || "text";
+      w.__STUDIO_ENHANCE_SELECT__?.(fType);
       w.__STUDIO_SYNC_SELECT__?.(fType);
     }
     if (fStep) {
       syncFieldStepDropdown();
       fStep.value = String(field.step || 1);
+      w.__STUDIO_ENHANCE_SELECT__?.(fStep);
       w.__STUDIO_SYNC_SELECT__?.(fStep);
     }
     if (fOpts) fOpts.value = Array.isArray(field.options) ? field.options.join(", ") : "";

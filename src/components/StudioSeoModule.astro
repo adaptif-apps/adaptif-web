@@ -1,0 +1,1356 @@
+---
+import { SEO_MANAGED_PAGES, type SeoConfig } from "../lib/seoDb";
+
+interface Props {
+  initialConfig: SeoConfig;
+}
+
+const { initialConfig } = Astro.props;
+---
+
+<div id="module-seo" hidden>
+  <header class="studio-header">
+    <div>
+      <p class="studio-eyebrow">Search &amp; Social</p>
+      <h1 class="studio-title">SEO <span>Preferences</span></h1>
+    </div>
+    <div class="studio-header-actions">
+      <a
+        href="/sitemap.xml"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="adaptif-btn adaptif-btn--dark adaptif-btn--sm"
+      >
+        View Sitemap ↗
+      </a>
+      <a
+        href="/robots.txt"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="adaptif-btn adaptif-btn--dark adaptif-btn--sm"
+      >
+        View robots.txt ↗
+      </a>
+      <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-seo">
+        Save SEO Settings
+      </button>
+    </div>
+  </header>
+
+  <!-- Sub-tabs inside SEO -->
+  <div class="seo-subtabs" role="tablist" aria-label="SEO sections">
+    <button type="button" class="seo-subtab is-active" data-seo-tab="global" role="tab" aria-selected="true">
+      Global &amp; Social Preview
+    </button>
+    <button type="button" class="seo-subtab" data-seo-tab="pages" role="tab" aria-selected="false">
+      Per-Page SEO
+    </button>
+    <button type="button" class="seo-subtab" data-seo-tab="indexing" role="tab" aria-selected="false">
+      Indexing, Sitemap &amp; Brand
+    </button>
+    <button type="button" class="seo-subtab" data-seo-tab="redirects" role="tab" aria-selected="false">
+      URL Redirects (301)
+    </button>
+  </div>
+
+  <!-- TAB 1: Global SEO & Social -->
+  <div class="seo-pane" data-seo-pane="global">
+    <div class="seo-two-col">
+      <section class="seo-card">
+        <div class="seo-card-head">
+          <div>
+            <span class="seo-kicker">Defaults</span>
+            <h2 class="seo-card-title">Search Engine &amp; Social Sharing</h2>
+            <p class="seo-card-sub">
+              These defaults apply across your entire website whenever a page doesn't have custom SEO settings.
+            </p>
+          </div>
+        </div>
+
+        <div class="seo-grid">
+          <label class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Default Page Title
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Default Title info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    The big blue headline people see in Google search results and browser tabs. Keep it under 60 characters so Google doesn't cut it off.
+                  </span>
+                </span>
+              </span>
+              <span class="seo-counter" id="seo-title-count">0 / 60</span>
+            </span>
+            <input type="text" id="seo-default-title" class="seo-input" value={initialConfig.defaultTitle} />
+          </label>
+
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Title Pattern
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Title Pattern info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Automatically adds your brand name to sub-pages. "%s" is replaced by the page name (e.g. "Pricing | Adaptif").
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="text" id="seo-title-template" class="seo-input" value={initialConfig.titleTemplate} placeholder="%s | Adaptif" />
+          </label>
+
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Official Site Address (Canonical URL)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Canonical URL info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Tells Google which web address is your official one (for example, your .com domain once connected) so search ranking isn't split across copies.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="url" id="seo-canonical-base" class="seo-input" value={initialConfig.canonicalBaseUrl} placeholder="https://adaptif-web.vercel.app" />
+          </label>
+
+          <label class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Default Description
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Default Description info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    The short summary shown under your title in Google. Write a clear sentence explaining what Adaptif does. Aim for 120–160 characters.
+                  </span>
+                </span>
+              </span>
+              <span class="seo-counter" id="seo-desc-count">0 / 160</span>
+            </span>
+            <textarea id="seo-default-desc" class="seo-textarea" rows="3">{initialConfig.defaultDescription}</textarea>
+          </label>
+
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Social Share Title (Optional)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Social Share Title info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Title shown when someone pastes your link into WhatsApp, LinkedIn, or X. Leave blank to automatically use your Default Title.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="text" id="seo-og-title" class="seo-input" value={initialConfig.ogTitle} placeholder="Same as Default Title" />
+          </label>
+
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Twitter / X Card Size
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Twitter Card info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    "Large Image" shows a big banner photo when shared on X/Twitter. "Compact" shows a small square thumbnail.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <select id="seo-twitter-card" class="ac-select">
+              <option value="summary_large_image" selected={initialConfig.twitterCard !== "summary"}>
+                Large Image Banner
+              </option>
+              <option value="summary" selected={initialConfig.twitterCard === "summary"}>
+                Compact Square Card
+              </option>
+            </select>
+          </label>
+
+          <label class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Social Share Description (Optional)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Social Share Description info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Short text shown on the preview card in WhatsApp, LinkedIn, or X. Leave blank to reuse your Default Description.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <textarea id="seo-og-desc" class="seo-textarea" rows="2" placeholder="Same as Default Description">{initialConfig.ogDescription}</textarea>
+          </label>
+
+          <div class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Social Share Image (Open Graph — 1200×630)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="OG Image info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    The preview image that appears when anyone shares your website link on WhatsApp, Slack, LinkedIn, or X. Recommended size: 1200×630 px.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <div class="seo-upload-row">
+              <input type="url" id="seo-og-image" class="seo-input" value={initialConfig.ogImage} placeholder="https://... or upload an image" />
+              <label class="adaptif-btn adaptif-btn--dark adaptif-btn--sm seo-upload-btn">
+                <span>Upload Image</span>
+                <input type="file" id="seo-og-file" accept="image/*" hidden />
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live SERP & Social Preview -->
+      <section class="seo-card">
+        <div class="seo-card-head">
+          <div>
+            <span class="seo-kicker">Live Simulator</span>
+            <h2 class="seo-card-title">How Your Site Looks</h2>
+          </div>
+        </div>
+
+        <div class="seo-preview-block">
+          <span class="seo-preview-label">Google Search Result</span>
+          <div class="seo-serp-card">
+            <div class="seo-serp-url" id="seo-serp-url">https://adaptif-web.vercel.app</div>
+            <div class="seo-serp-title" id="seo-serp-title">{initialConfig.defaultTitle}</div>
+            <div class="seo-serp-desc" id="seo-serp-desc">{initialConfig.defaultDescription}</div>
+          </div>
+        </div>
+
+        <div class="seo-preview-block">
+          <span class="seo-preview-label">WhatsApp / LinkedIn / X Card</span>
+          <div class="seo-social-card">
+            <div class="seo-social-img-wrap" id="seo-social-img-wrap">
+              <img
+                id="seo-social-img"
+                src={initialConfig.ogImage || ""}
+                alt="Social preview"
+                hidden={!initialConfig.ogImage}
+              />
+              <span id="seo-social-img-empty" hidden={Boolean(initialConfig.ogImage)}>
+                No social image set (1200×630 recommended)
+              </span>
+            </div>
+            <div class="seo-social-body">
+              <div class="seo-social-domain" id="seo-social-domain">adaptif-web.vercel.app</div>
+              <div class="seo-social-title" id="seo-social-title">
+                {initialConfig.ogTitle || initialConfig.defaultTitle}
+              </div>
+              <div class="seo-social-desc" id="seo-social-desc">
+                {initialConfig.ogDescription || initialConfig.defaultDescription}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- TAB 2: Per-Page Overrides -->
+  <div class="seo-pane" data-seo-pane="pages" hidden>
+    <section class="seo-card">
+      <div class="seo-card-head">
+        <div>
+          <span class="seo-kicker">Page Settings</span>
+          <h2 class="seo-card-title">Customize Individual Pages</h2>
+          <p class="seo-card-sub">
+            Pick any main page below to give it its own title, description, or image, or hide it from Google.
+          </p>
+        </div>
+      </div>
+
+      <div class="seo-pages-layout">
+        <div class="seo-pages-list" id="seo-pages-list">
+          {SEO_MANAGED_PAGES.map((p, idx) => (
+            <button
+              type="button"
+              class:list={["seo-page-btn", { "is-active": idx === 0 }]}
+              data-seo-page-path={p.path}
+            >
+              <span>{p.label}</span>
+              <span class="seo-page-badge" data-seo-page-badge={p.path} hidden>Custom</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="seo-page-editor">
+          <div class="seo-grid">
+            <label class="seo-field seo-span-2">
+              <span class="seo-label-row">
+                <span>
+                  Custom Page Title
+                  <span class="seo-tip-wrap">
+                    <button type="button" class="seo-tip-btn" aria-label="Custom Page Title info">?</button>
+                    <span class="seo-tip-box" role="tooltip">
+                      Overrides the default title just for this page. Leave blank to use the page's built-in title.
+                    </span>
+                  </span>
+                </span>
+                <span class="seo-counter" id="seo-page-title-count">0 / 60</span>
+              </span>
+              <input type="text" id="seo-page-title" class="seo-input" placeholder="Leave blank to use default" />
+            </label>
+
+            <label class="seo-field seo-span-2">
+              <span class="seo-label-row">
+                <span>
+                  Custom Page Description
+                  <span class="seo-tip-wrap">
+                    <button type="button" class="seo-tip-btn" aria-label="Custom Page Description info">?</button>
+                    <span class="seo-tip-box" role="tooltip">
+                      Overrides the summary shown in Google for this specific page. Aim for 120–160 characters.
+                    </span>
+                  </span>
+                </span>
+                <span class="seo-counter" id="seo-page-desc-count">0 / 160</span>
+              </span>
+              <textarea id="seo-page-desc" class="seo-textarea" rows="3" placeholder="Leave blank to use default"></textarea>
+            </label>
+
+            <label class="seo-field seo-span-2">
+              <span class="seo-label-row">
+                <span>
+                  Custom Social Image URL
+                  <span class="seo-tip-wrap">
+                    <button type="button" class="seo-tip-btn" aria-label="Custom Page OG Image info">?</button>
+                    <span class="seo-tip-box" role="tooltip">
+                      Optional image used only when this specific page is shared on WhatsApp or social media.
+                    </span>
+                  </span>
+                </span>
+              </span>
+              <input type="url" id="seo-page-og-image" class="seo-input" placeholder="Leave blank to use Global Social Image" />
+            </label>
+
+            <div class="seo-field seo-span-2">
+              <span class="seo-label-row">
+                <span>
+                  Hide This Page From Google
+                  <span class="seo-tip-wrap">
+                    <button type="button" class="seo-tip-btn" aria-label="Noindex info">?</button>
+                    <span class="seo-tip-box" role="tooltip">
+                      Turn this ON if this page is a draft or private and you don't want it appearing in Google search results.
+                    </span>
+                  </span>
+                </span>
+              </span>
+              <label class="seo-toggle-row" for="seo-page-noindex">
+                <input type="checkbox" id="seo-page-noindex" />
+                <span class="seo-toggle-track" aria-hidden="true"><span class="seo-toggle-thumb"></span></span>
+                <span class="seo-toggle-text" id="seo-page-noindex-label">Visible to search engines (index)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- TAB 3: Indexing, Sitemap & Brand -->
+  <div class="seo-pane" data-seo-pane="indexing" hidden>
+    <div class="seo-two-col">
+      <section class="seo-card">
+        <div class="seo-card-head">
+          <div>
+            <span class="seo-kicker">Search Visibility</span>
+            <h2 class="seo-card-title">Google Indexing &amp; Sitemap</h2>
+          </div>
+        </div>
+
+        <div class="seo-grid">
+          <div class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Allow Search Engines (Google)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Allow Indexing info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Keep ON for your live public site. Turn OFF only if you want to temporarily hide the entire site from Google while testing. (Preferences is always hidden.)
+                  </span>
+                </span>
+              </span>
+            </span>
+            <label class="seo-toggle-row" for="seo-allow-indexing">
+              <input type="checkbox" id="seo-allow-indexing" checked={initialConfig.allowIndexing} />
+              <span class="seo-toggle-track" aria-hidden="true"><span class="seo-toggle-thumb"></span></span>
+              <span class="seo-toggle-text" id="seo-allow-indexing-label">
+                {initialConfig.allowIndexing ? "Public — Search engines can index site" : "Private — Hidden from search engines"}
+              </span>
+            </label>
+          </div>
+
+          <div class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Sitemap: Main Pages
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Sitemap Pages info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Includes Home, Pricing, Our Work, Dedicated Team, and Academy in your automatic /sitemap.xml index for Google.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <label class="seo-toggle-row" for="seo-sitemap-pages">
+              <input type="checkbox" id="seo-sitemap-pages" checked={initialConfig.sitemapIncludePages} />
+              <span class="seo-toggle-track" aria-hidden="true"><span class="seo-toggle-thumb"></span></span>
+              <span class="seo-toggle-text">Include main pages</span>
+            </label>
+          </div>
+
+          <div class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Sitemap: Academy
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Sitemap Academy info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Automatically lists every published Course and Guide in /sitemap.xml as soon as you publish it.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <label class="seo-toggle-row" for="seo-sitemap-academy">
+              <input type="checkbox" id="seo-sitemap-academy" checked={initialConfig.sitemapIncludeAcademy} />
+              <span class="seo-toggle-track" aria-hidden="true"><span class="seo-toggle-thumb"></span></span>
+              <span class="seo-toggle-text">Include published courses</span>
+            </label>
+          </div>
+
+          <label class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Extra robots.txt Rules (Optional)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Robots extra info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Optional extra instructions for search bots (for example, "Disallow: /drafts"). Leave blank for standard setup.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <textarea id="seo-robots-extra" class="seo-textarea" rows="3" placeholder="Optional extra lines for /robots.txt">{initialConfig.robotsExtra}</textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="seo-card">
+        <div class="seo-card-head">
+          <div>
+            <span class="seo-kicker">Brand &amp; Analytics</span>
+            <h2 class="seo-card-title">Google Brand Card &amp; Tracking</h2>
+          </div>
+        </div>
+
+        <div class="seo-grid">
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Official Brand Name
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Brand Name info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Helps Google recognize Adaptif as an official company/brand in search results.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="text" id="seo-org-name" class="seo-input" value={initialConfig.orgName} />
+          </label>
+
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Brand Logo URL
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Brand Logo info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Full link to your company logo so Google can associate it with your brand profile.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="url" id="seo-org-logo" class="seo-input" value={initialConfig.orgLogo} />
+          </label>
+
+          <label class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Brand Summary
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Brand Summary info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    One-sentence description of your company used in Google's structured brand data.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="text" id="seo-org-desc" class="seo-input" value={initialConfig.orgDescription} />
+          </label>
+
+          <label class="seo-field seo-span-2">
+            <span class="seo-label-row">
+              <span>
+                Official Social Links (one per line)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Social Links info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Paste your official LinkedIn, Instagram, or X profile URLs (one per line) so Google links them to Adaptif.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <textarea id="seo-org-socials" class="seo-textarea" rows="3" placeholder="https://www.linkedin.com/company/adaptif&#10;https://x.com/adaptif">{initialConfig.orgSocialUrls.join("\n")}</textarea>
+          </label>
+
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Google Search Console Code
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="Google Verification info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Paste the verification code from Google Search Console (only the content value) to prove you own the site.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="text" id="seo-google-verify" class="seo-input" value={initialConfig.googleSiteVerification} placeholder="e.g. abc123xyz..." />
+          </label>
+
+          <label class="seo-field">
+            <span class="seo-label-row">
+              <span>
+                Google Analytics (GA4 ID)
+                <span class="seo-tip-wrap">
+                  <button type="button" class="seo-tip-btn" aria-label="GA4 ID info">?</button>
+                  <span class="seo-tip-box" role="tooltip">
+                    Optional Google Analytics Measurement ID (starts with "G-") to track website visitors automatically.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <input type="text" id="seo-ga4-id" class="seo-input" value={initialConfig.ga4MeasurementId} placeholder="G-XXXXXXXXXX" />
+          </label>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- TAB 4: URL Redirects -->
+  <div class="seo-pane" data-seo-pane="redirects" hidden>
+    <section class="seo-card">
+      <div class="seo-card-head">
+        <div>
+          <span class="seo-kicker">Traffic Protection</span>
+          <h2 class="seo-card-title">
+            URL Redirects (301 / 302)
+            <span class="seo-tip-wrap">
+              <button type="button" class="seo-tip-btn" aria-label="Redirects info">?</button>
+              <span class="seo-tip-box" role="tooltip">
+                If you ever rename or remove a page, add the old link and the new link here so visitors and Google are sent straight to the right page without seeing a 404 error.
+              </span>
+            </span>
+          </h2>
+          <p class="seo-card-sub">
+            Forward old or mistyped URLs to active pages automatically. Click "Save SEO Settings" after editing.
+          </p>
+        </div>
+        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-add-redirect">
+          + Add Redirect
+        </button>
+      </div>
+
+      <div class="seo-redirects-list" id="seo-redirects-list"></div>
+      <div class="seo-redirects-empty" id="seo-redirects-empty" hidden>
+        No redirects configured yet. Click <strong>+ Add Redirect</strong> to create one.
+      </div>
+    </section>
+  </div>
+</div>
+
+<script define:vars={{ initialConfig }}>
+  window.__INITIAL_SEO_CONFIG__ = initialConfig;
+</script>
+
+<style>
+  .seo-subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .seo-subtab {
+    appearance: none;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(16, 22, 34, 0.65);
+    color: rgba(248, 250, 252, 0.7);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  .seo-subtab:hover {
+    border-color: rgba(72, 200, 255, 0.35);
+    color: #f8fafc;
+  }
+
+  .seo-subtab.is-active {
+    background: rgba(56, 189, 248, 0.16);
+    border-color: rgba(72, 200, 255, 0.5);
+    color: #7fe2ff;
+  }
+
+  .seo-two-col {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .seo-card {
+    background: linear-gradient(180deg, rgba(16, 22, 34, 0.88) 0%, rgba(10, 14, 23, 0.94) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  }
+
+  .seo-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .seo-kicker {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    margin-bottom: 6px;
+  }
+
+  .seo-card-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .seo-card-sub {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(248, 250, 252, 0.62);
+  }
+
+  .seo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .seo-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .seo-span-2 {
+    grid-column: span 2;
+  }
+
+  .seo-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.84);
+  }
+
+  .seo-label-row > span:first-child {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .seo-counter {
+    font-size: 11px;
+    color: rgba(248, 250, 252, 0.5);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .seo-counter.is-over {
+    color: #fbbf24;
+  }
+
+  .seo-input,
+  .seo-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 13px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(5, 8, 15, 0.65);
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 13.5px;
+  }
+
+  .seo-input:focus,
+  .seo-textarea:focus {
+    outline: none;
+    border-color: rgba(56, 189, 248, 0.65);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
+  }
+
+  .seo-upload-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .seo-upload-btn {
+    flex-shrink: 0;
+  }
+
+  /* Tooltips */
+  .seo-tip-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .seo-tip-btn {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    background: rgba(56, 189, 248, 0.12);
+    color: #7dd3fc;
+    font-size: 10px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    padding: 0;
+  }
+
+  .seo-tip-box {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%) translateY(4px);
+    width: 240px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    background: rgba(6, 10, 19, 0.96);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    color: #e2e8f0;
+    font-size: 11.5px;
+    font-weight: 400;
+    line-height: 1.45;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 60;
+    white-space: normal;
+  }
+
+  .seo-tip-wrap:hover .seo-tip-box,
+  .seo-tip-btn:focus-visible + .seo-tip-box {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Toggle Switch */
+  .seo-toggle-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 42px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(5, 8, 15, 0.65);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .seo-toggle-row input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .seo-toggle-track {
+    position: relative;
+    width: 38px;
+    height: 22px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.35);
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .seo-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .seo-toggle-row input:checked + .seo-toggle-track {
+    background: #0ea5e9;
+  }
+
+  .seo-toggle-row input:checked + .seo-toggle-track .seo-toggle-thumb {
+    transform: translateX(16px);
+  }
+
+  .seo-toggle-text {
+    font-size: 13px;
+    color: rgba(248, 250, 252, 0.9);
+  }
+
+  /* Live Previews */
+  .seo-preview-block {
+    margin-bottom: 18px;
+  }
+
+  .seo-preview-block:last-child {
+    margin-bottom: 0;
+  }
+
+  .seo-preview-label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(248, 250, 252, 0.5);
+    margin-bottom: 8px;
+  }
+
+  .seo-serp-card {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #1f2937;
+    font-family: Arial, sans-serif;
+  }
+
+  .seo-serp-url {
+    font-size: 12px;
+    color: #202124;
+    margin-bottom: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .seo-serp-title {
+    font-size: 17px;
+    line-height: 1.3;
+    color: #1a0dab;
+    font-weight: 400;
+    margin-bottom: 4px;
+  }
+
+  .seo-serp-desc {
+    font-size: 13px;
+    line-height: 1.45;
+    color: #4d5156;
+  }
+
+  .seo-social-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #0b1120;
+  }
+
+  .seo-social-img-wrap {
+    height: 150px;
+    background: rgba(15, 23, 42, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: rgba(248, 250, 252, 0.45);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .seo-social-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .seo-social-body {
+    padding: 12px 14px;
+  }
+
+  .seo-social-domain {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: rgba(248, 250, 252, 0.5);
+    margin-bottom: 3px;
+  }
+
+  .seo-social-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 3px;
+  }
+
+  .seo-social-desc {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: rgba(248, 250, 252, 0.65);
+  }
+
+  /* Per-page layout */
+  .seo-pages-layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .seo-pages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .seo-page-btn {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(5, 8, 15, 0.45);
+    color: rgba(248, 250, 252, 0.8);
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .seo-page-btn.is-active {
+    background: rgba(56, 189, 248, 0.14);
+    border-color: rgba(72, 200, 255, 0.45);
+    color: #ffffff;
+  }
+
+  .seo-page-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.2);
+    color: #7dd3fc;
+  }
+
+  /* Redirects */
+  .seo-redirects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .seo-redirect-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 150px auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(5, 8, 15, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .seo-redirect-arrow {
+    text-align: center;
+    color: rgba(248, 250, 252, 0.45);
+    font-size: 14px;
+  }
+
+  .seo-redirects-empty {
+    padding: 28px 16px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(248, 250, 252, 0.55);
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+  }
+
+  @media (max-width: 1024px) {
+    .seo-two-col,
+    .seo-pages-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .seo-grid {
+      grid-template-columns: 1fr;
+    }
+    .seo-span-2 {
+      grid-column: span 1;
+    }
+    .seo-redirect-row {
+      grid-template-columns: 1fr;
+    }
+    .seo-redirect-arrow {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const w = window as any;
+  const state = JSON.parse(JSON.stringify(w.__INITIAL_SEO_CONFIG__ || {}));
+  state.pageOverrides = state.pageOverrides || {};
+  state.redirects = Array.isArray(state.redirects) ? state.redirects : [];
+
+  let activePagePath = "/";
+
+  // Subtabs switching
+  document.querySelectorAll<HTMLButtonElement>("[data-seo-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.seoTab;
+      document.querySelectorAll<HTMLButtonElement>("[data-seo-tab]").forEach((b) => {
+        const active = b.dataset.seoTab === target;
+        b.classList.toggle("is-active", active);
+        b.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      document.querySelectorAll<HTMLElement>("[data-seo-pane]").forEach((pane) => {
+        pane.hidden = pane.dataset.seoPane !== target;
+      });
+    });
+  });
+
+  // Global inputs
+  const defTitle = document.getElementById("seo-default-title") as HTMLInputElement | null;
+  const titleTpl = document.getElementById("seo-title-template") as HTMLInputElement | null;
+  const canonicalBase = document.getElementById("seo-canonical-base") as HTMLInputElement | null;
+  const defDesc = document.getElementById("seo-default-desc") as HTMLTextAreaElement | null;
+  const ogTitle = document.getElementById("seo-og-title") as HTMLInputElement | null;
+  const ogDesc = document.getElementById("seo-og-desc") as HTMLTextAreaElement | null;
+  const ogImage = document.getElementById("seo-og-image") as HTMLInputElement | null;
+  const ogFile = document.getElementById("seo-og-file") as HTMLInputElement | null;
+  const twitterCard = document.getElementById("seo-twitter-card") as HTMLSelectElement | null;
+
+  const titleCount = document.getElementById("seo-title-count");
+  const descCount = document.getElementById("seo-desc-count");
+  const serpUrl = document.getElementById("seo-serp-url");
+  const serpTitle = document.getElementById("seo-serp-title");
+  const serpDesc = document.getElementById("seo-serp-desc");
+  const socialImg = document.getElementById("seo-social-img") as HTMLImageElement | null;
+  const socialImgEmpty = document.getElementById("seo-social-img-empty");
+  const socialDomain = document.getElementById("seo-social-domain");
+  const socialTitle = document.getElementById("seo-social-title");
+  const socialDesc = document.getElementById("seo-social-desc");
+
+  function updateGlobalPreview() {
+    const t = defTitle?.value.trim() || "Adaptif";
+    const d = defDesc?.value.trim() || "";
+    const base = canonicalBase?.value.trim() || "https://adaptif-web.vercel.app";
+    const ogt = ogTitle?.value.trim() || t;
+    const ogd = ogDesc?.value.trim() || d;
+    const ogi = ogImage?.value.trim() || "";
+
+    if (titleCount) {
+      titleCount.textContent = `${t.length} / 60`;
+      titleCount.classList.toggle("is-over", t.length > 60);
+    }
+    if (descCount) {
+      descCount.textContent = `${d.length} / 160`;
+      descCount.classList.toggle("is-over", d.length > 160);
+    }
+    if (serpUrl) serpUrl.textContent = base;
+    if (serpTitle) serpTitle.textContent = t;
+    if (serpDesc) serpDesc.textContent = d;
+
+    let domainText = base.replace(/^https?:\/\//i, "").split("/")[0] || "adaptif-web.vercel.app";
+    if (socialDomain) socialDomain.textContent = domainText;
+    if (socialTitle) socialTitle.textContent = ogt;
+    if (socialDesc) socialDesc.textContent = ogd;
+    if (socialImg && socialImgEmpty) {
+      if (ogi) {
+        socialImg.src = ogi;
+        socialImg.hidden = false;
+        socialImgEmpty.hidden = true;
+      } else {
+        socialImg.hidden = true;
+        socialImgEmpty.hidden = false;
+      }
+    }
+  }
+
+  [defTitle, titleTpl, canonicalBase, defDesc, ogTitle, ogDesc, ogImage].forEach((el) => {
+    el?.addEventListener("input", updateGlobalPreview);
+  });
+  updateGlobalPreview();
+
+  // OG Image Upload
+  ogFile?.addEventListener("change", async () => {
+    const file = ogFile.files?.[0];
+    if (!file) return;
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok || !data?.url) throw new Error(data?.error || "Upload failed");
+      if (ogImage) ogImage.value = data.url;
+      updateGlobalPreview();
+      w.__SHOW_STUDIO_TOAST__?.("Social image uploaded!");
+    } catch (err: any) {
+      w.__SHOW_STUDIO_TOAST__?.(err?.message || "Image upload failed", true);
+    } finally {
+      ogFile.value = "";
+    }
+  });
+
+  // Per-page overrides
+  const pageTitleInput = document.getElementById("seo-page-title") as HTMLInputElement | null;
+  const pageDescInput = document.getElementById("seo-page-desc") as HTMLTextAreaElement | null;
+  const pageOgImgInput = document.getElementById("seo-page-og-image") as HTMLInputElement | null;
+  const pageNoIndexInput = document.getElementById("seo-page-noindex") as HTMLInputElement | null;
+  const pageNoIndexLabel = document.getElementById("seo-page-noindex-label");
+  const pageTitleCount = document.getElementById("seo-page-title-count");
+  const pageDescCount = document.getElementById("seo-page-desc-count");
+
+  function syncPageBadges() {
+    document.querySelectorAll<HTMLElement>("[data-seo-page-badge]").forEach((badge) => {
+      const path = badge.dataset.seoPageBadge || "";
+      const ov = state.pageOverrides[path];
+      const hasCustom = Boolean(ov && (ov.title || ov.description || ov.ogImage || ov.noIndex));
+      badge.hidden = !hasCustom;
+    });
+  }
+
+  function updatePageCounters() {
+    const tLen = pageTitleInput?.value.trim().length || 0;
+    const dLen = pageDescInput?.value.trim().length || 0;
+    if (pageTitleCount) {
+      pageTitleCount.textContent = `${tLen} / 60`;
+      pageTitleCount.classList.toggle("is-over", tLen > 60);
+    }
+    if (pageDescCount) {
+      pageDescCount.textContent = `${dLen} / 160`;
+      pageDescCount.classList.toggle("is-over", dLen > 160);
+    }
+    if (pageNoIndexLabel) {
+      pageNoIndexLabel.textContent = pageNoIndexInput?.checked
+        ? "Hidden from search engines (noindex)"
+        : "Visible to search engines (index)";
+    }
+  }
+
+  function loadPageOverride(path: string) {
+    activePagePath = path;
+    const ov = state.pageOverrides[path] || { path, title: "", description: "", ogImage: "", noIndex: false };
+    if (pageTitleInput) pageTitleInput.value = ov.title || "";
+    if (pageDescInput) pageDescInput.value = ov.description || "";
+    if (pageOgImgInput) pageOgImgInput.value = ov.ogImage || "";
+    if (pageNoIndexInput) pageNoIndexInput.checked = Boolean(ov.noIndex);
+    updatePageCounters();
+  }
+
+  function saveCurrentPageOverrideToState() {
+    state.pageOverrides[activePagePath] = {
+      path: activePagePath,
+      title: pageTitleInput?.value.trim() || "",
+      description: pageDescInput?.value.trim() || "",
+      ogImage: pageOgImgInput?.value.trim() || "",
+      noIndex: Boolean(pageNoIndexInput?.checked),
+    };
+    syncPageBadges();
+    updatePageCounters();
+  }
+
+  [pageTitleInput, pageDescInput, pageOgImgInput].forEach((el) => {
+    el?.addEventListener("input", saveCurrentPageOverrideToState);
+  });
+  pageNoIndexInput?.addEventListener("change", saveCurrentPageOverrideToState);
+
+  document.querySelectorAll<HTMLButtonElement>("[data-seo-page-path]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const path = btn.dataset.seoPagePath || "/";
+      document.querySelectorAll<HTMLButtonElement>("[data-seo-page-path]").forEach((b) => {
+        b.classList.toggle("is-active", b.dataset.seoPagePath === path);
+      });
+      loadPageOverride(path);
+    });
+  });
+
+  loadPageOverride("/");
+  syncPageBadges();
+
+  // Indexing toggle label
+  const allowIndexingInput = document.getElementById("seo-allow-indexing") as HTMLInputElement | null;
+  const allowIndexingLabel = document.getElementById("seo-allow-indexing-label");
+  allowIndexingInput?.addEventListener("change", () => {
+    if (allowIndexingLabel) {
+      allowIndexingLabel.textContent = allowIndexingInput.checked
+        ? "Public — Search engines can index site"
+        : "Private — Hidden from search engines";
+    }
+  });
+
+  // Redirects
+  const redirectsList = document.getElementById("seo-redirects-list");
+  const redirectsEmpty = document.getElementById("seo-redirects-empty");
+
+  function renderRedirects() {
+    if (!redirectsList || !redirectsEmpty) return;
+    redirectsEmpty.hidden = state.redirects.length > 0;
+    redirectsList.innerHTML = state.redirects
+      .map(
+        (r: any, idx: number) => `
+      <div class="seo-redirect-row" data-red-idx="${idx}">
+        <input type="text" class="seo-input seo-red-from" value="${(r.from || "").replace(/"/g, "&quot;")}" placeholder="/old-path" />
+        <span class="seo-redirect-arrow">→</span>
+        <input type="text" class="seo-input seo-red-to" value="${(r.to || "").replace(/"/g, "&quot;")}" placeholder="/new-path" />
+        <select class="seo-input seo-red-type">
+          <option value="301" ${r.permanent !== false ? "selected" : ""}>301 Permanent</option>
+          <option value="302" ${r.permanent === false ? "selected" : ""}>302 Temporary</option>
+        </select>
+        <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm seo-red-del">Remove</button>
+      </div>
+    `
+      )
+      .join("");
+
+    redirectsList.querySelectorAll<HTMLElement>(".seo-redirect-row").forEach((row) => {
+      const idx = Number(row.dataset.redIdx);
+      row.querySelector<HTMLInputElement>(".seo-red-from")?.addEventListener("input", (e) => {
+        state.redirects[idx].from = (e.target as HTMLInputElement).value;
+      });
+      row.querySelector<HTMLInputElement>(".seo-red-to")?.addEventListener("input", (e) => {
+        state.redirects[idx].to = (e.target as HTMLInputElement).value;
+      });
+      row.querySelector<HTMLSelectElement>(".seo-red-type")?.addEventListener("change", (e) => {
+        state.redirects[idx].permanent = (e.target as HTMLSelectElement).value !== "302";
+      });
+      row.querySelector<HTMLButtonElement>(".seo-red-del")?.addEventListener("click", () => {
+        state.redirects.splice(idx, 1);
+        renderRedirects();
+      });
+    });
+  }
+
+  document.getElementById("btn-add-redirect")?.addEventListener("click", () => {
+    state.redirects.push({
+      id: `red-${Date.now()}`,
+      from: "",
+      to: "",
+      permanent: true,
+    });
+    renderRedirects();
+  });
+  renderRedirects();
+
+  // Save all SEO settings
+  const saveSeoBtn = document.getElementById("btn-save-seo") as HTMLButtonElement | null;
+  saveSeoBtn?.addEventListener("click", async () => {
+    if (!saveSeoBtn) return;
+    const prev = saveSeoBtn.textContent;
+    saveSeoBtn.disabled = true;
+    saveSeoBtn.textContent = "Saving...";
+
+    try {
+      const payload = {
+        defaultTitle: defTitle?.value.trim() || "",
+        titleTemplate: titleTpl?.value.trim() || "",
+        defaultDescription: defDesc?.value.trim() || "",
+        canonicalBaseUrl: canonicalBase?.value.trim() || "",
+        ogTitle: ogTitle?.value.trim() || "",
+        ogDescription: ogDesc?.value.trim() || "",
+        ogImage: ogImage?.value.trim() || "",
+        twitterCard: twitterCard?.value === "summary" ? "summary" : "summary_large_image",
+        allowIndexing: Boolean(allowIndexingInput?.checked),
+        sitemapIncludePages: Boolean(
+          (document.getElementById("seo-sitemap-pages") as HTMLInputElement | null)?.checked
+        ),
+        sitemapIncludeAcademy: Boolean(
+          (document.getElementById("seo-sitemap-academy") as HTMLInputElement | null)?.checked
+        ),
+        robotsExtra:
+          (document.getElementById("seo-robots-extra") as HTMLTextAreaElement | null)?.value.trim() || "",
+        orgName:
+          (document.getElementById("seo-org-name") as HTMLInputElement | null)?.value.trim() || "",
+        orgLogo:
+          (document.getElementById("seo-org-logo") as HTMLInputElement | null)?.value.trim() || "",
+        orgDescription:
+          (document.getElementById("seo-org-desc") as HTMLInputElement | null)?.value.trim() || "",
+        orgSocialUrls: (
+          (document.getElementById("seo-org-socials") as HTMLTextAreaElement | null)?.value || ""
+        )
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean),
+        googleSiteVerification:
+          (document.getElementById("seo-google-verify") as HTMLInputElement | null)?.value.trim() || "",
+        ga4MeasurementId:
+          (document.getElementById("seo-ga4-id") as HTMLInputElement | null)?.value.trim() || "",
+        pageOverrides: state.pageOverrides,
+        redirects: state.redirects,
+      };
+
+      const res = await fetch("/api/seo/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to save SEO settings");
+      if (data?.config) {
+        state.pageOverrides = data.config.pageOverrides || {};
+        state.redirects = data.config.redirects || [];
+        renderRedirects();
+        syncPageBadges();
+      }
+      w.__SHOW_STUDIO_TOAST__?.("SEO settings saved & live!");
+    } catch (err: any) {
+      w.__SHOW_STUDIO_TOAST__?.(err?.message || "Failed to save SEO settings", true);
+    } finally {
+      saveSeoBtn.disabled = false;
+      saveSeoBtn.textContent = prev || "Save SEO Settings";
+    }
+  });
+</script>

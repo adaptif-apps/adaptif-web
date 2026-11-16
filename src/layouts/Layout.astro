@@ -3,18 +3,21 @@ import "../styles/global.css";
 import BookCallModal from "../components/BookCallModal.astro";
 import WhatsAppWidget from "../components/WhatsAppWidget.astro";
 import { getWhatsAppConfig } from "../lib/whatsappDb";
+import { getSeoConfig, resolvePageSeo } from "../lib/seoDb";
 
 interface Props {
   title?: string;
   description?: string;
 }
 
-const {
-  title = "Adaptif — The Fuel Behind Your Creative Engine",
-  description = "A subscription that plugs an AI-driven creative department into your team: design, dev and marketing, unlimited requests and revisions."
-} = Astro.props;
+const { title, description } = Astro.props;
 
-const whatsappConfig = await getWhatsAppConfig();
+const [whatsappConfig, seoConfig] = await Promise.all([
+  getWhatsAppConfig(),
+  getSeoConfig(),
+]);
+
+const seo = resolvePageSeo(seoConfig, Astro.url.pathname, { title, description });
 ---
 
 <!doctype html>
@@ -28,12 +31,34 @@ const whatsappConfig = await getWhatsAppConfig();
     <meta name="color-scheme" content="dark" />
 
     <!-- SEO Meta Tags -->
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <meta name="robots" content={seo.robots} />
+    <link rel="canonical" href={seo.canonicalUrl} />
+    <meta property="og:title" content={seo.ogTitle} />
+    <meta property="og:description" content={seo.ogDescription} />
+    <meta property="og:url" content={seo.canonicalUrl} />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+    {seo.ogImage && <meta property="og:image" content={seo.ogImage} />}
+    <meta name="twitter:card" content={seo.twitterCard} />
+    <meta name="twitter:title" content={seo.ogTitle} />
+    <meta name="twitter:description" content={seo.ogDescription} />
+    {seo.ogImage && <meta name="twitter:image" content={seo.ogImage} />}
+    {seo.googleSiteVerification && (
+      <meta name="google-site-verification" content={seo.googleSiteVerification} />
+    )}
+    <script type="application/ld+json" set:html={JSON.stringify(seo.jsonLd)} />
+    {seo.ga4MeasurementId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(seo.ga4MeasurementId)}`}></script>
+        <script is:inline define:vars={{ gaId: seo.ga4MeasurementId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
 
     <!-- Speculation Rules API for Predictive Preloading -->
     <script type="speculationrules">

@@ -468,12 +468,14 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(145deg, #25d366 0%, #16a34a 100%);
-    color: #fff;
+    background:
+      radial-gradient(ellipse 90% 65% at 50% 0%, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0) 72%),
+      linear-gradient(180deg, #56d3ff 0%, #30baff 48%, #0aa3f8 100%);
+    color: #031528;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+    box-shadow: var(--shadow-button-primary);
     transition: all 0.2s ease;
   }
 

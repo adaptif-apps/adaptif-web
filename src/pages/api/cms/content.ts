@@ -6,10 +6,17 @@ import {
   resetPageContent,
   savePageContent,
 } from "../../../lib/cmsContentDb";
+import { hasValidStudioSession } from "../../../lib/studioAuth";
 
 export const prerender = false;
 
-export const GET: APIRoute = async ({ url }) => {
+export const GET: APIRoute = async ({ url, cookies }) => {
+  if (!hasValidStudioSession(cookies)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   try {
     const path = normalizeCmsPath(url.searchParams.get("path") || "/");
     const [overrides, pages] = await Promise.all([
@@ -31,7 +38,13 @@ export const GET: APIRoute = async ({ url }) => {
   }
 };
 
-export const PUT: APIRoute = async ({ request }) => {
+export const PUT: APIRoute = async ({ request, cookies }) => {
+  if (!hasValidStudioSession(cookies)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   try {
     const body = await request.json().catch(() => ({}));
     const path = normalizeCmsPath(String(body.path || "/"));
@@ -51,7 +64,13 @@ export const PUT: APIRoute = async ({ request }) => {
   }
 };
 
-export const DELETE: APIRoute = async ({ url }) => {
+export const DELETE: APIRoute = async ({ url, cookies }) => {
+  if (!hasValidStudioSession(cookies)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   try {
     const path = normalizeCmsPath(url.searchParams.get("path") || "/");
     await resetPageContent(path);

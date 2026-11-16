@@ -6,6 +6,7 @@ import { getActiveCrmProvider, getKlaviyoConfig } from "../lib/klaviyoDb";
 import { listAcademyItems, getAcademySettings } from "../lib/academyDb";
 import { getWhatsAppConfig } from "../lib/whatsappDb";
 import { getSeoConfig } from "../lib/seoDb";
+import { issueStudioSessionCookie } from "../lib/studioAuth";
 import StudioAcademyModule from "../components/StudioAcademyModule.astro";
 import StudioActivityModule from "../components/StudioActivityModule.astro";
 import StudioKlaviyoModule from "../components/StudioKlaviyoModule.astro";
@@ -17,6 +18,7 @@ import "../styles/global.css";
 export const prerender = false;
 
 Astro.response.headers.set("X-Robots-Tag", "noindex, nofollow");
+issueStudioSessionCookie(Astro.cookies);
 
 const [
   initialProjects,

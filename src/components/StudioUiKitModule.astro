@@ -1,0 +1,382 @@
+---
+import StudioHeader from "./StudioHeader.astro";
+---
+
+<div id="module-ui-kit" hidden>
+  <StudioHeader
+    eyebrow="CONFIGURATION"
+    title="UI Kit"
+    subtitle="Unified global design system shared across both the public website and Preferences. Editing any class in src/styles/global.css updates everything automatically."
+  />
+
+  <div class="uikit-grid">
+    <!-- 1. Colors & Tokens -->
+    <section class="glass-panel uikit-card">
+      <div class="uikit-card-head">
+        <p class="adaptif-eyebrow">01 · TOKENS</p>
+        <h2 class="uikit-card-title">Color Palette</h2>
+      </div>
+      <div class="uikit-swatch-grid">
+        <div class="uikit-swatch">
+          <span class="uikit-swatch-box" style="background: var(--color-void);"></span>
+          <div>
+            <strong>Void</strong>
+            <code>--color-void</code>
+          </div>
+        </div>
+        <div class="uikit-swatch">
+          <span class="uikit-swatch-box" style="background: var(--color-obsidian-950);"></span>
+          <div>
+            <strong>Obsidian 950</strong>
+            <code>--color-obsidian-950</code>
+          </div>
+        </div>
+        <div class="uikit-swatch">
+          <span class="uikit-swatch-box" style="background: var(--color-brand-cyan);"></span>
+          <div>
+            <strong>Brand Cyan</strong>
+            <code>--color-brand-cyan</code>
+          </div>
+        </div>
+        <div class="uikit-swatch">
+          <span class="uikit-swatch-box" style="background: var(--color-blue-radiant);"></span>
+          <div>
+            <strong>Blue Radiant</strong>
+            <code>--color-blue-radiant</code>
+          </div>
+        </div>
+        <div class="uikit-swatch">
+          <span class="uikit-swatch-box" style="background: var(--color-text-primary);"></span>
+          <div>
+            <strong>Text Primary</strong>
+            <code>--color-text-primary</code>
+          </div>
+        </div>
+        <div class="uikit-swatch">
+          <span class="uikit-swatch-box" style="background: var(--color-text-secondary);"></span>
+          <div>
+            <strong>Text Secondary</strong>
+            <code>--color-text-secondary</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Typography & Eyebrows -->
+    <section class="glass-panel uikit-card">
+      <div class="uikit-card-head">
+        <p class="adaptif-eyebrow">02 · TYPOGRAPHY</p>
+        <h2 class="uikit-card-title">Headings, Eyebrows &amp; Highlights</h2>
+      </div>
+      <div class="uikit-stack">
+        <div class="uikit-row">
+          <div>
+            <p class="adaptif-eyebrow">SECTION EYEBROW</p>
+            <code>.adaptif-eyebrow / .studio-eyebrow</code>
+          </div>
+        </div>
+        <div class="uikit-row">
+          <div>
+            <h3 class="studio-title">Display Serif <span>with Italic Accent</span></h3>
+            <code>.studio-title / .studio-title span</code>
+          </div>
+        </div>
+        <div class="uikit-row">
+          <div>
+            <p class="uikit-display-sample">
+              Scale creative output <span class="title-highlight">without losing craft</span>
+            </p>
+            <code>.title-highlight</code>
+          </div>
+        </div>
+        <div class="uikit-row">
+          <div>
+            <p class="uikit-display-sample text-glow-blue">Text Glow Blue</p>
+            <code>.text-glow-blue</code>
+          </div>
+          <div>
+            <p class="uikit-display-sample text-gradient-subtle">Text Gradient Subtle</p>
+            <code>.text-gradient-subtle</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Primary & Sober Action Buttons + Links -->
+    <section class="glass-panel uikit-card uikit-span-2">
+      <div class="uikit-card-head">
+        <p class="adaptif-eyebrow">03 · BUTTONS &amp; LINKS</p>
+        <h2 class="uikit-card-title">Unified Interactive Controls</h2>
+      </div>
+
+      <div class="uikit-subsection">
+        <p class="uikit-sublabel">Primary &amp; Bevel Buttons (<code>.adaptif-btn</code>)</p>
+        <div class="uikit-flex-row">
+          <div class="uikit-item">
+            <button type="button" class="adaptif-btn">Primary CTA →</button>
+            <code>.adaptif-btn</code>
+          </div>
+          <div class="uikit-item">
+            <button type="button" class="adaptif-btn adaptif-btn--sm">Compact Primary</button>
+            <code>.adaptif-btn.adaptif-btn--sm</code>
+          </div>
+          <div class="uikit-item">
+            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm">Dark Secondary</button>
+            <code>.adaptif-btn.adaptif-btn--dark.adaptif-btn--sm</code>
+          </div>
+          <div class="uikit-item">
+            <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm">Danger Bevel</button>
+            <code>.adaptif-btn.adaptif-btn--danger.adaptif-btn--sm</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="uikit-subsection">
+        <p class="uikit-sublabel">Sober Outline Pill Buttons (<code>.cms-btn</code>)</p>
+        <div class="uikit-flex-row">
+          <div class="uikit-item">
+            <button type="button" class="cms-btn">Neutral Action ▾</button>
+            <code>.cms-btn</code>
+          </div>
+          <div class="uikit-item">
+            <button type="button" class="cms-btn cms-btn--save">Save / Accent Action</button>
+            <code>.cms-btn.cms-btn--save</code>
+          </div>
+          <div class="uikit-item">
+            <button type="button" class="cms-btn cms-btn--danger">Delete / Remove</button>
+            <code>.cms-btn.cms-btn--danger</code>
+          </div>
+          <div class="uikit-item">
+            <button type="button" class="cms-btn" disabled>Disabled State</button>
+            <code>.cms-btn:disabled</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="uikit-subsection">
+        <p class="uikit-sublabel">Navigation &amp; Inline Links (<code>.studio-link</code>)</p>
+        <div class="uikit-flex-row">
+          <div class="uikit-item">
+            <a href="#ui-kit" class="studio-link" onclick="return false;">View Sitemap ↗</a>
+            <code>.studio-link</code>
+          </div>
+          <div class="uikit-item">
+            <a href="#ui-kit" class="studio-link studio-link--inline" onclick="return false;">Open Stripe Webhooks ↗</a>
+            <code>.studio-link.studio-link--inline</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Tags, Status Badges & Tabs -->
+    <section class="glass-panel uikit-card">
+      <div class="uikit-card-head">
+        <p class="adaptif-eyebrow">04 · BADGES &amp; TABS</p>
+        <h2 class="uikit-card-title">Tags, Status Pills &amp; Segmented Tabs</h2>
+      </div>
+      <div class="uikit-stack">
+        <div class="uikit-flex-row">
+          <div class="uikit-item">
+            <span class="adaptif-tag adaptif-tag--white">NEW</span>
+            <code>.adaptif-tag--white</code>
+          </div>
+          <div class="uikit-item">
+            <span class="adaptif-tag adaptif-tag--cyan">AI POWERED</span>
+            <code>.adaptif-tag--cyan</code>
+          </div>
+          <div class="uikit-item">
+            <span class="adaptif-tag adaptif-tag--muted">OPTIONAL</span>
+            <code>.adaptif-tag--muted</code>
+          </div>
+        </div>
+
+        <div class="uikit-flex-row">
+          <div class="uikit-item">
+            <span class="cms-status-badge">Draft</span>
+            <code>.cms-status-badge</code>
+          </div>
+          <div class="uikit-item">
+            <span class="cms-status-badge is-published">Published</span>
+            <code>.cms-status-badge.is-published</code>
+          </div>
+          <div class="uikit-item">
+            <span class="cms-status-badge is-scheduled">Scheduled</span>
+            <code>.cms-status-badge.is-scheduled</code>
+          </div>
+        </div>
+
+        <div class="uikit-item">
+          <div class="cms-tabs-bar">
+            <button type="button" class="cms-tab-btn is-active">Settings &amp; Assets</button>
+            <button type="button" class="cms-tab-btn">AI Generator</button>
+          </div>
+          <code>.cms-tabs-bar / .cms-tab-btn.is-active</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Form Controls & Editorial Title Bar -->
+    <section class="glass-panel uikit-card">
+      <div class="uikit-card-head">
+        <p class="adaptif-eyebrow">05 · INPUTS &amp; SURFACES</p>
+        <h2 class="uikit-card-title">Inputs, Dropdowns &amp; Title Bar</h2>
+      </div>
+      <div class="uikit-stack">
+        <div class="uikit-item">
+          <input type="text" class="adaptif-input" value="https://adaptif-web.vercel.app" readonly />
+          <code>.adaptif-input</code>
+        </div>
+
+        <div class="uikit-item">
+          <select id="uikit-sample-select">
+            <option value="published">Public (Publish immediately)</option>
+            <option value="draft">Private (Draft)</option>
+            <option value="scheduled">Scheduled</option>
+          </select>
+          <code>&lt;select&gt; (auto-enhanced .studio-dropdown)</code>
+        </div>
+
+        <div class="uikit-item">
+          <div class="cms-item-title-bar">
+            <input type="text" class="cms-item-title-input" value="Editable Item Title" readonly />
+            <span class="cms-status-badge is-published">Published</span>
+          </div>
+          <code>.cms-item-title-bar / .cms-item-title-input</code>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .uikit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .uikit-span-2 {
+    grid-column: span 2;
+  }
+
+  .uikit-card {
+    padding: 22px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .uikit-card-head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .uikit-card-title {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: var(--color-text-white);
+  }
+
+  .uikit-swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .uikit-swatch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(5, 10, 22, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .uikit-swatch-box {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    flex-shrink: 0;
+  }
+
+  .uikit-swatch strong {
+    display: block;
+    font-size: 0.82rem;
+    color: #f8fafc;
+  }
+
+  .uikit-card code {
+    font-size: 0.72rem;
+    color: #7dd3fc;
+    opacity: 0.88;
+  }
+
+  .uikit-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .uikit-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: baseline;
+  }
+
+  .uikit-display-sample {
+    margin: 0 0 4px;
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    line-height: 1.15;
+    color: var(--color-text-white);
+  }
+
+  .uikit-subsection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .uikit-sublabel {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+  }
+
+  .uikit-flex-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 20px;
+    align-items: flex-end;
+  }
+
+  .uikit-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  @media (max-width: 980px) {
+    .uikit-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .uikit-span-2 {
+      grid-column: span 1;
+    }
+
+    .uikit-swatch-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

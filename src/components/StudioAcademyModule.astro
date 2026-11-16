@@ -235,7 +235,7 @@ const { initialItems, initialSettings } = Astro.props;
                   <input type="file" id="acd-custom-pdf-input" accept="application/pdf,.pdf" hidden />
                   <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-upload-custom-pdf">Upload Custom PDF</button>
                   <span class="acd-pdf-status" id="acd-custom-pdf-status">Using AI-generated slides</span>
-                  <button type="button" class="acd-btn-danger" id="btn-remove-custom-pdf" hidden>Remove PDF</button>
+                  <button type="button" class="cms-btn cms-btn--danger" id="btn-remove-custom-pdf" hidden>Remove PDF</button>
                 </div>
               </div>
             </div>
@@ -299,7 +299,7 @@ const { initialItems, initialSettings } = Astro.props;
             href="https://dashboard.stripe.com/webhooks"
             target="_blank"
             rel="noopener noreferrer"
-            class="acd-inline-link"
+            class="studio-link studio-link--inline"
           >
             Open Stripe Webhooks ↗
           </a>
@@ -339,7 +339,7 @@ const { initialItems, initialSettings } = Astro.props;
       <ol class="acd-stripe-guide-steps">
         <li>
           Open
-          <a href="https://dashboard.stripe.com/webhooks/create" target="_blank" rel="noopener noreferrer" class="acd-inline-link">
+          <a href="https://dashboard.stripe.com/webhooks/create" target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
             Stripe → Developers → Webhooks ↗
           </a>
           and click <strong>Add endpoint</strong> (or <strong>Add destination</strong>).
@@ -475,7 +475,7 @@ const { initialItems, initialSettings } = Astro.props;
         </div>
       </div>
       <div class="gi-card-foot">
-        <button type="button" class="acd-btn-cyan-outline" data-jump-tab="payment">Configure Payment →</button>
+        <button type="button" class="cms-btn cms-btn--save" data-jump-tab="payment">Configure Payment →</button>
       </div>
     </section>
 
@@ -533,7 +533,7 @@ const { initialItems, initialSettings } = Astro.props;
         </div>
       </div>
       <div class="gi-card-foot">
-        <button type="button" class="acd-btn-cyan-outline" data-jump-tab="ai-config">Configure AI Engine →</button>
+        <button type="button" class="cms-btn cms-btn--save" data-jump-tab="ai-config">Configure AI Engine →</button>
       </div>
     </section>
 

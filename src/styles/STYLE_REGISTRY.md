@@ -7,23 +7,34 @@ This is the single source of truth for global design tokens and reusable UI clas
 
 ---
 
-## 1. Buttons (`.adaptif-btn`)
+## 1. Buttons (`.adaptif-btn` & `.cms-btn`)
 
-Defined in `src/styles/global.css`. Controlled via CSS custom properties (`--btn-bg-top`, `--btn-bg-mid`, `--btn-bg-bottom`, `--btn-color`, `--btn-specular`, `--btn-glow`, `--btn-shadow`, `--btn-shadow-hover`, `--btn-text-shadow`).
+Defined in `src/styles/global.css`.
+
+### Primary & Bevel Buttons (`.adaptif-btn`)
+Controlled via CSS custom properties (`--btn-bg-top`, `--btn-bg-mid`, `--btn-bg-bottom`, `--btn-color`, `--btn-specular`, `--btn-glow`, `--btn-shadow`, `--btn-shadow-hover`, `--btn-text-shadow`).
 
 | Class | Purpose | Notes |
 | --- | --- | --- |
 | `.adaptif-btn` | Primary CTA button (cyan gradient, specular highlight, glow, spring hover) | Default size: `padding: 14px 32px` |
 | `.adaptif-btn--dark` | Secondary / dark obsidian button (same bevel & glow mechanics) | Combine with `.adaptif-btn` |
 | `.adaptif-btn--danger` | Destructive action button (red gradient, same bevel & glow mechanics) | Combine with `.adaptif-btn` |
-| `.adaptif-btn--sm` | Compact size (`padding: 9px 18px; font-size: 0.84rem`) | Use in Studio headers, toolbars, and inline forms |
+| `.adaptif-btn--sm` | Compact size (`padding: 9px 18px; font-size: 0.84rem`) | Use for primary `+ New ...` and `Save ...` CTAs |
 
-**Usage:**
-```html
-<button type="button" class="adaptif-btn adaptif-btn--sm">Save Changes</button>
-<button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm">Cancel</button>
-<button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm">Delete</button>
-```
+### Sober Outline Pill Buttons (`.cms-btn`)
+Used for secondary/item header actions and utility controls across both public and Preferences UIs:
+
+| Class | Purpose |
+| --- | --- |
+| `.cms-btn` | Neutral translucent dark pill (`border: 1px solid rgba(148, 163, 184, 0.26)`) |
+| `.cms-btn--save` | Cyan-tinted outline pill for save/accent actions |
+| `.cms-btn--danger` | Red-tinted outline pill for `Delete` / `Remove PDF` actions |
+
+### Links (`.studio-link`)
+| Class | Purpose |
+| --- | --- |
+| `.studio-link` | Clean cyan navigation/external link (`↗`) with subtle hover surface |
+| `.studio-link--inline` | Compact inline link variant inside form labels or steps |
 
 ---
 
@@ -31,7 +42,8 @@ Defined in `src/styles/global.css`. Controlled via CSS custom properties (`--btn
 
 | Class | Purpose |
 | --- | --- |
-| `.adaptif-eyebrow` | Canonical uppercase section eyebrow (`--color-brand-cyan`, `0.82rem`, `font-weight: 700`, `letter-spacing: 0.12em`) |
+| `.adaptif-eyebrow` / `.studio-eyebrow` | Canonical uppercase section eyebrow (`--color-brand-cyan`, `0.82rem`, `font-weight: 700`, `letter-spacing: 0.12em`) |
+| `.studio-title` | Display serif section heading (`--font-serif`, `2.2rem`, with italic cyan `<span>` accent) |
 | `.adaptif-eyebrow--light` | Light-theme eyebrow variant (`#0284c7`) |
 | `.title-highlight` | Celestial cyan gradient highlight for display headings |
 | `.text-glow-blue` | White-to-blue gradient text |
@@ -47,6 +59,8 @@ Defined in `src/styles/global.css`. Controlled via CSS custom properties (`--btn
 | `.adaptif-tag--white` | High-contrast white badge |
 | `.adaptif-tag--cyan` | Translucent cyan badge |
 | `.adaptif-tag--muted` | Subtle muted badge |
+| `.cms-status-badge` | Pill status badge (`.is-published`, `.is-scheduled`, default draft) |
+| `.cms-tabs-bar` / `.cms-tab-btn` | Segmented pill tab bar (`.is-active` for selected tab) |
 
 ---
 
@@ -56,6 +70,8 @@ Defined in `src/styles/global.css`. Controlled via CSS custom properties (`--btn
 | --- | --- |
 | `.container` | Centered max-width container (`--container-max`) with responsive horizontal padding |
 | `.glass-panel` | Frosted dark glass surface (`--glass-bg-card`, `--glass-blur-md`, `--border-hairline`, `--shadow-bevel-card`) |
+| `.adaptif-input` | Standard dark glass form input |
+| `.cms-item-title-bar` / `.cms-item-title-input` | Inline editable serif title bar with status badge |
 
 ---
 

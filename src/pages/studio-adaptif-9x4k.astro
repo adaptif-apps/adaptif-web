@@ -4,10 +4,12 @@ import { getBookCallConfig } from "../lib/bookCallDb";
 import { getActiveCampaignConfig } from "../lib/activeCampaignDb";
 import { getActiveCrmProvider, getKlaviyoConfig } from "../lib/klaviyoDb";
 import { listAcademyItems, getAcademySettings } from "../lib/academyDb";
+import { getWhatsAppConfig } from "../lib/whatsappDb";
 import StudioAcademyModule from "../components/StudioAcademyModule.astro";
 import StudioActivityModule from "../components/StudioActivityModule.astro";
 import StudioKlaviyoModule from "../components/StudioKlaviyoModule.astro";
 import StudioFormBuilder from "../components/StudioFormBuilder.astro";
+import StudioWhatsAppModule from "../components/StudioWhatsAppModule.astro";
 import "../styles/tokens.css";
 
 export const prerender = false;
@@ -22,6 +24,7 @@ const [
   initialCrmProvider,
   initialAcademyItems,
   initialAcademySettings,
+  initialWhatsAppConfig,
 ] = await Promise.all([
   listProjects({ includeHidden: true }),
   getBookCallConfig(),
@@ -30,6 +33,7 @@ const [
   getActiveCrmProvider(),
   listAcademyItems({ includeUnpublished: true }),
   getAcademySettings(),
+  getWhatsAppConfig(),
 ]);
 
 const initialKlaviyoState = {
@@ -206,6 +210,9 @@ const tagPresets = [
               </button>
               <button type="button" class="nav-item" data-module-tab="ai-config">
                 <span>AI Engine</span>
+              </button>
+              <button type="button" class="nav-item" data-module-tab="whatsapp">
+                <span>WhatsApp</span>
               </button>
             </div>
           </div>
@@ -526,6 +533,8 @@ const tagPresets = [
           initialItems={initialAcademyItems}
           initialSettings={initialAcademySettings}
         />
+
+        <StudioWhatsAppModule initialConfig={initialWhatsAppConfig} />
 
         <StudioActivityModule />
 
@@ -1004,6 +1013,7 @@ const tagPresets = [
           const generalInfoModule = document.getElementById("module-general-info");
           const paymentModule = document.getElementById("module-payment");
           const aiConfigModule = document.getElementById("module-ai-config");
+          const whatsappModule = document.getElementById("module-whatsapp");
           moduleTabs.forEach((t) => {
             const active = t.dataset.moduleTab === target;
             t.classList.toggle("is-active", active);
@@ -1019,6 +1029,7 @@ const tagPresets = [
           if (generalInfoModule) generalInfoModule.hidden = target !== "general-info";
           if (paymentModule) paymentModule.hidden = target !== "payment";
           if (aiConfigModule) aiConfigModule.hidden = target !== "ai-config";
+          if (whatsappModule) whatsappModule.hidden = target !== "whatsapp";
 
           const w = window as any;
           if (target === "klaviyo") {
@@ -1061,6 +1072,13 @@ const tagPresets = [
           }
           if (target === "ai-config") {
             const sel = document.getElementById("gen-ai-provider") as HTMLSelectElement | null;
+            if (sel) {
+              w.__STUDIO_ENHANCE_SELECT__?.(sel);
+              w.__STUDIO_SYNC_SELECT__?.(sel);
+            }
+          }
+          if (target === "whatsapp") {
+            const sel = document.getElementById("wa-cfg-position") as HTMLSelectElement | null;
             if (sel) {
               w.__STUDIO_ENHANCE_SELECT__?.(sel);
               w.__STUDIO_SYNC_SELECT__?.(sel);

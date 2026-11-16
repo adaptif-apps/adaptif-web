@@ -511,6 +511,7 @@ const { initialItems, initialSettings } = Astro.props;
       const generalInfoModule = document.getElementById("module-general-info");
       const paymentModule = document.getElementById("module-payment");
       const aiConfigModule = document.getElementById("module-ai-config");
+      const whatsappModule = document.getElementById("module-whatsapp");
 
       document.querySelectorAll<HTMLButtonElement>("[data-module-tab]").forEach((t) => {
         t.classList.remove("is-active");
@@ -523,6 +524,7 @@ const { initialItems, initialSettings } = Astro.props;
       if (generalInfoModule) generalInfoModule.hidden = true;
       if (paymentModule) paymentModule.hidden = true;
       if (aiConfigModule) aiConfigModule.hidden = true;
+      if (whatsappModule) whatsappModule.hidden = true;
       if (academyModule) academyModule.hidden = false;
     }
 

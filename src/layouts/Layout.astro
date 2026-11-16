@@ -1,6 +1,8 @@
 ---
 import "../styles/global.css";
 import BookCallModal from "../components/BookCallModal.astro";
+import WhatsAppWidget from "../components/WhatsAppWidget.astro";
+import { getWhatsAppConfig } from "../lib/whatsappDb";
 
 interface Props {
   title?: string;
@@ -11,6 +13,8 @@ const {
   title = "Adaptif — The Fuel Behind Your Creative Engine",
   description = "A subscription that plugs an AI-driven creative department into your team: design, dev and marketing, unlimited requests and revisions."
 } = Astro.props;
+
+const whatsappConfig = await getWhatsAppConfig();
 ---
 
 <!doctype html>
@@ -58,6 +62,7 @@ const {
     <!-- Page Content -->
     <slot />
     <BookCallModal />
+    <WhatsAppWidget config={whatsappConfig} />
 
     <!-- Universal Section Staggered Entrance Observer -->
     <script>

@@ -1,0 +1,231 @@
+---
+import {
+  buildWhatsAppUrl,
+  defaultWhatsAppConfig,
+  type WhatsAppConfig,
+} from "../lib/whatsappDb";
+
+interface Props {
+  config?: WhatsAppConfig;
+}
+
+const { config = defaultWhatsAppConfig } = Astro.props;
+const initialHref = buildWhatsAppUrl(config.phoneNumber, config.message);
+const isVisible = config.enabled && Boolean(initialHref);
+const posClass = config.position === "bottom-left" ? "is-bottom-left" : "is-bottom-right";
+---
+
+<a
+  id="adaptif-whatsapp-fab"
+  href={initialHref || "#"}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Chat with Adaptif on WhatsApp"
+  class:list={["wa-fab", posClass]}
+  hidden={!isVisible}
+>
+  <span class="wa-fab-pulse" aria-hidden="true"></span>
+  <span class="wa-fab-icon" aria-hidden="true">
+    <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor">
+      <path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.256.59 4.458 1.71 6.398L3.1 29.01l6.782-1.778a12.75 12.75 0 0 0 6.122 1.568h.006c7.058 0 12.796-5.74 12.796-12.8 0-3.418-1.33-6.632-3.748-9.05A12.716 12.716 0 0 0 16.004 3.2Zm7.46 18.21c-.314.884-1.824 1.69-2.52 1.794-.646.096-1.464.136-2.362-.15-.544-.174-1.242-.404-2.138-.79-3.76-1.624-6.216-5.408-6.404-5.658-.186-.25-1.528-2.032-1.528-3.878 0-1.844.966-2.752 1.308-3.128.342-.376.748-.47.996-.47.25 0 .498.002.716.014.23.012.538-.088.842.642.314.754 1.064 2.598 1.158 2.786.094.188.156.408.032.658-.124.25-.186.408-.374.626-.186.218-.394.488-.562.656-.186.186-.38.388-.164.762.218.374.968 1.596 2.08 2.586 1.43 1.274 2.634 1.668 3.008 1.856.374.188.592.156.81-.094.218-.25.936-1.094 1.186-1.47.25-.376.498-.314.842-.188.342.126 2.182 1.03 2.556 1.218.374.188.624.282.716.438.094.156.094.906-.22 1.79Z" />
+    </svg>
+  </span>
+  <span class="wa-fab-tooltip">Chat on WhatsApp</span>
+</a>
+
+<style>
+  .wa-fab {
+    position: fixed;
+    bottom: 24px;
+    z-index: 90;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #25d366 0%, #16a34a 100%);
+    color: #ffffff;
+    text-decoration: none;
+    box-shadow:
+      0 10px 28px rgba(22, 163, 74, 0.36),
+      0 2px 10px rgba(0, 0, 0, 0.4),
+      inset 0 1px 1px rgba(255, 255, 255, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    transition:
+      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.22s ease,
+      filter 0.22s ease;
+    cursor: pointer;
+  }
+
+  .wa-fab[hidden] {
+    display: none !important;
+  }
+
+  .wa-fab.is-bottom-right {
+    right: 24px;
+    left: auto;
+  }
+
+  .wa-fab.is-bottom-left {
+    left: 24px;
+    right: auto;
+  }
+
+  .wa-fab:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow:
+      0 14px 34px rgba(37, 211, 102, 0.48),
+      0 4px 14px rgba(0, 0, 0, 0.45),
+      inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  }
+
+  .wa-fab:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+
+  .wa-fab:focus-visible {
+    outline: 2px solid #7dd3fc;
+    outline-offset: 4px;
+  }
+
+  .wa-fab-icon {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wa-fab-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(37, 211, 102, 0.42);
+    z-index: 1;
+    animation: wa-pulse 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    pointer-events: none;
+  }
+
+  .wa-fab-tooltip {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%) scale(0.96);
+    padding: 7px 12px;
+    border-radius: 10px;
+    background: rgba(8, 13, 24, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #f8fafc;
+    font-family: var(--font-sans, "DM Sans", sans-serif);
+    font-size: 12.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .wa-fab.is-bottom-right .wa-fab-tooltip {
+    right: calc(100% + 12px);
+  }
+
+  .wa-fab.is-bottom-left .wa-fab-tooltip {
+    left: calc(100% + 12px);
+  }
+
+  .wa-fab:hover .wa-fab-tooltip,
+  .wa-fab:focus-visible .wa-fab-tooltip {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+
+  @keyframes wa-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.55;
+    }
+    70% {
+      transform: scale(1.36);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.36);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .wa-fab {
+      bottom: 18px;
+      width: 52px;
+      height: 52px;
+    }
+    .wa-fab.is-bottom-right {
+      right: 18px;
+    }
+    .wa-fab.is-bottom-left {
+      left: 18px;
+    }
+    .wa-fab-tooltip {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wa-fab-pulse {
+      animation: none;
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function buildUrl(phone: string, message: string): string {
+    const digits = (phone || "").replace(/[^\d]/g, "");
+    if (!digits) return "";
+    const msg = (message || "").trim();
+    return msg
+      ? `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`
+      : `https://wa.me/${digits}`;
+  }
+
+  async function syncWhatsAppWidget() {
+    const fab = document.getElementById("adaptif-whatsapp-fab") as HTMLAnchorElement | null;
+    if (!fab) return;
+
+    try {
+      const res = await fetch("/api/whatsapp/config", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      const cfg = data?.config;
+      if (!cfg) return;
+
+      const url = buildUrl(cfg.phoneNumber || "", cfg.message || "");
+      const visible = Boolean(cfg.enabled) && Boolean(url);
+
+      fab.classList.toggle("is-bottom-left", cfg.position === "bottom-left");
+      fab.classList.toggle("is-bottom-right", cfg.position !== "bottom-left");
+
+      if (visible) {
+        fab.href = url;
+        fab.hidden = false;
+      } else {
+        fab.hidden = true;
+      }
+    } catch {
+      // Keep server-rendered state if network fetch fails
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", syncWhatsAppWidget);
+  } else {
+    syncWhatsAppWidget();
+  }
+  document.addEventListener("astro:page-load", syncWhatsAppWidget);
+</script>

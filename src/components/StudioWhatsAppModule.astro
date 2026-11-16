@@ -1,0 +1,648 @@
+---
+import { buildWhatsAppUrl, type WhatsAppConfig } from "../lib/whatsappDb";
+
+interface Props {
+  initialConfig: WhatsAppConfig;
+}
+
+const { initialConfig } = Astro.props;
+const initialUrl = buildWhatsAppUrl(initialConfig.phoneNumber, initialConfig.message);
+const isReady = initialConfig.enabled && Boolean(initialUrl);
+---
+
+<div id="module-whatsapp" hidden>
+  <header class="studio-header">
+    <div>
+      <p class="studio-eyebrow">Floating Widget</p>
+      <h1 class="studio-title">WhatsApp <span>Button</span></h1>
+    </div>
+    <div class="studio-header-actions">
+      <button type="button" class="wa-btn-primary" id="btn-save-whatsapp">
+        Save WhatsApp Settings
+      </button>
+    </div>
+  </header>
+
+  <div class="wa-studio-grid">
+    <section class="wa-glass-card" aria-label="WhatsApp Floating Button Configuration">
+      <div class="wa-card-head">
+        <div>
+          <span class="wa-kicker">Global Site Widget</span>
+          <h2 class="wa-card-title">Connection &amp; Placement</h2>
+          <p class="wa-card-sub">
+            Configure the floating WhatsApp button shown across the public site. Clicking it opens a new tab with your company number and pre-filled message.
+          </p>
+        </div>
+        <div class="wa-status-pill" id="wa-status-pill">
+          <span class:list={["wa-status-dot", { "is-ready": isReady, "is-off": !initialConfig.enabled }]} id="wa-status-dot"></span>
+          <span id="wa-status-text">
+            {!initialConfig.enabled
+              ? "Hidden"
+              : initialUrl
+                ? `Visible · ${initialConfig.position === "bottom-left" ? "Bottom Left" : "Bottom Right"}`
+                : "Missing Phone"}
+          </span>
+        </div>
+      </div>
+
+      <div class="wa-form-grid">
+        <div class="wa-field">
+          <span class="wa-label">Visibility</span>
+          <label class="wa-toggle-row" for="wa-cfg-enabled">
+            <input
+              type="checkbox"
+              id="wa-cfg-enabled"
+              checked={initialConfig.enabled}
+            />
+            <span class="wa-toggle-track" aria-hidden="true">
+              <span class="wa-toggle-thumb"></span>
+            </span>
+            <span class="wa-toggle-label" id="wa-toggle-label">
+              {initialConfig.enabled ? "Show floating button" : "Hide floating button"}
+            </span>
+          </label>
+        </div>
+
+        <label class="wa-field">
+          <span class="wa-label">Screen Position</span>
+          <select id="wa-cfg-position" class="ac-select">
+            <option value="bottom-right" selected={initialConfig.position !== "bottom-left"}>
+              Bottom Right
+            </option>
+            <option value="bottom-left" selected={initialConfig.position === "bottom-left"}>
+              Bottom Left
+            </option>
+          </select>
+        </label>
+
+        <label class="wa-field wa-span-2">
+          <span class="wa-label">Company Phone Number</span>
+          <input
+            type="tel"
+            id="wa-cfg-phone"
+            class="wa-input"
+            value={initialConfig.phoneNumber}
+            placeholder="e.g. +1 555 123 4567"
+            autocomplete="off"
+          />
+          <span class="wa-hint">
+            Include your country code (e.g. +1 for US, +54 for Argentina). Non-numeric characters are automatically stripped for the WhatsApp link.
+          </span>
+        </label>
+
+        <label class="wa-field wa-span-2">
+          <span class="wa-label">Pre-filled Message</span>
+          <textarea
+            id="wa-cfg-message"
+            class="wa-textarea"
+            rows="3"
+            placeholder="Hi Adaptif! I'd like to learn more about your creative services."
+          >{initialConfig.message}</textarea>
+          <span class="wa-hint">
+            This message will appear pre-typed in the visitor's WhatsApp chat window.
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section class="wa-glass-card wa-preview-card" aria-label="WhatsApp Widget Preview">
+      <div class="wa-card-head">
+        <div>
+          <span class="wa-kicker">Live Preview</span>
+          <h2 class="wa-card-title">Viewport Placement &amp; Link</h2>
+        </div>
+        <a
+          id="wa-test-link"
+          href={initialUrl || "#"}
+          target="_blank"
+          rel="noopener noreferrer"
+          class:list={["wa-btn-glass", { "is-disabled": !initialUrl }]}
+        >
+          Test WhatsApp Link ↗
+        </a>
+      </div>
+
+      <div class="wa-viewport-mock" id="wa-viewport-mock">
+        <div class="wa-mock-chrome">
+          <span></span><span></span><span></span>
+          <p>adaptif-web.vercel.app</p>
+        </div>
+        <div class="wa-mock-body">
+          <div class="wa-mock-hero">
+            <div class="wa-mock-line is-lg"></div>
+            <div class="wa-mock-line is-md"></div>
+          </div>
+          <div
+            class:list={[
+              "wa-mock-fab",
+              initialConfig.position === "bottom-left" ? "is-left" : "is-right",
+              { "is-hidden": !isReady },
+            ]}
+            id="wa-mock-fab"
+            title="WhatsApp Floating Button"
+          >
+            <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true">
+              <path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.256.59 4.458 1.71 6.398L3.1 29.01l6.782-1.778a12.75 12.75 0 0 0 6.122 1.568h.006c7.058 0 12.796-5.74 12.796-12.8 0-3.418-1.33-6.632-3.748-9.05A12.716 12.716 0 0 0 16.004 3.2Zm7.46 18.21c-.314.884-1.824 1.69-2.52 1.794-.646.096-1.464.136-2.362-.15-.544-.174-1.242-.404-2.138-.79-3.76-1.624-6.216-5.408-6.404-5.658-.186-.25-1.528-2.032-1.528-3.878 0-1.844.966-2.752 1.308-3.128.342-.376.748-.47.996-.47.25 0 .498.002.716.014.23.012.538-.088.842.642.314.754 1.064 2.598 1.158 2.786.094.188.156.408.032.658-.124.25-.186.408-.374.626-.186.218-.394.488-.562.656-.186.186-.38.388-.164.762.218.374.968 1.596 2.08 2.586 1.43 1.274 2.634 1.668 3.008 1.856.374.188.592.156.81-.094.218-.25.936-1.094 1.186-1.47.25-.376.498-.314.842-.188.342.126 2.182 1.03 2.556 1.218.374.188.624.282.716.438.094.156.094.906-.22 1.79Z" />
+            </svg>
+          </div>
+          <div class="wa-mock-empty" id="wa-mock-empty" hidden={isReady}>
+            {!initialConfig.enabled
+              ? "Widget is currently hidden"
+              : "Enter a company phone number to activate"}
+          </div>
+        </div>
+      </div>
+
+      <div class="wa-url-box">
+        <span class="wa-label">Generated Destination URL</span>
+        <code id="wa-generated-url">{initialUrl || "https://wa.me/<phone>?text=..."}</code>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .wa-studio-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .wa-glass-card {
+    background: linear-gradient(180deg, rgba(16, 22, 34, 0.88) 0%, rgba(10, 14, 23, 0.94) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  }
+
+  .wa-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .wa-kicker {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #38bdf8;
+    margin-bottom: 6px;
+  }
+
+  .wa-card-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  .wa-card-sub {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(248, 250, 252, 0.62);
+    max-width: 560px;
+  }
+
+  .wa-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.85);
+    white-space: nowrap;
+  }
+
+  .wa-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.55);
+  }
+
+  .wa-status-dot.is-ready {
+    background: #25d366;
+    box-shadow: 0 0 10px rgba(37, 211, 102, 0.7);
+  }
+
+  .wa-status-dot.is-off {
+    background: #64748b;
+    box-shadow: none;
+  }
+
+  .wa-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .wa-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wa-span-2 {
+    grid-column: span 2;
+  }
+
+  .wa-label {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: rgba(248, 250, 252, 0.82);
+  }
+
+  .wa-input,
+  .wa-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(5, 8, 15, 0.65);
+    color: #f8fafc;
+    font-family: inherit;
+    font-size: 13.5px;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .wa-textarea {
+    resize: vertical;
+    min-height: 84px;
+    line-height: 1.5;
+  }
+
+  .wa-input:focus,
+  .wa-textarea:focus {
+    outline: none;
+    border-color: rgba(56, 189, 248, 0.65);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
+  }
+
+  .wa-hint {
+    font-size: 12px;
+    line-height: 1.45;
+    color: rgba(248, 250, 252, 0.5);
+  }
+
+  .wa-toggle-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 42px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(5, 8, 15, 0.65);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .wa-toggle-row input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .wa-toggle-track {
+    position: relative;
+    width: 38px;
+    height: 22px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.35);
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .wa-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .wa-toggle-row input:checked + .wa-toggle-track {
+    background: #25d366;
+  }
+
+  .wa-toggle-row input:checked + .wa-toggle-track .wa-toggle-thumb {
+    transform: translateX(16px);
+  }
+
+  .wa-toggle-label {
+    font-size: 13px;
+    color: rgba(248, 250, 252, 0.9);
+  }
+
+  .wa-btn-primary {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(56, 189, 248, 0.45);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.28), rgba(56, 189, 248, 0.14));
+    color: #e0f2fe;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+
+  .wa-btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.4), rgba(56, 189, 248, 0.22));
+  }
+
+  .wa-btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .wa-btn-glass {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .wa-btn-glass:hover:not(.is-disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .wa-btn-glass.is-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .wa-viewport-mock {
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #030712;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .wa-mock-chrome {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .wa-mock-chrome span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .wa-mock-chrome p {
+    margin: 0 0 0 8px;
+    font-size: 11px;
+    color: rgba(248, 250, 252, 0.45);
+  }
+
+  .wa-mock-body {
+    position: relative;
+    height: 170px;
+    padding: 20px;
+    background: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12), transparent 65%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wa-mock-hero {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.45;
+  }
+
+  .wa-mock-line {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .wa-mock-line.is-lg {
+    width: 62%;
+  }
+
+  .wa-mock-line.is-md {
+    width: 42%;
+  }
+
+  .wa-mock-fab {
+    position: absolute;
+    bottom: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #25d366 0%, #16a34a 100%);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+    transition: all 0.2s ease;
+  }
+
+  .wa-mock-fab.is-right {
+    right: 14px;
+    left: auto;
+  }
+
+  .wa-mock-fab.is-left {
+    left: 14px;
+    right: auto;
+  }
+
+  .wa-mock-fab.is-hidden {
+    opacity: 0.22;
+    filter: grayscale(1);
+    box-shadow: none;
+  }
+
+  .wa-mock-empty {
+    position: absolute;
+    bottom: 18px;
+    font-size: 11.5px;
+    color: rgba(248, 250, 252, 0.52);
+    background: rgba(15, 23, 42, 0.85);
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wa-url-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(5, 8, 15, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wa-url-box code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    color: #7dd3fc;
+    word-break: break-all;
+  }
+
+  @media (max-width: 1024px) {
+    .wa-studio-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .wa-form-grid {
+      grid-template-columns: 1fr;
+    }
+    .wa-span-2 {
+      grid-column: span 1;
+    }
+  }
+</style>
+
+<script>
+  const enabledInput = document.getElementById("wa-cfg-enabled") as HTMLInputElement | null;
+  const toggleLabel = document.getElementById("wa-toggle-label");
+  const positionSelect = document.getElementById("wa-cfg-position") as HTMLSelectElement | null;
+  const phoneInput = document.getElementById("wa-cfg-phone") as HTMLInputElement | null;
+  const messageInput = document.getElementById("wa-cfg-message") as HTMLTextAreaElement | null;
+  const saveBtn = document.getElementById("btn-save-whatsapp") as HTMLButtonElement | null;
+
+  const statusDot = document.getElementById("wa-status-dot");
+  const statusText = document.getElementById("wa-status-text");
+  const testLink = document.getElementById("wa-test-link") as HTMLAnchorElement | null;
+  const mockFab = document.getElementById("wa-mock-fab");
+  const mockEmpty = document.getElementById("wa-mock-empty");
+  const generatedUrlEl = document.getElementById("wa-generated-url");
+
+  function buildPreviewUrl(phone: string, msg: string): string {
+    const digits = (phone || "").replace(/[^\d]/g, "");
+    if (!digits) return "";
+    const trimmed = (msg || "").trim();
+    return trimmed
+      ? `https://wa.me/${digits}?text=${encodeURIComponent(trimmed)}`
+      : `https://wa.me/${digits}`;
+  }
+
+  function updateWhatsAppPreview() {
+    const enabled = Boolean(enabledInput?.checked);
+    const position = positionSelect?.value === "bottom-left" ? "bottom-left" : "bottom-right";
+    const phone = phoneInput?.value ?? "";
+    const message = messageInput?.value ?? "";
+    const url = buildPreviewUrl(phone, message);
+    const isReady = enabled && Boolean(url);
+
+    if (toggleLabel) {
+      toggleLabel.textContent = enabled ? "Show floating button" : "Hide floating button";
+    }
+
+    if (statusDot) {
+      statusDot.classList.toggle("is-ready", isReady);
+      statusDot.classList.toggle("is-off", !enabled);
+    }
+
+    if (statusText) {
+      if (!enabled) {
+        statusText.textContent = "Hidden";
+      } else if (url) {
+        statusText.textContent = `Visible · ${position === "bottom-left" ? "Bottom Left" : "Bottom Right"}`;
+      } else {
+        statusText.textContent = "Missing Phone";
+      }
+    }
+
+    if (mockFab) {
+      mockFab.classList.toggle("is-left", position === "bottom-left");
+      mockFab.classList.toggle("is-right", position !== "bottom-left");
+      mockFab.classList.toggle("is-hidden", !isReady);
+    }
+
+    if (mockEmpty) {
+      mockEmpty.hidden = isReady;
+      mockEmpty.textContent = !enabled
+        ? "Widget is currently hidden"
+        : "Enter a company phone number to activate";
+    }
+
+    if (generatedUrlEl) {
+      generatedUrlEl.textContent = url || "https://wa.me/<phone>?text=...";
+    }
+
+    if (testLink) {
+      testLink.href = url || "#";
+      testLink.classList.toggle("is-disabled", !url);
+    }
+  }
+
+  enabledInput?.addEventListener("change", updateWhatsAppPreview);
+  positionSelect?.addEventListener("change", updateWhatsAppPreview);
+  phoneInput?.addEventListener("input", updateWhatsAppPreview);
+  messageInput?.addEventListener("input", updateWhatsAppPreview);
+
+  saveBtn?.addEventListener("click", async () => {
+    if (!saveBtn) return;
+    const prevText = saveBtn.textContent;
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+
+    const w = window as any;
+    try {
+      const res = await fetch("/api/whatsapp/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          enabled: Boolean(enabledInput?.checked),
+          position: positionSelect?.value === "bottom-left" ? "bottom-left" : "bottom-right",
+          phoneNumber: phoneInput?.value.trim() ?? "",
+          message: messageInput?.value ?? "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to save WhatsApp settings");
+      updateWhatsAppPreview();
+      w.__SHOW_STUDIO_TOAST__?.("WhatsApp settings saved & live!");
+    } catch (err: any) {
+      w.__SHOW_STUDIO_TOAST__?.(err?.message || "Error saving WhatsApp settings", true);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = prevText || "Save WhatsApp Settings";
+    }
+  });
+</script>

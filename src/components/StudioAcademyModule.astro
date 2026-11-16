@@ -17,7 +17,7 @@ const { initialItems, initialSettings } = Astro.props;
     </div>
     <div class="studio-header-actions" id="acd-header-actions">
       <div class="cms-header-dropdown" id="acd-edit-dropdown">
-        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm cms-dropdown-trigger" aria-expanded="false">
+        <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
           Edit ▾
         </button>
         <div class="cms-dropdown-menu" hidden>
@@ -31,7 +31,7 @@ const { initialItems, initialSettings } = Astro.props;
       </div>
 
       <div class="cms-header-dropdown" id="acd-preview-dropdown">
-        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm cms-dropdown-trigger" aria-expanded="false">
+        <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
           Preview ▾
         </button>
         <div class="cms-dropdown-menu" hidden>
@@ -44,8 +44,8 @@ const { initialItems, initialSettings } = Astro.props;
         </div>
       </div>
 
-      <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-delete-acd-item">Delete</button>
-      <button type="submit" form="acd-editor-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-item" disabled>Save Changes</button>
+      <button type="button" class="cms-btn cms-btn--danger" id="btn-delete-acd-item">Delete</button>
+      <button type="submit" form="acd-editor-form" class="cms-btn cms-btn--save" id="btn-save-acd-item" disabled>Save Changes</button>
 
       <span class="studio-actions-divider" id="acd-actions-divider"></span>
 
@@ -150,9 +150,9 @@ const { initialItems, initialSettings } = Astro.props;
             </div>
 
             <!-- Course Pricing & Optional Micro-App (hidden for Guides) -->
-            <div class="gen-course-box" id="gen-course-fields" style="margin-top: 16px;">
-              <div class="gen-three-col">
-                <label class="gen-field">
+            <div class="acd-course-box" id="gen-course-fields" style="margin-top: 16px;">
+              <div class="acd-form-grid acd-prefs-grid">
+                <label class="acd-field">
                   <span class="acd-label-row">
                     Course Price
                     <span class="acd-tip-wrap">
@@ -164,7 +164,7 @@ const { initialItems, initialSettings } = Astro.props;
                   </span>
                   <input type="text" id="gen-price" placeholder="$49" value="$49" />
                 </label>
-                <label class="gen-field gen-span-2">
+                <label class="acd-field acd-span-2">
                   <span class="acd-label-row">
                     Stripe Checkout Link
                     <span class="acd-tip-wrap">
@@ -178,8 +178,8 @@ const { initialItems, initialSettings } = Astro.props;
                 </label>
               </div>
 
-              <div class="gen-three-col" style="margin-top: 12px;">
-                <label class="gen-field">
+              <div class="acd-form-grid acd-prefs-grid" style="margin-top: 14px;">
+                <label class="acd-field">
                   <span class="acd-label-row">
                     Tool / Template Name (Optional)
                     <span class="acd-tip-wrap">
@@ -191,11 +191,11 @@ const { initialItems, initialSettings } = Astro.props;
                   </span>
                   <input type="text" id="gen-tool-name" placeholder="Magnific Preset Pack" />
                 </label>
-                <label class="gen-field">
+                <label class="acd-field">
                   <span>Tool Type (Optional)</span>
                   <input type="text" id="gen-tool-type" placeholder="Template / Micro-App / Mockups" />
                 </label>
-                <label class="gen-field">
+                <label class="acd-field">
                   <span class="acd-label-row">
                     Tool / Micro-App URL (Optional)
                     <span class="acd-tip-wrap">
@@ -1504,6 +1504,17 @@ const { initialItems, initialSettings } = Astro.props;
 
   .acd-prefs-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .acd-course-box {
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(4, 9, 24, 0.45);
+    border: 1px solid rgba(72, 200, 255, 0.14);
+  }
+
+  .acd-course-box[hidden] {
+    display: none;
   }
 
   .acd-span-2 {

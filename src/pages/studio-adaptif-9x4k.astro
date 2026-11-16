@@ -114,6 +114,21 @@ const tagPresets = [
           <span class="studio-badge">Preferences</span>
         </div>
 
+        <div class="studio-nav-controls">
+          <button
+            type="button"
+            class="studio-collapse-all-btn"
+            id="btn-toggle-all-dropdowns"
+            title="Collapse all sections"
+          >
+            <svg class="collapse-all-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m7 15 5 5 5-5" />
+              <path d="m7 9 5-5 5 5" />
+            </svg>
+            <span id="toggle-all-dropdowns-label">Collapse All</span>
+          </button>
+        </div>
+
         <nav class="studio-nav" aria-label="Preferences modules">
           <div class="nav-dropdown is-open" data-nav-group="cms">
             <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
@@ -981,7 +996,22 @@ const tagPresets = [
       renderList();
       loadEditor(projects[0] ?? null, false);
 
-      // Sidebar dropdown groups
+      // Sidebar dropdown groups & Collapse/Expand All toggle
+      const navDropdowns = Array.from(document.querySelectorAll<HTMLElement>(".nav-dropdown"));
+      const toggleAllBtn = document.getElementById("btn-toggle-all-dropdowns") as HTMLButtonElement | null;
+      const toggleAllLabel = document.getElementById("toggle-all-dropdowns-label");
+
+      function syncToggleAllState() {
+        const anyOpen = navDropdowns.some((g) => g.classList.contains("is-open"));
+        if (toggleAllLabel) {
+          toggleAllLabel.textContent = anyOpen ? "Collapse All" : "Expand All";
+        }
+        if (toggleAllBtn) {
+          toggleAllBtn.title = anyOpen ? "Collapse all sections" : "Expand all sections";
+          toggleAllBtn.classList.toggle("is-collapsed", !anyOpen);
+        }
+      }
+
       document.querySelectorAll<HTMLButtonElement>(".nav-dropdown-trigger").forEach((trigger) => {
         trigger.addEventListener("click", () => {
           const group = trigger.closest<HTMLElement>(".nav-dropdown");
@@ -989,8 +1019,22 @@ const tagPresets = [
           const willOpen = !group.classList.contains("is-open");
           group.classList.toggle("is-open", willOpen);
           trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+          syncToggleAllState();
         });
       });
+
+      toggleAllBtn?.addEventListener("click", () => {
+        const anyOpen = navDropdowns.some((g) => g.classList.contains("is-open"));
+        const targetOpen = !anyOpen;
+        navDropdowns.forEach((group) => {
+          group.classList.toggle("is-open", targetOpen);
+          const trigger = group.querySelector<HTMLButtonElement>(".nav-dropdown-trigger");
+          trigger?.setAttribute("aria-expanded", targetOpen ? "true" : "false");
+        });
+        syncToggleAllState();
+      });
+
+      syncToggleAllState();
 
       // Module tab switching (Portfolio <-> Book a Call <-> ActiveCampaign)
       const moduleTabs = document.querySelectorAll<HTMLButtonElement>("[data-module-tab]");
@@ -1616,6 +1660,40 @@ const tagPresets = [
         border: 1px solid rgba(56, 189, 248, 0.25);
         padding: 3px 8px;
         border-radius: 6px;
+      }
+
+      .studio-nav-controls {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 10px;
+      }
+
+      .studio-collapse-all-btn {
+        appearance: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border-radius: 9999px;
+        border: 1px solid rgba(72, 200, 255, 0.22);
+        background: rgba(18, 44, 88, 0.36);
+        color: #9ce1ff;
+        font-family: var(--font-sans);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+      }
+
+      .studio-collapse-all-btn:hover {
+        background: rgba(72, 200, 255, 0.14);
+        border-color: rgba(72, 200, 255, 0.45);
+        color: #ffffff;
+      }
+
+      .studio-collapse-all-btn.is-collapsed .collapse-all-icon {
+        transform: rotate(180deg);
       }
 
       .studio-nav {

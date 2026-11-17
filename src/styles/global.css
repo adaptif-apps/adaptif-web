@@ -600,7 +600,8 @@ img, svg {
  * Unified Upsell Banner (Public & Studio Mini-Preview)
  * ========================================================= */
 .adaptif-upsell-banner {
-  margin-top: 36px;
+  max-width: 832px;
+  margin: 36px auto 0;
   padding: 0;
   overflow: hidden;
   border-radius: 22px;
@@ -611,8 +612,7 @@ img, svg {
 }
 
 .adaptif-upsell-banner--compact {
-  margin-top: 24px;
-  margin-bottom: 24px;
+  margin: 24px auto;
   padding: 0;
   border-radius: 18px;
 }

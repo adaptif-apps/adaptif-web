@@ -343,7 +343,10 @@ import StudioHeader from "./StudioHeader.astro";
         const items = sec.querySelectorAll<HTMLElement>("[data-uikit-search-item]");
         let anyItemMatch = false;
         items.forEach((el) => {
-          const haystack = `${el.dataset.uikitSearchItem || ""} ${el.textContent || ""}`.toLowerCase();
+          const copyVals = Array.from(el.querySelectorAll<HTMLElement>("[data-copy-value]"))
+            .map((c) => c.dataset.copyValue || "")
+            .join(" ");
+          const haystack = `${el.dataset.uikitSearchItem || ""} ${copyVals} ${el.textContent || ""}`.toLowerCase();
           const match = haystack.includes(q);
           el.hidden = !match;
           if (match) anyItemMatch = true;
@@ -366,6 +369,47 @@ import StudioHeader from "./StudioHeader.astro";
     });
 
     searchEl?.addEventListener("input", applyFilter);
+
+    const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+    const checkSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+    document.querySelectorAll<HTMLElement>(".uikit-card code").forEach((codeEl) => {
+      if (codeEl.closest(".uikit-sublabel")) return;
+      const value = (codeEl.textContent || "").trim();
+      if (!value) return;
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "uikit-copy-btn";
+      btn.dataset.copyValue = value;
+      btn.title = `Copy: ${value}`;
+      btn.setAttribute("aria-label", `Copy ${value}`);
+      btn.innerHTML = copySvg;
+
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(value);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = value;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        btn.classList.add("is-copied");
+        btn.innerHTML = checkSvg;
+        (window as any).__SHOW_STUDIO_TOAST__?.(`Copied: ${value}`);
+        setTimeout(() => {
+          btn.classList.remove("is-copied");
+          btn.innerHTML = copySvg;
+        }, 1400);
+      });
+
+      codeEl.replaceWith(btn);
+    });
   })();
 </script>
 
@@ -579,6 +623,38 @@ import StudioHeader from "./StudioHeader.astro";
 
   .uikit-flex-row .uikit-item {
     width: auto;
+  }
+
+  .uikit-workspace :global(.uikit-copy-btn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-top: 2px;
+    border-radius: 8px;
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.2);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition:
+      background 0.16s ease,
+      border-color 0.16s ease,
+      color 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .uikit-workspace :global(.uikit-copy-btn:hover) {
+    background: rgba(72, 200, 255, 0.16);
+    border-color: rgba(72, 200, 255, 0.45);
+    color: var(--color-brand-cyan);
+    transform: translateY(-1px);
+  }
+
+  .uikit-workspace :global(.uikit-copy-btn.is-copied) {
+    background: rgba(56, 189, 248, 0.22);
+    border-color: rgba(56, 189, 248, 0.65);
+    color: #7dd3fc;
   }
 
   @media (max-width: 980px) {

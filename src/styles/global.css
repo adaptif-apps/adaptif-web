@@ -623,14 +623,41 @@ img, svg {
 .adaptif-upsell-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.adaptif-upsell-media {
+  width: 260px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(72, 200, 255, 0.22);
+  background: rgba(8, 16, 34, 0.7);
+}
+
+.adaptif-upsell-media[hidden] {
+  display: none;
+}
+
+.adaptif-upsell-media img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+}
+
+.adaptif-upsell-banner--compact .adaptif-upsell-inner {
+  gap: 20px;
+}
+
+.adaptif-upsell-banner--compact .adaptif-upsell-media {
+  width: 190px;
+  border-radius: 12px;
 }
 
 .adaptif-upsell-copy {
   flex: 1;
-  min-width: 240px;
+  min-width: 0;
 }
 
 .adaptif-upsell-eyebrow-row {
@@ -665,7 +692,24 @@ img, svg {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0;
+  margin-top: 18px;
+}
+
+.adaptif-upsell-banner--compact .adaptif-upsell-actions {
+  margin-top: 14px;
+}
+
+@media (max-width: 680px) {
+  .adaptif-upsell-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+  }
+
+  .adaptif-upsell-media,
+  .adaptif-upsell-banner--compact .adaptif-upsell-media {
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

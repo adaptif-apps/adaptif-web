@@ -38,6 +38,8 @@ export function createUpsellPanelController(prefix: "blog" | "acd"): UpsellPanel
 
   const pvCard = document.getElementById(`${prefix}-upsell-preview-card`);
   const pvStatus = document.getElementById(`${prefix}-upsell-preview-status`);
+  const pvMedia = document.getElementById(`${prefix}-upsell-pv-media`);
+  const pvImg = document.getElementById(`${prefix}-upsell-pv-img`) as HTMLImageElement | null;
   const pvEyebrow = document.getElementById(`${prefix}-upsell-pv-eyebrow`);
   const pvBadge = document.getElementById(`${prefix}-upsell-pv-badge`);
   const pvTitle = document.getElementById(`${prefix}-upsell-pv-title`);
@@ -128,6 +130,16 @@ export function createUpsellPanelController(prefix: "blog" | "acd"): UpsellPanel
     }
 
     if (resolved.visible) {
+      if (pvMedia && pvImg) {
+        if (resolved.coverImage) {
+          pvImg.src = resolved.coverImage;
+          pvImg.alt = resolved.title;
+          pvMedia.hidden = false;
+        } else {
+          pvImg.src = "";
+          pvMedia.hidden = true;
+        }
+      }
       if (pvEyebrow) pvEyebrow.textContent = resolved.eyebrow;
       if (pvBadge) {
         pvBadge.textContent = resolved.badge || "";
@@ -137,6 +149,7 @@ export function createUpsellPanelController(prefix: "blog" | "acd"): UpsellPanel
       if (pvDesc) pvDesc.textContent = resolved.description;
       if (pvCta) pvCta.textContent = `${resolved.ctaLabel} →`;
     } else {
+      if (pvMedia) pvMedia.hidden = true;
       if (pvEyebrow) pvEyebrow.textContent = "Upsell Disabled";
       if (pvBadge) pvBadge.hidden = true;
       if (pvTitle) pvTitle.textContent = "No upsell banner will be shown on this page";

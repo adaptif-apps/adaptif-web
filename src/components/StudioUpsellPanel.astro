@@ -97,6 +97,9 @@ const { prefix, allowGuide = false, showPlacement = false } = Astro.props;
     </div>
     <div class="glass-panel adaptif-upsell-banner adaptif-upsell-banner--compact sup-preview-card" id={`${prefix}-upsell-preview-card`}>
       <div class="adaptif-upsell-inner">
+        <div class="adaptif-upsell-media" id={`${prefix}-upsell-pv-media`} hidden>
+          <img id={`${prefix}-upsell-pv-img`} src="" alt="" />
+        </div>
         <div class="adaptif-upsell-copy">
           <div class="adaptif-upsell-eyebrow-row">
             <span class="adaptif-eyebrow" id={`${prefix}-upsell-pv-eyebrow`}>Creative Subscription</span>
@@ -108,9 +111,9 @@ const { prefix, allowGuide = false, showPlacement = false } = Astro.props;
           <p class="adaptif-upsell-desc" id={`${prefix}-upsell-pv-desc`}>
             Unlimited brand, social, and ad creative requests with senior design talent and 48-hour turnarounds.
           </p>
-        </div>
-        <div class="adaptif-upsell-actions">
-          <span class="adaptif-btn adaptif-btn--sm" id={`${prefix}-upsell-pv-cta`}>Explore Creative Plan →</span>
+          <div class="adaptif-upsell-actions">
+            <span class="adaptif-btn adaptif-btn--sm" id={`${prefix}-upsell-pv-cta`}>Explore Creative Plan →</span>
+          </div>
         </div>
       </div>
     </div>

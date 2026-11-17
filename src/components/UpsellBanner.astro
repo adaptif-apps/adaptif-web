@@ -20,6 +20,16 @@ const { banner, compact = false, cmsPrefix } = Astro.props;
     aria-label="Recommended next step"
   >
     <div class="adaptif-upsell-inner">
+      {banner.coverImage && (
+        <div class="adaptif-upsell-media">
+          <img
+            src={banner.coverImage}
+            alt={banner.title}
+            loading="lazy"
+            data-cms-key={cmsPrefix ? `${cmsPrefix}.image` : undefined}
+          />
+        </div>
+      )}
       <div class="adaptif-upsell-copy">
         <div class="adaptif-upsell-eyebrow-row">
           <span
@@ -44,18 +54,18 @@ const { banner, compact = false, cmsPrefix } = Astro.props;
         >
           {banner.description}
         </p>
-      </div>
-      <div class="adaptif-upsell-actions">
-        <a
-          href={banner.ctaHref}
-          class:list={["adaptif-btn", { "adaptif-btn--sm": compact }]}
-          data-cms-key={cmsPrefix ? `${cmsPrefix}.cta` : undefined}
-        >
-          <span>{banner.ctaLabel}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </a>
+        <div class="adaptif-upsell-actions">
+          <a
+            href={banner.ctaHref}
+            class:list={["adaptif-btn", { "adaptif-btn--sm": compact }]}
+            data-cms-key={cmsPrefix ? `${cmsPrefix}.cta` : undefined}
+          >
+            <span>{banner.ctaLabel}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   </aside>

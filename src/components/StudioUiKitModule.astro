@@ -140,6 +140,22 @@ import StudioHeader from "./StudioHeader.astro";
               <code>.text-gradient-subtle</code>
             </div>
           </div>
+          <div class="uikit-row" data-uikit-search-item="body paragraph copy sans inter sf pro --font-family-body --font-size-subhero --color-text-secondary">
+            <div>
+              <p class="uikit-body-lead">
+                Lead Paragraph — Plug an AI-driven creative department into your team with 48-hour turnarounds.
+              </p>
+              <code>--font-family-body · --font-size-subhero · --font-line-height-subhero (1.55)</code>
+            </div>
+          </div>
+          <div class="uikit-row" data-uikit-search-item="paragraph body secondary text --font-family-body --color-text-secondary">
+            <div>
+              <p class="uikit-body-copy">
+                Body Paragraph (SF Pro / Inter / System Sans) — Used across descriptions, cards, FAQs, and upsell banners for high-legibility dark-mode reading.
+              </p>
+              <code>--font-family-body · 0.95rem · --color-text-secondary</code>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -507,10 +523,27 @@ import StudioHeader from "./StudioHeader.astro";
 
   .uikit-display-sample {
     margin: 0 0 4px;
-    font-family: var(--font-serif);
+    font-family: var(--font-family-display);
     font-size: 1.5rem;
     line-height: 1.15;
     color: var(--color-text-white);
+  }
+
+  .uikit-body-lead {
+    margin: 0 0 4px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-subhero);
+    line-height: var(--font-line-height-subhero);
+    letter-spacing: var(--font-letter-spacing-subhero);
+    color: var(--color-text-primary);
+  }
+
+  .uikit-body-copy {
+    margin: 0 0 4px;
+    font-family: var(--font-family-body);
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
   }
 
   .uikit-subsection {

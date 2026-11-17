@@ -679,7 +679,7 @@ img, svg {
 
 .adaptif-upsell-title {
   margin: 10px 0 8px;
-  font-family: var(--font-serif);
+  font-family: var(--font-family-display);
   font-weight: 400;
   font-size: clamp(1.5rem, 2.5vw, 2.05rem);
   line-height: 1.12;

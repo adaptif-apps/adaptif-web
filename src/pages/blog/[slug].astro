@@ -2,8 +2,10 @@
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header.astro";
 import Footer from "../../components/Footer.astro";
+import UpsellBanner from "../../components/UpsellBanner.astro";
 import { getBlogPostBySlug } from "../../lib/blogDb";
 import { getAcademyItemBySlug, listAcademyItems } from "../../lib/academyDb";
+import { resolveUpsellBanner } from "../../lib/upsell";
 import { hasValidStudioSession } from "../../lib/studioAuth";
 
 export const prerender = false;
@@ -43,43 +45,31 @@ function toEmbedUrl(raw: string): { kind: "iframe" | "video" | "none"; url: stri
   return { kind: "iframe", url: u };
 }
 
+const allAcademyItems = await listAcademyItems({ onlyPublished: !isStudio });
+const allCourses = allAcademyItems.filter((i) => i.kind === "course");
+const allGuides = allAcademyItems.filter((i) => i.kind === "guide");
+
+const resolvedUpsell = resolveUpsellBanner({
+  upsell: post.upsell,
+  sourceKind: "blog",
+  sourceSlug: post.slug,
+  courses: allCourses,
+  guides: allGuides
+});
+
 let linkedItem: any = null;
 if (post.upsell?.enabled && post.upsell.targetSlug && (post.upsell.kind === "guide" || post.upsell.kind === "course")) {
   linkedItem = await getAcademyItemBySlug(post.upsell.targetSlug, post.upsell.kind, isStudio);
 }
 
-const upsellEyebrow =
-  post.upsell?.eyebrow ||
-  (post.upsell?.kind === "course"
-    ? "FEATURED PRO COURSE"
-    : post.upsell?.kind === "guide"
-      ? "FREE TACTICAL GUIDE"
-      : "ADAPTIF SUBSCRIPTION");
-
-const upsellTitle =
-  post.upsell?.title ||
-  linkedItem?.title ||
-  `Scale faster with ${post.upsell?.planName || "Adaptif"}`;
-
+const upsellEyebrow = resolvedUpsell.eyebrow || "ADAPTIF SUBSCRIPTION";
+const upsellTitle = resolvedUpsell.title || `Scale faster with ${post.upsell?.planName || "Adaptif"}`;
 const upsellDesc =
-  post.upsell?.description ||
-  linkedItem?.subtitle ||
-  linkedItem?.description ||
+  resolvedUpsell.description ||
   "Plug an AI-driven creative department into your team with unlimited requests and 48-hour turnarounds.";
-
-const upsellHref =
-  post.upsell?.ctaHref ||
-  (linkedItem
-    ? `/academy/${post.upsell.kind === "course" ? "courses" : "guides"}/${linkedItem.slug}`
-    : "/pricing");
-
-const upsellCta =
-  post.upsell?.ctaLabel ||
-  (post.upsell?.kind === "course"
-    ? "Explore Course"
-    : post.upsell?.kind === "guide"
-      ? "Get Free Guide"
-      : "View Plans");
+const upsellHref = resolvedUpsell.ctaHref || "/pricing";
+const upsellCta = resolvedUpsell.ctaLabel || "View Plans";
+const midSectionIdx = post.sections.length > 1 ? Math.floor((post.sections.length - 1) / 2) : -1;
 ---
 
 <Layout title={`${post.title} — Adaptif Blog`} description={post.excerpt || post.subtitle}>
@@ -142,7 +132,8 @@ const upsellCta =
 
       <div class="container blog-narrow">
         <div id="bp-sections-stack" class="blog-sections-stack">
-          {!isEditMode && post.sections.map((section) => (
+          {!isEditMode && post.sections.map((section, secIdx) => (
+            <>
             <section class:list={["blog-section is-visible", `cols-${section.columnsCount}`]}>
               {section.columns.map((col) => (
                 <div class="blog-col">
@@ -198,6 +189,13 @@ const upsellCta =
                 </div>
               ))}
             </section>
+            {!isEditMode &&
+              resolvedUpsell.visible &&
+              (resolvedUpsell.placement === "mid" || resolvedUpsell.placement === "both") &&
+              secIdx === midSectionIdx && (
+                <UpsellBanner banner={resolvedUpsell} compact={true} cmsPrefix={`blog.${post.slug}.upsell.mid`} />
+              )}
+            </>
           ))}
         </div>
 
@@ -209,7 +207,13 @@ const upsellCta =
           </div>
         )}
 
-        {(post.upsell?.enabled || isEditMode) && (
+        {!isEditMode &&
+          resolvedUpsell.visible &&
+          (resolvedUpsell.placement === "end" || resolvedUpsell.placement === "both") && (
+            <UpsellBanner banner={resolvedUpsell} cmsPrefix={`blog.${post.slug}.upsell`} />
+          )}
+
+        {isEditMode && (
           <aside class:list={["glass-panel blog-upsell-banner", { "is-disabled-preview": isEditMode && !post.upsell?.enabled }]} id="bp-upsell-banner">
             {isEditMode && (
               <div class="bp-upsell-controls">

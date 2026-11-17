@@ -1,0 +1,229 @@
+---
+interface Props {
+  prefix: "blog" | "acd";
+  allowGuide?: boolean;
+  showPlacement?: boolean;
+}
+
+const { prefix, allowGuide = false, showPlacement = false } = Astro.props;
+---
+
+<div class="sup-root" data-upsell-prefix={prefix}>
+  <div class="sup-header-row">
+    <div>
+      <span class="adaptif-eyebrow">Monetization &amp; Cross-Sell</span>
+      <h3 class="sup-heading">Upsell Banner Configuration</h3>
+      <p class="sup-sub">
+        Choose what this page promotes. In <strong>Auto</strong> mode, it applies the recommended default offer; switch to <strong>Custom</strong> to pick a specific Plan or Course.
+      </p>
+    </div>
+  </div>
+
+  <div class="sup-grid">
+    <label class="sup-field">
+      <span class="sup-label">Upsell Mode</span>
+      <select id={`${prefix}-upsell-mode`} class="adaptif-input">
+        <option value="auto">Auto (Recommended Default)</option>
+        <option value="custom">Custom Offer</option>
+        <option value="off">Off (Hide Banner)</option>
+      </select>
+    </label>
+
+    {showPlacement && (
+      <label class="sup-field" id={`${prefix}-upsell-placement-wrap`}>
+        <span class="sup-label">Banner Placement</span>
+        <select id={`${prefix}-upsell-placement`} class="adaptif-input">
+          <option value="end">End of Article</option>
+          <option value="mid">Mid-Article</option>
+          <option value="both">Mid-Article + End</option>
+        </select>
+      </label>
+    )}
+  </div>
+
+  <div class="sup-custom-box" id={`${prefix}-upsell-custom-fields`}>
+    <div class="sup-grid">
+      <label class="sup-field">
+        <span class="sup-label">What to Sell (Offer Type)</span>
+        <select id={`${prefix}-upsell-kind`} class="adaptif-input">
+          <option value="plan">Adaptif Plan</option>
+          <option value="course">Academy Course</option>
+          {allowGuide && <option value="guide">Free Guide</option>}
+        </select>
+      </label>
+
+      <label class="sup-field" id={`${prefix}-upsell-plan-wrap`}>
+        <span class="sup-label">Select Plan</span>
+        <select id={`${prefix}-upsell-plan`} class="adaptif-input">
+          <option value="Creative Plan">Creative Plan</option>
+          <option value="Full Stack Plan">Full Stack Plan</option>
+          <option value="Dedicated Team">Dedicated Team</option>
+        </select>
+      </label>
+
+      <label class="sup-field" id={`${prefix}-upsell-target-wrap`} hidden>
+        <span class="sup-label">Select Course / Item</span>
+        <select id={`${prefix}-upsell-target`} class="adaptif-input"></select>
+      </label>
+    </div>
+
+    <details class="sup-overrides">
+      <summary class="sup-overrides-summary">Optional Copy Overrides (auto-filled from selected offer)</summary>
+      <div class="sup-grid sup-overrides-grid">
+        <label class="sup-field">
+          <span class="sup-label">Custom Eyebrow</span>
+          <input type="text" id={`${prefix}-upsell-eyebrow`} class="adaptif-input" placeholder="Auto-filled from offer" />
+        </label>
+        <label class="sup-field">
+          <span class="sup-label">Custom CTA Label</span>
+          <input type="text" id={`${prefix}-upsell-cta`} class="adaptif-input" placeholder="Auto-filled from offer" />
+        </label>
+        <label class="sup-field sup-field--full">
+          <span class="sup-label">Custom Headline</span>
+          <input type="text" id={`${prefix}-upsell-title`} class="adaptif-input" placeholder="Auto-filled from offer" />
+        </label>
+        <label class="sup-field sup-field--full">
+          <span class="sup-label">Custom Description</span>
+          <textarea id={`${prefix}-upsell-desc`} class="adaptif-input sup-textarea" rows="2" placeholder="Auto-filled from offer"></textarea>
+        </label>
+      </div>
+    </details>
+  </div>
+
+  <div class="sup-preview-wrap">
+    <div class="sup-preview-label">
+      <span class="adaptif-eyebrow">Live Banner Preview</span>
+      <span class="adaptif-tag adaptif-tag--muted" id={`${prefix}-upsell-preview-status`}>Visible</span>
+    </div>
+    <div class="glass-panel adaptif-upsell-banner adaptif-upsell-banner--compact sup-preview-card" id={`${prefix}-upsell-preview-card`}>
+      <div class="adaptif-upsell-inner">
+        <div class="adaptif-upsell-copy">
+          <div class="adaptif-upsell-eyebrow-row">
+            <span class="adaptif-eyebrow" id={`${prefix}-upsell-pv-eyebrow`}>Creative Subscription</span>
+            <span class="adaptif-tag adaptif-tag--cyan" id={`${prefix}-upsell-pv-badge`}>Most Popular</span>
+          </div>
+          <h4 class="adaptif-upsell-title" id={`${prefix}-upsell-pv-title`}>
+            Scale your brand output with the Creative Plan
+          </h4>
+          <p class="adaptif-upsell-desc" id={`${prefix}-upsell-pv-desc`}>
+            Unlimited brand, social, and ad creative requests with senior design talent and 48-hour turnarounds.
+          </p>
+        </div>
+        <div class="adaptif-upsell-actions">
+          <span class="adaptif-btn adaptif-btn--sm" id={`${prefix}-upsell-pv-cta`}>Explore Creative Plan →</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .sup-root {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .sup-heading {
+    margin: 4px 0 4px;
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: 1.45rem;
+    color: var(--color-text-white);
+  }
+
+  .sup-sub {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+
+  .sup-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .sup-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .sup-field[hidden] {
+    display: none;
+  }
+
+  .sup-field--full {
+    grid-column: 1 / -1;
+  }
+
+  .sup-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.02em;
+  }
+
+  .sup-custom-box {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(10, 20, 40, 0.45);
+    border: 1px solid rgba(72, 200, 255, 0.14);
+  }
+
+  .sup-custom-box[hidden] {
+    display: none;
+  }
+
+  .sup-overrides {
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    padding-top: 12px;
+  }
+
+  .sup-overrides-summary {
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-brand-cyan);
+    user-select: none;
+  }
+
+  .sup-overrides-grid {
+    margin-top: 12px;
+  }
+
+  .sup-textarea {
+    resize: vertical;
+    min-height: 62px;
+  }
+
+  .sup-preview-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 4px;
+  }
+
+  .sup-preview-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .sup-preview-card {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  @media (max-width: 720px) {
+    .sup-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

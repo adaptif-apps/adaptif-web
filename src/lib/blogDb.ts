@@ -1,4 +1,8 @@
 import { neon } from "@neondatabase/serverless";
+import type { UpsellConfig } from "./upsell";
+
+export type { UpsellConfig } from "./upsell";
+export type BlogUpsellConfig = UpsellConfig;
 
 export type BlogStatus = "draft" | "published";
 export type BlogTextFormat =
@@ -29,18 +33,6 @@ export interface BlogSection {
   id: string;
   columnsCount: 1 | 2 | 3;
   columns: BlogColumn[];
-}
-
-export interface BlogUpsellConfig {
-  enabled: boolean;
-  kind: "guide" | "course" | "plan";
-  targetSlug?: string;
-  planName?: string;
-  eyebrow?: string;
-  title?: string;
-  description?: string;
-  ctaLabel?: string;
-  ctaHref?: string;
 }
 
 export interface BlogPost {

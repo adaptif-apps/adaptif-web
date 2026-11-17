@@ -4,14 +4,17 @@ import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
 import FaqSection from "../../../components/FaqSection.astro";
 import CourseHeroShaderBg from "../../../components/CourseHeroShaderBg.astro";
+import UpsellBanner from "../../../components/UpsellBanner.astro";
 import {
   FUNNEL_BLOCKS,
   buildSlidesFromLanding,
   defaultFunnelVisibility,
   getAcademyItemBySlug,
   getAcademySettings,
+  listAcademyItems,
   verifyAccessToken
 } from "../../../lib/academyDb";
+import { resolveUpsellBanner } from "../../../lib/upsell";
 
 export const prerender = false;
 
@@ -23,6 +26,13 @@ if (!item) {
 }
 
 const settings = await getAcademySettings();
+const allCourses = await listAcademyItems({ kind: "course", onlyPublished: true });
+const resolvedUpsell = resolveUpsellBanner({
+  upsell: item.landingData?.upsell,
+  sourceKind: "course",
+  sourceSlug: item.slug,
+  courses: allCourses
+});
 const effectiveAccessMode = settings.defaultCourseAccessMode || item.accessMode;
 
 const cookieToken = Astro.cookies.get(`adaptif_academy_${item.slug}`)?.value;
@@ -815,6 +825,14 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
         hidden={!vis.faq}
         dataFunnelBlock="faq"
       />
+    )}
+
+    {resolvedUpsell.visible && (
+      <section class="cf-section is-visible" style="padding-top: 0;">
+        <div class="cf-container">
+          <UpsellBanner banner={resolvedUpsell} cmsPrefix={`course.${item.slug}.upsell`} />
+        </div>
+      </section>
     )}
   </main>
 

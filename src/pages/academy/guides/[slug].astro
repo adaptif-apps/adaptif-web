@@ -2,7 +2,9 @@
 import Layout from "../../../layouts/Layout.astro";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
-import { getAcademyItemBySlug, verifyAccessToken } from "../../../lib/academyDb";
+import UpsellBanner from "../../../components/UpsellBanner.astro";
+import { getAcademyItemBySlug, listAcademyItems, verifyAccessToken } from "../../../lib/academyDb";
+import { resolveUpsellBanner } from "../../../lib/upsell";
 
 export const prerender = false;
 
@@ -15,6 +17,13 @@ if (!item) {
 
 const cookieToken = Astro.cookies.get(`adaptif_academy_${item.slug}`)?.value;
 const isUnlocked = await verifyAccessToken(item.id, cookieToken);
+const allCourses = await listAcademyItems({ kind: "course", onlyPublished: true });
+const resolvedUpsell = resolveUpsellBanner({
+  upsell: item.landingData?.upsell,
+  sourceKind: "guide",
+  sourceSlug: item.slug,
+  courses: allCourses
+});
 ---
 
 <Layout title={`${item.title} — Free Guide | Adaptif Academy`} description={item.subtitle || item.description}>
@@ -175,6 +184,14 @@ const isUnlocked = await verifyAccessToken(item.id, cookieToken);
         </div>
       </div>
     </section>
+
+    {resolvedUpsell.visible && (
+      <section class="guide-section is-visible" style="padding-top: 0;">
+        <div class="guide-container">
+          <UpsellBanner banner={resolvedUpsell} cmsPrefix={`guide.${item.slug}.upsell`} />
+        </div>
+      </section>
+    )}
   </main>
   <Footer />
 </Layout>

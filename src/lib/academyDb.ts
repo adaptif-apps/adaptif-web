@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import crypto from "node:crypto";
+import type { UpsellConfig } from "./upsell";
 
 export type AcademyKind = "guide" | "course";
 export type AcademyStatus = "draft" | "published" | "scheduled";
@@ -161,6 +162,7 @@ export interface AcademyLandingData {
   heroSignal1?: string;
   heroSignal2?: string;
   heroGallery?: { label: string; image: string }[];
+  upsell?: UpsellConfig;
 }
 
 export interface AcademyItem {

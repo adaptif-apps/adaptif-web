@@ -70,6 +70,7 @@ Used for secondary/item header actions and utility controls across both public a
 | --- | --- |
 | `.container` | Centered max-width container (`--container-max`) with responsive horizontal padding |
 | `.glass-panel` | Frosted dark glass surface (`--glass-bg-card`, `--glass-blur-md`, `--border-hairline`, `--shadow-bevel-card`) |
+| `.adaptif-upsell-banner` | Cross-sell / upsell banner card (`.adaptif-upsell-banner--compact` for mid-article/preview) |
 | `.adaptif-input` | Standard dark glass form input |
 | `.cms-item-title-bar` / `.cms-item-title-input` | Inline editable serif title bar with status badge |
 

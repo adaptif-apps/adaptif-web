@@ -2,6 +2,7 @@
 import { FUNNEL_BLOCKS, type AcademyItem, type AcademySettings } from "../lib/academyDb";
 import AcademyGeneratorModal from "./AcademyGeneratorModal.astro";
 import StudioHeader from "./StudioHeader.astro";
+import StudioUpsellPanel from "./StudioUpsellPanel.astro";
 
 interface Props {
   initialItems: AcademyItem[];
@@ -86,6 +87,9 @@ const { initialItems, initialSettings } = Astro.props;
         </button>
         <button type="button" class="cms-tab-btn" data-acd-tab="generator" role="tab" aria-selected="false">
           AI Generator
+        </button>
+        <button type="button" class="cms-tab-btn" data-acd-tab="upselling" role="tab" aria-selected="false">
+          Upselling
         </button>
       </div>
 
@@ -246,6 +250,11 @@ const { initialItems, initialSettings } = Astro.props;
       <!-- Tab 2: AI Curriculum Engine -->
       <section class="acd-glass-card" id="acd-tab-generator" aria-label="AI Curriculum Engine" hidden>
         <AcademyGeneratorModal initialSettings={initialSettings} />
+      </section>
+
+      <!-- Tab 3: Upselling -->
+      <section class="acd-glass-card" id="acd-tab-upselling" aria-label="Upselling configuration" hidden>
+        <StudioUpsellPanel prefix="acd" allowGuide={false} showPlacement={false} />
       </section>
     </div>
   </div>
@@ -573,10 +582,19 @@ const { initialItems, initialSettings } = Astro.props;
 </script>
 
 <script>
+  import { createUpsellPanelController } from "../lib/studioUpsellClient";
+
   (() => {
     const w = window as any;
     let items: any[] = Array.isArray(w.__INITIAL_ACADEMY_ITEMS__) ? [...w.__INITIAL_ACADEMY_ITEMS__] : [];
     let selectedId: string | null = items[0]?.id ?? null;
+    const acdUpsellCtrl = createUpsellPanelController("acd");
+    const syncUpsellCatalog = () => {
+      const courseList = items.filter((i) => i.kind === "course");
+      const guideList = items.filter((i) => i.kind === "guide");
+      acdUpsellCtrl.setCatalog(courseList, guideList);
+    };
+    syncUpsellCatalog();
 
     const formEl = document.getElementById("acd-editor-form") as HTMLFormElement | null;
     const emptyEl = document.getElementById("acd-empty-editor");
@@ -698,7 +716,7 @@ const { initialItems, initialSettings } = Astro.props;
       renderEditor();
     });
 
-    function switchAcdTab(tab: "settings" | "generator") {
+    function switchAcdTab(tab: "settings" | "generator" | "upselling") {
       document.querySelectorAll<HTMLButtonElement>("[data-acd-tab]").forEach((btn) => {
         const active = btn.dataset.acdTab === tab;
         btn.classList.toggle("is-active", active);
@@ -706,13 +724,15 @@ const { initialItems, initialSettings } = Astro.props;
       });
       const settingsPanel = document.getElementById("acd-tab-settings");
       const genPanel = document.getElementById("acd-tab-generator");
+      const upsellPanel = document.getElementById("acd-tab-upselling");
       if (settingsPanel) settingsPanel.hidden = tab !== "settings";
       if (genPanel) genPanel.hidden = tab !== "generator";
+      if (upsellPanel) upsellPanel.hidden = tab !== "upselling";
     }
 
     document.querySelectorAll<HTMLButtonElement>("[data-acd-tab]").forEach((btn) => {
       btn.addEventListener("click", () => {
-        switchAcdTab((btn.dataset.acdTab as "settings" | "generator") || "settings");
+        switchAcdTab((btn.dataset.acdTab as "settings" | "generator" | "upselling") || "settings");
       });
     });
 
@@ -902,6 +922,12 @@ const { initialItems, initialSettings } = Astro.props;
       }
 
       toggleKindAndStatusUI(item.kind);
+      syncUpsellCatalog();
+      acdUpsellCtrl.setContext(
+        item.kind === "course" ? "course" : "guide",
+        item.slug || "",
+        item.landingData?.upsell
+      );
     }
 
     async function createItem(kind: "guide" | "course") {
@@ -1066,7 +1092,10 @@ const { initialItems, initialSettings } = Astro.props;
       const nextStatus = genVal("gen-status") || item.status;
       const nextPublishAtRaw = genVal("gen-publish-at");
 
-        const nextLandingData = { ...(item.landingData || {}) };
+        const nextLandingData = {
+          ...(item.landingData || {}),
+          upsell: acdUpsellCtrl.getConfig()
+        };
         if (pendingCustomPdfUrl === null) {
           delete nextLandingData.customPdfUrl;
         } else if (typeof pendingCustomPdfUrl === "string" && pendingCustomPdfUrl) {

@@ -2,6 +2,7 @@
 import type { BlogPost } from "../lib/blogDb";
 import type { AcademyItem } from "../lib/academyDb";
 import StudioHeader from "./StudioHeader.astro";
+import StudioUpsellPanel from "./StudioUpsellPanel.astro";
 
 interface Props {
   initialPosts: BlogPost[];
@@ -9,8 +10,28 @@ interface Props {
 }
 
 const { initialPosts, academyItems } = Astro.props;
-const guides = academyItems.filter((i) => i.kind === "guide").map((i) => ({ slug: i.slug, title: i.title }));
-const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ slug: i.slug, title: i.title }));
+const guides = academyItems
+  .filter((i) => i.kind === "guide")
+  .map((i) => ({
+    slug: i.slug,
+    kind: "guide" as const,
+    title: i.title,
+    subtitle: i.subtitle,
+    description: i.description,
+    priceLabel: i.priceLabel,
+    coverImage: i.coverImage
+  }));
+const courses = academyItems
+  .filter((i) => i.kind === "course")
+  .map((i) => ({
+    slug: i.slug,
+    kind: "course" as const,
+    title: i.title,
+    subtitle: i.subtitle,
+    description: i.description,
+    priceLabel: i.priceLabel,
+    coverImage: i.coverImage
+  }));
 ---
 
 <div id="module-blogs" hidden>
@@ -91,6 +112,9 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
         </button>
         <button type="button" class="cms-tab-btn" data-blog-tab="generator" role="tab" aria-selected="false">
           AI Generator
+        </button>
+        <button type="button" class="cms-tab-btn" data-blog-tab="upselling" role="tab" aria-selected="false">
+          Upselling
         </button>
       </div>
 
@@ -213,6 +237,11 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
             ★ Generate
           </button>
         </div>
+      </section>
+
+      <!-- Tab 3: Upselling -->
+      <section class="blog-cms-card" id="blog-tab-upselling" aria-label="Blog upsell configuration" hidden>
+        <StudioUpsellPanel prefix="blog" allowGuide={true} showPlacement={true} />
       </section>
     </div>
   </div>
@@ -479,8 +508,12 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
 </style>
 
 <script>
+  import { createUpsellPanelController } from "../lib/studioUpsellClient";
+
   const w = window as any;
-  const seed = w.__INITIAL_BLOG_STUDIO__ || { posts: [] };
+  const seed = w.__INITIAL_BLOG_STUDIO__ || { posts: [], courses: [], guides: [] };
+  const blogUpsellCtrl = createUpsellPanelController("blog");
+  blogUpsellCtrl.setCatalog(seed.courses || [], seed.guides || []);
   let posts: any[] = JSON.parse(JSON.stringify(seed.posts || []));
   let selectedId: string | null = posts[0]?.id || null;
   let uploadedDocText = "";
@@ -527,7 +560,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     });
   }
 
-  function switchBlogTab(tab: "settings" | "generator") {
+  function switchBlogTab(tab: "settings" | "generator" | "upselling") {
     document.querySelectorAll<HTMLButtonElement>("[data-blog-tab]").forEach((btn) => {
       const active = btn.dataset.blogTab === tab;
       btn.classList.toggle("is-active", active);
@@ -535,13 +568,15 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     });
     const settingsPanel = document.getElementById("blog-tab-settings");
     const genPanel = document.getElementById("blog-tab-generator");
+    const upsellPanel = document.getElementById("blog-tab-upselling");
     if (settingsPanel) settingsPanel.hidden = tab !== "settings";
     if (genPanel) genPanel.hidden = tab !== "generator";
+    if (upsellPanel) upsellPanel.hidden = tab !== "upselling";
   }
 
   document.querySelectorAll<HTMLButtonElement>("[data-blog-tab]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      switchBlogTab((btn.dataset.blogTab as "settings" | "generator") || "settings");
+      switchBlogTab((btn.dataset.blogTab as "settings" | "generator" | "upselling") || "settings");
     });
   });
 
@@ -617,6 +652,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
     setVal("blog-f-subtitle", post.subtitle);
     setVal("blog-f-excerpt", post.excerpt);
     setVal("blog-f-cover", post.coverImage);
+    blogUpsellCtrl.setContext("blog", post.slug || "", post.upsell);
 
     if (editContentLink) editContentLink.href = `/blog/${post.slug}?edit=1`;
     if (liveLink) liveLink.href = `/blog/${post.slug}`;
@@ -749,6 +785,7 @@ const courses = academyItems.filter((i) => i.kind === "course").map((i) => ({ sl
           subtitle: val("blog-f-subtitle"),
           excerpt: val("blog-f-excerpt"),
           coverImage: val("blog-f-cover"),
+          upsell: blogUpsellCtrl.getConfig(),
         }),
       });
       const data = await res.json();

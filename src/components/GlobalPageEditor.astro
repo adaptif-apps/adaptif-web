@@ -329,7 +329,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
   }
 
   .gce-icon-close:hover {
-    color: #ffffff;
+    color: var(--color-text-primary);
     border-color: rgba(72, 200, 255, 0.45);
   }
 
@@ -357,7 +357,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
 
   .gce-edge-handle:hover {
     background: rgba(18, 44, 88, 0.95);
-    color: #ffffff;
+    color: var(--color-text-primary);
   }
 
   /* Drawer dynamic items */
@@ -382,7 +382,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
 
   :global(.gce-nav-link:hover) {
     background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
+    color: var(--color-text-primary);
   }
 
   :global(.gce-nav-link.is-current) {
@@ -563,7 +563,7 @@ const { currentPath, overrides, isEditMode, pages = [] } = Astro.props;
     font-family: var(--font-family-body, "DM Sans", sans-serif);
     font-size: 18px;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--color-text-primary);
   }
 
   .gce-modal p {

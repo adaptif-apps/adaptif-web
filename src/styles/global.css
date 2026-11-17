@@ -54,7 +54,7 @@ body::before {
    ========================================================================== */
 ::selection {
   background-color: rgba(0, 140, 255, 0.35);
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 ::-webkit-scrollbar {
@@ -369,7 +369,7 @@ img, svg {
 .cms-btn:hover:not(:disabled) {
   background: rgba(30, 41, 59, 0.88);
   border-color: rgba(148, 163, 184, 0.45);
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .cms-btn[hidden] {
@@ -500,7 +500,7 @@ img, svg {
   border-radius: 8px;
   padding: 6px 10px;
   margin: -6px -10px;
-  color: #fff;
+  color: var(--color-text-primary);
   font-family: var(--font-serif, "Instrument Serif", Georgia, serif);
   font-size: 1.55rem;
   font-weight: 400;
@@ -569,12 +569,12 @@ img, svg {
 }
 
 .cms-tab-btn:hover {
-  color: #fff;
+  color: var(--color-text-primary);
 }
 
 .cms-tab-btn.is-active {
   background: rgba(72, 200, 255, 0.18);
-  color: #fff;
+  color: var(--color-text-primary);
   box-shadow: inset 0 0 0 1px rgba(72, 200, 255, 0.45);
 }
 

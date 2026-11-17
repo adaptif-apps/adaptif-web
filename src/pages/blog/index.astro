@@ -143,7 +143,7 @@ const categories = ["All", ...Array.from(new Set(posts.map((p) => p.category).fi
 
   .blog-cat-pill:hover {
     border-color: rgba(72, 200, 255, 0.4);
-    color: #ffffff;
+    color: var(--color-text-primary);
   }
 
   .blog-cat-pill.is-active {
@@ -244,7 +244,7 @@ const categories = ["All", ...Array.from(new Set(posts.map((p) => p.category).fi
   .blog-card-title {
     font-size: 1.45rem;
     line-height: 1.15;
-    color: #ffffff;
+    color: var(--color-text-primary);
   }
 
   .blog-card-excerpt {

@@ -601,7 +601,8 @@ img, svg {
  * ========================================================= */
 .adaptif-upsell-banner {
   margin-top: 36px;
-  padding: 32px;
+  padding: 0;
+  overflow: hidden;
   border-radius: 22px;
   background:
     radial-gradient(circle at 0% 0%, rgba(72, 200, 255, 0.18), transparent 55%),
@@ -612,7 +613,7 @@ img, svg {
 .adaptif-upsell-banner--compact {
   margin-top: 24px;
   margin-bottom: 24px;
-  padding: 22px 24px;
+  padding: 0;
   border-radius: 18px;
 }
 
@@ -622,16 +623,18 @@ img, svg {
 
 .adaptif-upsell-inner {
   display: flex;
-  align-items: center;
-  gap: 28px;
+  align-items: stretch;
+  gap: 0;
 }
 
 .adaptif-upsell-media {
-  width: 260px;
+  width: 42%;
+  max-width: 420px;
+  min-width: 280px;
+  aspect-ratio: 16 / 9;
   flex-shrink: 0;
-  border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(72, 200, 255, 0.22);
+  border-right: 1px solid rgba(72, 200, 255, 0.18);
   background: rgba(8, 16, 34, 0.7);
 }
 
@@ -641,23 +644,30 @@ img, svg {
 
 .adaptif-upsell-media img {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
 }
 
-.adaptif-upsell-banner--compact .adaptif-upsell-inner {
-  gap: 20px;
-}
-
 .adaptif-upsell-banner--compact .adaptif-upsell-media {
-  width: 190px;
-  border-radius: 12px;
+  width: 38%;
+  max-width: 290px;
+  min-width: 200px;
+  aspect-ratio: 16 / 9;
 }
 
 .adaptif-upsell-copy {
   flex: 1;
   min-width: 0;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.adaptif-upsell-banner--compact .adaptif-upsell-copy {
+  padding: 20px 24px;
 }
 
 .adaptif-upsell-eyebrow-row {
@@ -699,16 +709,23 @@ img, svg {
   margin-top: 14px;
 }
 
-@media (max-width: 680px) {
+@media (max-width: 720px) {
   .adaptif-upsell-inner {
     flex-direction: column;
     align-items: stretch;
-    gap: 18px;
   }
 
   .adaptif-upsell-media,
   .adaptif-upsell-banner--compact .adaptif-upsell-media {
     width: 100%;
+    max-width: none;
+    min-width: 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.18);
+  }
+
+  .adaptif-upsell-copy {
+    padding: 22px 22px;
   }
 }
 

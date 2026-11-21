@@ -691,7 +691,89 @@ try {
     <span class="acd-section-kicker">Plain-Language Overview</span>
     <h2 class="acd-card-title" style="margin-bottom: 8px;">How Adaptif Web Is Connected</h2>
     <p class="gi-summary-text">
-      Adaptif Web is hosted on <strong>Vercel</strong> and uses a <strong>Neon Postgres</strong> database to store all pages, courses, blog posts, SEO settings, and customer activity, while uploaded images, videos, and PDFs are stored in <strong>Vercel Blob</strong>. Content generation and SEO writing are powered by <strong id="gi-summary-ai">{initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}</strong>, payments and checkout are currently routed through <strong id="gi-summary-payment">{paymentSettings.activeProvider === "shopify" ? `Shopify API (${paymentSettings.shopifyStoreDomain})` : "Stripe"}</strong> (switchable in one click under Payment), and automated course-access emails are sent via <strong>Resend</strong> with <strong>Cloudflare Turnstile</strong> protecting public forms.
+      Adaptif Web is hosted on
+      <span class="gi-svc-wrap">
+        <button type="button" class="gi-svc-trigger">Vercel</button>
+        <span class="gi-svc-tip" role="tooltip">
+          <span class="gi-svc-tip-desc">Cloud hosting, serverless APIs, and production deployments.</span>
+          <a href="https://vercel.com/adaptif-apps-projects/adaptif-web" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Vercel Project ↗</a>
+        </span>
+      </span>
+      and uses a
+      <span class="gi-svc-wrap">
+        <button type="button" class="gi-svc-trigger">Neon Postgres</button>
+        <span class="gi-svc-tip" role="tooltip">
+          <span class="gi-svc-tip-desc">Serverless PostgreSQL database storing pages, courses, SEO, and orders.</span>
+          <a href="https://vercel.com/adaptif-apps-projects/adaptif-web/stores" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Vercel Stores ↗</a>
+        </span>
+      </span>
+      database to store all pages, courses, blog posts, SEO settings, and customer activity, while uploaded images, videos, and PDFs are stored in
+      <span class="gi-svc-wrap">
+        <button type="button" class="gi-svc-trigger">Vercel Blob</button>
+        <span class="gi-svc-tip" role="tooltip">
+          <span class="gi-svc-tip-desc">Fast CDN object storage for uploaded media, images, and course PDFs.</span>
+          <a href="https://vercel.com/adaptif-apps-projects/adaptif-web/stores" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Blob Storage ↗</a>
+        </span>
+      </span>.
+      Content generation and SEO writing are powered by
+      <span class="gi-svc-wrap">
+        <button type="button" class="gi-svc-trigger" id="gi-summary-ai">
+          {initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}
+        </button>
+        <span class="gi-svc-tip" role="tooltip">
+          <span class="gi-svc-tip-desc" id="gi-summary-ai-desc">AI model generating course curricula, slides, and SEO copy.</span>
+          <a
+            href={initialSettings.aiProvider === "openai" ? "https://platform.openai.com/api-keys" : "https://aistudio.google.com/app/apikey"}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="gi-svc-tip-link"
+            id="gi-summary-ai-link"
+          >
+            {initialSettings.aiProvider === "openai" ? "Open OpenAI Keys ↗" : "Open Google AI Studio ↗"}
+          </a>
+        </span>
+      </span>,
+      payments and checkout are currently routed through
+      <span class="gi-svc-wrap">
+        <button type="button" class="gi-svc-trigger" id="gi-summary-payment">
+          {paymentSettings.activeProvider === "shopify" ? `Shopify API (${paymentSettings.shopifyStoreDomain})` : "Stripe"}
+        </button>
+        <span class="gi-svc-tip" role="tooltip">
+          <span class="gi-svc-tip-desc" id="gi-summary-payment-desc">
+            {paymentSettings.activeProvider === "shopify"
+              ? "Active checkout engine creating Shopify Storefront carts for courses, plans & audits."
+              : "Active checkout engine processing Stripe Payment Links & webhooks."}
+          </span>
+          <a
+            href={paymentSettings.activeProvider === "shopify"
+              ? `https://admin.shopify.com/store/${(paymentSettings.shopifyStoreDomain || "adaptif-dev.myshopify.com").replace(/\.myshopify\.com$/i, "")}`
+              : "https://dashboard.stripe.com"}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="gi-svc-tip-link"
+            id="gi-summary-payment-link"
+          >
+            {paymentSettings.activeProvider === "shopify" ? "Open Shopify Admin ↗" : "Open Stripe Dashboard ↗"}
+          </a>
+        </span>
+      </span>
+      (switchable in one click under Payment), and automated course-access emails are sent via
+      <span class="gi-svc-wrap">
+        <button type="button" class="gi-svc-trigger">Resend</button>
+        <span class="gi-svc-tip" role="tooltip">
+          <span class="gi-svc-tip-desc">Transactional email API delivering course access links after purchase.</span>
+          <a href="https://resend.com/emails" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Resend ↗</a>
+        </span>
+      </span>
+      with
+      <span class="gi-svc-wrap">
+        <button type="button" class="gi-svc-trigger">Cloudflare Turnstile</button>
+        <span class="gi-svc-tip" role="tooltip">
+          <span class="gi-svc-tip-desc">Privacy-first anti-bot protection for public lead and booking forms.</span>
+          <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Cloudflare ↗</a>
+        </span>
+      </span>
+      protecting public forms.
     </p>
   </section>
 
@@ -1417,9 +1499,22 @@ try {
           });
           if (res.ok) {
             const summaryPayEl = document.getElementById("gi-summary-payment");
+            const summaryPayDesc = document.getElementById("gi-summary-payment-desc");
+            const summaryPayLink = document.getElementById("gi-summary-payment-link") as HTMLAnchorElement | null;
             const domainVal = (document.getElementById("pay-shopify-domain") as HTMLInputElement)?.value?.trim() || "adaptif-dev.myshopify.com";
+            const storeSlug = domainVal.replace(/\.myshopify\.com$/i, "");
             if (summaryPayEl) {
               summaryPayEl.textContent = nextProvider === "shopify" ? `Shopify API (${domainVal})` : "Stripe";
+            }
+            if (summaryPayDesc) {
+              summaryPayDesc.textContent =
+                nextProvider === "shopify"
+                  ? "Active checkout engine creating Shopify Storefront carts for courses, plans & audits."
+                  : "Active checkout engine processing Stripe Payment Links & webhooks.";
+            }
+            if (summaryPayLink) {
+              summaryPayLink.href = nextProvider === "shopify" ? `https://admin.shopify.com/store/${storeSlug}` : "https://dashboard.stripe.com";
+              summaryPayLink.textContent = nextProvider === "shopify" ? "Open Shopify Admin ↗" : "Open Stripe Dashboard ↗";
             }
             showStudioToast(
               nextProvider === "shopify"
@@ -1511,8 +1606,13 @@ try {
             aiDot?.classList.add("is-ready");
             if (aiStatusText) aiStatusText.textContent = `${provider === "openai" ? "OpenAI" : "Gemini"} Ready`;
             const summaryAiEl = document.getElementById("gi-summary-ai");
+            const summaryAiLink = document.getElementById("gi-summary-ai-link") as HTMLAnchorElement | null;
             if (summaryAiEl) {
               summaryAiEl.textContent = provider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)";
+            }
+            if (summaryAiLink) {
+              summaryAiLink.href = provider === "openai" ? "https://platform.openai.com/api-keys" : "https://aistudio.google.com/app/apikey";
+              summaryAiLink.textContent = provider === "openai" ? "Open OpenAI Keys ↗" : "Open Google AI Studio ↗";
             }
           }
           showStudioToast("AI Engine configuration saved!");
@@ -2846,18 +2946,97 @@ try {
 
   .gi-summary-card {
     margin-bottom: 18px;
+    overflow: visible;
   }
 
   .gi-summary-text {
     margin: 0;
     font-size: 0.94rem;
-    line-height: 1.7;
+    line-height: 1.75;
     color: rgba(226, 232, 240, 0.86);
     max-width: 92ch;
   }
 
-  .gi-summary-text strong {
+  .gi-svc-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .gi-svc-trigger {
+    display: inline;
+    padding: 0 2px;
+    border: none;
+    border-bottom: 1px dashed rgba(72, 200, 255, 0.6);
+    background: transparent;
     color: #f8fafc;
+    font: inherit;
     font-weight: 600;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .gi-svc-wrap:hover .gi-svc-trigger,
+  .gi-svc-wrap:focus-within .gi-svc-trigger {
+    color: #7dd3fc;
+    border-bottom-color: #48c8ff;
+  }
+
+  .gi-svc-tip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    width: 260px;
+    padding: 11px 13px;
+    border-radius: 12px;
+    background: rgba(5, 11, 22, 0.97);
+    border: 1px solid rgba(72, 200, 255, 0.34);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 40;
+    transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+  }
+
+  /* Hover bridge so cursor can move from the word into the tooltip link */
+  .gi-svc-tip::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 12px;
+  }
+
+  .gi-svc-wrap:hover .gi-svc-tip,
+  .gi-svc-wrap:focus-within .gi-svc-tip {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .gi-svc-tip-desc {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: rgba(226, 232, 240, 0.88);
+    font-weight: 400;
+  }
+
+  .gi-svc-tip-link {
+    align-self: flex-start;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #48c8ff;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .gi-svc-tip-link:hover {
+    text-decoration: underline;
   }
 </style>

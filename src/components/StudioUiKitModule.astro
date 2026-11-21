@@ -6,7 +6,6 @@ import StudioHeader from "./StudioHeader.astro";
   <StudioHeader
     eyebrow="CONFIGURATION"
     title="UI Kit"
-    subtitle="Unified global design system shared across both the public website and Preferences. Editing any class in src/styles/global.css updates everything automatically."
   />
 
   <div class="uikit-workspace">
@@ -24,7 +23,7 @@ import StudioHeader from "./StudioHeader.astro";
       <div class="uikit-cat-list" id="uikit-cat-list">
         <button type="button" class="uikit-cat-item is-active" data-uikit-cat="all">
           <span class="uikit-cat-title">All Elements</span>
-          <span class="uikit-cat-meta">5 categories</span>
+          <span class="uikit-cat-meta">8 categories</span>
         </button>
         <button type="button" class="uikit-cat-item" data-uikit-cat="tokens">
           <span class="uikit-cat-title">Color Tokens</span>
@@ -39,12 +38,24 @@ import StudioHeader from "./StudioHeader.astro";
           <span class="uikit-cat-meta">03 · .adaptif-btn, .cms-btn, .studio-link</span>
         </button>
         <button type="button" class="uikit-cat-item" data-uikit-cat="badges">
-          <span class="uikit-cat-title">Badges &amp; Tabs</span>
-          <span class="uikit-cat-meta">04 · Tags, status &amp; tabs</span>
+          <span class="uikit-cat-title">Badges, Pills &amp; Tabs</span>
+          <span class="uikit-cat-meta">04 · Tags, status, toggles &amp; tabs</span>
         </button>
         <button type="button" class="uikit-cat-item" data-uikit-cat="inputs">
           <span class="uikit-cat-title">Inputs &amp; Surfaces</span>
           <span class="uikit-cat-meta">05 · Inputs, dropdowns &amp; title bar</span>
+        </button>
+        <button type="button" class="uikit-cat-item" data-uikit-cat="cards">
+          <span class="uikit-cat-title">Cards &amp; Panels</span>
+          <span class="uikit-cat-meta">06 · Glass, leader, hairline &amp; rows</span>
+        </button>
+        <button type="button" class="uikit-cat-item" data-uikit-cat="banners">
+          <span class="uikit-cat-title">Banners &amp; Upsells</span>
+          <span class="uikit-cat-meta">07 · Upsell &amp; AI spotlight banners</span>
+        </button>
+        <button type="button" class="uikit-cat-item" data-uikit-cat="layouts">
+          <span class="uikit-cat-title">Editorial &amp; Metrics</span>
+          <span class="uikit-cat-meta">08 · Metric strips, splits &amp; FAQs</span>
         </button>
       </div>
     </section>
@@ -98,6 +109,41 @@ import StudioHeader from "./StudioHeader.astro";
             <div>
               <strong>Text Secondary</strong>
               <code>--color-text-secondary</code>
+            </div>
+          </div>
+          <div class="uikit-swatch" data-uikit-search-item="obsidian 900 --color-obsidian-900 background">
+            <span class="uikit-swatch-box" style="background: var(--color-obsidian-900);"></span>
+            <div>
+              <strong>Obsidian 900</strong>
+              <code>--color-obsidian-900</code>
+            </div>
+          </div>
+          <div class="uikit-swatch" data-uikit-search-item="obsidian 850 --color-obsidian-850 background">
+            <span class="uikit-swatch-box" style="background: var(--color-obsidian-850);"></span>
+            <div>
+              <strong>Obsidian 850</strong>
+              <code>--color-obsidian-850</code>
+            </div>
+          </div>
+          <div class="uikit-swatch" data-uikit-search-item="blue azure --color-blue-azure">
+            <span class="uikit-swatch-box" style="background: var(--color-blue-azure);"></span>
+            <div>
+              <strong>Blue Azure</strong>
+              <code>--color-blue-azure</code>
+            </div>
+          </div>
+          <div class="uikit-swatch" data-uikit-search-item="blue cobalt --color-blue-cobalt">
+            <span class="uikit-swatch-box" style="background: var(--color-blue-cobalt);"></span>
+            <div>
+              <strong>Blue Cobalt</strong>
+              <code>--color-blue-cobalt</code>
+            </div>
+          </div>
+          <div class="uikit-swatch" data-uikit-search-item="text muted --color-text-muted">
+            <span class="uikit-swatch-box" style="background: var(--color-text-muted);"></span>
+            <div>
+              <strong>Text Muted</strong>
+              <code>--color-text-muted</code>
             </div>
           </div>
         </div>
@@ -178,12 +224,20 @@ import StudioHeader from "./StudioHeader.astro";
               <code>.adaptif-btn.adaptif-btn--sm</code>
             </div>
             <div class="uikit-item">
-              <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm">Dark Secondary</button>
+              <button type="button" class="adaptif-btn adaptif-btn--dark">Secondary CTA</button>
+              <code>.adaptif-btn.adaptif-btn--dark</code>
+            </div>
+            <div class="uikit-item">
+              <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm">Compact Secondary</button>
               <code>.adaptif-btn.adaptif-btn--dark.adaptif-btn--sm</code>
             </div>
             <div class="uikit-item">
               <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm">Danger Bevel</button>
               <code>.adaptif-btn.adaptif-btn--danger.adaptif-btn--sm</code>
+            </div>
+            <div class="uikit-item">
+              <button type="button" class="adaptif-btn adaptif-btn--light adaptif-btn--sm">Explore all our work →</button>
+              <code>.adaptif-btn.adaptif-btn--light</code>
             </div>
           </div>
         </div>
@@ -269,6 +323,25 @@ import StudioHeader from "./StudioHeader.astro";
             </div>
             <code>.cms-tabs-bar / .cms-tab-btn.is-active</code>
           </div>
+
+          <div class="uikit-flex-row" data-uikit-search-item="toggle switch studio-toggle-pill active inactive">
+            <div class="uikit-item">
+              <label class="studio-toggle-pill is-active">
+                <input type="checkbox" class="studio-toggle-chk" checked />
+                <span class="studio-switch" aria-hidden="true"></span>
+                <span class="studio-toggle-text">Active</span>
+              </label>
+              <code>.studio-toggle-pill.is-active</code>
+            </div>
+            <div class="uikit-item">
+              <label class="studio-toggle-pill is-inactive">
+                <input type="checkbox" class="studio-toggle-chk" />
+                <span class="studio-switch" aria-hidden="true"></span>
+                <span class="studio-toggle-text">Inactive</span>
+              </label>
+              <code>.studio-toggle-pill.is-inactive</code>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -299,6 +372,201 @@ import StudioHeader from "./StudioHeader.astro";
               <span class="cms-status-badge is-published">Published</span>
             </div>
             <code>.cms-item-title-bar / .cms-item-title-input</code>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Cards & Panels (Web Layouts) -->
+      <section class="glass-panel uikit-card" data-uikit-section="cards">
+        <div class="uikit-card-head">
+          <p class="adaptif-eyebrow">06 · CARDS &amp; PANELS</p>
+          <h2 class="uikit-card-title">Website Card Patterns</h2>
+        </div>
+        <div class="uikit-stack">
+          <div class="uikit-subsection" data-uikit-search-item="glass-panel card surface frosted">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">Standard Frosted Glass Panel (<code>.glass-panel</code>)</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<div class="glass-panel" style="padding: 28px; border-radius: 20px;">...</div>'>Copy Snippet</button>
+            </div>
+            <div class="glass-panel uikit-demo-glass">
+              <p class="adaptif-eyebrow">FEATURED SURFACE</p>
+              <h3 class="uikit-demo-h3">Primary Focal Panel</h3>
+              <p class="uikit-body-copy" style="margin:0;">Reserved for primary interactive panels, selectors, and pricing cards.</p>
+            </div>
+          </div>
+
+          <div class="uikit-subsection" data-uikit-search-item="leader expert team card portrait valentina">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">Expert / Leader Card (Used in Audit &amp; AI Excellence)</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<article class="glass-panel uikit-demo-leader"><img src="/images/ai-excellence/expert-valentina.jpg" alt="" /><div><span class="adaptif-eyebrow">Strategy Lead</span><h3>Valentina Lugo</h3><p>...</p></div></article>'>Copy Snippet</button>
+            </div>
+            <article class="glass-panel uikit-demo-leader">
+              <div class="uikit-demo-leader__img">
+                <img src="/images/ai-excellence/expert-valentina.jpg" alt="Valentina Lugo" loading="lazy" />
+              </div>
+              <div>
+                <span class="adaptif-eyebrow">Strategy Lead</span>
+                <h3 class="uikit-demo-serif">Valentina Lugo</h3>
+                <p class="uikit-body-copy" style="margin:0;">Leads Email &amp; Retention and Website &amp; Funnel audits: offer, funnel, lifecycle, pricing and conversion.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="uikit-subsection" data-uikit-search-item="hairline grid deliverable cell numbered 01 02 03">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">Open Hairline Grid (No Nested Boxes — Used in Deliverables)</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<div class="uikit-demo-hairline-grid"><div class="uikit-demo-hairline-cell"><span>01</span><h4>Executive Snapshot</h4><p>...</p></div></div>'>Copy Snippet</button>
+            </div>
+            <div class="uikit-demo-hairline-grid">
+              <div class="uikit-demo-hairline-cell">
+                <span class="uikit-demo-num">01</span>
+                <h4>Executive Snapshot</h4>
+                <p>The central findings and the primary opportunity.</p>
+              </div>
+              <div class="uikit-demo-hairline-cell">
+                <span class="uikit-demo-num">02</span>
+                <h4>Visual Scorecard</h4>
+                <p>Maturity level per area: critical, weak, acceptable, solid or advanced.</p>
+              </div>
+              <div class="uikit-demo-hairline-cell">
+                <span class="uikit-demo-num">03</span>
+                <h4>Opportunity Map</h4>
+                <p>Recommendations ordered by impact, effort and priority.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="uikit-subsection" data-uikit-search-item="scorecard row status badge critical weak solid advanced">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">Scorecard Diagnostic Row</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<div class="uikit-demo-score-row"><strong>Winback</strong><span>Buyers from 6+ months ago never hear from you again.</span><span class="uikit-sem-badge is-critical">Critical</span></div>'>Copy Snippet</button>
+            </div>
+            <div class="uikit-demo-score-list">
+              <div class="uikit-demo-score-row">
+                <strong>Lead capture</strong>
+                <span>One 10% popup for every visitor, no origin segmenting.</span>
+                <span class="uikit-sem-badge is-weak">Weak</span>
+              </div>
+              <div class="uikit-demo-score-row">
+                <strong>Winback</strong>
+                <span>Buyers from 6+ months ago never hear from you again.</span>
+                <span class="uikit-sem-badge is-critical">Critical</span>
+              </div>
+              <div class="uikit-demo-score-row">
+                <strong>Mobile &amp; checkout</strong>
+                <span>Checkout is clean and fast on mobile.</span>
+                <span class="uikit-sem-badge is-solid">Solid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. Banners & Upsells -->
+      <section class="glass-panel uikit-card" data-uikit-section="banners">
+        <div class="uikit-card-head">
+          <p class="adaptif-eyebrow">07 · BANNERS &amp; UPSELLS</p>
+          <h2 class="uikit-card-title">Website Banner Layouts</h2>
+        </div>
+        <div class="uikit-stack">
+          <div class="uikit-subsection" data-uikit-search-item="upsell banner .adaptif-upsell-banner blog academy">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">Cross-Sell / Upsell Banner (<code>.adaptif-upsell-banner</code>)</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<aside class="adaptif-upsell-banner">...</aside>'>Copy Snippet</button>
+            </div>
+            <aside class="adaptif-upsell-banner" style="margin: 0;">
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <span class="adaptif-tag adaptif-tag--cyan" style="align-self:flex-start;">RECOMMENDED PLAN</span>
+                <h3 class="uikit-demo-h3" style="margin-top:4px;">Need your creative team executing this for you?</h3>
+                <p class="uikit-body-copy" style="margin:0;">Plug our dedicated designers and AI workflows straight into your Slack.</p>
+              </div>
+              <button type="button" class="adaptif-btn adaptif-btn--sm">Explore Plans →</button>
+            </aside>
+          </div>
+
+          <div class="uikit-subsection" data-uikit-search-item="ai spotlight cta banner services pricing glow">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">AI / CTA Spotlight Banner (Used in Services &amp; Pricing)</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<div class="uikit-demo-spotlight"><p class="adaptif-eyebrow">AI EXCELLENCE</p><h3>Human craft, <span class="title-highlight">AI velocity.</span></h3><p>...</p><a href="#book-a-call" class="adaptif-btn">Book a Call →</a></div>'>Copy Snippet</button>
+            </div>
+            <div class="uikit-demo-spotlight">
+              <p class="adaptif-eyebrow">AI EXCELLENCE</p>
+              <h3 class="uikit-demo-spotlight__title">
+                Human craft, <span class="title-highlight">AI velocity.</span>
+              </h3>
+              <p class="uikit-body-copy" style="max-width: 540px; margin: 0 0 18px;">
+                Combine top 1% creative directors with proprietary AI workflows to ship campaigns 10x faster.
+              </p>
+              <button type="button" class="adaptif-btn adaptif-btn--sm">Book a Call →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Editorial Layouts & Metrics -->
+      <section class="glass-panel uikit-card" data-uikit-section="layouts">
+        <div class="uikit-card-head">
+          <p class="adaptif-eyebrow">08 · EDITORIAL &amp; METRICS</p>
+          <h2 class="uikit-card-title">Metric Strips, Asymmetric Splits &amp; FAQs</h2>
+        </div>
+        <div class="uikit-stack">
+          <div class="uikit-subsection" data-uikit-search-item="metric strip kpi 4 column hairline audit activity">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">4-Column Unboxed Metric Strip (Used in Audit &amp; Activity)</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<div class="uikit-demo-metrics"><div class="uikit-demo-metric"><div>4–5 days</div><p>Business days from intake.</p></div></div>'>Copy Snippet</button>
+            </div>
+            <div class="uikit-demo-metrics">
+              <div class="uikit-demo-metric">
+                <div class="uikit-demo-metric__val">4–5 days</div>
+                <p>Business days from completed intake and access.</p>
+              </div>
+              <div class="uikit-demo-metric">
+                <div class="uikit-demo-metric__val">100%</div>
+                <p>Asynchronous. No mandatory kick-off call.</p>
+              </div>
+              <div class="uikit-demo-metric">
+                <div class="uikit-demo-metric__val">1 focus</div>
+                <p>You pick the bottleneck we go deep on.</p>
+              </div>
+              <div class="uikit-demo-metric">
+                <div class="uikit-demo-metric__val">15 min</div>
+                <p>Loom walkthrough of the diagnosis and plan.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="uikit-subsection" data-uikit-search-item="asymmetric split editorial numbered list sticky">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">Asymmetric Editorial Split + Numbered List</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<div class="uikit-demo-split"><div><p class="adaptif-eyebrow">HOW IT WORKS</p><h3>Six steps, no <span class="title-highlight">mandatory meetings.</span></h3></div><ol>...</ol></div>'>Copy Snippet</button>
+            </div>
+            <div class="uikit-demo-split">
+              <div>
+                <p class="adaptif-eyebrow">HOW IT WORKS</p>
+                <h3 class="uikit-demo-spotlight__title" style="font-size: 1.9rem;">
+                  Six steps, no <span class="title-highlight">mandatory meetings.</span>
+                </h3>
+              </div>
+              <ol class="uikit-demo-num-list">
+                <li><span>01</span><span>You choose the focus that represents your main bottleneck, and pay.</span></li>
+                <li><span>02</span><span>You receive the intake form and complete it in 10 to 15 minutes.</span></li>
+                <li><span>03</span><span>Adaptif audits the system over 4–5 business days.</span></li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="uikit-subsection" data-uikit-search-item="faq accordion item details summary">
+            <div class="uikit-subhead-row">
+              <p class="uikit-sublabel">FAQ Accordion Item (Used in Pricing, Home &amp; Audit)</p>
+              <button type="button" class="cms-btn" data-copy-snippet='<details class="uikit-demo-faq"><summary><span>When does the 4–5 day clock start?</span><span>+</span></summary><p>...</p></details>'>Copy Snippet</button>
+            </div>
+            <details class="uikit-demo-faq" open>
+              <summary>
+                <span>When does the 4–5 day clock start?</span>
+                <span class="uikit-demo-faq__icon" aria-hidden="true">+</span>
+              </summary>
+              <p>Once all three are in: payment, the completed intake form, and read-only access. Not before.</p>
+            </details>
           </div>
         </div>
       </section>
@@ -370,45 +638,75 @@ import StudioHeader from "./StudioHeader.astro";
 
     searchEl?.addEventListener("input", applyFilter);
 
-    const copySvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
-    const checkSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const copySvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+    const checkSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+    const copyText = async (value: string) => {
+      try {
+        await navigator.clipboard.writeText(value);
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = value;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+      }
+    };
 
     document.querySelectorAll<HTMLElement>(".uikit-card code").forEach((codeEl) => {
-      if (codeEl.closest(".uikit-sublabel")) return;
+      if (codeEl.closest(".uikit-sublabel") || codeEl.closest(".uikit-copy-pill")) return;
       const value = (codeEl.textContent || "").trim();
       if (!value) return;
 
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "uikit-copy-btn";
+      btn.className = "uikit-copy-pill";
       btn.dataset.copyValue = value;
       btn.title = `Copy: ${value}`;
       btn.setAttribute("aria-label", `Copy ${value}`);
-      btn.innerHTML = copySvg;
+
+      const textSpan = document.createElement("span");
+      textSpan.className = "uikit-copy-pill__code";
+      textSpan.textContent = value;
+
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "uikit-copy-pill__icon";
+      iconSpan.innerHTML = copySvg;
+
+      btn.appendChild(textSpan);
+      btn.appendChild(iconSpan);
 
       btn.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(value);
-        } catch {
-          const ta = document.createElement("textarea");
-          ta.value = value;
-          ta.style.position = "fixed";
-          ta.style.opacity = "0";
-          document.body.appendChild(ta);
-          ta.select();
-          document.execCommand("copy");
-          ta.remove();
-        }
+        await copyText(value);
         btn.classList.add("is-copied");
-        btn.innerHTML = checkSvg;
+        iconSpan.innerHTML = checkSvg;
         (window as any).__SHOW_STUDIO_TOAST__?.(`Copied: ${value}`);
         setTimeout(() => {
           btn.classList.remove("is-copied");
-          btn.innerHTML = copySvg;
+          iconSpan.innerHTML = copySvg;
         }, 1400);
       });
 
       codeEl.replaceWith(btn);
+    });
+
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-snippet]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const snippet = btn.dataset.copySnippet || "";
+        if (!snippet) return;
+        await copyText(snippet);
+        const prev = btn.textContent;
+        btn.textContent = "Copied!";
+        btn.classList.add("cms-btn--save");
+        (window as any).__SHOW_STUDIO_TOAST__?.("HTML snippet copied to clipboard");
+        setTimeout(() => {
+          btn.textContent = prev || "Copy Snippet";
+          btn.classList.remove("cms-btn--save");
+        }, 1400);
+      });
     });
   })();
 </script>
@@ -511,8 +809,10 @@ import StudioHeader from "./StudioHeader.astro";
 
   .uikit-card-title {
     margin: 0;
+    font-family: var(--font-family-body);
     font-size: 1.08rem;
     font-weight: 600;
+    letter-spacing: -0.015em;
     color: var(--color-text-white);
   }
 
@@ -625,17 +925,18 @@ import StudioHeader from "./StudioHeader.astro";
     width: auto;
   }
 
-  .uikit-workspace :global(.uikit-copy-btn) {
+  .uikit-workspace :global(.uikit-copy-pill) {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
+    gap: 8px;
+    padding: 4px 10px;
     margin-top: 2px;
     border-radius: 8px;
     background: rgba(72, 200, 255, 0.08);
     border: 1px solid rgba(72, 200, 255, 0.2);
     color: var(--color-text-secondary);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
     cursor: pointer;
     transition:
       background 0.16s ease,
@@ -644,22 +945,296 @@ import StudioHeader from "./StudioHeader.astro";
       transform 0.16s ease;
   }
 
-  .uikit-workspace :global(.uikit-copy-btn:hover) {
+  .uikit-workspace :global(.uikit-copy-pill__icon) {
+    display: inline-flex;
+    align-items: center;
+    opacity: 0.72;
+  }
+
+  .uikit-workspace :global(.uikit-copy-pill:hover) {
     background: rgba(72, 200, 255, 0.16);
     border-color: rgba(72, 200, 255, 0.45);
     color: var(--color-brand-cyan);
     transform: translateY(-1px);
   }
 
-  .uikit-workspace :global(.uikit-copy-btn.is-copied) {
+  .uikit-workspace :global(.uikit-copy-pill.is-copied) {
     background: rgba(56, 189, 248, 0.22);
     border-color: rgba(56, 189, 248, 0.65);
     color: #7dd3fc;
   }
 
+  .uikit-subhead-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .uikit-demo-glass {
+    padding: 22px;
+    border-radius: 16px;
+  }
+
+  .uikit-demo-h3 {
+    margin: 6px 0 6px;
+    font-family: var(--font-family-body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .uikit-demo-serif {
+    margin: 4px 0 8px;
+    font-family: var(--font-family-display);
+    font-size: 1.7rem;
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--color-text-primary);
+  }
+
+  .uikit-demo-leader {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    gap: 18px;
+    padding: 16px;
+    border-radius: 16px;
+    align-items: center;
+  }
+
+  .uikit-demo-leader__img {
+    width: 112px;
+    height: 124px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .uikit-demo-leader__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  .uikit-demo-hairline-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .uikit-demo-hairline-cell {
+    padding: 18px 16px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .uikit-demo-num {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--color-brand-cyan);
+  }
+
+  .uikit-demo-hairline-cell h4 {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .uikit-demo-hairline-cell p {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .uikit-demo-score-list {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .uikit-demo-score-row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    font-size: 0.86rem;
+  }
+
+  .uikit-demo-score-row strong {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+
+  .uikit-demo-score-row span:not(.uikit-sem-badge) {
+    color: var(--color-text-secondary);
+  }
+
+  .uikit-sem-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  .uikit-sem-badge.is-critical {
+    background: rgba(239, 68, 68, 0.14);
+    border-color: rgba(239, 68, 68, 0.38);
+    color: #fca5a5;
+  }
+
+  .uikit-sem-badge.is-weak {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.36);
+    color: #fcd34d;
+  }
+
+  .uikit-sem-badge.is-solid {
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.38);
+    color: #7dd3fc;
+  }
+
+  .uikit-demo-spotlight {
+    padding: 30px 26px;
+    border-radius: 18px;
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    background:
+      radial-gradient(ellipse 70% 60% at 85% 10%, rgba(72, 200, 255, 0.16) 0%, transparent 65%),
+      rgba(2, 5, 14, 0.85);
+  }
+
+  .uikit-demo-spotlight__title {
+    margin: 8px 0 10px;
+    font-family: var(--font-family-display);
+    font-size: 2.2rem;
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .uikit-demo-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .uikit-demo-metric {
+    padding: 16px 14px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .uikit-demo-metric:last-child {
+    border-right: none;
+  }
+
+  .uikit-demo-metric__val {
+    font-family: var(--font-family-display);
+    font-size: 1.85rem;
+    line-height: 1.05;
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
+  }
+
+  .uikit-demo-metric p {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+  }
+
+  .uikit-demo-split {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .uikit-demo-num-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .uikit-demo-num-list li {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.88rem;
+    color: var(--color-text-secondary);
+  }
+
+  .uikit-demo-num-list li span:first-child {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-brand-cyan);
+  }
+
+  .uikit-demo-faq {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+    padding: 0 18px;
+  }
+
+  .uikit-demo-faq summary {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    font-size: 0.94rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+
+  .uikit-demo-faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .uikit-demo-faq__icon {
+    color: var(--color-brand-cyan);
+    font-size: 1.15rem;
+    transition: transform 0.2s ease;
+  }
+
+  .uikit-demo-faq[open] .uikit-demo-faq__icon {
+    transform: rotate(45deg);
+  }
+
+  .uikit-demo-faq p {
+    margin: 0 0 15px;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+
   @media (max-width: 980px) {
     .uikit-workspace,
-    .uikit-swatch-grid {
+    .uikit-swatch-grid,
+    .uikit-demo-hairline-grid,
+    .uikit-demo-metrics,
+    .uikit-demo-split,
+    .uikit-demo-score-row {
       grid-template-columns: 1fr;
     }
 

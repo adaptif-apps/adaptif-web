@@ -1,0 +1,246 @@
+---
+// MarketingHero.astro - Full-bleed Hero + bottom service marquee strip for /marketing-strategy
+
+const stripCards = [
+  { label: "Brand Identity", image: "/images/branding/strip-brand.jpg", href: "/branding" },
+  { label: "Email Design", image: "/images/branding/strip-email.jpg", href: "/services#service-email-creation" },
+  { label: "Print Design", image: "/images/branding/strip-print.jpg", href: "/services#service-print-design" },
+  { label: "Ad Creative", image: "/images/branding/strip-ad.jpg", href: "/services#service-ad-creative" },
+  { label: "Social Media Creative", image: "/images/branding/strip-social.jpg", href: "/services#service-social-media" },
+  { label: "Marketing Strategy", image: "/images/branding/strip-strategy.jpg", href: "/marketing-strategy" },
+  { label: "Website Design", image: "/images/branding/strip-web.jpg", href: "/services#service-web-design" },
+];
+---
+
+<section class="mk-hero" id="marketing-hero" aria-labelledby="mk-hero-title">
+  <div class="mk-hero__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/marketing-strategy/hero-mobile.jpg" />
+      <img
+        src="/images/marketing-strategy/hero-desktop.jpg"
+        alt=""
+        class="mk-hero__bg"
+        loading="eager"
+        decoding="async"
+        data-cms-key="marketing.hero.image"
+      />
+    </picture>
+    <div class="mk-hero__scrim"></div>
+    <div class="mk-hero__bottom-fade"></div>
+  </div>
+
+  <div class="container mk-hero__container">
+    <div class="mk-hero__content">
+      <p class="adaptif-eyebrow" data-cms-key="marketing.hero.eyebrow">
+        Marketing Strategy Services
+      </p>
+
+      <h1 id="mk-hero-title" class="mk-hero__title" data-cms-key="marketing.hero.title">
+        Sharp, inventive marketing strategy <span class="title-highlight">made for impact &amp; speed</span>
+      </h1>
+
+      <p class="mk-hero__description" data-cms-key="marketing.hero.description">
+        Adaptif’s strategy work helps marketing teams launch on-brand, high-performing campaigns. For brands like Meta, Intuit, and The Economist, we deliver adaptable expert support without the drawn-out timelines or steep fees of traditional consultancies.
+      </p>
+
+      <div class="mk-hero__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="marketing.hero.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mk-strip" aria-label="Adaptif creative services overview">
+    <div class="mk-strip__track">
+      {[...stripCards, ...stripCards].map((card, i) => (
+        <a href={card.href} class="mk-strip__card" tabindex={i >= stripCards.length ? -1 : undefined}>
+          <img src={card.image} alt={card.label} class="mk-strip__img" loading="lazy" decoding="async" />
+          <div class="mk-strip__scrim" aria-hidden="true"></div>
+          <span class="mk-strip__label">{card.label}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .mk-hero {
+    position: relative;
+    width: 100%;
+    padding: clamp(128px, 16vh, 175px) 0 36px;
+    overflow: hidden;
+    background-color: var(--color-void);
+  }
+
+  .mk-hero__media {
+    position: absolute;
+    inset: 0 0 110px 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .mk-hero__media picture {
+    display: contents;
+  }
+
+  .mk-hero__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 68% 30%;
+    opacity: 0.9;
+  }
+
+  .mk-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(1, 3, 7, 0.92) 0%, rgba(1, 3, 7, 0.72) 48%, rgba(1, 3, 7, 0.16) 100%),
+      radial-gradient(ellipse 55% 55% at 22% 45%, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+  }
+
+  .mk-hero__bottom-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 150px;
+    background: linear-gradient(180deg, transparent 0%, var(--color-void) 100%);
+  }
+
+  .mk-hero__container {
+    position: relative;
+    z-index: 2;
+    padding-bottom: clamp(44px, 6vw, 72px);
+  }
+
+  .mk-hero__content {
+    max-width: 640px;
+  }
+
+  .mk-hero__title {
+    margin: 16px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.85rem, 5.4vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .mk-hero__description {
+    max-width: 540px;
+    margin: 0 0 32px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.2vw, 1.12rem);
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .mk-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mk-strip {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  }
+
+  .mk-strip__track {
+    display: flex;
+    gap: 14px;
+    width: max-content;
+    padding: 4px 0;
+    animation: mkStripScroll 38s linear infinite;
+  }
+
+  .mk-strip:hover .mk-strip__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes mkStripScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .mk-strip__card {
+    position: relative;
+    width: 156px;
+    height: 112px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 12px;
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .mk-strip__card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .mk-strip__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mk-strip__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(1, 3, 7, 0.08) 0%, rgba(1, 3, 7, 0.86) 100%);
+  }
+
+  .mk-strip__label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-family-body);
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .mk-hero {
+      padding: 120px 0 28px;
+    }
+
+    .mk-hero__scrim {
+      background: linear-gradient(180deg, rgba(1, 3, 7, 0.88) 0%, rgba(1, 3, 7, 0.68) 60%, rgba(1, 3, 7, 0.94) 100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mk-strip__track {
+      animation: none;
+    }
+  }
+</style>

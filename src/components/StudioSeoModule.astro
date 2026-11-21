@@ -35,17 +35,17 @@ const { initialConfig } = Astro.props;
   </StudioHeader>
 
   <!-- Sub-tabs inside SEO -->
-  <div class="seo-subtabs" role="tablist" aria-label="SEO sections">
-    <button type="button" class="seo-subtab is-active" data-seo-tab="global" role="tab" aria-selected="true">
+  <div class="cms-tabs-bar" role="tablist" aria-label="SEO sections" style="margin-bottom: 20px;">
+    <button type="button" class="cms-tab-btn is-active" data-seo-tab="global" role="tab" aria-selected="true">
       Global &amp; Social Preview
     </button>
-    <button type="button" class="seo-subtab" data-seo-tab="pages" role="tab" aria-selected="false">
+    <button type="button" class="cms-tab-btn" data-seo-tab="pages" role="tab" aria-selected="false">
       Per-Page SEO
     </button>
-    <button type="button" class="seo-subtab" data-seo-tab="indexing" role="tab" aria-selected="false">
+    <button type="button" class="cms-tab-btn" data-seo-tab="indexing" role="tab" aria-selected="false">
       Indexing, Sitemap &amp; Brand
     </button>
-    <button type="button" class="seo-subtab" data-seo-tab="redirects" role="tab" aria-selected="false">
+    <button type="button" class="cms-tab-btn" data-seo-tab="redirects" role="tab" aria-selected="false">
       URL Redirects (301)
     </button>
   </div>
@@ -74,6 +74,20 @@ const { initialConfig } = Astro.props;
                   <span class="seo-tip-box" role="tooltip">
                     The big blue headline people see in Google search results and browser tabs. Keep it under 60 characters so Google doesn't cut it off.
                   </span>
+                </span>
+                <span class="seo-tip-wrap seo-spark-wrap">
+                  <button
+                    type="button"
+                    class="seo-tip-btn seo-spark-btn"
+                    data-seo-gen-field="defaultTitle"
+                    data-seo-gen-target="seo-default-title"
+                    aria-label="Generate Default Page Title with AI"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                    </svg>
+                  </button>
+                  <span class="seo-tip-box seo-spark-tip" role="tooltip">Generate</span>
                 </span>
               </span>
               <span class="seo-counter" id="seo-title-count">0 / 60</span>
@@ -121,6 +135,20 @@ const { initialConfig } = Astro.props;
                     The short summary shown under your title in Google. Write a clear sentence explaining what Adaptif does. Aim for 120–160 characters.
                   </span>
                 </span>
+                <span class="seo-tip-wrap seo-spark-wrap">
+                  <button
+                    type="button"
+                    class="seo-tip-btn seo-spark-btn"
+                    data-seo-gen-field="defaultDescription"
+                    data-seo-gen-target="seo-default-desc"
+                    aria-label="Generate Default Description with AI"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                    </svg>
+                  </button>
+                  <span class="seo-tip-box seo-spark-tip" role="tooltip">Generate</span>
+                </span>
               </span>
               <span class="seo-counter" id="seo-desc-count">0 / 160</span>
             </span>
@@ -136,6 +164,20 @@ const { initialConfig } = Astro.props;
                   <span class="seo-tip-box" role="tooltip">
                     Title shown when someone pastes your link into WhatsApp, LinkedIn, or X. Leave blank to automatically use your Default Title.
                   </span>
+                </span>
+                <span class="seo-tip-wrap seo-spark-wrap">
+                  <button
+                    type="button"
+                    class="seo-tip-btn seo-spark-btn"
+                    data-seo-gen-field="ogTitle"
+                    data-seo-gen-target="seo-og-title"
+                    aria-label="Generate Social Share Title with AI"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                    </svg>
+                  </button>
+                  <span class="seo-tip-box seo-spark-tip" role="tooltip">Generate</span>
                 </span>
               </span>
             </span>
@@ -173,6 +215,20 @@ const { initialConfig } = Astro.props;
                   <span class="seo-tip-box" role="tooltip">
                     Short text shown on the preview card in WhatsApp, LinkedIn, or X. Leave blank to reuse your Default Description.
                   </span>
+                </span>
+                <span class="seo-tip-wrap seo-spark-wrap">
+                  <button
+                    type="button"
+                    class="seo-tip-btn seo-spark-btn"
+                    data-seo-gen-field="ogDescription"
+                    data-seo-gen-target="seo-og-desc"
+                    aria-label="Generate Social Share Description with AI"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                    </svg>
+                  </button>
+                  <span class="seo-tip-box seo-spark-tip" role="tooltip">Generate</span>
                 </span>
               </span>
             </span>
@@ -288,6 +344,20 @@ const { initialConfig } = Astro.props;
                       Overrides the default title just for this page. Leave blank to use the page's built-in title.
                     </span>
                   </span>
+                  <span class="seo-tip-wrap seo-spark-wrap">
+                    <button
+                      type="button"
+                      class="seo-tip-btn seo-spark-btn"
+                      data-seo-gen-field="pageTitle"
+                      data-seo-gen-target="seo-page-title"
+                      aria-label="Generate Custom Page Title with AI"
+                    >
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                      </svg>
+                    </button>
+                    <span class="seo-tip-box seo-spark-tip" role="tooltip">Generate</span>
+                  </span>
                 </span>
                 <span class="seo-counter" id="seo-page-title-count">0 / 60</span>
               </span>
@@ -303,6 +373,20 @@ const { initialConfig } = Astro.props;
                     <span class="seo-tip-box" role="tooltip">
                       Overrides the summary shown in Google for this specific page. Aim for 120–160 characters.
                     </span>
+                  </span>
+                  <span class="seo-tip-wrap seo-spark-wrap">
+                    <button
+                      type="button"
+                      class="seo-tip-btn seo-spark-btn"
+                      data-seo-gen-field="pageDescription"
+                      data-seo-gen-target="seo-page-desc"
+                      aria-label="Generate Custom Page Description with AI"
+                    >
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                      </svg>
+                    </button>
+                    <span class="seo-tip-box seo-spark-tip" role="tooltip">Generate</span>
                   </span>
                 </span>
                 <span class="seo-counter" id="seo-page-desc-count">0 / 160</span>
@@ -486,6 +570,20 @@ const { initialConfig } = Astro.props;
                     One-sentence description of your company used in Google's structured brand data.
                   </span>
                 </span>
+                <span class="seo-tip-wrap seo-spark-wrap">
+                  <button
+                    type="button"
+                    class="seo-tip-btn seo-spark-btn"
+                    data-seo-gen-field="orgDescription"
+                    data-seo-gen-target="seo-org-desc"
+                    aria-label="Generate Brand Summary with AI"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z" />
+                    </svg>
+                  </button>
+                  <span class="seo-tip-box seo-spark-tip" role="tooltip">Generate</span>
+                </span>
               </span>
             </span>
             <input type="text" id="seo-org-desc" class="seo-input" value={initialConfig.orgDescription} />
@@ -644,8 +742,10 @@ const { initialConfig } = Astro.props;
 
   .seo-card-title {
     margin: 0;
+    font-family: var(--font-family-body);
     font-size: 18px;
     font-weight: 600;
+    letter-spacing: -0.015em;
     color: #f8fafc;
     display: flex;
     align-items: center;
@@ -782,6 +882,44 @@ const { initialConfig } = Astro.props;
     transform: translateX(-50%) translateY(0);
   }
 
+  .seo-spark-wrap {
+    margin-left: 4px;
+  }
+
+  .seo-spark-btn {
+    cursor: pointer;
+    border-color: rgba(72, 200, 255, 0.32);
+    background: rgba(72, 200, 255, 0.12);
+    color: #7fe2ff;
+  }
+
+  .seo-spark-btn:hover,
+  .seo-spark-btn:focus-visible {
+    background: rgba(72, 200, 255, 0.25);
+    border-color: rgba(72, 200, 255, 0.65);
+    color: #ffffff;
+  }
+
+  .seo-spark-btn.is-loading {
+    pointer-events: none;
+    opacity: 0.7;
+    animation: seoSparkPulse 0.85s ease-in-out infinite;
+  }
+
+  @keyframes seoSparkPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.16); }
+  }
+
+  .seo-spark-tip {
+    width: auto;
+    white-space: nowrap;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e0f2fe;
+  }
+
   /* Toggle Switch */
   .seo-toggle-row {
     display: inline-flex;
@@ -908,6 +1046,12 @@ const { initialConfig } = Astro.props;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
+  }
+
+  .seo-social-img-wrap img[hidden],
+  .seo-social-img-wrap span[hidden] {
+    display: none !important;
   }
 
   .seo-social-body {
@@ -1349,5 +1493,58 @@ const { initialConfig } = Astro.props;
       saveSeoBtn.disabled = false;
       saveSeoBtn.textContent = prev || "Save SEO Settings";
     }
+  });
+
+  // AI Spark Copy Generation for SEO Fields
+  document.querySelectorAll<HTMLButtonElement>("[data-seo-gen-field]").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const field = btn.dataset.seoGenField;
+      const targetId = btn.dataset.seoGenTarget;
+      if (!field || !targetId || btn.classList.contains("is-loading")) return;
+
+      const targetEl = document.getElementById(targetId) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (!targetEl) return;
+
+      const activePageBtn = document.querySelector<HTMLButtonElement>("[data-seo-page-path].is-active");
+      const pagePath = activePageBtn?.dataset.seoPagePath || "";
+      const pageLabel = activePageBtn?.querySelector(".seo-page-label")?.textContent?.trim() || "";
+      const brandName = (document.getElementById("seo-org-name") as HTMLInputElement | null)?.value.trim() || "Adaptif";
+      const defaultTitle = (document.getElementById("seo-default-title") as HTMLInputElement | null)?.value.trim() || "";
+      const defaultDescription = (document.getElementById("seo-default-desc") as HTMLTextAreaElement | null)?.value.trim() || "";
+
+      btn.classList.add("is-loading");
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/studio/seo-generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            field,
+            currentValue: targetEl.value,
+            pagePath,
+            pageLabel,
+            brandName,
+            defaultTitle,
+            defaultDescription,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Failed to generate SEO copy");
+        if (typeof data?.text === "string" && data.text.trim()) {
+          targetEl.value = data.text.trim();
+          targetEl.dispatchEvent(new Event("input", { bubbles: true }));
+          const label = data.source === "ai" ? "Generated with AI" : "Generated recommended copy";
+          w.__SHOW_STUDIO_TOAST__?.(`${label} — click again for another option.`);
+        }
+      } catch (err: any) {
+        w.__SHOW_STUDIO_TOAST__?.(err?.message || "Failed to generate SEO copy", true);
+      } finally {
+        btn.classList.remove("is-loading");
+        btn.disabled = false;
+      }
+    });
   });
 </script>

@@ -1,0 +1,558 @@
+---
+// ProductDesignWorkflowAndBottom.astro - "How we work" (7 steps) + Creative power banner + Related articles
+
+const steps = [
+  {
+    num: "1",
+    title: "Discovery and kickoff",
+    desc: "We get to know your brand, product vision, business objectives, and existing technology.",
+  },
+  {
+    num: "2",
+    title: "Team setup",
+    desc: "Based on your priorities, we assemble the right mix of specialists, such as a Product Creative Lead, Product Designer, and Digital Experience Manager.",
+  },
+  {
+    num: "3",
+    title: "Product strategy sessions",
+    desc: "Through regular working sessions, we review priorities, uncover opportunities, and align around key milestones, design goals, and next steps.",
+  },
+  {
+    num: "4",
+    title: "Research and immersion",
+    desc: "Our team explores the context around your product, gathering insights and identifying the most promising directions for the sprint.",
+  },
+  {
+    num: "5",
+    title: "Concept development",
+    desc: "We turn insights into wireframes and interface concepts, testing and refining ideas until the strongest solution emerges.",
+  },
+  {
+    num: "6",
+    title: "Documentation and developer handoff",
+    desc: "Once approved, we prepare a thorough handoff with user flows, relevant components, interaction details, and accessibility guidance.",
+  },
+  {
+    num: "7",
+    title: "Continuous improvement",
+    desc: "After launch, we remain involved through UX reviews, design updates, and iterative improvements informed by user feedback.",
+  },
+];
+
+const articles = [
+  {
+    id: "art1",
+    category: "Creative Leadership",
+    readTime: "8 min read",
+    title: "6 AI applications that actually save time (with real examples)",
+    excerpt:
+      "Creative teams don’t need more AI hype. They need practical, proven applications and real results.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art2",
+    category: "Design Systems",
+    readTime: "6 min read",
+    title: "How component-based design systems cut product delivery time by 35%",
+    excerpt:
+      "Build scalable UI libraries and token architectures that keep engineering and design in lockstep.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art3",
+    category: "UX Strategy",
+    readTime: "7 min read",
+    title: "Product design audits: finding the friction costing you conversions",
+    excerpt:
+      "A structured method for diagnosing drop-offs, prioritizing quick wins, and validating UX improvements.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art4",
+    category: "MVP & Prototyping",
+    readTime: "5 min read",
+    title: "Validating MVP product concepts before writing production code",
+    excerpt:
+      "Use interactive prototypes and rapid feedback loops to align stakeholders and de-risk launches.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+];
+---
+
+<!-- 1. How we work (7 steps) -->
+<section class="pd-work" id="product-workflow" aria-labelledby="pd-work-title">
+  <div class="container pd-work__grid">
+    <div class="pd-work__intro" data-pd-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="product.workflow.eyebrow">
+        How we work
+      </p>
+      <h2 id="pd-work-title" class="pd-work__title" data-cms-key="product.workflow.title">
+        A clear process <span class="title-highlight">built for momentum,</span> growth, and alignment
+      </h2>
+      <p class="pd-work__subtitle" data-cms-key="product.workflow.subtitle">
+        Our approach is designed for close collaboration between your team and ours, reducing uncertainty, keeping projects moving, and producing stronger outcomes.
+      </p>
+
+      <div class="pd-work__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="product.workflow.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <ol class="pd-work__steps">
+      {steps.map((step, idx) => (
+        <li class="pd-step" data-pd-reveal style={`--pd-delay: ${idx * 45}ms`}>
+          <span class="pd-step__num" aria-hidden="true">{step.num}</span>
+          <div class="pd-step__body">
+            <h3 class="pd-step__title" data-cms-key={`product.workflow.step${step.num}.title`}>
+              {step.title}
+            </h3>
+            <p class="pd-step__desc" data-cms-key={`product.workflow.step${step.num}.desc`}>
+              {step.desc}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<!-- 2. Creative power banner -->
+<section class="pd-banner" aria-labelledby="pd-banner-title">
+  <div class="container">
+    <div class="pd-banner__card" data-pd-reveal="scale">
+      <img
+        src="/images/product-design/creative-power-banner.jpg"
+        alt="Cyclist riding across sunlit desert dunes"
+        class="pd-banner__bg"
+        loading="lazy"
+        decoding="async"
+        data-cms-key="product.banner.image"
+      />
+      <div class="pd-banner__scrim" aria-hidden="true"></div>
+
+      <div class="pd-banner__content">
+        <h2 id="pd-banner-title" class="pd-banner__title" data-cms-key="product.banner.title">
+          Now imagine this <span class="title-highlight">creative power</span> behind your next project
+        </h2>
+        <p class="pd-banner__subtitle" data-cms-key="product.banner.subtitle">
+          This is just one of many creative services, what you do with them is up to you. Let’s chat.
+        </p>
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="product.banner.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Related articles -->
+<section class="pd-articles" id="product-articles" aria-labelledby="pd-articles-title">
+  <div class="container">
+    <header class="pd-articles__header" data-pd-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="product.articles.eyebrow">
+        Related articles
+      </p>
+      <h2 id="pd-articles-title" class="pd-articles__title" data-cms-key="product.articles.title">
+        Learn how top creative teams use <span class="title-highlight">product design</span>
+      </h2>
+    </header>
+
+    <div class="pd-articles__grid">
+      {articles.map((art, idx) => (
+        <a
+          href={art.href}
+          class="pd-article-card"
+          data-pd-reveal
+          style={`--pd-delay: ${idx * 65}ms`}
+        >
+          <div class="pd-article-card__media">
+            <img
+              src="/images/branding/article-cover.jpg"
+              alt={art.title}
+              class="pd-article-card__img"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div class="pd-article-card__body">
+            <p class="pd-article-card__meta">
+              <span>{art.category}</span>
+              <span aria-hidden="true">•</span>
+              <span>{art.readTime}</span>
+            </p>
+            <h3 class="pd-article-card__title" data-cms-key={`product.articles.${art.id}.title`}>
+              {art.title}
+            </h3>
+            <p class="pd-article-card__excerpt" data-cms-key={`product.articles.${art.id}.excerpt`}>
+              {art.excerpt}
+            </p>
+
+            <div class="pd-article-card__author">
+              <img
+                src="/images/branding/author-tessa.jpg"
+                alt={art.author}
+                class="pd-article-card__avatar"
+                loading="lazy"
+                decoding="async"
+              />
+              <div>
+                <span class="pd-article-card__author-name">{art.author}</span>
+                <span class="pd-article-card__author-role">{art.role}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* 1. How we work */
+  .pd-work {
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .pd-work__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .pd-work__intro {
+    position: sticky;
+    top: 112px;
+  }
+
+  .pd-work__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .pd-work__subtitle {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.62;
+    color: var(--color-text-secondary);
+  }
+
+  .pd-work__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  .pd-work__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .pd-step {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .pd-step:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .pd-step__num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.28);
+  }
+
+  .pd-step__title {
+    margin: 2px 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .pd-step__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* 2. Creative power banner */
+  .pd-banner {
+    padding: clamp(24px, 4vw, 48px) 0 clamp(56px, 7.5vw, 96px);
+    background: var(--color-void);
+  }
+
+  .pd-banner__card {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    min-height: clamp(320px, 38vw, 440px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+  }
+
+  .pd-banner__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .pd-banner__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(1, 3, 7, 0.92) 0%,
+      rgba(1, 3, 7, 0.72) 48%,
+      rgba(1, 3, 7, 0.16) 100%
+    );
+  }
+
+  .pd-banner__content {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+    padding: clamp(32px, 5vw, 60px);
+  }
+
+  .pd-banner__title {
+    margin: 0 0 14px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2rem, 3.8vw, 3.1rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .pd-banner__subtitle {
+    margin: 0 0 26px;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  /* 3. Related articles */
+  .pd-articles {
+    padding: clamp(48px, 6.5vw, 88px) 0 clamp(72px, 9vw, 118px);
+    background: var(--color-obsidian-950);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .pd-articles__header {
+    max-width: 680px;
+    margin-bottom: clamp(32px, 4.5vw, 48px);
+  }
+
+  .pd-articles__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 3.8vw, 3.1rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .pd-articles__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .pd-article-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+  }
+
+  .pd-article-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.36);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .pd-article-card__media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
+
+  .pd-article-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+
+  .pd-article-card:hover .pd-article-card__img {
+    transform: scale(1.04);
+  }
+
+  .pd-article-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .pd-article-card__meta {
+    margin: 0 0 10px;
+    display: flex;
+    gap: 8px;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    color: var(--color-brand-cyan);
+  }
+
+  .pd-article-card__title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1.02rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .pd-article-card__excerpt {
+    margin: 0 0 20px;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .pd-article-card__author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .pd-article-card__avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .pd-article-card__author-name {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .pd-article-card__author-role {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 1024px) {
+    .pd-articles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 820px) {
+    .pd-work__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pd-work__intro {
+      position: static;
+    }
+
+    .pd-banner__scrim {
+      background: linear-gradient(
+        180deg,
+        rgba(1, 3, 7, 0.84) 0%,
+        rgba(1, 3, 7, 0.72) 60%,
+        rgba(1, 3, 7, 0.88) 100%
+      );
+    }
+  }
+
+  @media (max-width: 600px) {
+    .pd-articles__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

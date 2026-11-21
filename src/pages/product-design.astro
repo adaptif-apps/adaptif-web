@@ -1,0 +1,150 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import ProductDesignHero from "../components/ProductDesignHero.astro";
+import BrandLogos from "../components/BrandLogos.astro";
+import ProductDesignOverviewAndOffer from "../components/ProductDesignOverviewAndOffer.astro";
+import ProductDesignWorkflowAndBottom from "../components/ProductDesignWorkflowAndBottom.astro";
+import FaqSection, { type FaqItem } from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+if (Astro.url.searchParams.get("edit") !== "1") {
+  Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+}
+
+const productFaqs: FaqItem[] = [
+  {
+    question: "What's included in Adaptif's product design services?",
+    answer:
+      "Adaptif’s product design services cover the full product design process: product design strategy, MVP design and prototyping, product design audits, UX enhancements and iteration, design system creation and evolution, and ongoing product design consulting. Engagements typically support new product launches, feature enhancements, redesigns of legacy interfaces, and scaling product design systems as teams grow. The team works with enterprise product organizations and growing SMBs alike.",
+  },
+  {
+    question: "How does Adaptif use AI in product design?",
+    answer:
+      "Adaptif uses AI to accelerate routine product design work, including layout variant generation, UI component variations, and assisting with content for product surfaces. AI tools are combined with senior product design expertise so output stays aligned with brand standards rather than drifting into generic AI work. Senior product designers govern every deliverable, with AI handling routine variant work and freeing designers for strategic interaction design.",
+  },
+  {
+    question: "How is Adaptif different from a traditional UX agency?",
+    answer:
+      "Use Adaptif when product design is part of broader marketing and creative needs, connecting product UX with brand, web design, landing pages, and customer-facing content. Traditional UX agencies typically work in isolation on standalone product engagements with long discovery phases and limited connection to downstream marketing creative. Adaptif fits product-led companies where product UX, marketing site, and lifecycle creative need to feel like one coherent experience.",
+  },
+  {
+    question: "Does Adaptif design for mobile (iOS, Android) and web?",
+    answer:
+      "Yes. Adaptif designs for both web and mobile, delivering complete digital experiences across responsive web and mobile product surfaces. Component-based design systems make it straightforward to maintain consistency when the same product spans multiple platforms, which is a common need for product-led companies running web alongside mobile apps. End-to-end product design engagements cover both, with platform-appropriate patterns applied to each.",
+  },
+  {
+    question: "Should I hire an in-house product designer or use Adaptif?",
+    answer:
+      "A hybrid model works best for most teams: an in-house product designer or design lead for day-to-day product work and design strategy, plus Adaptif for capacity bursts, design system work, audits, and specialized projects. Pure in-house product design teams are expensive to staff at scale, and small teams often lack design system or motion specialists. Adaptif fills capability and capacity gaps while keeping product strategy in-house.",
+  },
+  {
+    question: "How are product design engagements typically structured?",
+    answer:
+      "Product design engagements are scoped to the work at hand. A product design audit focuses on evaluating existing UX, surfacing friction points, and prioritizing improvements. MVP design covers user flows, prototypes, and design system foundations for a new product. Product design engagements can include research, discovery, wireframes, high-fidelity design, design systems, and implementation-ready documentation. Ongoing UX enhancement and iteration continues through the Adaptif creative subscription.",
+  },
+  {
+    question: "How does Adaptif keep product design consistent with our brand and design system?",
+    answer:
+      "Product design projects start from your existing brand guidelines, design system, and product patterns. The team works within those guidelines and applies them consistently across designers and projects, so design output stays aligned with the rest of your brand and product surfaces. If a design system already exists, Adaptif works within it rather than inventing new patterns. If no system is in place yet, design system foundations can be built alongside product work through the design system creation and evolution service.",
+  },
+  {
+    question: "Who owns the product design files and IP after the engagement?",
+    answer:
+      "The customer owns all product design files, Figma source files, design tokens, research artifacts, and any deliverables produced by Adaptif. Source files are delivered with no ongoing license fees and no restrictions on internal use, extension, or handoff to other teams or agencies. This applies whether the engagement is a single audit or ongoing product design work.",
+  },
+];
+---
+
+<Layout
+  title="Product Design Services — Adaptif"
+  description="Create seamless digital experiences that grow alongside your business. Strategic product design, prototyping, UX audits, and scalable design systems."
+>
+  <Header />
+  <main>
+    <ProductDesignHero />
+    <BrandLogos />
+    <ProductDesignOverviewAndOffer />
+    <ProductDesignWorkflowAndBottom />
+    <FaqSection faqs={productFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  :global([data-pd-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--pd-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--pd-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-pd-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-pd-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-pd-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initProductDesignPage = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-pd-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+
+    const revealInView = () => {
+      const vh = window.innerHeight || 900;
+      revealEls.forEach((el) => {
+        if (el.classList.contains("is-visible")) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.top < vh + 140) {
+          el.classList.add("is-visible");
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.01, rootMargin: "140px 0px 140px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+    revealInView();
+    window.addEventListener("scroll", revealInView, { passive: true });
+  };
+
+  initProductDesignPage();
+  document.addEventListener("astro:page-load", initProductDesignPage);
+</script>

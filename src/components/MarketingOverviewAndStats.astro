@@ -1,0 +1,241 @@
+---
+// MarketingOverviewAndStats.astro - "Strong campaigns begin with smarter marketing strategy" + 213+ / 5/5 / 100% stats
+
+const stats = [
+  {
+    id: "projects",
+    count: 213,
+    suffix: "+",
+    desc: "Running total (and still climbing!) of strategy projects our team has completed.",
+  },
+  {
+    id: "satisfaction",
+    count: 5,
+    suffix: "/5",
+    desc: "91.8% of the strategy projects we shipped earned a 5-star client satisfaction score.",
+  },
+  {
+    id: "alignment",
+    count: 100,
+    suffix: "%",
+    desc: "Aligned for brands such as Meta, Intuit, Booking.com, The Economist, UBS, and Wistia.",
+  },
+];
+---
+
+<!-- 1. Strong campaigns begin with smarter marketing strategy -->
+<section class="mk-overview" id="marketing-overview" aria-labelledby="mk-overview-title">
+  <div class="mk-overview__glow" aria-hidden="true"></div>
+
+  <div class="container mk-overview__grid">
+    <div class="mk-overview__copy" data-mk-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="marketing.overview.eyebrow">
+        Trade scattered for strategic
+      </p>
+
+      <h2 id="mk-overview-title" class="mk-overview__title" data-cms-key="marketing.overview.title">
+        Strong campaigns begin <span class="title-highlight">with smarter marketing strategy</span>
+      </h2>
+
+      <p class="mk-overview__lead" data-cms-key="marketing.overview.lead">
+        Marketing teams now operate leaner, quicker, and across more channels than ever. But once strategy lags behind, messaging splinters, campaigns underdeliver, and media budgets leak.
+      </p>
+
+      <p class="mk-overview__body" data-cms-key="marketing.overview.body">
+        Adaptif bridges the distance between creative output and strategic focus. If you’re searching for a marketing consultant, our team folds workable strategy straight into your creative process.
+      </p>
+    </div>
+
+    <div class="mk-overview__visual" data-mk-reveal="scale" style="--mk-delay: 120ms">
+      <div class="mk-overview__frame">
+        <img
+          src="/images/marketing-strategy/team-strategy.jpg"
+          alt="Marketing strategists collaborating around campaign plans"
+          class="mk-overview__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="marketing.overview.image"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. A few strategic numbers -->
+<section class="mk-stats" id="marketing-stats" aria-labelledby="mk-stats-title">
+  <div class="container">
+    <header class="mk-stats__header" data-mk-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="marketing.stats.eyebrow">
+        A few strategic numbers
+      </p>
+      <h2 id="mk-stats-title" class="mk-stats__title" data-cms-key="marketing.stats.title">
+        We’ve <span class="title-highlight">shipped hundreds</span> of strategic projects
+      </h2>
+    </header>
+
+    <dl class="mk-stats__grid">
+      {stats.map((s, idx) => (
+        <div class="mk-stats__item" data-mk-reveal style={`--mk-delay: ${idx * 70}ms`}>
+          <dt class="mk-stats__desc" data-cms-key={`marketing.stats.${s.id}.label`}>
+            {s.desc}
+          </dt>
+          <dd
+            class="mk-stats__value"
+            data-mk-count={s.count}
+            data-mk-suffix={s.suffix}
+            data-cms-key={`marketing.stats.${s.id}.value`}
+          >
+            {`${s.count}${s.suffix}`}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .mk-overview {
+    position: relative;
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .mk-overview__glow {
+    position: absolute;
+    top: 16%;
+    right: 8%;
+    width: 480px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .mk-overview__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: clamp(32px, 5vw, 68px);
+    align-items: center;
+  }
+
+  .mk-overview__title {
+    margin: 14px 0 20px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.3rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .mk-overview__lead {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .mk-overview__body {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.66;
+    color: var(--color-text-secondary);
+  }
+
+  .mk-overview__frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 26px 60px -20px rgba(0, 0, 0, 0.8),
+      0 0 38px -14px rgba(72, 200, 255, 0.16);
+    aspect-ratio: 1 / 1;
+  }
+
+  .mk-overview__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Stats */
+  .mk-stats {
+    padding: clamp(56px, 7vw, 96px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .mk-stats__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+
+  .mk-stats__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .mk-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 40px;
+    margin: 0;
+  }
+
+  .mk-stats__item {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 28px 16px 12px;
+  }
+
+  .mk-stats__desc {
+    margin: 0;
+    max-width: 270px;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .mk-stats__value {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(3.1rem, 5vw, 4.4rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-brand-cyan);
+  }
+
+  @media (max-width: 960px) {
+    .mk-overview__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .mk-overview__frame {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .mk-stats__grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>

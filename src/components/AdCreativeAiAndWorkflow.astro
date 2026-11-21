@@ -1,0 +1,587 @@
+---
+// AdCreativeAiAndWorkflow.astro - Shared ServiceAiBanner + 5-step approach + Creative power banner + Related articles
+import ServiceAiBanner from "./ServiceAiBanner.astro";
+
+const aiItems = [
+  {
+    id: "assets",
+    title: "Brand-ready assets",
+    description:
+      "Generate campaign imagery and copy that feels on-brand, without relying on stock libraries or photo shoots.",
+  },
+  {
+    id: "video",
+    title: "Smarter video scale",
+    description:
+      "Expand video output with AI-assisted footage, storyboards, and voiceover capabilities.",
+  },
+  {
+    id: "adaptation",
+    title: "Market-ready adaptation",
+    description:
+      "Localize visuals and messaging with AI while retaining cultural relevance across every audience.",
+  },
+];
+
+const steps = [
+  {
+    num: "1",
+    title: "Seamless kickoff",
+    desc: "Set projects up clearly through Workspace, a shared space for briefs, collaboration, and reviews.",
+  },
+  {
+    num: "2",
+    title: "Brand consistency",
+    desc: "Keep every asset aligned with your identity using toolkits, creative frameworks, and brand-trained teams.",
+  },
+  {
+    num: "3",
+    title: "Fast, no trade-offs",
+    desc: "Move quickly with dedicated creative pods that understand your people, priorities, and objectives.",
+  },
+  {
+    num: "4",
+    title: "Scale on demand",
+    desc: "Add campaign volume, formats, or new initiatives in days rather than weeks through flexible resourcing.",
+  },
+  {
+    num: "5",
+    title: "Designed for learning",
+    desc: "Produce multiple versions quickly so you can test, refine, and improve without burning out.",
+  },
+];
+
+const articles = [
+  {
+    id: "art1",
+    category: "Creative Leadership",
+    readTime: "8 min read",
+    title: "6 AI applications that actually save time (with real examples)",
+    excerpt:
+      "Creative teams don’t need more AI hype. They need practical, proven applications and real results.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art2",
+    category: "Paid Social",
+    readTime: "6 min read",
+    title: "Beating ad fatigue with high-velocity creative testing matrices",
+    excerpt:
+      "How performance teams ship 50+ variations a month without sacrificing brand craft.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art3",
+    category: "Localization",
+    readTime: "7 min read",
+    title: "Scaling global ad campaigns with AI-assisted transcreation",
+    excerpt:
+      "Adapt regional visuals, idioms, and formats while keeping one cohesive global identity.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art4",
+    category: "Video & Motion",
+    readTime: "5 min read",
+    title: "Why modular motion templates double paid video output",
+    excerpt:
+      "Turn hero campaign shoots into dozens of hook variations for TikTok, Reels, and YouTube.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+];
+---
+
+<!-- 1. How Adaptif uses AI (shared 1-col banner template) -->
+<ServiceAiBanner
+  id="ad-ai"
+  cmsPrefix="adcreative.ai"
+  titleLead="AI-powered creative"
+  titleHighlight="with standards intact"
+  lead="We use AI to produce attention-grabbing advertising faster while protecting quality, brand consistency, and performance."
+  image="/images/ad-creative/ai-banner.jpg"
+  items={aiItems}
+  showCta={true}
+  revealAttr="data-ac-reveal"
+/>
+
+<!-- 2. Our approach (5 steps) -->
+<section class="ac-work" id="ad-approach" aria-labelledby="ac-work-title">
+  <div class="container ac-work__grid">
+    <div class="ac-work__intro" data-ac-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="adcreative.approach.eyebrow">
+        Our approach
+      </p>
+      <h2 id="ac-work-title" class="ac-work__title" data-cms-key="adcreative.approach.title">
+        A simpler, quicker path to <span class="title-highlight">creative that delivers</span>
+      </h2>
+      <p class="ac-work__subtitle" data-cms-key="adcreative.approach.subtitle">
+        Our workflow clears friction and unlocks scale through skilled creative teams, transparent communication, and speed-focused delivery.
+      </p>
+
+      <div class="ac-work__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="adcreative.approach.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <ol class="ac-work__steps">
+      {steps.map((step, idx) => (
+        <li class="ac-step" data-ac-reveal style={`--ac-delay: ${idx * 55}ms`}>
+          <span class="ac-step__num" aria-hidden="true">{step.num}</span>
+          <div class="ac-step__body">
+            <h3 class="ac-step__title" data-cms-key={`adcreative.approach.step${step.num}.title`}>
+              {step.title}
+            </h3>
+            <p class="ac-step__desc" data-cms-key={`adcreative.approach.step${step.num}.desc`}>
+              {step.desc}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<!-- 3. Creative power banner -->
+<section class="ac-power" id="ad-creative-power" aria-labelledby="ac-power-title">
+  <div class="ac-power__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/branding/creative-power-mobile.jpg" />
+      <img
+        src="/images/branding/creative-power-desktop.jpg"
+        alt=""
+        class="ac-power__bg"
+        loading="lazy"
+        decoding="async"
+        data-cms-key="adcreative.power.image"
+      />
+    </picture>
+    <div class="ac-power__scrim"></div>
+  </div>
+
+  <div class="container ac-power__container">
+    <div class="ac-power__content" data-ac-reveal>
+      <h2 id="ac-power-title" class="ac-power__title" data-cms-key="adcreative.power.title">
+        Now imagine this <span class="title-highlight">creative power</span> behind your next project
+      </h2>
+      <p class="ac-power__desc" data-cms-key="adcreative.power.desc">
+        This is just one of many creative services—what you do with them is up to you. Let’s chat.
+      </p>
+      <a
+        href="#book-a-call"
+        class="adaptif-btn"
+        data-open-book-call
+        data-cms-key="adcreative.power.cta"
+      >
+        <span>Book a Call</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path
+            d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Related articles -->
+<section class="ac-articles" id="ad-articles" aria-labelledby="ac-articles-title">
+  <div class="container">
+    <header class="ac-articles__header" data-ac-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="adcreative.articles.eyebrow">
+        Related articles
+      </p>
+      <h2 id="ac-articles-title" class="ac-articles__title" data-cms-key="adcreative.articles.title">
+        What <span class="title-highlight">ad creative at scale</span> looks like in the real world
+      </h2>
+    </header>
+
+    <div class="ac-articles__grid">
+      {articles.map((art, idx) => (
+        <a
+          href={art.href}
+          class="ac-article-card"
+          data-ac-reveal
+          style={`--ac-delay: ${idx * 65}ms`}
+        >
+          <div class="ac-article-card__media">
+            <img
+              src="/images/branding/article-cover.jpg"
+              alt={art.title}
+              class="ac-article-card__img"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div class="ac-article-card__body">
+            <p class="ac-article-card__meta">
+              <span>{art.category}</span>
+              <span aria-hidden="true">•</span>
+              <span>{art.readTime}</span>
+            </p>
+            <h3 class="ac-article-card__title" data-cms-key={`adcreative.articles.${art.id}.title`}>
+              {art.title}
+            </h3>
+            <p class="ac-article-card__excerpt" data-cms-key={`adcreative.articles.${art.id}.excerpt`}>
+              {art.excerpt}
+            </p>
+
+            <div class="ac-article-card__author">
+              <img
+                src="/images/branding/author-tessa.jpg"
+                alt={art.author}
+                class="ac-article-card__avatar"
+                loading="lazy"
+                decoding="async"
+              />
+              <div>
+                <span class="ac-article-card__author-name">{art.author}</span>
+                <span class="ac-article-card__author-role">{art.role}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ac-work {
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .ac-work__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .ac-work__intro {
+    position: sticky;
+    top: 112px;
+  }
+
+  .ac-work__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.1vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .ac-work__subtitle {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.62;
+    color: var(--color-text-secondary);
+  }
+
+  .ac-work__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ac-step {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .ac-step:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .ac-step__num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    margin-top: 2px;
+  }
+
+  .ac-step__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .ac-step__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Power banner */
+  .ac-power {
+    position: relative;
+    min-height: clamp(380px, 44vw, 520px);
+    display: flex;
+    align-items: center;
+    padding: clamp(64px, 8vw, 100px) 0;
+    overflow: hidden;
+    background: var(--color-void);
+  }
+
+  .ac-power__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .ac-power__media picture {
+    display: contents;
+  }
+
+  .ac-power__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .ac-power__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(1, 3, 7, 0.9) 0%,
+      rgba(1, 3, 7, 0.65) 48%,
+      rgba(1, 3, 7, 0.14) 100%
+    );
+  }
+
+  .ac-power__container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .ac-power__content {
+    max-width: 560px;
+  }
+
+  .ac-power__title {
+    margin: 0 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.3vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .ac-power__desc {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Related articles */
+  .ac-articles {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .ac-articles__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(36px, 5vw, 52px);
+  }
+
+  .ac-articles__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .ac-articles__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .ac-article-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.025);
+    text-decoration: none;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+  }
+
+  .ac-article-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .ac-article-card__media {
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+  }
+
+  .ac-article-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s ease;
+  }
+
+  .ac-article-card:hover .ac-article-card__img {
+    transform: scale(1.04);
+  }
+
+  .ac-article-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 18px;
+  }
+
+  .ac-article-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-brand-cyan);
+  }
+
+  .ac-article-card__title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .ac-article-card__excerpt {
+    margin: 0 0 18px;
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .ac-article-card__author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .ac-article-card__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .ac-article-card__author-name {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .ac-article-card__author-role {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 1100px) {
+    .ac-articles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 960px) {
+    .ac-work__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ac-work__intro {
+      position: static;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .ac-power__scrim {
+      background: linear-gradient(180deg, rgba(1, 3, 7, 0.86) 0%, rgba(1, 3, 7, 0.65) 55%, rgba(1, 3, 7, 0.9) 100%);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .ac-articles__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

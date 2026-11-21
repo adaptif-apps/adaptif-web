@@ -1,0 +1,246 @@
+---
+// WebDesignHero.astro - Full-bleed Hero + bottom service marquee strip for /web-design
+
+const stripCards = [
+  { label: "Website Design", image: "/images/web-design/offer-website.jpg", href: "#web-offer" },
+  { label: "UX/UI Audit", image: "/images/web-design/offer-ux-audit.jpg", href: "#web-offer" },
+  { label: "Design Systems & UI Kits", image: "/images/web-design/offer-design-systems.jpg", href: "#web-offer" },
+  { label: "Landing Page Design", image: "/images/web-design/offer-landing.jpg", href: "#web-offer" },
+  { label: "Conversion Optimization", image: "/images/web-design/offer-cro.jpg", href: "#web-offer" },
+  { label: "Brand Identity", image: "/images/branding/strip-brand.jpg", href: "/branding" },
+  { label: "Marketing Strategy", image: "/images/branding/strip-strategy.jpg", href: "/marketing-strategy" },
+];
+---
+
+<section class="wd-hero" id="web-design-hero" aria-labelledby="wd-hero-title">
+  <div class="wd-hero__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/web-design/hero-mobile.jpg" />
+      <img
+        src="/images/web-design/hero-desktop.jpg"
+        alt=""
+        class="wd-hero__bg"
+        loading="eager"
+        decoding="async"
+        data-cms-key="webdesign.hero.image"
+      />
+    </picture>
+    <div class="wd-hero__scrim"></div>
+    <div class="wd-hero__bottom-fade"></div>
+  </div>
+
+  <div class="container wd-hero__container">
+    <div class="wd-hero__content">
+      <p class="adaptif-eyebrow" data-cms-key="webdesign.hero.eyebrow">
+        Web Design Services
+      </p>
+
+      <h1 id="wd-hero-title" class="wd-hero__title" data-cms-key="webdesign.hero.title">
+        Results-driven web design <span class="title-highlight">made to scale with your brand</span>
+      </h1>
+
+      <p class="wd-hero__description" data-cms-key="webdesign.hero.description">
+        What does your brand look like online? We build quick, expandable web experiences engineered to convert on any screen, audience, and funnel stage.
+      </p>
+
+      <div class="wd-hero__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="webdesign.hero.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wd-strip" aria-label="Web design deliverables overview">
+    <div class="wd-strip__track">
+      {[...stripCards, ...stripCards].map((card, i) => (
+        <a href={card.href} class="wd-strip__card" tabindex={i >= stripCards.length ? -1 : undefined}>
+          <img src={card.image} alt={card.label} class="wd-strip__img" loading="lazy" decoding="async" />
+          <div class="wd-strip__scrim" aria-hidden="true"></div>
+          <span class="wd-strip__label">{card.label}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .wd-hero {
+    position: relative;
+    width: 100%;
+    padding: clamp(128px, 16vh, 175px) 0 36px;
+    overflow: hidden;
+    background-color: var(--color-void);
+  }
+
+  .wd-hero__media {
+    position: absolute;
+    inset: 0 0 110px 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .wd-hero__media picture {
+    display: contents;
+  }
+
+  .wd-hero__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 65% center;
+    opacity: 0.9;
+  }
+
+  .wd-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(1, 3, 7, 0.92) 0%, rgba(1, 3, 7, 0.72) 48%, rgba(1, 3, 7, 0.16) 100%),
+      radial-gradient(ellipse 55% 55% at 22% 45%, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+  }
+
+  .wd-hero__bottom-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 150px;
+    background: linear-gradient(180deg, transparent 0%, var(--color-void) 100%);
+  }
+
+  .wd-hero__container {
+    position: relative;
+    z-index: 2;
+    padding-bottom: clamp(44px, 6vw, 72px);
+  }
+
+  .wd-hero__content {
+    max-width: 640px;
+  }
+
+  .wd-hero__title {
+    margin: 16px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.85rem, 5.4vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .wd-hero__description {
+    max-width: 530px;
+    margin: 0 0 32px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.2vw, 1.12rem);
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .wd-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .wd-strip {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  }
+
+  .wd-strip__track {
+    display: flex;
+    gap: 14px;
+    width: max-content;
+    padding: 4px 0;
+    animation: wdStripScroll 38s linear infinite;
+  }
+
+  .wd-strip:hover .wd-strip__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes wdStripScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .wd-strip__card {
+    position: relative;
+    width: 168px;
+    height: 112px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 12px;
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .wd-strip__card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .wd-strip__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .wd-strip__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(1, 3, 7, 0.08) 0%, rgba(1, 3, 7, 0.88) 100%);
+  }
+
+  .wd-strip__label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-family-body);
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .wd-hero {
+      padding: 120px 0 28px;
+    }
+
+    .wd-hero__scrim {
+      background: linear-gradient(180deg, rgba(1, 3, 7, 0.88) 0%, rgba(1, 3, 7, 0.68) 60%, rgba(1, 3, 7, 0.94) 100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wd-strip__track {
+      animation: none;
+    }
+  }
+</style>

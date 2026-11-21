@@ -1,0 +1,264 @@
+---
+// AuditHeroCanvas.astro - Abstract Three.js Diagnostic Signal & System Topology background for /audit
+---
+
+<div class="au-three-wrap" aria-hidden="true">
+  <canvas class="au-three-canvas" id="audit-hero-canvas"></canvas>
+  <div class="au-three-vignette"></div>
+</div>
+
+<script>
+  import * as THREE from "three";
+
+  const createGlowTexture = (): THREE.CanvasTexture => {
+    const size = 64;
+    const c = document.createElement("canvas");
+    c.width = size;
+    c.height = size;
+    const ctx = c.getContext("2d")!;
+    const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    grad.addColorStop(0, "rgba(255, 255, 255, 1)");
+    grad.addColorStop(0.28, "rgba(120, 220, 255, 0.85)");
+    grad.addColorStop(0.6, "rgba(43, 127, 255, 0.28)");
+    grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, size, size);
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    return tex;
+  };
+
+  const initAuditHeroCanvas = () => {
+    const canvas = document.getElementById("audit-hero-canvas") as HTMLCanvasElement | null;
+    if (!canvas || canvas.dataset.auThreeInit === "1") return;
+    canvas.dataset.auThreeInit = "1";
+
+    const host = canvas.parentElement;
+    if (!host) return;
+
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x000000, 0);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x010307, 0.018);
+
+    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 120);
+    camera.position.set(0, 5.2, 18.5);
+    camera.lookAt(0, -0.3, 0);
+
+    const rootGroup = new THREE.Group();
+    scene.add(rootGroup);
+
+    // 1. Undulating Diagnostic System Grid (Topographic Wireframe Plane)
+    const planeWidth = 46;
+    const planeDepth = 30;
+    const segX = 56;
+    const segZ = 36;
+    const gridGeo = new THREE.PlaneGeometry(planeWidth, planeDepth, segX, segZ);
+    gridGeo.rotateX(-Math.PI / 2);
+
+    const gridPos = gridGeo.attributes.position as THREE.BufferAttribute;
+    const baseY = new Float32Array(gridPos.count);
+    for (let i = 0; i < gridPos.count; i++) {
+      baseY[i] = gridPos.getY(i);
+    }
+
+    const gridMat = new THREE.MeshBasicMaterial({
+      color: 0x3898ff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.24,
+    });
+    const gridMesh = new THREE.Mesh(gridGeo, gridMat);
+    gridMesh.position.y = -2.2;
+    rootGroup.add(gridMesh);
+
+    // 2. Luminous Signal Nodes (Glowing Orbs on top of the diagnostic field)
+    const glowTex = createGlowTexture();
+    const nodeCount = gridPos.count;
+    const nodeGeo = new THREE.BufferGeometry();
+    const nodePositions = new Float32Array(nodeCount * 3);
+    const nodeColors = new Float32Array(nodeCount * 3);
+
+    const colorAzure = new THREE.Color(0x2b7fff);
+    const colorCyan = new THREE.Color(0x7fe2ff);
+
+    for (let i = 0; i < nodeCount; i++) {
+      const x = gridPos.getX(i);
+      const z = gridPos.getZ(i);
+      nodePositions[i * 3] = x;
+      nodePositions[i * 3 + 1] = -2.2;
+      nodePositions[i * 3 + 2] = z;
+
+      const dist = Math.sqrt(x * x + z * z);
+      const t = Math.max(0, 1 - dist / 20);
+      const c = colorAzure.clone().lerp(colorCyan, t);
+      nodeColors[i * 3] = c.r;
+      nodeColors[i * 3 + 1] = c.g;
+      nodeColors[i * 3 + 2] = c.b;
+    }
+
+    nodeGeo.setAttribute("position", new THREE.BufferAttribute(nodePositions, 3));
+    nodeGeo.setAttribute("color", new THREE.BufferAttribute(nodeColors, 3));
+
+    const nodeMat = new THREE.PointsMaterial({
+      size: 0.28,
+      map: glowTex,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const nodePoints = new THREE.Points(nodeGeo, nodeMat);
+    rootGroup.add(nodePoints);
+
+    // 3. Floating Ambient Telemetry Particles in upper/mid space
+    const floatCount = 90;
+    const floatGeo = new THREE.BufferGeometry();
+    const floatPositions = new Float32Array(floatCount * 3);
+    const floatPhases = new Float32Array(floatCount);
+    for (let i = 0; i < floatCount; i++) {
+      floatPositions[i * 3] = (Math.random() - 0.5) * 34;
+      floatPositions[i * 3 + 1] = Math.random() * 10 - 2;
+      floatPositions[i * 3 + 2] = (Math.random() - 0.5) * 18;
+      floatPhases[i] = Math.random() * Math.PI * 2;
+    }
+    floatGeo.setAttribute("position", new THREE.BufferAttribute(floatPositions, 3));
+    const floatMat = new THREE.PointsMaterial({
+      size: 0.36,
+      map: glowTex,
+      color: 0x48c8ff,
+      transparent: true,
+      opacity: 0.55,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const floatPoints = new THREE.Points(floatGeo, floatMat);
+    rootGroup.add(floatPoints);
+
+    // Resize handling
+    const setSize = () => {
+      const rect = host.getBoundingClientRect();
+      const w = Math.max(1, Math.floor(rect.width));
+      const h = Math.max(1, Math.floor(rect.height));
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    setSize();
+
+    const resizeObserver = new ResizeObserver(setSize);
+    resizeObserver.observe(host);
+
+    // Visibility pause
+    let isVisible = true;
+    const io = new IntersectionObserver(
+      (entries) => {
+        isVisible = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(host);
+
+    let rafId = 0;
+    const clock = new THREE.Clock();
+
+    const renderFrame = (elapsed: number) => {
+      rootGroup.rotation.y = Math.sin(elapsed * 0.16) * 0.06;
+
+      const nodePosAttr = nodeGeo.attributes.position as THREE.BufferAttribute;
+
+      for (let i = 0; i < gridPos.count; i++) {
+        const x = gridPos.getX(i);
+        const z = gridPos.getZ(i);
+        const dist = Math.sqrt(x * x + z * z);
+
+        const wave =
+          Math.sin(x * 0.25 + elapsed * 1.1) * 0.72 +
+          Math.cos(z * 0.28 - elapsed * 0.85) * 0.58 +
+          Math.sin(dist * 0.55 - elapsed * 1.8) * 0.42;
+
+        const y = baseY[i] + wave;
+        gridPos.setY(i, y);
+        nodePosAttr.setY(i, -2.2 + y);
+      }
+
+      gridPos.needsUpdate = true;
+      nodePosAttr.needsUpdate = true;
+
+      const floatAttr = floatGeo.attributes.position as THREE.BufferAttribute;
+      for (let i = 0; i < floatCount; i++) {
+        const fy = floatAttr.getY(i);
+        const nextY = fy + Math.sin(elapsed * 0.8 + floatPhases[i]) * 0.008;
+        floatAttr.setY(i, nextY);
+      }
+      floatAttr.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    };
+
+    if (prefersReducedMotion) {
+      renderFrame(1.2);
+    } else {
+      const animate = () => {
+        rafId = requestAnimationFrame(animate);
+        if (!isVisible) return;
+        renderFrame(clock.getElapsedTime());
+      };
+      animate();
+    }
+
+    const cleanup = () => {
+      cancelAnimationFrame(rafId);
+      resizeObserver.disconnect();
+      io.disconnect();
+      glowTex.dispose();
+      gridGeo.dispose();
+      gridMat.dispose();
+      nodeGeo.dispose();
+      nodeMat.dispose();
+      floatGeo.dispose();
+      floatMat.dispose();
+      renderer.dispose();
+    };
+
+    document.addEventListener("astro:before-swap", cleanup, { once: true });
+  };
+
+  initAuditHeroCanvas();
+  document.addEventListener("astro:page-load", initAuditHeroCanvas);
+</script>
+
+<style>
+  .au-three-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .au-three-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 1;
+  }
+
+  .au-three-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 62% 48% at 50% 44%, rgba(1, 3, 7, 0.35) 0%, rgba(1, 3, 7, 0.15) 55%, rgba(1, 3, 7, 0.85) 100%),
+      linear-gradient(180deg, rgba(1, 3, 7, 0.5) 0%, transparent 20%, transparent 78%, var(--color-void) 100%);
+  }
+</style>

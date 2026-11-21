@@ -7,6 +7,7 @@ import { listAcademyItems, getAcademySettings } from "../lib/academyDb";
 import { getWhatsAppConfig } from "../lib/whatsappDb";
 import { getSeoConfig } from "../lib/seoDb";
 import { listBlogPosts } from "../lib/blogDb";
+import { getTurnstileConfig } from "../lib/turnstile";
 import { issueStudioSessionCookie } from "../lib/studioAuth";
 import StudioAcademyModule from "../components/StudioAcademyModule.astro";
 import StudioActivityModule from "../components/StudioActivityModule.astro";
@@ -17,6 +18,7 @@ import StudioSeoModule from "../components/StudioSeoModule.astro";
 import StudioBlogModule from "../components/StudioBlogModule.astro";
 import StudioHeader from "../components/StudioHeader.astro";
 import StudioUiKitModule from "../components/StudioUiKitModule.astro";
+import StudioTurnstileModule from "../components/StudioTurnstileModule.astro";
 import "../styles/global.css";
 
 export const prerender = false;
@@ -35,6 +37,7 @@ const [
   initialWhatsAppConfig,
   initialSeoConfig,
   initialBlogPosts,
+  rawTurnstileConfig,
 ] = await Promise.all([
   listProjects({ includeHidden: true }),
   getBookCallConfig(),
@@ -46,6 +49,7 @@ const [
   getWhatsAppConfig(),
   getSeoConfig({ bypassCache: true }),
   listBlogPosts({ includeDrafts: true }),
+  getTurnstileConfig(),
 ]);
 
 const initialKlaviyoState = {
@@ -123,21 +127,32 @@ const tagPresets = [
       <aside class="studio-sidebar">
         <div class="studio-brand">
           <img src="/logo.svg" alt="Adaptif" class="studio-logo" />
-          <button
-            type="button"
-            class="studio-collapse-all-btn"
-            id="btn-toggle-all-dropdowns"
-            title="Collapse all sections"
-          >
-            <svg class="collapse-all-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="m7 15 5 5 5-5" />
-              <path d="m7 9 5-5 5 5" />
-            </svg>
-            <span id="toggle-all-dropdowns-label">Collapse All</span>
-          </button>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button
+              type="button"
+              class="studio-collapse-all-btn"
+              id="btn-toggle-all-dropdowns"
+              title="Collapse all sections"
+            >
+              <svg class="collapse-all-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m7 15 5 5 5-5" />
+                <path d="m7 9 5-5 5 5" />
+              </svg>
+              <span id="toggle-all-dropdowns-label">Collapse All</span>
+            </button>
+            <button
+              type="button"
+              class="cms-btn studio-mobile-menu-btn"
+              id="btn-studio-mobile-menu"
+              aria-expanded="false"
+              aria-controls="studio-nav-panel"
+            >
+              Menu
+            </button>
+          </div>
         </div>
 
-        <nav class="studio-nav" aria-label="Preferences modules">
+        <nav class="studio-nav" id="studio-nav-panel" aria-label="Preferences modules">
           <div class="nav-dropdown is-open" data-nav-group="cms">
             <button type="button" class="nav-dropdown-trigger" aria-expanded="true">
               <span>CMS</span>
@@ -206,6 +221,9 @@ const tagPresets = [
               <button type="button" class="nav-item" data-module-tab="whatsapp">
                 <span>WhatsApp</span>
               </button>
+              <button type="button" class="nav-item" data-module-tab="turnstile">
+                <span>Turnstile</span>
+              </button>
             </div>
           </div>
 
@@ -257,9 +275,17 @@ const tagPresets = [
       <main class="studio-main">
         <div id="module-portfolio">
           <StudioHeader eyebrow="CMS" title="Portfolio">
-            <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-add-brand">
-              + Add Brand
-            </button>
+            <Fragment slot="actions">
+              <button type="button" class="cms-btn cms-btn--danger" id="btn-delete-brand">
+                Delete Brand
+              </button>
+              <button type="button" class="cms-btn" id="btn-add-brand">
+                + Add Brand
+              </button>
+              <button type="submit" form="brand-editor-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-brand">
+                Save Changes
+              </button>
+            </Fragment>
           </StudioHeader>
 
           <div class="studio-workspace">
@@ -298,19 +324,31 @@ const tagPresets = [
                   </a>
                 </div>
 
-                <div class="editor-toggles" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                  <label class="toggle-wrap">
-                    <input type="checkbox" id="field-published" checked />
-                    <span>Visible on /our-work</span>
+                <div class="editor-toggles" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                  <label class="studio-toggle-pill is-active">
+                    <input type="checkbox" class="studio-toggle-chk" id="field-published" checked />
+                    <span class="studio-switch" aria-hidden="true"></span>
+                    <span class="studio-toggle-text">Visible on /our-work</span>
                   </label>
-                  <label class="toggle-wrap">
-                    <input type="checkbox" id="field-home" />
-                    <span>Show on Home</span>
+                  <label class="studio-toggle-pill is-inactive">
+                    <input type="checkbox" class="studio-toggle-chk" id="field-home" />
+                    <span class="studio-switch" aria-hidden="true"></span>
+                    <span class="studio-toggle-text">Show on Home</span>
                   </label>
                 </div>
               </div>
 
-              <div class="form-grid">
+              <!-- Sub-tabs for cleaner Portfolio editing -->
+              <div class="cms-tabs-bar" role="tablist" aria-label="Portfolio sections" style="margin-bottom: 18px;">
+                <button type="button" class="cms-tab-btn is-active" data-pf-tab="details" role="tab" aria-selected="true">
+                  Details &amp; Tags
+                </button>
+                <button type="button" class="cms-tab-btn" data-pf-tab="media" role="tab" aria-selected="false">
+                  Media &amp; Gallery
+                </button>
+              </div>
+
+              <div class="form-grid" data-pf-panel="details">
                 <div class="form-field">
                   <label for="field-title">Brand Title</label>
                   <input type="text" id="field-title" required placeholder="e.g. Sideline Podcast" />
@@ -347,7 +385,9 @@ const tagPresets = [
                     </div>
                   </div>
                 </div>
+              </div>
 
+              <div class="form-grid" data-pf-panel="media" hidden>
                 <!-- Thumbnail 1:1 -->
                 <div class="form-field">
                   <label>Thumbnail (1:1)</label>
@@ -389,15 +429,6 @@ const tagPresets = [
                   <div class="gallery-editor-grid" id="gallery-editor-grid"></div>
                 </div>
               </div>
-
-              <div class="editor-footer">
-                <button type="button" class="adaptif-btn adaptif-btn--danger adaptif-btn--sm" id="btn-delete-brand">
-                  Delete Brand
-                </button>
-                <button type="submit" class="adaptif-btn adaptif-btn--sm" id="btn-save-brand">
-                  Save Changes
-                </button>
-              </div>
             </form>
           </section>
           </div>
@@ -417,7 +448,6 @@ const tagPresets = [
           <StudioHeader
             eyebrow="INTEGRATIONS"
             title="ActiveCampaign"
-            subtitle="Connect ActiveCampaign to sync leads, lists, tags, and Form Builder custom fields automatically."
           >
             <button slot="actions" type="submit" form="ac-cms-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-ac">
               Save Integration
@@ -425,7 +455,7 @@ const tagPresets = [
           </StudioHeader>
 
           <form id="ac-cms-form" class="bc-cms-form">
-            <section class="studio-card acd-card" style="padding: 20px;">
+            <section class="studio-card acd-card">
               <div class="ac-card-head">
                 <div>
                   <span class="acd-section-kicker">Connection</span>
@@ -466,7 +496,7 @@ const tagPresets = [
               <div class="acd-settings-grid" style="margin-top: 18px;">
                 <label class="acd-field">
                   <span class="acd-label-row">
-                    <a id="ac-api-url-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="acd-label-link">
+                    <a id="ac-api-url-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
                       Account API URL ↗
                     </a>
                   </span>
@@ -479,7 +509,7 @@ const tagPresets = [
                 </label>
                 <label class="acd-field">
                   <span class="acd-label-row">
-                    <a id="ac-api-key-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="acd-label-link">
+                    <a id="ac-api-key-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
                       API Key ↗
                     </a>
                   </span>
@@ -504,7 +534,7 @@ const tagPresets = [
               </div>
             </section>
 
-            <section class="studio-card acd-card" style="padding: 20px;">
+            <section class="studio-card acd-card">
               <span class="acd-section-kicker">Audience &amp; Testing</span>
               <h2 class="bc-cms-card-title" style="margin: 4px 0;">2. Lists, Tags &amp; Live Test</h2>
               <p class="field-hint" style="margin: 0 0 16px;">
@@ -566,6 +596,14 @@ const tagPresets = [
 
         <StudioKlaviyoModule
           initialKlaviyo={initialKlaviyoState}
+        />
+
+        <StudioTurnstileModule
+          initialTurnstile={{
+            enabled: rawTurnstileConfig.enabled,
+            siteKey: rawTurnstileConfig.siteKey,
+            hasSecretKey: Boolean(rawTurnstileConfig.secretKey),
+          }}
         />
       </main>
     </div>
@@ -637,6 +675,7 @@ const tagPresets = [
         clearTimeout(toastTimer);
         toastTimer = setTimeout(() => toastEl.classList.remove("is-visible"), 2600);
       }
+      (window as any).__SHOW_STUDIO_TOAST__ = showToast;
 
       async function toClientWebpIfPossible(file: File): Promise<File> {
         // Keep animated GIFs, SVGs, and existing WebPs intact for server-side sharp handling
@@ -791,9 +830,48 @@ const tagPresets = [
           saveBtn.textContent = "Save Changes";
         }
 
+        const syncPfToggles = () => {
+          [publishedEl, homeEl].forEach((chk) => {
+            const pill = chk.closest(".studio-toggle-pill");
+            if (!pill) return;
+            pill.classList.toggle("is-active", chk.checked);
+            pill.classList.toggle("is-inactive", !chk.checked);
+          });
+        };
+        syncPfToggles();
+
         renderTags();
         renderGallery();
       }
+
+      [
+        document.getElementById("field-published"),
+        document.getElementById("field-home"),
+      ].forEach((el) => {
+        el?.addEventListener("change", () => {
+          const chk = el as HTMLInputElement;
+          const pill = chk.closest(".studio-toggle-pill");
+          if (!pill) return;
+          pill.classList.toggle("is-active", chk.checked);
+          pill.classList.toggle("is-inactive", !chk.checked);
+        });
+      });
+
+      const pfTabs = document.querySelectorAll<HTMLButtonElement>("[data-pf-tab]");
+      const pfPanels = document.querySelectorAll<HTMLElement>("[data-pf-panel]");
+      pfTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.pfTab;
+          pfTabs.forEach((t) => {
+            const active = t === tab;
+            t.classList.toggle("is-active", active);
+            t.setAttribute("aria-selected", active ? "true" : "false");
+          });
+          pfPanels.forEach((panel) => {
+            panel.hidden = panel.dataset.pfPanel !== target;
+          });
+        });
+      });
 
       async function saveOrder(newOrderIds: string[]) {
         await fetch("/api/projects/reorder", {
@@ -1052,6 +1130,14 @@ const tagPresets = [
       const portfolioModule = document.getElementById("module-portfolio");
       const bookCallModule = document.getElementById("module-book-call");
 
+      const mobileMenuBtnEl = document.getElementById("btn-studio-mobile-menu");
+      mobileMenuBtnEl?.addEventListener("click", () => {
+        const sb = document.querySelector(".studio-sidebar");
+        if (!sb) return;
+        const open = sb.classList.toggle("is-mobile-open");
+        mobileMenuBtnEl.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
       moduleTabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           const target = tab.dataset.moduleTab;
@@ -1069,6 +1155,7 @@ const tagPresets = [
           const paymentModule = document.getElementById("module-payment");
           const aiConfigModule = document.getElementById("module-ai-config");
           const whatsappModule = document.getElementById("module-whatsapp");
+          const turnstileModule = document.getElementById("module-turnstile");
           const seoModule = document.getElementById("module-seo");
           const uiKitModule = document.getElementById("module-ui-kit");
           const blogsModule = document.getElementById("module-blogs");
@@ -1096,9 +1183,13 @@ const tagPresets = [
           if (paymentModule) paymentModule.hidden = target !== "payment";
           if (aiConfigModule) aiConfigModule.hidden = target !== "ai-config";
           if (whatsappModule) whatsappModule.hidden = target !== "whatsapp";
+          if (turnstileModule) turnstileModule.hidden = target !== "turnstile";
           if (seoModule) seoModule.hidden = target !== "seo";
           if (uiKitModule) uiKitModule.hidden = target !== "ui-kit";
           if (blogsModule) blogsModule.hidden = target !== "blogs";
+          document.querySelector(".studio-sidebar")?.classList.remove("is-mobile-open");
+          document.getElementById("btn-studio-mobile-menu")?.setAttribute("aria-expanded", "false");
+          window.scrollTo({ top: 0, behavior: "instant" });
 
           const w = window as any;
           if (target === "klaviyo") {
@@ -1691,6 +1782,15 @@ const tagPresets = [
         gap: 28px;
       }
 
+      @media (min-width: 1081px) {
+        .studio-sidebar {
+          position: sticky;
+          top: 0;
+          height: 100vh;
+          overflow-y: auto;
+        }
+      }
+
       .studio-brand {
         display: flex;
         align-items: center;
@@ -1887,6 +1987,33 @@ const tagPresets = [
         flex-direction: column;
         gap: 22px;
         min-width: 0;
+        max-width: 1380px;
+        width: 100%;
+      }
+
+      .studio-main:has(#module-book-call:not([hidden])) {
+        max-width: none;
+      }
+
+      @keyframes studioModuleIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .studio-main > div:not([hidden]) {
+        animation: studioModuleIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .studio-main > div:not([hidden]) {
+          animation: none;
+        }
       }
 
       @media (min-width: 1081px) {
@@ -2824,7 +2951,36 @@ const tagPresets = [
         }
       }
 
+      .studio-mobile-menu-btn {
+        display: none;
+      }
+
       @media (max-width: 1024px) {
+        .studio-mobile-menu-btn {
+          display: inline-flex;
+        }
+
+        .studio-sidebar {
+          gap: 0;
+          padding: 16px 20px;
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .studio-sidebar .studio-nav,
+        .studio-sidebar .studio-sidebar-footer {
+          display: none;
+        }
+
+        .studio-sidebar.is-mobile-open {
+          gap: 20px;
+        }
+
+        .studio-sidebar.is-mobile-open .studio-nav,
+        .studio-sidebar.is-mobile-open .studio-sidebar-footer {
+          display: flex;
+        }
+
         .studio-shell {
           grid-template-columns: 1fr;
         }

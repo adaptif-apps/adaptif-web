@@ -1,0 +1,167 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import WebDesignHero from "../components/WebDesignHero.astro";
+import BrandLogos from "../components/BrandLogos.astro";
+import WebDesignOverviewAndStats from "../components/WebDesignOverviewAndStats.astro";
+import WebDesignOfferAndEcosystem from "../components/WebDesignOfferAndEcosystem.astro";
+import WebDesignWorkflowAndBottom from "../components/WebDesignWorkflowAndBottom.astro";
+import FaqSection, { type FaqItem } from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+if (Astro.url.searchParams.get("edit") !== "1") {
+  Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+}
+
+const webDesignFaqs: FaqItem[] = [
+  {
+    question: "What do Adaptif’s web design services cover?",
+    answer:
+      "Adaptif supports the entire web design process, from UX research and wireframes to responsive interface design, landing pages, design systems, and ongoing improvements through UX audits. Deliverables include reusable component libraries developed using the Atomic Design methodology.",
+  },
+  {
+    question: "How does Adaptif organize enterprise web design projects?",
+    answer:
+      "We shape each project around its scope and goals—from focused homepage redesigns to complete enterprise websites with multiple templates, a design system, and coordinated copy. Once foundations are established, your subscription supports ongoing landing page and lifecycle page production.",
+  },
+  {
+    question: "How do I choose between Adaptif and a traditional web design agency?",
+    answer:
+      "Adaptif is built for teams with recurring web design needs—landing pages, SEO content, lifecycle campaigns, paid media, and major redesigns—all managed at a predictable monthly cost with one creative partner across web design, motion, advertising, and branding.",
+  },
+  {
+    question: "What does the handoff to our developers look like?",
+    answer:
+      "We provide clearly organized design files, design systems, reusable component libraries, and supporting documentation to help your development team move efficiently into implementation while staying aligned with your technical requirements.",
+  },
+  {
+    question: "How do you keep web design consistent with our brand?",
+    answer:
+      "We begin with your existing brand guidelines, design system, and established website patterns. If you already have a design system, we build within it; if not, we develop the foundations alongside your web design project.",
+  },
+  {
+    question: "How does AI support Adaptif’s web design process?",
+    answer:
+      "We use AI to speed up repetitive production tasks—creating layout variations for testing, generating image assets, and drafting copy for large volumes of landing pages—while experienced creatives guide every deliverable.",
+  },
+  {
+    question: "How are web designs reviewed throughout a project?",
+    answer:
+      "Review and refinement happen at every stage. We assess layouts, interactions, accessibility, and brand alignment as the work develops, with structured feedback rounds before development handoff.",
+  },
+  {
+    question: "What do we need to provide to get started?",
+    answer:
+      "We typically begin with a brief outlining your business objectives, target audience, brand guidelines, and how the website fits into your marketing strategy. Analytics, user research, and existing design systems help us move through discovery even faster.",
+  },
+];
+---
+
+<Layout
+  title="Web Design Services — Adaptif"
+  description="Results-driven web design made to scale with your brand. Build quick, expandable web experiences, landing pages, and design systems engineered to convert."
+>
+  <Header />
+  <main>
+    <WebDesignHero />
+    <BrandLogos />
+    <WebDesignOverviewAndStats />
+    <WebDesignOfferAndEcosystem />
+    <WebDesignWorkflowAndBottom />
+    <FaqSection faqs={webDesignFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  :global([data-wd-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--wd-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--wd-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-wd-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-wd-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-wd-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initWebDesignPage = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-wd-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animateCounter = (el: HTMLElement) => {
+      const target = Number(el.dataset.wdCount || "0");
+      const suffix = el.dataset.wdSuffix || "";
+      if (!target || el.dataset.wdCounted === "1") return;
+      el.dataset.wdCounted = "1";
+
+      if (prefersReducedMotion) {
+        el.textContent = `${target}${suffix}`;
+        return;
+      }
+
+      const duration = 950;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = `${Math.round(target * eased)}${suffix}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => {
+        el.classList.add("is-visible");
+        el.querySelectorAll<HTMLElement>("[data-wd-count]").forEach(animateCounter);
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          target.classList.add("is-visible");
+          target.querySelectorAll<HTMLElement>("[data-wd-count]").forEach(animateCounter);
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.01, rootMargin: "100px 0px 100px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initWebDesignPage();
+  document.addEventListener("astro:page-load", initWebDesignPage);
+</script>

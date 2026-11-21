@@ -1,0 +1,147 @@
+---
+// AiExcellenceSolutions.astro - Section 2: Solutions for modern teams
+const pillars = [
+  {
+    title: "Saving time and money",
+    description:
+      "We've run hundreds of AI-enhanced projects, cutting production costs by an average of 40% vs. traditional agencies, without sacrificing brand quality or turnaround time.",
+  },
+  {
+    title: "Human + AI, fully integrated",
+    description:
+      "Every Adaptif creative is trained on AI-powered workflows. They move faster because the tools handle the repetitive work and they deliver better because they know your brand.",
+  },
+  {
+    title: "Always evolving",
+    description:
+      "We test every major AI tool before recommending it. When off-the-shelf isn't enough, we build custom workflows and prompts to keep your brand ahead of where the market is going.",
+  },
+  {
+    title: "Transparency and control",
+    description:
+      "You decide how AI is used in your projects: fully human, AI-enhanced, or a mix of both. Your brand guidelines and legal requirements always come first. No surprises.",
+  },
+];
+---
+
+<section class="ai-solutions" id="solutions" aria-labelledby="ai-solutions-title">
+  <div class="container">
+    <div class="ai-solutions__grid">
+      <div class="ai-solutions__media" data-ai-reveal="scale">
+        <img
+          src="/images/ai-excellence/ai-brand-head.jpg"
+          alt="AI neural network sculpted within brand intelligence"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="ai-solutions__media-scrim" aria-hidden="true"></div>
+      </div>
+
+      <div class="ai-solutions__body">
+        <p class="adaptif-eyebrow" data-ai-reveal>Solutions for modern teams</p>
+        <h2 id="ai-solutions-title" class="ai-solutions__title" data-ai-reveal style="--ai-delay: 80ms">
+          AI that actually <span class="title-highlight">knows your brand</span>
+        </h2>
+        <p class="ai-solutions__intro" data-ai-reveal style="--ai-delay: 140ms">
+          You're expected to ship more — faster, with less budget — while figuring out how to use AI without breaking your brand or your legal compliance. That's exactly what Adaptif handles for you.
+        </p>
+
+        <div class="ai-solutions__pillars">
+          {pillars.map((pillar, idx) => (
+            <div class="ai-solutions__pillar" data-ai-reveal style={`--ai-delay: ${180 + idx * 70}ms`}>
+              <h3 class="ai-solutions__pillar-title">{pillar.title}</h3>
+              <p class="ai-solutions__pillar-desc">{pillar.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ai-solutions {
+    padding: clamp(72px, 9vw, 120px) 0;
+    background-color: var(--color-void);
+  }
+
+  .ai-solutions__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+
+  .ai-solutions__media {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--shadow-bevel-card);
+  }
+
+  .ai-solutions__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-solutions__media-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(1, 3, 7, 0.05) 55%, rgba(1, 3, 7, 0.55) 100%);
+  }
+
+  .ai-solutions__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 3.8vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .ai-solutions__intro {
+    margin: 0 0 36px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .ai-solutions__pillars {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 32px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .ai-solutions__pillar-title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .ai-solutions__pillar-desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 900px) {
+    .ai-solutions__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ai-solutions__pillars {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

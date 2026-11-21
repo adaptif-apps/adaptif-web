@@ -1,38 +1,31 @@
 ---
-// DedicatedTeamExperience.astro - Why Adaptif works: 6 day-to-day operational benefits
+// DedicatedTeamExperience.astro - Why Adaptif works: sticky editorial split + operational ledger
 interface BenefitItem {
-  number: string;
   title: string;
   description: string;
   cueLabel: string;
   cueSteps?: string[];
-  featured?: boolean;
   icon: "start" | "talent" | "workflow" | "capacity" | "progress" | "ai";
 }
 
 const benefits: BenefitItem[] = [
   {
-    number: "01",
     title: "A simpler start",
     description:
       "Share your brand guidelines, assets, and priorities during a guided onboarding, then submit your first creative request into the queue—without spending weeks setting up vendor contracts.",
     cueLabel: "Onboarding flow",
     cueSteps: ["Brand context", "First brief", "Active queue"],
-    featured: true,
     icon: "start",
   },
   {
-    number: "02",
     title: "Senior-level talent",
     description:
       "Work with experienced creatives who take the time to understand your brand voice and visual standards, applying the right discipline to each brief instead of stretching one generalist across every format.",
     cueLabel: "Creative judgment",
     cueSteps: ["Brand alignment", "Right specialist", "Craft review"],
-    featured: true,
     icon: "talent",
   },
   {
-    number: "03",
     title: "Fits your workflow",
     description:
       "Keep briefs, brand context, feedback, and final files organized in one place. Collaborate through shared tools and structured review cycles without adopting complex software or extra overhead.",
@@ -40,7 +33,6 @@ const benefits: BenefitItem[] = [
     icon: "workflow",
   },
   {
-    number: "04",
     title: "Capacity that fits your needs",
     description:
       "Choose a plan tier sized for your workload—with clear active-ticket limits and defined service scope—and adjust between billing cycles as your creative pipeline expands or slows down.",
@@ -48,7 +40,6 @@ const benefits: BenefitItem[] = [
     icon: "capacity",
   },
   {
-    number: "05",
     title: "Clear progress. Consistent delivery.",
     description:
       "Prioritize your request queue, track what is in progress, and see what comes next at a glance. Active deliverables move through predictable 1–2 day turnaround cycles so your team can plan with clarity.",
@@ -56,7 +47,6 @@ const benefits: BenefitItem[] = [
     icon: "progress",
   },
   {
-    number: "06",
     title: "AI-enhanced production",
     description:
       "When helpful, AI supports early ideation, concept exploration, and format variations—always paired with human creative direction and review, alongside dedicated AI production services on eligible plans.",
@@ -64,9 +54,6 @@ const benefits: BenefitItem[] = [
     icon: "ai",
   },
 ];
-
-const featuredBenefits = benefits.filter((b) => b.featured);
-const operationalBenefits = benefits.filter((b) => !b.featured);
 ---
 
 <section
@@ -75,120 +62,117 @@ const operationalBenefits = benefits.filter((b) => !b.featured);
   aria-labelledby="dt-exp-heading"
 >
   <div class="container dt-exp__container">
-    <!-- Section Header -->
-    <header class="dt-exp__header">
-      <span class="dt-exp__eyebrow">Why Adaptif works</span>
+    <div class="dt-exp__split">
+      <!-- Left Sticky Editorial Column -->
+      <aside class="dt-exp__rail">
+        <header class="dt-exp__header">
+          <span class="dt-exp__eyebrow">Why Adaptif works</span>
 
-      <h2 id="dt-exp-heading" class="dt-exp__title">
-        Work better.
-        <span class="title-highlight dt-exp__title-accent">Create faster.</span>
-      </h2>
+          <h2 id="dt-exp-heading" class="dt-exp__title">
+            Work better.
+            <span class="title-highlight dt-exp__title-accent">Create faster.</span>
+          </h2>
 
-      <p class="dt-exp__subtitle">
-        Designed for day-to-day momentum—combining organized execution, experienced creative judgment, and practical technology so your team moves forward with less friction.
-      </p>
-    </header>
+          <p class="dt-exp__subtitle">
+            Designed for day-to-day momentum—combining organized execution, experienced creative judgment, and practical technology so your team moves forward with less friction.
+          </p>
+        </header>
 
-    <!-- Editorial Layout: 2 Featured Foundation Blocks + 2x2 Operational Matrix -->
-    <div class="dt-exp__layout">
-      <!-- Top Row: Foundation (Starting & Talent) -->
-      <div class="dt-exp__featured-row">
-        {featuredBenefits.map((item, idx) => (
-          <article
-            class="dt-exp__card dt-exp__card--featured reveal-exp"
-            style={`--exp-delay: ${idx * 80}ms;`}
+        <!-- Compact Operational Telemetry Summary -->
+        <div class="dt-exp__telemetry" aria-hidden="true">
+          <div class="dt-exp__telemetry-row">
+            <span class="dt-exp__telemetry-label">Turnaround</span>
+            <span class="dt-exp__telemetry-val">1–2 business days</span>
+          </div>
+          <div class="dt-exp__telemetry-row">
+            <span class="dt-exp__telemetry-label">Collaboration</span>
+            <span class="dt-exp__telemetry-val">Direct · Async & Live</span>
+          </div>
+          <div class="dt-exp__telemetry-row">
+            <span class="dt-exp__telemetry-label">Craft Standard</span>
+            <span class="dt-exp__telemetry-val">Senior-led + AI-assisted</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Operational Ledger -->
+      <ul class="dt-exp__ledger">
+        {benefits.map((item, idx) => (
+          <li
+            class="dt-exp__row reveal-exp"
+            style={`--exp-delay: ${idx * 65}ms;`}
           >
-            <div class="dt-exp__card-top">
-              <div class="dt-exp__icon-wrap">
-                <span class="dt-exp__icon" aria-hidden="true">
-                  {item.icon === "start" && (
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M5 12h14" />
-                      <path d="m13 6 6 6-6 6" />
-                      <circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none" />
-                    </svg>
-                  )}
-                  {item.icon === "talent" && (
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 3l2.6 5.4L20.5 9.3l-4.2 4.1 1 5.9L12 16.5l-5.3 2.8 1-5.9-4.2-4.1 5.9-.9L12 3z" />
-                    </svg>
-                  )}
-                </span>
-                <span class="dt-exp__num">{item.number}</span>
-              </div>
-              <span class="dt-exp__cue">{item.cueLabel}</span>
+            <div class="dt-exp__row-index">
+              <span class="dt-exp__icon" aria-hidden="true">
+                {item.icon === "start" && (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14" />
+                    <path d="m13 6 6 6-6 6" />
+                    <circle cx="5" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                  </svg>
+                )}
+                {item.icon === "talent" && (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3l2.6 5.4L20.5 9.3l-4.2 4.1 1 5.9L12 16.5l-5.3 2.8 1-5.9-4.2-4.1 5.9-.9L12 3z" />
+                  </svg>
+                )}
+                {item.icon === "workflow" && (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="7" height="6" rx="1.5" />
+                    <rect x="14" y="4" width="7" height="6" rx="1.5" />
+                    <rect x="8.5" y="14" width="7" height="6" rx="1.5" />
+                    <path d="M6.5 10v2a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2" />
+                  </svg>
+                )}
+                {item.icon === "capacity" && (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="7" x2="20" y2="7" />
+                    <line x1="4" y1="12" x2="20" y2="12" />
+                    <line x1="4" y1="17" x2="20" y2="17" />
+                    <circle cx="9" cy="7" r="2" fill="#060d1e" />
+                    <circle cx="15" cy="12" r="2" fill="#060d1e" />
+                    <circle cx="11" cy="17" r="2" fill="#060d1e" />
+                  </svg>
+                )}
+                {item.icon === "progress" && (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="8.5" />
+                    <path d="M12 7.5v4.5l3 2" />
+                  </svg>
+                )}
+                {item.icon === "ai" && (
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+                    <path d="M12 7l1.8 3.2L17 12l-3.2 1.8L12 17l-1.8-3.2L7 12l3.2-1.8L12 7z" />
+                  </svg>
+                )}
+              </span>
             </div>
 
-            <h3 class="dt-exp__card-title">{item.title}</h3>
-            <p class="dt-exp__card-copy">{item.description}</p>
-
-            {item.cueSteps && (
-              <div class="dt-exp__steps" aria-hidden="true">
-                {item.cueSteps.map((step, sIdx) => (
-                  <>
-                    <span class="dt-exp__step-pill">{step}</span>
-                    {sIdx < item.cueSteps!.length - 1 && (
-                      <span class="dt-exp__step-arrow">→</span>
-                    )}
-                  </>
-                ))}
+            <div class="dt-exp__row-body">
+              <div class="dt-exp__row-top">
+                <h3 class="dt-exp__row-title">{item.title}</h3>
+                <span class="dt-exp__cue">{item.cueLabel}</span>
               </div>
-            )}
-          </article>
-        ))}
-      </div>
 
-      <!-- Bottom Grid: Day-to-Day Execution (2x2) -->
-      <div class="dt-exp__grid">
-        {operationalBenefits.map((item, idx) => (
-          <article
-            class="dt-exp__card reveal-exp"
-            style={`--exp-delay: ${(idx + 2) * 70}ms;`}
-          >
-            <div class="dt-exp__card-top">
-              <div class="dt-exp__icon-wrap">
-                <span class="dt-exp__icon" aria-hidden="true">
-                  {item.icon === "workflow" && (
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="4" width="7" height="6" rx="1.5" />
-                      <rect x="14" y="4" width="7" height="6" rx="1.5" />
-                      <rect x="8.5" y="14" width="7" height="6" rx="1.5" />
-                      <path d="M6.5 10v2a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2" />
-                    </svg>
-                  )}
-                  {item.icon === "capacity" && (
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="4" y1="7" x2="20" y2="7" />
-                      <line x1="4" y1="12" x2="20" y2="12" />
-                      <line x1="4" y1="17" x2="20" y2="17" />
-                      <circle cx="9" cy="7" r="2" fill="#060d1e" />
-                      <circle cx="15" cy="12" r="2" fill="#060d1e" />
-                      <circle cx="11" cy="17" r="2" fill="#060d1e" />
-                    </svg>
-                  )}
-                  {item.icon === "progress" && (
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="8.5" />
-                      <path d="M12 7.5v4.5l3 2" />
-                    </svg>
-                  )}
-                  {item.icon === "ai" && (
-                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
-                      <path d="M12 7l1.8 3.2L17 12l-3.2 1.8L12 17l-1.8-3.2L7 12l3.2-1.8L12 7z" />
-                    </svg>
-                  )}
-                </span>
-                <span class="dt-exp__num">{item.number}</span>
-              </div>
-              <span class="dt-exp__cue">{item.cueLabel}</span>
+              <p class="dt-exp__row-copy">{item.description}</p>
+
+              {item.cueSteps && (
+                <div class="dt-exp__steps" aria-hidden="true">
+                  {item.cueSteps.map((step, sIdx) => (
+                    <>
+                      <span class="dt-exp__step-pill">{step}</span>
+                      {sIdx < item.cueSteps!.length - 1 && (
+                        <span class="dt-exp__step-arrow">→</span>
+                      )}
+                    </>
+                  ))}
+                </div>
+              )}
             </div>
-
-            <h3 class="dt-exp__card-title">{item.title}</h3>
-            <p class="dt-exp__card-copy">{item.description}</p>
-          </article>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   </div>
 </section>
@@ -235,10 +219,24 @@ const operationalBenefits = benefits.filter((b) => !b.featured);
     z-index: 1;
   }
 
-  /* Header */
+  /* Two-Column Editorial Split */
+  .dt-exp__split {
+    display: grid;
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    gap: clamp(36px, 5.5vw, 72px);
+    align-items: start;
+  }
+
+  /* Left Sticky Rail */
+  .dt-exp__rail {
+    position: sticky;
+    top: 112px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
   .dt-exp__header {
-    max-width: 680px;
-    margin-bottom: clamp(36px, 5vw, 56px);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -257,127 +255,168 @@ const operationalBenefits = benefits.filter((b) => !b.featured);
 
   .dt-exp__title {
     font-family: var(--font-family-display);
-    font-size: clamp(2.4rem, 4.3vw, 4rem);
+    font-size: clamp(2.35rem, 4.1vw, 3.85rem);
     line-height: 1.05;
     letter-spacing: var(--font-letter-spacing-display, -0.04em);
     font-weight: 400;
     color: var(--color-text-white, #ffffff);
-    margin-bottom: 16px;
+    margin: 0 0 16px;
     text-wrap: balance;
   }
 
   .dt-exp__title-accent {
     font-style: italic;
+    padding-right: 0.06em;
   }
 
   .dt-exp__subtitle {
-    font-size: clamp(0.98rem, 1.1vw, 1.12rem);
-    line-height: 1.6;
+    font-size: clamp(0.98rem, 1.05vw, 1.08rem);
+    line-height: 1.62;
     letter-spacing: -0.015em;
     color: var(--color-text-secondary, #94a3b8);
-    max-width: 580px;
     margin: 0;
   }
 
-  /* Layout */
-  .dt-exp__layout {
+  /* Compact Telemetry Strip */
+  .dt-exp__telemetry {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    border-radius: 14px;
+    background: rgba(8, 18, 42, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    overflow: hidden;
   }
 
-  .dt-exp__featured-row,
-  .dt-exp__grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
-  }
-
-  .dt-exp__card {
-    padding: clamp(24px, 3vw, 34px);
-    border-radius: 20px;
-    background: rgba(6, 13, 30, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 14px 34px -16px rgba(0, 0, 0, 0.75);
-    display: flex;
-    flex-direction: column;
-    transition: border-color 0.25s ease, background 0.25s ease;
-  }
-
-  .dt-exp__card--featured {
-    background: linear-gradient(
-      160deg,
-      rgba(10, 22, 50, 0.78) 0%,
-      rgba(5, 11, 26, 0.76) 100%
-    );
-    border-color: rgba(72, 200, 255, 0.18);
-  }
-
-  .dt-exp__card:hover {
-    border-color: rgba(72, 200, 255, 0.32);
-    background: rgba(8, 18, 40, 0.84);
-  }
-
-  .dt-exp__card-top {
+  .dt-exp__telemetry-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 18px;
+    padding: 11px 16px;
+    font-size: 0.82rem;
   }
 
-  .dt-exp__icon-wrap {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
+  .dt-exp__telemetry-row + .dt-exp__telemetry-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .dt-exp__telemetry-label {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: #64748b;
+    text-transform: uppercase;
+  }
+
+  .dt-exp__telemetry-val {
+    font-weight: 500;
+    color: #e2e8f0;
+  }
+
+  /* Right Numbered Ledger */
+  .dt-exp__ledger {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .dt-exp__row {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(18px, 2.6vw, 28px);
+    padding: clamp(24px, 3vw, 32px) clamp(14px, 2vw, 22px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .dt-exp__row::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18px;
+    bottom: 18px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--color-brand-cyan, #48C8FF);
+    opacity: 0;
+    transform: scaleY(0.5);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .dt-exp__row:hover {
+    background: rgba(72, 200, 255, 0.025);
+  }
+
+  .dt-exp__row:hover::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  .dt-exp__row-index {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 2px;
   }
 
   .dt-exp__icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 11px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  }
+
+  .dt-exp__row:hover .dt-exp__icon {
     color: var(--color-brand-cyan, #48C8FF);
     background: rgba(72, 200, 255, 0.08);
-    border: 1px solid rgba(72, 200, 255, 0.24);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    flex-shrink: 0;
+    border-color: rgba(72, 200, 255, 0.24);
   }
 
-  .dt-exp__num {
-    font-family: var(--font-family-mono, monospace);
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    color: #94a3b8;
+  .dt-exp__row-body {
+    display: flex;
+    flex-direction: column;
   }
 
-  .dt-exp__cue {
-    font-size: 0.76rem;
-    font-weight: 500;
-    color: #94a3b8;
-    padding: 4px 10px;
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .dt-exp__card-title {
-    font-family: var(--font-family-display);
-    font-size: clamp(1.45rem, 2.05vw, 1.85rem);
-    line-height: 1.15;
-    letter-spacing: -0.025em;
-    font-weight: 400;
-    color: var(--color-text-primary);
+  .dt-exp__row-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 14px;
     margin-bottom: 10px;
   }
 
-  .dt-exp__card-copy {
-    font-size: 0.96rem;
+  .dt-exp__row-title {
+    font-family: var(--font-family-body);
+    font-size: clamp(1.18rem, 1.5vw, 1.38rem);
+    line-height: 1.24;
+    letter-spacing: -0.015em;
+    font-weight: 500;
+    color: var(--color-text-primary, #ffffff);
+    margin: 0;
+  }
+
+  .dt-exp__cue {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    white-space: nowrap;
+  }
+
+  .dt-exp__row-copy {
+    font-size: 0.94rem;
     line-height: 1.62;
     color: #cbd5e1;
     margin: 0;
@@ -388,23 +427,21 @@ const operationalBenefits = benefits.filter((b) => !b.featured);
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 22px;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 14px;
   }
 
   .dt-exp__step-pill {
-    font-size: 0.76rem;
-    font-weight: 500;
-    color: #e2e8f0;
-    padding: 4px 11px;
-    border-radius: var(--radius-pill);
-    background: rgba(72, 200, 255, 0.08);
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.68rem;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(72, 200, 255, 0.07);
     border: 1px solid rgba(72, 200, 255, 0.2);
+    color: #bae6fd;
   }
 
   .dt-exp__step-arrow {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: var(--color-brand-cyan, #48C8FF);
     opacity: 0.75;
   }
@@ -416,7 +453,6 @@ const operationalBenefits = benefits.filter((b) => !b.featured);
     transition:
       opacity 0.5s ease var(--exp-delay, 0ms),
       transform 0.5s var(--ease-spring) var(--exp-delay, 0ms),
-      border-color 0.25s ease,
       background 0.25s ease;
   }
 
@@ -429,14 +465,30 @@ const operationalBenefits = benefits.filter((b) => !b.featured);
     .reveal-exp {
       opacity: 1;
       transform: none;
-      transition: border-color 0.25s ease, background 0.25s ease;
+      transition: background 0.25s ease;
     }
   }
 
-  @media (max-width: 900px) {
-    .dt-exp__featured-row,
-    .dt-exp__grid {
+  @media (max-width: 960px) {
+    .dt-exp__split {
       grid-template-columns: 1fr;
+    }
+
+    .dt-exp__rail {
+      position: static;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .dt-exp__row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 22px 10px;
+    }
+
+    .dt-exp__row-index {
+      flex-direction: row;
+      justify-content: flex-start;
     }
   }
 </style>

@@ -1,0 +1,616 @@
+---
+// WhyUsCreativePartner.astro - Smarter way to scale + Creative partner + Marc Vitulli case study
+const pillars = [
+  {
+    eyebrow: "Only the best",
+    title: "Global reach, local feel",
+    description:
+      "Creatives spanning every time zone, so there’s always someone working on your brand when you need them.",
+    icon: "star",
+  },
+  {
+    eyebrow: "Tailored to you",
+    title: "Built for the long game",
+    description: "Your team learns your brand. Every brief builds on the last.",
+    icon: "heart",
+  },
+  {
+    eyebrow: "Ultra-fast",
+    title: "Fast by design",
+    description:
+      "We cut the briefs-to-rounds-to-delivery cycle down to days, not weeks. No back-and-forth, no bottlenecks.",
+    icon: "clock",
+  },
+  {
+    eyebrow: "Ready for the future",
+    title: "AI-amplified, human-led",
+    description:
+      "Senior creatives own every project. AI handles the repetition so they can focus on the craft.",
+    icon: "spark",
+  },
+];
+
+const caseStats = [
+  { value: "4x", label: "Increase in design capacity", count: "4", suffix: "x" },
+  { value: "60%", label: "Reduction in time to market", count: "60", suffix: "%" },
+  { value: "60+", label: "Number of brands", count: "60", suffix: "+" },
+];
+---
+
+<!-- Section: A smarter way to scale your creative -->
+<section class="wu-scale" id="smarter-scale" aria-labelledby="wu-scale-title">
+  <div class="container">
+    <div class="wu-scale__visual" id="wu-scale-visual" data-why-reveal="scale">
+      <header class="wu-scale__header" data-why-reveal>
+        <h2 id="wu-scale-title" class="wu-scale__title">
+          A <span class="title-highlight">smarter</span> way to scale your creative
+        </h2>
+        <p class="wu-scale__subtitle">
+          Adaptif replaces creative bottlenecks with limitless creative output, empowering you to bring your bold visions to life faster.
+        </p>
+      </header>
+      <div class="wu-scale__stage" id="wu-scale-stage">
+        <canvas class="wu-scale__canvas" id="wu-scale-canvas" aria-hidden="true"></canvas>
+        <div class="wu-scale__core">
+          <img src="/images/why-us/adaptif-glass-logo.png" alt="Adaptif" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section: Creative that works -->
+<section class="wu-partner" id="creative-that-works" aria-labelledby="wu-partner-title">
+  <div class="container">
+    <header class="wu-partner__header" data-why-reveal>
+      <p class="adaptif-eyebrow">Creative that works</p>
+      <h2 id="wu-partner-title" class="wu-partner__title">
+        A creative partner that <span class="title-highlight">just clicks</span>
+      </h2>
+    </header>
+
+    <div class="wu-partner__grid">
+      {pillars.map((item, idx) => (
+        <article class="wu-partner__item" data-why-reveal style={`--why-delay: ${idx * 70}ms`}>
+          <div class="wu-partner__icon" aria-hidden="true">
+            {item.icon === "star" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            )}
+            {item.icon === "heart" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            )}
+            {item.icon === "clock" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            )}
+            {item.icon === "spark" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3l1.9 5.8L20 10.7l-6.1 1.9L12 18.4l-1.9-5.8L4 10.7l6.1-1.9L12 3z" />
+              </svg>
+            )}
+          </div>
+          <p class="adaptif-eyebrow wu-partner__eyebrow">{item.eyebrow}</p>
+          <h3 class="wu-partner__item-title">{item.title}</h3>
+          <p class="wu-partner__item-desc">{item.description}</p>
+        </article>
+      ))}
+    </div>
+
+    <!-- Case Study Spotlight: S&S Activewear -->
+    <div class="glass-panel wu-case" data-why-reveal="scale">
+      <div class="wu-case__portrait">
+        <img
+          src="/images/why-us/marc-vitulli.jpg"
+          alt="Marc Vitulli, VP Marketing at S&S Activewear"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <div class="wu-case__body">
+        <span class="adaptif-tag adaptif-tag--cyan">S&amp;S Activewear</span>
+
+        <blockquote class="wu-case__quote">
+          “Thanks to Adaptif, we’ve elevated ourselves. We’ve changed marketing in the industry by acting as more of a marketing agency for our brands, and streamlining that into robust marketing campaigns that move the needle.”
+        </blockquote>
+
+        <p class="wu-case__author">Marc Vitulli, VP Marketing at S&amp;S Activewear</p>
+
+        <div class="wu-case__bottom">
+          <div class="wu-case__stats">
+            {caseStats.map((st) => (
+              <div class="wu-case__stat">
+                <div class="wu-case__stat-val" data-why-count={st.count} data-why-suffix={st.suffix}>
+                  {st.value}
+                </div>
+                <div class="wu-case__stat-label">{st.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <a href="/our-work" class="wu-case__link">
+            <span class="wu-case__link-eyebrow">Read the Story</span>
+            <span class="wu-case__link-title">How To Keep Creative Fresh for 60+ Different Brands →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .wu-scale {
+    padding: clamp(56px, 7vw, 96px) 0 clamp(32px, 4vw, 56px);
+    background-color: var(--color-void);
+  }
+
+  .wu-scale__header {
+    position: absolute;
+    top: clamp(16px, 3vw, 36px);
+    left: 0;
+    z-index: 3;
+    text-align: left;
+    max-width: 680px;
+  }
+
+  .wu-scale__title {
+    margin: 0 0 14px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.1rem, 3.6vw, 3.05rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .wu-scale__subtitle {
+    margin: 0;
+    max-width: 540px;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .wu-scale__visual {
+    position: relative;
+    width: 100%;
+    max-width: 1180px;
+    height: clamp(360px, 46vw, 540px);
+    margin: 0 auto;
+    overflow: hidden;
+  }
+
+  .wu-scale__stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+  }
+
+  .wu-scale__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wu-scale__core {
+    position: relative;
+    z-index: 2;
+    width: clamp(118px, 14vw, 172px);
+    height: clamp(118px, 14vw, 172px);
+    display: grid;
+    place-items: center;
+    filter: drop-shadow(0 0 28px rgba(72, 200, 255, 0.45));
+  }
+
+  .wu-scale__core img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .wu-partner {
+    padding: clamp(56px, 7vw, 96px) 0;
+    background-color: var(--color-void);
+  }
+
+  .wu-partner__header {
+    text-align: center;
+    margin-bottom: clamp(40px, 5vw, 56px);
+  }
+
+  .wu-partner__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 4vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .wu-partner__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 28px;
+    padding: 36px 0 48px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wu-partner__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.22);
+    margin-bottom: 16px;
+  }
+
+  .wu-partner__eyebrow {
+    font-size: 0.72rem;
+    margin-bottom: 6px;
+  }
+
+  .wu-partner__item-title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-text-primary);
+  }
+
+  .wu-partner__item-desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .wu-case {
+    margin-top: 20px;
+    padding: clamp(24px, 3.5vw, 36px);
+    border-radius: 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 44px);
+    align-items: center;
+  }
+
+  .wu-case__portrait {
+    aspect-ratio: 3 / 3.8;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .wu-case__portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .wu-case__quote {
+    margin: 18px 0 14px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.35vw, 1.2rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .wu-case__author {
+    margin: 0 0 24px;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+  }
+
+  .wu-case__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 28px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wu-case__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 36px;
+  }
+
+  .wu-case__stat-val {
+    font-family: var(--font-family-display);
+    font-size: 2.15rem;
+    line-height: 1;
+    color: var(--color-brand-cyan);
+    margin-bottom: 4px;
+  }
+
+  .wu-case__stat-label {
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    max-width: 130px;
+  }
+
+  .wu-case__link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    max-width: 280px;
+    transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+  }
+
+  .wu-case__link:hover {
+    border-color: rgba(72, 200, 255, 0.4);
+    background: rgba(72, 200, 255, 0.08);
+  }
+
+  .wu-case__link-eyebrow {
+    font-family: var(--font-family-body);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan);
+  }
+
+  .wu-case__link-title {
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  @media (max-width: 960px) {
+    .wu-partner__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .wu-case {
+      grid-template-columns: 1fr;
+    }
+
+    .wu-case__portrait {
+      max-width: 280px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .wu-scale__visual {
+      height: auto;
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .wu-scale__header {
+      position: static;
+      max-width: 100%;
+    }
+
+    .wu-scale__stage {
+      height: 460px;
+    }
+
+    .wu-scale__core {
+      margin: 0;
+    }
+  }
+
+  @media (max-width: 580px) {
+    .wu-partner__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import * as THREE from "three";
+
+  const initThermalFlowCanvas = () => {
+    const container = document.getElementById("wu-scale-stage");
+    const canvas = document.getElementById("wu-scale-canvas") as HTMLCanvasElement | null;
+    if (!container || !canvas || canvas.dataset.wuInit === "1") return;
+    canvas.dataset.wuInit = "1";
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: "low-power" });
+    } catch {
+      return;
+    }
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+    const uniforms = {
+      uTime: { value: 0 },
+      uRes: { value: new THREE.Vector2(container.clientWidth || 1100, container.clientHeight || 400) },
+      uVertical: { value: window.innerWidth <= 768 ? 1 : 0 },
+    };
+
+    const material = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      uniforms,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        precision highp float;
+        varying vec2 vUv;
+        uniform float uTime;
+        uniform vec2 uRes;
+        uniform float uVertical;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(
+            mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+            mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x),
+            u.y
+          );
+        }
+
+        float fbm(vec2 p) {
+          float v = 0.0;
+          float a = 0.5;
+          for (int i = 0; i < 4; i++) {
+            v += a * noise(p);
+            p = p * 2.05 + vec2(1.7, 9.2);
+            a *= 0.5;
+          }
+          return v;
+        }
+
+        void main() {
+          vec2 uv = vUv;
+          // Horizontal on desktop (left -> right), Vertical on mobile (top -> bottom)
+          float x = uVertical > 0.5 ? (0.5 - uv.y) : (uv.x - 0.5);
+          float y = uVertical > 0.5 ? (uv.x - 0.5) : (uv.y - 0.5);
+          float t = uTime * 0.95;
+
+          // Left side: calm narrow stream entering center; Right side: pressurized wide flare exiting center
+          float leftSpread = mix(0.22, 0.09, smoothstep(-0.45, 0.0, x));
+          float rightSpread = mix(0.09, 0.68, pow(clamp(x * 2.0, 0.0, 1.0), 0.78));
+          float spread = x < 0.0 ? leftSpread : rightSpread;
+
+          // Directional jet turbulence (stronger & faster outward on the right)
+          float jetNoise = fbm(vec2(x * 3.2 - t * 0.85, y * 5.2)) - 0.5;
+          float angle = atan(y, max(x, 0.025));
+          float radialStreaks = sin(angle * 22.0 + jetNoise * 6.0 - t * 1.4) * 0.5 + 0.5;
+          float streakNoise = fbm(vec2(x * 5.0 - t * 1.35, angle * 3.5 + t * 0.2));
+
+          float yWarped = y + jetNoise * (x < 0.0 ? 0.16 : 0.32 * (0.35 + x * 1.8));
+          float w1 = sin(yWarped * 14.0 + x * 9.0 - t * 2.4) * 0.5 + 0.5;
+          float w2 = sin(yWarped * 22.0 - x * 13.0 + t * 1.8) * 0.5 + 0.5;
+          float ribbons = pow(w1, 2.0) * 0.55 + pow(w2, 2.8) * 0.45;
+
+          float band = exp(-(yWarped * yWarped) / max(spread * spread * 0.42, 0.004));
+          float rightBoost = x > 0.0 ? (0.72 + 0.58 * pow(radialStreaks, 1.6) * streakNoise) : 1.0;
+          float field = band * (0.52 + ribbons * 0.85) * rightBoost;
+
+          // Cool thermal palette (left side entering logo)
+          vec3 deepBlue = vec3(0.04, 0.16, 0.56);
+          vec3 elecBlue = vec3(0.17, 0.50, 1.00);
+          vec3 iceCyan  = vec3(0.28, 0.78, 1.00);
+          vec3 coolCol  = mix(deepBlue, elecBlue, smoothstep(0.15, 0.6, field));
+          coolCol = mix(coolCol, iceCyan, smoothstep(0.55, 1.0, field));
+
+          // Warm thermal heat palette (right side exiting logo)
+          vec3 crimson  = vec3(0.976, 0.024, 0.173); // #F9062C
+          vec3 orange   = vec3(1.00, 0.42, 0.02);
+          vec3 yellow   = vec3(1.00, 0.86, 0.12);
+          vec3 warmCol  = mix(crimson, orange, smoothstep(0.16, 0.58, field));
+          warmCol = mix(warmCol, yellow, smoothstep(0.56, 1.0, field));
+
+          // Interwoven cool blue smoke streaks carried through the right-side heat plume
+          float blueMask = smoothstep(0.02, 0.14, x)
+                         * smoothstep(0.52, 0.82, fbm(vec2(x * 4.2 - t * 1.1, angle * 4.5 + 3.1)))
+                         * smoothstep(0.35, 0.85, radialStreaks);
+          warmCol = mix(warmCol, mix(elecBlue, iceCyan, 0.55), blueMask * 0.72);
+
+          // Transition right through the central logo
+          float sideMix = smoothstep(-0.06, 0.06, x);
+          vec3 col = mix(coolCol, warmCol, sideMix);
+
+          // Fade cleanly at left/right/top/bottom edges
+          float edgeX = smoothstep(0.0, 0.12, uv.x) * smoothstep(1.0, 0.84, uv.x);
+          float edgeY = smoothstep(0.0, 0.14, uv.y) * smoothstep(1.0, 0.86, uv.y);
+
+          float alpha = clamp(field * 0.92, 0.0, 1.0) * edgeX * edgeY;
+          gl_FragColor = vec4(col, alpha);
+        }
+      `,
+    });
+
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+    scene.add(mesh);
+
+    const resize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      uniforms.uRes.value.set(w, h);
+      uniforms.uVertical.value = window.innerWidth <= 768 ? 1 : 0;
+    };
+    resize();
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(container);
+
+    if (prefersReducedMotion) {
+      uniforms.uTime.value = 1.2;
+      renderer.render(scene, camera);
+      return;
+    }
+
+    let rafId = 0;
+    let visible = false;
+    const start = performance.now();
+
+    const renderFrame = (now: number) => {
+      if (!visible) return;
+      uniforms.uTime.value = (now - start) * 0.001;
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(renderFrame);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) {
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(renderFrame);
+        } else {
+          cancelAnimationFrame(rafId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(container);
+  };
+
+  initThermalFlowCanvas();
+  document.addEventListener("astro:page-load", initThermalFlowCanvas);
+</script>

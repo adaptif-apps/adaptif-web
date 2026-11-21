@@ -1,0 +1,271 @@
+---
+// ProductDesignHero.astro - Full-bleed Hero + bottom service marquee strip for /product-design
+
+const stripCards = [
+  { label: "Product Design", image: "/images/product-design/offer-product-design.jpg", href: "#product-offer" },
+  { label: "Prototyping & Validation", image: "/images/product-design/offer-prototyping.jpg", href: "#product-offer" },
+  { label: "Product Design Audit", image: "/images/product-design/offer-audit.jpg", href: "#product-offer" },
+  { label: "UX Enhancements", image: "/images/product-design/offer-ux-enhancements.jpg", href: "#product-offer" },
+  { label: "Design System Creation", image: "/images/product-design/offer-design-system.jpg", href: "#product-offer" },
+  { label: "MVP Prototyping", image: "/images/product-design/offer-mvp.jpg", href: "#product-offer" },
+  { label: "Product Consulting", image: "/images/product-design/offer-consulting.jpg", href: "#product-offer" },
+];
+---
+
+<section class="pd-hero" id="product-hero" aria-labelledby="pd-hero-title">
+  <div class="pd-hero__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/product-design/hero-mobile.jpg" />
+      <img
+        src="/images/product-design/hero-desktop.jpg"
+        alt=""
+        class="pd-hero__bg"
+        loading="eager"
+        decoding="async"
+        data-cms-key="product.hero.image"
+      />
+    </picture>
+    <div class="pd-hero__scrim"></div>
+    <div class="pd-hero__bottom-fade"></div>
+  </div>
+
+  <div class="container pd-hero__container">
+    <div class="pd-hero__content">
+      <p class="adaptif-eyebrow" data-cms-key="product.hero.eyebrow">
+        Product design
+      </p>
+
+      <h1 id="pd-hero-title" class="pd-hero__title" data-cms-key="product.hero.title">
+        Create seamless <span class="title-highlight">digital experiences,</span> that grow alongside your business
+      </h1>
+
+      <p class="pd-hero__description" data-cms-key="product.hero.description">
+        From launching new products to refining existing ones, Adaptif helps startups, growing companies, and enterprise teams create engaging, on-brand experiences through strategic product design and scalable design systems.
+      </p>
+
+      <div class="pd-hero__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="product.hero.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pd-strip" aria-label="Product design deliverables overview">
+    <div class="pd-strip__track">
+      {[...stripCards, ...stripCards].map((card, i) => (
+        <a href={card.href} class="pd-strip__card" tabindex={i >= stripCards.length ? -1 : undefined}>
+          <img src={card.image} alt={card.label} class="pd-strip__img" loading="lazy" decoding="async" />
+          <div class="pd-strip__scrim" aria-hidden="true"></div>
+          <span class="pd-strip__label">{card.label}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .pd-hero {
+    position: relative;
+    width: 100%;
+    padding: clamp(128px, 16vh, 175px) 0 36px;
+    overflow: hidden;
+    background-color: var(--color-void);
+  }
+
+  .pd-hero__media {
+    position: absolute;
+    inset: 0 0 110px 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .pd-hero__media picture {
+    display: contents;
+  }
+
+  .pd-hero__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% center;
+    opacity: 0.9;
+  }
+
+  .pd-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(1, 3, 7, 0.94) 0%, rgba(1, 3, 7, 0.74) 48%, rgba(1, 3, 7, 0.18) 100%),
+      radial-gradient(ellipse 55% 55% at 22% 45%, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+  }
+
+  .pd-hero__bottom-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 150px;
+    background: linear-gradient(180deg, transparent 0%, var(--color-void) 100%);
+  }
+
+  .pd-hero__container {
+    position: relative;
+    z-index: 2;
+    padding-bottom: clamp(44px, 6vw, 72px);
+  }
+
+  .pd-hero__content {
+    max-width: 660px;
+  }
+
+  .pd-hero__title {
+    margin: 16px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.85rem, 5.4vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .pd-hero__description {
+    max-width: 540px;
+    margin: 0 0 32px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.2vw, 1.12rem);
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .pd-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  /* Bottom Marquee Strip */
+  .pd-strip {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  }
+
+  .pd-strip__track {
+    display: flex;
+    gap: 14px;
+    width: max-content;
+    padding: 4px 0;
+    animation: pdStripScroll 42s linear infinite;
+  }
+
+  .pd-strip:hover .pd-strip__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes pdStripScroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .pd-strip__card {
+    position: relative;
+    flex: 0 0 230px;
+    height: 124px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+
+  .pd-strip__card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .pd-strip__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease;
+  }
+
+  .pd-strip__card:hover .pd-strip__img {
+    transform: scale(1.05);
+  }
+
+  .pd-strip__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(1, 3, 7, 0.1) 0%, rgba(1, 3, 7, 0.85) 100%);
+  }
+
+  .pd-strip__label {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 768px) {
+    .pd-hero {
+      padding: 118px 0 28px;
+    }
+
+    .pd-hero__media {
+      inset: 0 0 90px 0;
+    }
+
+    .pd-hero__bg {
+      object-position: center center;
+      opacity: 0.65;
+    }
+
+    .pd-hero__scrim {
+      background:
+        linear-gradient(180deg, rgba(1, 3, 7, 0.78) 0%, rgba(1, 3, 7, 0.86) 55%, rgba(1, 3, 7, 0.96) 100%);
+    }
+
+    .pd-strip__card {
+      flex: 0 0 185px;
+      height: 104px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pd-strip__track {
+      animation: none;
+    }
+  }
+</style>

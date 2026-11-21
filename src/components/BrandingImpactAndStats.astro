@@ -1,0 +1,258 @@
+---
+// BrandingImpactAndStats.astro - On-brand impact split + Results-driven 5,750+ / 3x / 4.9/5 metrics
+
+const stats = [
+  {
+    id: "projects",
+    count: 5750,
+    decimals: 0,
+    suffix: "+",
+    formatComma: true,
+    desc: "Brand design projects delivered so far (and climbing)",
+  },
+  {
+    id: "rollout",
+    count: 3,
+    decimals: 0,
+    suffix: "x",
+    formatComma: false,
+    desc: "Up to three times quicker brand rollout with systems and guidelines set up",
+  },
+  {
+    id: "approval",
+    count: 4.9,
+    decimals: 1,
+    suffix: "/5",
+    formatComma: false,
+    desc: "Average branding project approval score from satisfied teams",
+  },
+];
+---
+
+<!-- 1. On-brand impact -->
+<section class="br-impact" id="branding-impact" aria-labelledby="br-impact-title">
+  <div class="br-impact__glow" aria-hidden="true"></div>
+
+  <div class="container br-impact__grid">
+    <div class="br-impact__copy" data-br-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="branding.impact.eyebrow">
+        On-brand impact
+      </p>
+
+      <h2 id="br-impact-title" class="br-impact__title" data-cms-key="branding.impact.title">
+        Consistent branding <span class="title-highlight">drives stronger results</span>
+      </h2>
+
+      <p class="br-impact__lead" data-cms-key="branding.impact.lead">
+        When every asset speaks the same language, they stop competing and start compounding, each one pushing toward the same goal.
+      </p>
+
+      <p class="br-impact__body" data-cms-key="branding.impact.body">
+        Most in-house teams simply don’t have the bandwidth (or the specialized skills) to keep branding sharp. The result: extra rounds of revisions, campaigns that drift out of alignment, and performance that quietly slips.
+      </p>
+    </div>
+
+    <div class="br-impact__visual" data-br-reveal="scale" style="--br-delay: 120ms">
+      <div class="br-impact__frame">
+        <img
+          src="/images/branding/impact-spread.jpg"
+          alt="Multi-channel brand identity collateral across print, web, and mobile"
+          class="br-impact__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="branding.impact.image"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Your branding solution (Open typographic metrics) -->
+<section class="br-stats" id="branding-solution" aria-labelledby="br-stats-title">
+  <div class="container">
+    <header class="br-stats__header" data-br-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="branding.stats.eyebrow">
+        Your branding solution
+      </p>
+      <h2 id="br-stats-title" class="br-stats__title" data-cms-key="branding.stats.title">
+        Adaptif delivers results-driven branding <span class="title-highlight">for fast-scaling teams</span>
+      </h2>
+      <p class="br-stats__subtitle" data-cms-key="branding.stats.subtitle">
+        Thousands of projects shipped, quicker turnarounds, and brand systems built to grow with you.
+      </p>
+    </header>
+
+    <dl class="br-stats__grid">
+      {stats.map((s, idx) => (
+        <div class="br-stats__item" data-br-reveal style={`--br-delay: ${idx * 70}ms`}>
+          <dt class="br-stats__desc" data-cms-key={`branding.stats.${s.id}.label`}>
+            {s.desc}
+          </dt>
+          <dd
+            class="br-stats__value"
+            data-br-count={s.count}
+            data-br-decimals={s.decimals}
+            data-br-suffix={s.suffix}
+            data-br-comma={s.formatComma ? "1" : "0"}
+            data-cms-key={`branding.stats.${s.id}.value`}
+          >
+            {s.formatComma ? `${s.count.toLocaleString("en-US")}${s.suffix}` : `${s.count}${s.suffix}`}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .br-impact {
+    position: relative;
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .br-impact__glow {
+    position: absolute;
+    top: 18%;
+    right: 8%;
+    width: 500px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .br-impact__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: clamp(32px, 5vw, 68px);
+    align-items: center;
+  }
+
+  .br-impact__title {
+    margin: 14px 0 20px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.3rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .br-impact__lead {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .br-impact__body {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.66;
+    color: var(--color-text-secondary);
+  }
+
+  .br-impact__frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow:
+      0 26px 60px -20px rgba(0, 0, 0, 0.8),
+      0 0 38px -14px rgba(72, 200, 255, 0.16);
+    padding: 14px;
+  }
+
+  .br-impact__img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+  }
+
+  /* Stats strip */
+  .br-stats {
+    position: relative;
+    padding: clamp(56px, 7vw, 96px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .br-stats__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(40px, 5vw, 60px);
+  }
+
+  .br-stats__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .br-stats__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .br-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 40px;
+    margin: 0;
+  }
+
+  .br-stats__item {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 28px;
+  }
+
+  .br-stats__desc {
+    margin: 0;
+    max-width: 260px;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .br-stats__value {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(3.1rem, 5vw, 4.4rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-brand-cyan);
+  }
+
+  @media (max-width: 960px) {
+    .br-impact__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .br-stats__grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>

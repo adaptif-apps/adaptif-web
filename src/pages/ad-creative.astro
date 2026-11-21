@@ -1,0 +1,181 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import AdCreativeHero from "../components/AdCreativeHero.astro";
+import BrandLogos from "../components/BrandLogos.astro";
+import AdCreativeOverviewAndStats from "../components/AdCreativeOverviewAndStats.astro";
+import AdCreativeOfferAndChannels from "../components/AdCreativeOfferAndChannels.astro";
+import AdCreativeAiAndWorkflow from "../components/AdCreativeAiAndWorkflow.astro";
+import FaqSection, { type FaqItem } from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+if (Astro.url.searchParams.get("edit") !== "1") {
+  Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+}
+
+const adCreativeFaqs: FaqItem[] = [
+  {
+    question: "What’s covered by Adaptif’s ad creative services?",
+    answer:
+      "Adaptif handles the complete ad creative process, from campaign strategy and concept development to static ads, motion graphics, animation, illustration, and creative adaptations for local markets, plus conversion-focused landing pages for paid campaigns.",
+  },
+  {
+    question: "How does Adaptif incorporate AI into ad production?",
+    answer:
+      "We use AI to expand creative possibilities and streamline production—accelerating A/B test variations, market adaptations, background visuals, voiceovers, and multi-placement resizing—always guided and reviewed by senior designers.",
+  },
+  {
+    question: "How is ad creative priced at Adaptif?",
+    answer:
+      "Our ad creative services are delivered through a flexible monthly subscription with a predictable cost and senior creative direction across variations, formats, and channels—avoiding per-asset fees.",
+  },
+  {
+    question: "Can we adjust our ad creative volume from month to month?",
+    answer:
+      "Yes. Our subscription model lets you increase output for product launches and seasonal campaigns, then scale back during quieter periods without paying for unused agency capacity.",
+  },
+  {
+    question: "How quickly can Adaptif deliver a set of ads?",
+    answer:
+      "Most ad sets are delivered within days instead of weeks, with accelerated turnaround options on our enterprise plan—working on design, copy, and motion in parallel.",
+  },
+  {
+    question: "Which advertising channels and formats can Adaptif create for?",
+    answer:
+      "We produce creative for Meta, TikTok, LinkedIn, Pinterest, YouTube, Snapchat, X, Reddit, programmatic display, native advertising, out-of-home, connected TV, and print—across static, motion, video, GIF, carousel, Stories, and Reels.",
+  },
+  {
+    question: "What sets Adaptif apart from a traditional advertising agency?",
+    answer:
+      "Adaptif is built for teams needing a continuous supply of ad concepts, variations, localized assets, and testing creative at a predictable cost—supporting weekly paid social and display production alongside major brand campaigns.",
+  },
+  {
+    question: "How do you maintain brand consistency across large volumes of ads?",
+    answer:
+      "We keep your brand guidelines, visual components, tone-of-voice rules, and approved assets in one centralized system, plus reusable ad templates and component libraries for high-volume programs.",
+  },
+  {
+    question: "Should we hire an internal ad creative team or partner with Adaptif?",
+    answer:
+      "Adaptif can serve as your creative team or extend your in-house team—bringing design, copywriting, motion, illustration, and AI together under one subscription with senior creative direction included.",
+  },
+  {
+    question: "How does Adaptif use performance insights to improve ad creative?",
+    answer:
+      "Performance considerations guide the work from the beginning. We create A/B variations, document winning patterns in your shared brand knowledge base, and iterate rapidly to inform every next round of creative.",
+  },
+];
+---
+
+<Layout
+  title="Ad Creative Services — Adaptif"
+  description="On-brand ads, delivered on schedule and built to convert. Digital, social, display, print, and out-of-home ad creative at scale."
+>
+  <Header />
+  <main>
+    <AdCreativeHero />
+    <BrandLogos />
+    <AdCreativeOverviewAndStats />
+    <AdCreativeOfferAndChannels />
+    <AdCreativeAiAndWorkflow />
+    <FaqSection faqs={adCreativeFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  :global([data-ac-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--ac-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--ac-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-ac-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-ac-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-ac-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initAdCreativePage = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-ac-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animateCounter = (el: HTMLElement) => {
+      const target = Number(el.dataset.acCount || "0");
+      const decimals = Number(el.dataset.acDecimals || "0");
+      const suffix = el.dataset.acSuffix || "";
+      if (!target || el.dataset.acCounted === "1") return;
+      el.dataset.acCounted = "1";
+
+      const formatVal = (val: number) =>
+        decimals > 0 ? val.toFixed(decimals) : String(Math.round(val));
+
+      if (prefersReducedMotion) {
+        el.textContent = `${formatVal(target)}${suffix}`;
+        return;
+      }
+
+      const duration = 950;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = `${formatVal(target * eased)}${suffix}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => {
+        el.classList.add("is-visible");
+        el.querySelectorAll<HTMLElement>("[data-ac-count]").forEach(animateCounter);
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          target.classList.add("is-visible");
+          target.querySelectorAll<HTMLElement>("[data-ac-count]").forEach(animateCounter);
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.01, rootMargin: "100px 0px 100px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initAdCreativePage();
+  document.addEventListener("astro:page-load", initAdCreativePage);
+</script>

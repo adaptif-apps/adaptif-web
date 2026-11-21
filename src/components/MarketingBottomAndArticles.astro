@@ -1,0 +1,374 @@
+---
+// MarketingBottomAndArticles.astro - Creative power banner + Related articles on marketing strategy
+
+const articles = [
+  {
+    id: "art1",
+    category: "Creative Leadership",
+    readTime: "8 min read",
+    title: "6 AI applications that actually save time (with real examples)",
+    excerpt:
+      "Creative teams don’t need more AI hype. They need practical, proven applications and real results.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art2",
+    category: "Growth Strategy",
+    readTime: "6 min read",
+    title: "Full-funnel messaging: aligning brand story with paid performance",
+    excerpt:
+      "How cohesive messaging architecture improves CAC and keeps multi-channel campaigns compounding.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art3",
+    category: "Campaign Ops",
+    readTime: "7 min read",
+    title: "Why creative testing fails without strategic hypotheses",
+    excerpt:
+      "Move beyond random ad variations with structured test matrices tied to audience insights.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art4",
+    category: "Launch Playbooks",
+    readTime: "5 min read",
+    title: "Shipping multi-market product launches in half the time",
+    excerpt:
+      "How embedded strategy and creative pods eliminate handoff friction from brief to launch.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+];
+---
+
+<!-- 1. Creative power full-bleed banner -->
+<section class="mk-power" id="marketing-creative-power" aria-labelledby="mk-power-title">
+  <div class="mk-power__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/branding/creative-power-mobile.jpg" />
+      <img
+        src="/images/branding/creative-power-desktop.jpg"
+        alt=""
+        class="mk-power__bg"
+        loading="lazy"
+        decoding="async"
+        data-cms-key="marketing.power.image"
+      />
+    </picture>
+    <div class="mk-power__scrim"></div>
+  </div>
+
+  <div class="container mk-power__container">
+    <div class="mk-power__content" data-mk-reveal>
+      <h2 id="mk-power-title" class="mk-power__title" data-cms-key="marketing.power.title">
+        Now imagine this <span class="title-highlight">creative power</span> behind your next project
+      </h2>
+      <p class="mk-power__desc" data-cms-key="marketing.power.desc">
+        This is just one of many creative services—what you do with them is up to you. Let’s chat.
+      </p>
+      <a
+        href="#book-a-call"
+        class="adaptif-btn"
+        data-open-book-call
+        data-cms-key="marketing.power.cta"
+      >
+        <span>Book a Call</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path
+            d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Related articles -->
+<section class="mk-articles" id="marketing-articles" aria-labelledby="mk-articles-title">
+  <div class="container">
+    <header class="mk-articles__header" data-mk-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="marketing.articles.eyebrow">
+        Related articles
+      </p>
+      <h2 id="mk-articles-title" class="mk-articles__title" data-cms-key="marketing.articles.title">
+        Read how <span class="title-highlight">creative teams use strategy</span> to stay ahead
+      </h2>
+    </header>
+
+    <div class="mk-articles__grid">
+      {articles.map((art, idx) => (
+        <a
+          href={art.href}
+          class="mk-article-card"
+          data-mk-reveal
+          style={`--mk-delay: ${idx * 65}ms`}
+        >
+          <div class="mk-article-card__media">
+            <img
+              src="/images/branding/article-cover.jpg"
+              alt={art.title}
+              class="mk-article-card__img"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div class="mk-article-card__body">
+            <p class="mk-article-card__meta">
+              <span>{art.category}</span>
+              <span aria-hidden="true">•</span>
+              <span>{art.readTime}</span>
+            </p>
+            <h3 class="mk-article-card__title" data-cms-key={`marketing.articles.${art.id}.title`}>
+              {art.title}
+            </h3>
+            <p class="mk-article-card__excerpt" data-cms-key={`marketing.articles.${art.id}.excerpt`}>
+              {art.excerpt}
+            </p>
+
+            <div class="mk-article-card__author">
+              <img
+                src="/images/branding/author-tessa.jpg"
+                alt={art.author}
+                class="mk-article-card__avatar"
+                loading="lazy"
+                decoding="async"
+              />
+              <div>
+                <span class="mk-article-card__author-name">{art.author}</span>
+                <span class="mk-article-card__author-role">{art.role}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .mk-power {
+    position: relative;
+    min-height: clamp(380px, 44vw, 520px);
+    display: flex;
+    align-items: center;
+    padding: clamp(64px, 8vw, 100px) 0;
+    overflow: hidden;
+    background: var(--color-void);
+  }
+
+  .mk-power__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .mk-power__media picture {
+    display: contents;
+  }
+
+  .mk-power__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .mk-power__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(1, 3, 7, 0.9) 0%,
+      rgba(1, 3, 7, 0.65) 48%,
+      rgba(1, 3, 7, 0.14) 100%
+    );
+  }
+
+  .mk-power__container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .mk-power__content {
+    max-width: 560px;
+  }
+
+  .mk-power__title {
+    margin: 0 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.3vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .mk-power__desc {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Related articles */
+  .mk-articles {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .mk-articles__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(36px, 5vw, 52px);
+  }
+
+  .mk-articles__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .mk-articles__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .mk-article-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.025);
+    text-decoration: none;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+  }
+
+  .mk-article-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .mk-article-card__media {
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+  }
+
+  .mk-article-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s ease;
+  }
+
+  .mk-article-card:hover .mk-article-card__img {
+    transform: scale(1.04);
+  }
+
+  .mk-article-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 18px;
+  }
+
+  .mk-article-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-brand-cyan);
+  }
+
+  .mk-article-card__title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .mk-article-card__excerpt {
+    margin: 0 0 18px;
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .mk-article-card__author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mk-article-card__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .mk-article-card__author-name {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .mk-article-card__author-role {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 1100px) {
+    .mk-articles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mk-power__scrim {
+      background: linear-gradient(180deg, rgba(1, 3, 7, 0.86) 0%, rgba(1, 3, 7, 0.65) 55%, rgba(1, 3, 7, 0.9) 100%);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .mk-articles__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

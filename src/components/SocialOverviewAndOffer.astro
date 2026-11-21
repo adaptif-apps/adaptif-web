@@ -1,0 +1,555 @@
+---
+// SocialOverviewAndOffer.astro - "Driving social momentum" + "Designed for social" (6-card mosaic) + "Native-first content" (light)
+
+const offers = [
+  {
+    id: "organic",
+    title: "Organic social content",
+    description:
+      "Build connection through compelling stories—from high-impact static posts to educational video series.",
+    image: "/images/social-media-creative/offer-organic.jpg",
+    alt: "Organic social media feed on smartphone",
+    area: "sm-offer--organic",
+    pos: "bottom",
+  },
+  {
+    id: "paid",
+    title: "Paid social ads",
+    description:
+      "Explore fresh concepts, scale proven ideas, and serve every format the algorithm favors.",
+    image: "/images/social-media-creative/offer-paid.jpg",
+    alt: "High-converting paid social ad creatives",
+    area: "sm-offer--paid",
+    pos: "top",
+  },
+  {
+    id: "video",
+    title: "Video",
+    description:
+      "Motion-led explainers, UGC-inspired ads, and in-studio testimonials—whatever the brief requires.",
+    image: "/images/social-media-creative/offer-video.jpg",
+    alt: "Vertical social video storytelling",
+    area: "sm-offer--video",
+    pos: "top",
+  },
+  {
+    id: "ai",
+    title: "AI production",
+    description:
+      "Create more content, faster, with AI-supported editing, voiceovers, automated translation, and localization.",
+    image: "/images/social-media-creative/offer-ai.jpg",
+    alt: "Multilingual AI-supported social production",
+    area: "sm-offer--ai",
+    pos: "top",
+  },
+  {
+    id: "concepts",
+    title: "Campaign concepts",
+    description:
+      "Turn individual deliverables into stronger, connected work rooted in one big creative idea.",
+    image: "/images/social-media-creative/offer-concepts.jpg",
+    alt: "Cohesive social campaign concept direction",
+    area: "sm-offer--concepts",
+    pos: "top",
+  },
+  {
+    id: "immersive",
+    title: "Immersive experiences",
+    description:
+      "Use 3D, AR, and interactive experiences to interrupt the scroll and make stories more memorable.",
+    image: "/images/social-media-creative/offer-immersive.jpg",
+    alt: "Interactive social carousel and immersive experience",
+    area: "sm-offer--immersive",
+    pos: "top",
+  },
+];
+
+const channels = [
+  {
+    id: "meta",
+    title: "Meta",
+    desc: "Drive stronger engagement with eye-catching content made specifically for Facebook and Instagram.",
+    icon: "meta",
+  },
+  {
+    id: "linkedin",
+    title: "LinkedIn",
+    desc: "Produce relevant, conversation-starting creative for LinkedIn’s professional audience.",
+    icon: "linkedin",
+  },
+  {
+    id: "tiktok",
+    title: "TikTok",
+    desc: "Use culture-led, timely content to generate views, participation, and shares.",
+    icon: "tiktok",
+  },
+  {
+    id: "youtube",
+    title: "YouTube",
+    desc: "Improve watch time and click-through performance with video ads designed for YouTube.",
+    icon: "youtube",
+  },
+  {
+    id: "other",
+    title: "Other platforms",
+    desc: "X, Snapchat, Reddit, Pinterest or another channel—get attention-led assets in the formats and dimensions they need.",
+    icon: "other",
+  },
+];
+---
+
+<!-- 1. Driving social momentum -->
+<section class="sm-overview" id="social-overview" aria-labelledby="sm-overview-title">
+  <div class="sm-overview__glow" aria-hidden="true"></div>
+
+  <div class="container sm-overview__grid">
+    <div class="sm-overview__copy" data-sm-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="social.overview.eyebrow">
+        Driving social momentum
+      </p>
+
+      <h2 id="sm-overview-title" class="sm-overview__title" data-cms-key="social.overview.title">
+        Speed and scale <span class="title-highlight">are essential on social</span>
+      </h2>
+
+      <p class="sm-overview__lead" data-cms-key="social.overview.lead">
+        Arrive late to a trend, publish inconsistently, or run outdated, off-brand creative, and both your audience and the algorithm will take notice.
+      </p>
+
+      <p class="sm-overview__body" data-cms-key="social.overview.body">
+        Consistency matters. Yet even strong teams can’t always stay ahead of relentless content demand. Adaptif helps you move faster, remain relevant, and avoid the burnout.
+      </p>
+    </div>
+
+    <div class="sm-overview__visual" data-sm-reveal="scale" style="--sm-delay: 120ms">
+      <div class="sm-overview__frame">
+        <img
+          src="/images/social-media-creative/social-momentum.jpg"
+          alt="Multi-format social media feed grid"
+          class="sm-overview__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="social.overview.image"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Designed for social -->
+<section class="sm-offer" id="social-offer" aria-labelledby="sm-offer-title">
+  <div class="container">
+    <header class="sm-offer__header" data-sm-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="social.offer.eyebrow">
+        Designed for social
+      </p>
+      <h2 id="sm-offer-title" class="sm-offer__title" data-cms-key="social.offer.title">
+        Social creative made for <span class="title-highlight">every channel and objective</span>
+      </h2>
+      <p class="sm-offer__subtitle" data-cms-key="social.offer.subtitle">
+        Our specialists create performance-focused social design and content that encourages engagement, sharing, clicks, and conversion.
+      </p>
+    </header>
+
+    <div class="sm-offer__mosaic">
+      {offers.map((item, idx) => (
+        <article
+          class={`sm-offer-card ${item.area} sm-offer-card--${item.pos}`}
+          data-sm-reveal
+          style={`--sm-delay: ${Math.min(idx * 50, 240)}ms`}
+        >
+          <img
+            src={item.image}
+            alt={item.alt}
+            class="sm-offer-card__img"
+            loading="lazy"
+            decoding="async"
+            data-cms-key={`social.offer.${item.id}.image`}
+          />
+          <div class={`sm-offer-card__scrim sm-offer-card__scrim--${item.pos}`} aria-hidden="true"></div>
+          <div class="sm-offer-card__content">
+            <h3 class="sm-offer-card__title" data-cms-key={`social.offer.${item.id}.title`}>
+              {item.title}
+            </h3>
+            <p class="sm-offer-card__desc" data-cms-key={`social.offer.${item.id}.desc`}>
+              {item.description}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 3. Built around each channel (Light) -->
+<section class="sm-channels" id="social-channels" data-theme="light" aria-labelledby="sm-channels-title">
+  <div class="container">
+    <header class="sm-channels__header" data-sm-reveal>
+      <p class="adaptif-eyebrow adaptif-eyebrow--light" data-cms-key="social.channels.eyebrow">
+        Built around each channel
+      </p>
+      <h2 id="sm-channels-title" class="sm-channels__title" data-cms-key="social.channels.title">
+        <span class="title-highlight">Native-first</span> content
+      </h2>
+      <p class="sm-channels__subtitle" data-cms-key="social.channels.subtitle">
+        Whether it’s organic or paid, our channel specialists shape social creative around audience behaviors and the signals each platform prioritizes.
+      </p>
+    </header>
+
+    <div class="sm-channels__grid">
+      {channels.map((ch, idx) => (
+        <article class="sm-channel-item" data-sm-reveal style={`--sm-delay: ${idx * 55}ms`}>
+          <div class="sm-channel-item__icon" aria-hidden="true">
+            {ch.icon === "meta" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                <line x1="9" y1="9" x2="9.01" y2="9" />
+                <line x1="15" y1="9" x2="15.01" y2="9" />
+              </svg>
+            )}
+            {ch.icon === "linkedin" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+              </svg>
+            )}
+            {ch.icon === "tiktok" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            )}
+            {ch.icon === "youtube" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            )}
+            {ch.icon === "other" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+            )}
+          </div>
+          <h3 class="sm-channel-item__title" data-cms-key={`social.channels.${ch.id}.title`}>
+            {ch.title}
+          </h3>
+          <p class="sm-channel-item__desc" data-cms-key={`social.channels.${ch.id}.desc`}>
+            {ch.desc}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .sm-overview {
+    position: relative;
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .sm-overview__glow {
+    position: absolute;
+    top: 16%;
+    right: 8%;
+    width: 480px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .sm-overview__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: clamp(32px, 5vw, 68px);
+    align-items: center;
+  }
+
+  .sm-overview__title {
+    margin: 14px 0 20px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.3rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .sm-overview__lead {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .sm-overview__body {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.66;
+    color: var(--color-text-secondary);
+  }
+
+  .sm-overview__frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 26px 60px -20px rgba(0, 0, 0, 0.8),
+      0 0 38px -14px rgba(72, 200, 255, 0.16);
+    aspect-ratio: 1 / 1;
+  }
+
+  .sm-overview__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Offer mosaic */
+  .sm-offer {
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .sm-offer__header {
+    text-align: center;
+    max-width: 740px;
+    margin: 0 auto clamp(36px, 5vw, 56px);
+  }
+
+  .sm-offer__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .sm-offer__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .sm-offer__mosaic {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(270px, auto);
+    gap: 18px;
+  }
+
+  .sm-offer-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-obsidian-950);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+
+  .sm-offer-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.36);
+  }
+
+  .sm-offer-card--top { justify-content: flex-start; }
+  .sm-offer-card--bottom { justify-content: flex-end; }
+
+  .sm-offer--organic { grid-column: 1 / span 4; grid-row: 1 / span 2; min-height: 550px; }
+  .sm-offer--paid { grid-column: 5 / span 4; grid-row: 1; min-height: 270px; }
+  .sm-offer--video { grid-column: 9 / span 4; grid-row: 1; min-height: 270px; }
+  .sm-offer--ai { grid-column: 5 / span 4; grid-row: 2; min-height: 270px; }
+  .sm-offer--concepts { grid-column: 9 / span 4; grid-row: 2; min-height: 270px; }
+  .sm-offer--immersive { grid-column: 1 / span 12; grid-row: 3; min-height: 300px; }
+
+  .sm-offer-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .sm-offer-card:hover .sm-offer-card__img {
+    transform: scale(1.03);
+  }
+
+  .sm-offer-card__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .sm-offer-card__scrim--top {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.9) 0%,
+      rgba(1, 3, 7, 0.48) 48%,
+      rgba(1, 3, 7, 0.22) 100%
+    );
+  }
+
+  .sm-offer-card__scrim--bottom {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.1) 0%,
+      rgba(1, 3, 7, 0.46) 52%,
+      rgba(1, 3, 7, 0.92) 100%
+    );
+  }
+
+  .sm-offer-card__content {
+    position: relative;
+    z-index: 2;
+    padding: clamp(20px, 2.2vw, 26px);
+    max-width: 440px;
+  }
+
+  .sm-offer-card__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.1rem, 1.28vw, 1.25rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+  }
+
+  .sm-offer-card__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: rgba(241, 245, 249, 0.84);
+  }
+
+  /* Channels (Light) */
+  .sm-channels {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: #ffffff;
+    color: #090d16;
+  }
+
+  .sm-channels__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+
+  .sm-channels__title {
+    margin: 14px 0 14px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #090d16;
+  }
+
+  .sm-channels__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #475569;
+  }
+
+  .sm-channels__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 40px;
+  }
+
+  .sm-channel-item {
+    padding-top: 24px;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+  }
+
+  .sm-channel-item__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 132, 199, 0.08);
+    border: 1px solid rgba(2, 132, 199, 0.22);
+    color: #0284c7;
+    margin-bottom: 14px;
+  }
+
+  .sm-channel-item__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #090d16;
+  }
+
+  .sm-channel-item__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.58;
+    color: #475569;
+  }
+
+  @media (max-width: 1024px) {
+    .sm-overview__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sm-overview__frame {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .sm-offer__mosaic {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: auto;
+    }
+
+    .sm-offer--organic,
+    .sm-offer--paid,
+    .sm-offer--video,
+    .sm-offer--ai,
+    .sm-offer--concepts,
+    .sm-offer--immersive {
+      grid-column: auto;
+      grid-row: auto;
+      min-height: 280px;
+    }
+
+    .sm-channels__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .sm-offer__mosaic,
+    .sm-channels__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

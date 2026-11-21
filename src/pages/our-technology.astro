@@ -1,0 +1,148 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import OurTechHero from "../components/OurTechHero.astro";
+import OurTechFeatures from "../components/OurTechFeatures.astro";
+import OurTechBottom from "../components/OurTechBottom.astro";
+import FaqSection from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+const ourTechFaqs = [
+  {
+    question: "What tools does Adaptif use to manage projects?",
+    answer:
+      "We work inside ClickUp, Asana, Jira, Slack, Trello, Notion, Wrike, monday.com, Google Drive, and Dropbox—adapting to the exact stack your team already runs on.",
+  },
+  {
+    question: "Do I need to learn a new platform?",
+    answer:
+      "No. We build and manage your creative workflow directly inside the tools your team already knows so there is zero onboarding friction.",
+  },
+  {
+    question: "What if we don’t use any project management tool yet?",
+    answer:
+      "We can set up a clean, ready-to-use workspace for your team from day one, complete with structured brief templates, review columns, and automated asset delivery.",
+  },
+  {
+    question: "How do I submit a brief?",
+    answer:
+      "Simply create a task in your board using our AI-guided brief template or paste plain-language notes—our workflow structures the specs automatically.",
+  },
+  {
+    question: "Can my whole marketing team access the workflow?",
+    answer:
+      "Yes. Your entire marketing, product, and leadership team can submit requests, leave contextual feedback, and track live progress in one shared place.",
+  },
+  {
+    question: "What happens to our workflow if we pause or cancel?",
+    answer:
+      "Your workspace, tickets, source files, and organized asset folders remain yours—nothing is locked inside a proprietary portal.",
+  },
+  {
+    question: "What exactly is included in my Adaptif subscription?",
+    answer:
+      "Dedicated creative capacity, senior creative direction, structured briefing, real-time capacity tracking, and direct delivery into your cloud storage.",
+  },
+  {
+    question: "How does Adaptif use AI in our projects?",
+    answer:
+      "We use AI to strengthen briefs, accelerate iterations, and scale production while keeping senior human creative direction and brand guardrails in full control.",
+  },
+  {
+    question: "Can I pause, upgrade, or downgrade my plan?",
+    answer:
+      "Yes. Plans are flexible month-to-month so you can scale capacity up during launches or pause anytime between cycles.",
+  },
+  {
+    question: "What happens if I have more requests than my plan can handle?",
+    answer:
+      "You can queue unlimited requests in your backlog and prioritize them anytime, or add parallel capacity when deadlines spike.",
+  },
+  {
+    question: "What’s included in my subscription, and what’s considered out of scope?",
+    answer:
+      "20+ creative, brand, motion, web, and AI production services are included. Custom third-party software licenses or paid media spend are outside the subscription.",
+  },
+];
+---
+
+<Layout
+  title="Our Technology — Adaptif"
+  description="The tech powering your creative edge. Adaptif runs on the tools your team already knows — ClickUp, Asana, Slack, and more."
+>
+  <Header />
+  <main>
+    <OurTechHero />
+    <OurTechFeatures />
+    <OurTechBottom />
+    <FaqSection faqs={ourTechFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  /* Shared scroll-reveal system for Our Technology */
+  :global([data-tech-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--tech-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--tech-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-tech-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-tech-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-tech-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initOurTechAnimations = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-tech-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          target.classList.add("is-visible");
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -36px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initOurTechAnimations();
+  document.addEventListener("astro:page-load", initOurTechAnimations);
+</script>

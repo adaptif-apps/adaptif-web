@@ -1,0 +1,436 @@
+---
+// BrandingOfferAndChannels.astro - "What we offer" (6-card mosaic) + "Channel-tailored" (open light 3x2 grid)
+
+const offers = [
+  {
+    id: "brand-design",
+    title: "Brand design",
+    description:
+      "Logo, typography, colors, and essential design elements all built for digital and physical touchpoints.",
+    image: "/images/branding/offer-brand-design.jpg",
+    alt: "RiizeUp branded fleet truck design",
+    area: "br-offer--design",
+    pos: "top",
+  },
+  {
+    id: "brand-dev",
+    title: "Brand development",
+    description:
+      "Strategic positioning and visual foundations to shape and set your brand apart from day one.",
+    image: "/images/branding/offer-brand-dev.jpg",
+    alt: "UI component and design system foundations",
+    area: "br-offer--dev",
+    pos: "top",
+  },
+  {
+    id: "brand-guidelines",
+    title: "Brand guidelines",
+    description:
+      "Thorough, practical documentation that keeps internal and external teams executing consistently.",
+    image: "/images/branding/offer-brand-guidelines.jpg",
+    alt: "Comprehensive brand guidelines system",
+    area: "br-offer--guidelines",
+    pos: "top",
+  },
+  {
+    id: "logo-design",
+    title: "Logo design",
+    description:
+      "Primary and sub-brand logo systems with complete file kits, responsive variations, and real-world usage guidance.",
+    image: "/images/branding/offer-logo-design.jpg",
+    alt: "RiizeUp logo construction grid",
+    area: "br-offer--logo",
+    pos: "top",
+  },
+  {
+    id: "rebranding",
+    title: "Rebranding services",
+    description:
+      "From gradual evolution to complete reinvention, we help brands refresh for new markets, products, or growth stages.",
+    image: "/images/branding/offer-rebranding.jpg",
+    alt: "Rebranded merchandise and tote bag collateral",
+    area: "br-offer--rebrand",
+    pos: "top",
+  },
+  {
+    id: "brand-story",
+    title: "Brand story & messaging",
+    description:
+      "Mission, vision, values, tone of voice, and messaging pillars shaped to align teams and inspire audiences.",
+    image: "/images/branding/offer-brand-story.jpg",
+    alt: "Crafted packaging and brand storytelling",
+    area: "br-offer--story",
+    pos: "top",
+  },
+];
+
+const channels = [
+  {
+    id: "web",
+    title: "Web and digital platforms",
+    desc: "Design frameworks, UI libraries, and ready-to-use assets for sites and digital products.",
+    icon: "web",
+  },
+  {
+    id: "campaigns",
+    title: "Marketing campaigns",
+    desc: "Layouts, copy, and creative shaped to power on-brand acquisition and promotional bursts.",
+    icon: "campaigns",
+  },
+  {
+    id: "product",
+    title: "Product experiences",
+    desc: "Packaging and product identity work that ties the physical and digital sides together.",
+    icon: "product",
+  },
+  {
+    id: "internal",
+    title: "Internal brand toolkit",
+    desc: "Materials for culture, new hire onboarding, talent attraction, and internal brand buy-in.",
+    icon: "internal",
+  },
+  {
+    id: "sales",
+    title: "Sales tools",
+    desc: "On-brand presentations, handouts, and support material that arm your revenue crew.",
+    icon: "sales",
+  },
+  {
+    id: "events",
+    title: "Event presence",
+    desc: "Visuals for activations, sponsorship spaces, and stage moments that lift your brand.",
+    icon: "events",
+  },
+];
+---
+
+<!-- 1. What we offer -->
+<section class="br-offer" id="branding-offer" aria-labelledby="br-offer-title">
+  <div class="container">
+    <header class="br-offer__header" data-br-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="branding.offer.eyebrow">
+        What we offer
+      </p>
+      <h2 id="br-offer-title" class="br-offer__title" data-cms-key="branding.offer.title">
+        From <span class="title-highlight">brand strategy to brand systems</span>, we handle it all
+      </h2>
+      <p class="br-offer__subtitle" data-cms-key="branding.offer.subtitle">
+        Our branding services drive consistency, speed, and creative that stands out—whether you’re building from zero or evolving what’s there.
+      </p>
+    </header>
+
+    <div class="br-offer__mosaic">
+      {offers.map((item, idx) => (
+        <article
+          class={`br-offer-card ${item.area}`}
+          data-br-reveal
+          style={`--br-delay: ${idx * 60}ms`}
+        >
+          <img
+            src={item.image}
+            alt={item.alt}
+            class="br-offer-card__img"
+            loading="lazy"
+            decoding="async"
+            data-cms-key={`branding.offer.${item.id}.image`}
+          />
+          <div class="br-offer-card__scrim" aria-hidden="true"></div>
+          <div class="br-offer-card__content">
+            <h3 class="br-offer-card__title" data-cms-key={`branding.offer.${item.id}.title`}>
+              {item.title}
+            </h3>
+            <p class="br-offer-card__desc" data-cms-key={`branding.offer.${item.id}.desc`}>
+              {item.description}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 2. Channel-tailored (Light open editorial grid) -->
+<section class="br-channels" id="branding-channels" data-theme="light" aria-labelledby="br-channels-title">
+  <div class="container">
+    <header class="br-channels__header" data-br-reveal>
+      <p class="adaptif-eyebrow adaptif-eyebrow--light" data-cms-key="branding.channels.eyebrow">
+        Channel-tailored
+      </p>
+      <h2 id="br-channels-title" class="br-channels__title" data-cms-key="branding.channels.title">
+        One brand language <span class="title-highlight">on every surface</span>
+      </h2>
+      <p class="br-channels__subtitle" data-cms-key="branding.channels.subtitle">
+        Websites, packaging, pitch decks—we make sure your brand lands with impact wherever it appears.
+      </p>
+    </header>
+
+    <div class="br-channels__grid">
+      {channels.map((ch, idx) => (
+        <article class="br-channel-item" data-br-reveal style={`--br-delay: ${idx * 55}ms`}>
+          <div class="br-channel-item__icon" aria-hidden="true">
+            {ch.icon === "web" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            )}
+            {ch.icon === "campaigns" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 11l18-5v12L3 14v-3z" />
+                <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+              </svg>
+            )}
+            {ch.icon === "product" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                <line x1="12" y1="22.08" x2="12" y2="12" />
+              </svg>
+            )}
+            {ch.icon === "internal" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            )}
+            {ch.icon === "sales" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+            )}
+            {ch.icon === "events" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            )}
+          </div>
+          <h3 class="br-channel-item__title" data-cms-key={`branding.channels.${ch.id}.title`}>
+            {ch.title}
+          </h3>
+          <p class="br-channel-item__desc" data-cms-key={`branding.channels.${ch.id}.desc`}>
+            {ch.desc}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .br-offer {
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .br-offer__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(36px, 5vw, 56px);
+  }
+
+  .br-offer__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .br-offer__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .br-offer__mosaic {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(270px, auto);
+    gap: 18px;
+  }
+
+  .br-offer-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-obsidian-950);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+
+  .br-offer-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.36);
+  }
+
+  .br-offer--design { grid-column: 1 / span 5; grid-row: 1; min-height: 300px; }
+  .br-offer--dev { grid-column: 6 / span 4; grid-row: 1; min-height: 300px; }
+  .br-offer--guidelines { grid-column: 10 / span 3; grid-row: 1 / span 2; min-height: 580px; }
+  .br-offer--logo { grid-column: 1 / span 3; grid-row: 2; min-height: 300px; }
+  .br-offer--rebrand { grid-column: 4 / span 3; grid-row: 2; min-height: 300px; }
+  .br-offer--story { grid-column: 7 / span 3; grid-row: 2; min-height: 300px; }
+
+  .br-offer-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .br-offer-card:hover .br-offer-card__img {
+    transform: scale(1.03);
+  }
+
+  .br-offer-card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.88) 0%,
+      rgba(1, 3, 7, 0.48) 46%,
+      rgba(1, 3, 7, 0.25) 100%
+    );
+    pointer-events: none;
+  }
+
+  .br-offer-card__content {
+    position: relative;
+    z-index: 2;
+    padding: clamp(20px, 2.2vw, 26px);
+  }
+
+  .br-offer-card__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.12rem, 1.3vw, 1.28rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+  }
+
+  .br-offer-card__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: rgba(241, 245, 249, 0.84);
+  }
+
+  /* Channel-tailored (Light) */
+  .br-channels {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: #ffffff;
+    color: #090d16;
+  }
+
+  .br-channels__header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+
+  .br-channels__title {
+    margin: 14px 0 14px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #090d16;
+  }
+
+  .br-channels__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #475569;
+  }
+
+  .br-channels__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 40px;
+  }
+
+  .br-channel-item {
+    padding-top: 24px;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+  }
+
+  .br-channel-item__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 132, 199, 0.08);
+    border: 1px solid rgba(2, 132, 199, 0.22);
+    color: #0284c7;
+    margin-bottom: 14px;
+  }
+
+  .br-channel-item__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #090d16;
+  }
+
+  .br-channel-item__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.58;
+    color: #475569;
+  }
+
+  @media (max-width: 1024px) {
+    .br-offer__mosaic {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: auto;
+    }
+
+    .br-offer--design,
+    .br-offer--dev,
+    .br-offer--guidelines,
+    .br-offer--logo,
+    .br-offer--rebrand,
+    .br-offer--story {
+      grid-column: auto;
+      grid-row: auto;
+      min-height: 300px;
+    }
+
+    .br-channels__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .br-offer__mosaic,
+    .br-channels__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

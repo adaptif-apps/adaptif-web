@@ -1,0 +1,374 @@
+---
+// BrandingBottomAndArticles.astro - Creative power banner + Related articles on branding
+
+const articles = [
+  {
+    id: "art1",
+    category: "Creative Leadership",
+    readTime: "8 min read",
+    title: "6 AI applications that actually save time (with real examples)",
+    excerpt:
+      "Creative teams don’t need more AI hype. They need practical, proven applications and real results.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art2",
+    category: "Brand Systems",
+    readTime: "6 min read",
+    title: "How to build brand guidelines your entire team actually uses",
+    excerpt:
+      "Turn static PDFs into living design systems that speed up production across marketing, product, and sales.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art3",
+    category: "Rebranding",
+    readTime: "7 min read",
+    title: "When to refresh vs. reinvent your brand identity",
+    excerpt:
+      "Key signals that your visual language is holding back conversion—and how to evolve without losing brand equity.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art4",
+    category: "Creative Ops",
+    readTime: "5 min read",
+    title: "Scaling multi-market brand campaigns without agency bottlenecks",
+    excerpt:
+      "How fast-growing teams maintain visual consistency across dozens of channels with embedded creative pods.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+];
+---
+
+<!-- 1. Creative power full-bleed banner -->
+<section class="br-power" id="branding-creative-power" aria-labelledby="br-power-title">
+  <div class="br-power__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/branding/creative-power-mobile.jpg" />
+      <img
+        src="/images/branding/creative-power-desktop.jpg"
+        alt=""
+        class="br-power__bg"
+        loading="lazy"
+        decoding="async"
+        data-cms-key="branding.power.image"
+      />
+    </picture>
+    <div class="br-power__scrim"></div>
+  </div>
+
+  <div class="container br-power__container">
+    <div class="br-power__content" data-br-reveal>
+      <h2 id="br-power-title" class="br-power__title" data-cms-key="branding.power.title">
+        Now imagine this <span class="title-highlight">creative power</span> behind your next project
+      </h2>
+      <p class="br-power__desc" data-cms-key="branding.power.desc">
+        This is just one of many creative services—what you do with them is up to you. Let’s chat.
+      </p>
+      <a
+        href="#book-a-call"
+        class="adaptif-btn"
+        data-open-book-call
+        data-cms-key="branding.power.cta"
+      >
+        <span>Book a Call</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path
+            d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Related articles -->
+<section class="br-articles" id="branding-articles" aria-labelledby="br-articles-title">
+  <div class="container">
+    <header class="br-articles__header" data-br-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="branding.articles.eyebrow">
+        Related articles
+      </p>
+      <h2 id="br-articles-title" class="br-articles__title" data-cms-key="branding.articles.title">
+        Check out the <span class="title-highlight">latest on branding</span> for creative teams
+      </h2>
+    </header>
+
+    <div class="br-articles__grid">
+      {articles.map((art, idx) => (
+        <a
+          href={art.href}
+          class="br-article-card"
+          data-br-reveal
+          style={`--br-delay: ${idx * 65}ms`}
+        >
+          <div class="br-article-card__media">
+            <img
+              src="/images/branding/article-cover.jpg"
+              alt={art.title}
+              class="br-article-card__img"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div class="br-article-card__body">
+            <p class="br-article-card__meta">
+              <span>{art.category}</span>
+              <span aria-hidden="true">•</span>
+              <span>{art.readTime}</span>
+            </p>
+            <h3 class="br-article-card__title" data-cms-key={`branding.articles.${art.id}.title`}>
+              {art.title}
+            </h3>
+            <p class="br-article-card__excerpt" data-cms-key={`branding.articles.${art.id}.excerpt`}>
+              {art.excerpt}
+            </p>
+
+            <div class="br-article-card__author">
+              <img
+                src="/images/branding/author-tessa.jpg"
+                alt={art.author}
+                class="br-article-card__avatar"
+                loading="lazy"
+                decoding="async"
+              />
+              <div>
+                <span class="br-article-card__author-name">{art.author}</span>
+                <span class="br-article-card__author-role">{art.role}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .br-power {
+    position: relative;
+    min-height: clamp(380px, 44vw, 520px);
+    display: flex;
+    align-items: center;
+    padding: clamp(64px, 8vw, 100px) 0;
+    overflow: hidden;
+    background: var(--color-void);
+  }
+
+  .br-power__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .br-power__media picture {
+    display: contents;
+  }
+
+  .br-power__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .br-power__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(1, 3, 7, 0.9) 0%,
+      rgba(1, 3, 7, 0.65) 48%,
+      rgba(1, 3, 7, 0.14) 100%
+    );
+  }
+
+  .br-power__container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .br-power__content {
+    max-width: 560px;
+  }
+
+  .br-power__title {
+    margin: 0 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.3vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .br-power__desc {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Related articles */
+  .br-articles {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .br-articles__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(36px, 5vw, 52px);
+  }
+
+  .br-articles__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .br-articles__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .br-article-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.025);
+    text-decoration: none;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+  }
+
+  .br-article-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .br-article-card__media {
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+  }
+
+  .br-article-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s ease;
+  }
+
+  .br-article-card:hover .br-article-card__img {
+    transform: scale(1.04);
+  }
+
+  .br-article-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 18px;
+  }
+
+  .br-article-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-brand-cyan);
+  }
+
+  .br-article-card__title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .br-article-card__excerpt {
+    margin: 0 0 18px;
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .br-article-card__author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .br-article-card__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .br-article-card__author-name {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .br-article-card__author-role {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 1100px) {
+    .br-articles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .br-power__scrim {
+      background: linear-gradient(180deg, rgba(1, 3, 7, 0.86) 0%, rgba(1, 3, 7, 0.65) 55%, rgba(1, 3, 7, 0.9) 100%);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .br-articles__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

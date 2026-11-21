@@ -1,0 +1,717 @@
+---
+// ProductDesignOverviewAndOffer.astro - "Why product design matters" + "Results that count" + "What we deliver" (7-card mosaic) + "Why ambitious teams work with Adaptif" (light)
+
+const stats = [
+  {
+    id: "delivery",
+    count: 35,
+    suffix: "%",
+    desc: "Average decrease in delivery time through component-based design systems.",
+  },
+  {
+    id: "schedule",
+    count: 98,
+    suffix: "%",
+    desc: "Projects delivered on schedule.",
+  },
+  {
+    id: "conversion",
+    count: 30,
+    suffix: "%+",
+    desc: "Average improvement in conversion rates after UX/UI optimization.",
+  },
+];
+
+const offers = [
+  {
+    id: "product-design",
+    title: "Product design",
+    description:
+      "From early strategy through polished UI, we create web and mobile experiences designed around usability, business goals, and sustainable growth.",
+    image: "/images/product-design/offer-product-design.jpg",
+    alt: "Laptop displaying product interface design",
+    area: "pd-offer--design",
+    pos: "top",
+  },
+  {
+    id: "prototyping",
+    title: "Prototyping and concept validation",
+    description:
+      "Interactive prototypes and rapid iteration cycles that help teams validate ideas, explore options before development, and reduce uncertainty.",
+    image: "/images/product-design/offer-prototyping.jpg",
+    alt: "Designers validating interactive prototypes on sticky-note board",
+    area: "pd-offer--prototyping",
+    pos: "bottom",
+  },
+  {
+    id: "audit",
+    title: "Product design audit",
+    description:
+      "A detailed review of your current user experience to uncover friction, prioritize improvements, and inform smarter product decisions.",
+    image: "/images/product-design/offer-audit.jpg",
+    alt: "Product designer conducting UX audit at dual-monitor workstation",
+    area: "pd-offer--audit",
+    pos: "top",
+  },
+  {
+    id: "ux-enhancements",
+    title: "UX enhancements and iteration",
+    description:
+      "Targeted improvements that strengthen clarity, accessibility, usability, and engagement across your product experience.",
+    image: "/images/product-design/offer-ux-enhancements.jpg",
+    alt: "Mobile app interface displaying UX enhancements",
+    area: "pd-offer--ux",
+    pos: "top",
+  },
+  {
+    id: "design-system",
+    title: "Design system creation and evolution",
+    description:
+      "We build or evolve structured design systems that bring consistency, efficiency, and flexibility to every stage of product development.",
+    image: "/images/product-design/offer-design-system.jpg",
+    alt: "Component-based design system button states",
+    area: "pd-offer--system",
+    pos: "top",
+  },
+  {
+    id: "mvp",
+    title: "MVP design and prototyping",
+    description:
+      "Focused design support for fast-moving teams, enabling quicker validation, clearer buy-in, and better-informed product choices.",
+    image: "/images/product-design/offer-mvp.jpg",
+    alt: "Product team sketching and prototyping MVP flows",
+    area: "pd-offer--mvp",
+    pos: "top",
+  },
+  {
+    id: "consulting",
+    title: "Product consulting",
+    description:
+      "Strategic guidance across the product lifecycle to identify opportunities, solve complex challenges, and question assumptions with confidence.",
+    image: "/images/product-design/offer-consulting.jpg",
+    alt: "Product consultants reviewing lifecycle strategy",
+    area: "pd-offer--consulting",
+    pos: "bottom",
+  },
+];
+
+const pillars = [
+  {
+    id: "impact",
+    title: "Measurable impact",
+    desc: "Every decision serves a purpose, whether that means simplifying product journeys, or creating more meaningful engagement.",
+    icon: "impact",
+  },
+  {
+    id: "execution",
+    title: "Faster, focused execution",
+    desc: "Structured sprints, reusable components, and clear project alignment help teams move quickly while staying focused on what matters.",
+    icon: "execution",
+  },
+  {
+    id: "collaboration",
+    title: "Specialist-led collaboration",
+    desc: "Collaborate directly with experienced product designers to create scalable experiences that support real business objectives.",
+    icon: "collaboration",
+  },
+  {
+    id: "integrated",
+    title: "Integrated creative",
+    desc: "Access connected creative capabilities, from motion, video, and copy to digital assets, so every touchpoint feels cohesive.",
+    icon: "integrated",
+  },
+];
+---
+
+<!-- 1. Why product design matters -->
+<section class="pd-split" id="product-why" aria-labelledby="pd-why-title">
+  <div class="pd-split__glow" aria-hidden="true"></div>
+
+  <div class="container pd-split__grid">
+    <div class="pd-split__copy" data-pd-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="product.why.eyebrow">
+        Why product design matters
+      </p>
+
+      <h2 id="pd-why-title" class="pd-split__title" data-cms-key="product.why.title">
+        Your digital experience should <span class="title-highlight">feel unmistakably</span> like your brand
+      </h2>
+
+      <p class="pd-split__lead" data-cms-key="product.why.lead">
+        A smooth digital experience is no longer optional, it is what people expect. When UX is unclear, difficult to use, or excludes part of your audience, engagement falls and more users leave before taking action.
+      </p>
+
+      <p class="pd-split__body" data-cms-key="product.why.body">
+        Many internal teams lack the specialized expertise or available time to design, iterate, and act on user feedback effectively.
+      </p>
+    </div>
+
+    <div class="pd-split__visual" data-pd-reveal="scale" style="--pd-delay: 120ms">
+      <div class="pd-split__frame">
+        <img
+          src="/images/product-design/why-product-design.jpg"
+          alt="User engaging with a mobile product experience at home"
+          class="pd-split__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="product.why.image"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Results that count -->
+<section class="pd-stats" id="product-results" aria-labelledby="pd-stats-title">
+  <div class="container">
+    <header class="pd-stats__header" data-pd-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="product.stats.eyebrow">
+        Results that count
+      </p>
+      <h2 id="pd-stats-title" class="pd-stats__title" data-cms-key="product.stats.title">
+        A <span class="title-highlight">product design partner</span> built for confidence
+      </h2>
+    </header>
+
+    <dl class="pd-stats__grid">
+      {stats.map((s, idx) => (
+        <div class="pd-stats__item" data-pd-reveal style={`--pd-delay: ${idx * 70}ms`}>
+          <dt class="pd-stats__desc" data-cms-key={`product.stats.${s.id}.label`}>
+            {s.desc}
+          </dt>
+          <dd
+            class="pd-stats__value"
+            data-pd-count={s.count}
+            data-pd-suffix={s.suffix}
+            data-cms-key={`product.stats.${s.id}.value`}
+          >
+            {`${s.count}${s.suffix}`}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<!-- 3. What we deliver (7-card Mosaic) -->
+<section class="pd-offer" id="product-offer" aria-labelledby="pd-offer-title">
+  <div class="container">
+    <header class="pd-offer__header" data-pd-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="product.offer.eyebrow">
+        What we deliver
+      </p>
+      <h2 id="pd-offer-title" class="pd-offer__title" data-cms-key="product.offer.title">
+        The foundation for <span class="title-highlight">exceptional digital</span> experiences
+      </h2>
+      <p class="pd-offer__subtitle" data-cms-key="product.offer.subtitle">
+        From detailed interface design to scalable design systems, Adaptif helps teams build, evolve, and improve digital products with clarity and consistency.
+      </p>
+    </header>
+
+    <div class="pd-offer__grid">
+      {offers.map((item, idx) => (
+        <article
+          class={`pd-card ${item.area} pd-card--${item.pos}`}
+          data-pd-reveal
+          style={`--pd-delay: ${idx * 55}ms`}
+        >
+          <img
+            src={item.image}
+            alt={item.alt}
+            class="pd-card__img"
+            loading="lazy"
+            decoding="async"
+            data-cms-key={`product.offer.${item.id}.image`}
+          />
+          <div class="pd-card__scrim" aria-hidden="true"></div>
+
+          <div class="pd-card__content">
+            <h3 class="pd-card__title" data-cms-key={`product.offer.${item.id}.title`}>
+              {item.title}
+            </h3>
+            <p class="pd-card__desc" data-cms-key={`product.offer.${item.id}.desc`}>
+              {item.description}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 4. Built around your needs (Light Editorial Grid) -->
+<section class="pd-pillars" id="product-pillars" aria-labelledby="pd-pillars-title">
+  <div class="container">
+    <header class="pd-pillars__header" data-pd-reveal>
+      <p class="adaptif-eyebrow adaptif-eyebrow--light" data-cms-key="product.pillars.eyebrow">
+        Built around your needs
+      </p>
+      <h2 id="pd-pillars-title" class="pd-pillars__title" data-cms-key="product.pillars.title">
+        Why <span class="title-highlight-dark">ambitious teams</span> work with Adaptif
+      </h2>
+    </header>
+
+    <div class="pd-pillars__grid">
+      {pillars.map((pillar, idx) => (
+        <article class="pd-pillar-card" data-pd-reveal style={`--pd-delay: ${idx * 55}ms`}>
+          <div class="pd-pillar-card__icon" aria-hidden="true">
+            {pillar.icon === "impact" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M3 17l6-6 4 4 8-8M17 7h4v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            )}
+            {pillar.icon === "execution" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            )}
+            {pillar.icon === "collaboration" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8" />
+                <path d="M3 19c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                <circle cx="17.5" cy="9.5" r="2.5" stroke="currentColor" stroke-width="1.8" />
+                <path d="M17 14.5c2.2.4 4 1.9 4 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+            )}
+            {pillar.icon === "integrated" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8" />
+                <rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8" />
+                <rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8" />
+                <rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.8" />
+              </svg>
+            )}
+          </div>
+          <h3 class="pd-pillar-card__title" data-cms-key={`product.pillars.${pillar.id}.title`}>
+            {pillar.title}
+          </h3>
+          <p class="pd-pillar-card__desc" data-cms-key={`product.pillars.${pillar.id}.desc`}>
+            {pillar.desc}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* 1. Split Section */
+  .pd-split {
+    position: relative;
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .pd-split__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 60% at 75% 50%, rgba(72, 200, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .pd-split__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+  }
+
+  .pd-split__title {
+    margin: 14px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .pd-split__lead {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.25vw, 1.12rem);
+    line-height: 1.62;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .pd-split__body {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .pd-split__frame {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    aspect-ratio: 4 / 4.2;
+    background: var(--color-void-soft);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .pd-split__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* 2. Results that count (Stats) */
+  .pd-stats {
+    padding: clamp(56px, 7.5vw, 96px) 0;
+    background: var(--color-obsidian-950);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .pd-stats__header {
+    max-width: 720px;
+    margin-bottom: clamp(32px, 4.5vw, 52px);
+  }
+
+  .pd-stats__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 3.8vw, 3.1rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .pd-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 40px);
+    margin: 0;
+  }
+
+  .pd-stats__item {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 28px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .pd-stats__value {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(3rem, 5.2vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-brand-cyan);
+  }
+
+  .pd-stats__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+    max-width: 320px;
+  }
+
+  /* 3. What we deliver (7-card Mosaic) */
+  .pd-offer {
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .pd-offer__header {
+    max-width: 680px;
+    margin-bottom: clamp(36px, 4.5vw, 52px);
+  }
+
+  .pd-offer__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .pd-offer__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.62;
+    color: var(--color-text-secondary);
+  }
+
+  .pd-offer__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .pd-offer--design {
+    grid-column: span 4;
+    min-height: 360px;
+  }
+
+  .pd-offer--prototyping {
+    grid-column: span 4;
+    min-height: 360px;
+  }
+
+  .pd-offer--audit {
+    grid-column: span 4;
+    min-height: 360px;
+  }
+
+  .pd-offer--ux {
+    grid-column: span 4;
+    min-height: 380px;
+  }
+
+  .pd-offer--system {
+    grid-column: span 4;
+    min-height: 380px;
+  }
+
+  .pd-offer--mvp {
+    grid-column: span 4;
+    min-height: 380px;
+  }
+
+  .pd-offer--consulting {
+    grid-column: span 12;
+    min-height: 290px;
+  }
+
+  .pd-offer--consulting .pd-card__img {
+    object-position: center 22%;
+  }
+
+  .pd-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-void-soft);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s ease, border-color 0.35s ease;
+  }
+
+  .pd-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.38);
+  }
+
+  .pd-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pd-card:hover .pd-card__img {
+    transform: scale(1.04);
+  }
+
+  .pd-card__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .pd-card--top {
+    justify-content: flex-start;
+  }
+
+  .pd-card--top .pd-card__scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.9) 0%,
+      rgba(1, 3, 7, 0.58) 48%,
+      rgba(1, 3, 7, 0.18) 100%
+    );
+  }
+
+  .pd-card--bottom {
+    justify-content: flex-end;
+  }
+
+  .pd-card--bottom .pd-card__scrim {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.15) 0%,
+      rgba(1, 3, 7, 0.55) 45%,
+      rgba(1, 3, 7, 0.92) 100%
+    );
+  }
+
+  .pd-card__content {
+    position: relative;
+    z-index: 2;
+    padding: 26px;
+    max-width: 520px;
+  }
+
+  .pd-card__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.2rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: #fff;
+  }
+
+  .pd-card__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* 4. Light Section: Built around your needs */
+  .pd-pillars {
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: #f4f7fb;
+    color: #0f172a;
+  }
+
+  .pd-pillars__header {
+    max-width: 680px;
+    margin-bottom: clamp(32px, 4.5vw, 52px);
+  }
+
+  .adaptif-eyebrow--light {
+    color: #0284c7;
+  }
+
+  .pd-pillars__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+
+  .title-highlight-dark {
+    color: #0284c7;
+  }
+
+  .pd-pillars__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .pd-pillar-card {
+    padding: 28px 24px;
+    border-radius: var(--radius-lg);
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .pd-pillar-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(2, 132, 199, 0.35);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+  }
+
+  .pd-pillar-card__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 132, 199, 0.08);
+    color: #0284c7;
+    margin-bottom: 18px;
+  }
+
+  .pd-pillar-card__title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #0f172a;
+  }
+
+  .pd-pillar-card__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    line-height: 1.58;
+    color: rgba(15, 23, 42, 0.72);
+  }
+
+  @media (max-width: 1024px) {
+    .pd-offer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pd-offer--design,
+    .pd-offer--prototyping,
+    .pd-offer--audit,
+    .pd-offer--ux,
+    .pd-offer--system,
+    .pd-offer--mvp {
+      grid-column: span 1;
+      min-height: 320px;
+    }
+
+    .pd-offer--consulting {
+      grid-column: span 2;
+      min-height: 280px;
+    }
+
+    .pd-pillars__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 820px) {
+    .pd-split__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pd-stats__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .pd-offer__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .pd-offer--design,
+    .pd-offer--prototyping,
+    .pd-offer--audit,
+    .pd-offer--ux,
+    .pd-offer--system,
+    .pd-offer--mvp,
+    .pd-offer--consulting {
+      grid-column: span 1;
+      min-height: 300px;
+    }
+
+    .pd-pillars__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

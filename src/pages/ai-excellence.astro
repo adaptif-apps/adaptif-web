@@ -1,0 +1,180 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import AiExcellenceHero from "../components/AiExcellenceHero.astro";
+import AiExcellenceSolutions from "../components/AiExcellenceSolutions.astro";
+import AiExcellenceProduction from "../components/AiExcellenceProduction.astro";
+import AiExcellenceWorkflows from "../components/AiExcellenceWorkflows.astro";
+import AiExcellenceTeamAndMore from "../components/AiExcellenceTeamAndMore.astro";
+import FaqSection from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+const aiExcellenceFaqs = [
+  {
+    question: "How do I know what budget is right for me?",
+    answer:
+      "We help you match a plan to your monthly deliverable volume and channels—whether you need ongoing campaign production, custom AI brand models, or full-stack creative support.",
+  },
+  {
+    question: "What is the minimum commitment?",
+    answer:
+      "Plans are flexible month-to-month, so you can scale up for launches or pause between cycles without long-term lock-in.",
+  },
+  {
+    question: "How does the onboarding work?",
+    answer:
+      "We immerse ourselves in your brand guidelines, visual assets, tone of voice, and workflow in the first few days so your team starts shipping immediately.",
+  },
+  {
+    question: "Can I pause, upgrade, or downgrade my plan?",
+    answer:
+      "Yes. You can adjust your subscription tier or pause anytime as your roadmap and creative demand evolve.",
+  },
+  {
+    question: "What if my budget isn't fully used?",
+    answer:
+      "Your creative team works continuously on your prioritized queue so you get consistent output and maximum value every month.",
+  },
+  {
+    question: "What’s the typical cost of a design project without Adaptif?",
+    answer:
+      "Traditional agencies and fragmented freelancers often cost 40%+ more per campaign once you factor in studio days, coordination overhead, and revision delays.",
+  },
+  {
+    question: "What exactly is included in my Adaptif subscription?",
+    answer:
+      "Senior creative direction, AI-powered production, brand and performance design, motion/video, copywriting, and human review on every deliverable.",
+  },
+  {
+    question: "How does Adaptif use AI in our projects?",
+    answer:
+      "You choose the exact mix—Full AI, Hybrid, or Human-only. Every AI-assisted deliverable is guided by your brand rules and reviewed by senior creatives.",
+  },
+  {
+    question: "What billing options do you offer?",
+    answer:
+      "Simple predictable monthly billing with transparent scope and zero hidden production markups.",
+  },
+  {
+    question: "What happens if I have more requests than my plan can handle?",
+    answer:
+      "You can queue unlimited requests and we work through them in priority order, or add parallel capacity whenever deadlines spike.",
+  },
+  {
+    question: "What’s included in my subscription, and what’s considered out of scope?",
+    answer:
+      "Over 20 creative, AI production, and web/product services are included. Custom enterprise engineering or third-party media spend is scoped separately if needed.",
+  },
+];
+---
+
+<Layout
+  title="AI Excellence — Adaptif"
+  description="AI is the new creative standard. Adaptif blends senior creative direction with AI-powered workflows for faster output, tighter brand consistency, and zero coordination overhead."
+>
+  <Header />
+  <main>
+    <AiExcellenceHero />
+    <AiExcellenceSolutions />
+    <AiExcellenceProduction />
+    <AiExcellenceWorkflows />
+    <AiExcellenceTeamAndMore />
+    <FaqSection faqs={aiExcellenceFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  /* Shared scroll-reveal system for AI Excellence */
+  :global([data-ai-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--ai-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--ai-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-ai-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-ai-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-ai-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initAiExcellenceAnimations = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-ai-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animateCounter = (el: HTMLElement) => {
+      const target = Number(el.dataset.aiCount || "0");
+      const prefix = el.dataset.aiPrefix || "";
+      const suffix = el.dataset.aiSuffix || "";
+      if (!target || el.dataset.aiCounted === "1") return;
+      el.dataset.aiCounted = "1";
+
+      if (prefersReducedMotion) {
+        el.textContent = `${prefix}${target}${suffix}`;
+        return;
+      }
+
+      const duration = 1000;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = `${prefix}${Math.round(target * eased)}${suffix}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => {
+        el.classList.add("is-visible");
+        el.querySelectorAll<HTMLElement>("[data-ai-count]").forEach(animateCounter);
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          target.classList.add("is-visible");
+          target.querySelectorAll<HTMLElement>("[data-ai-count]").forEach(animateCounter);
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -36px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initAiExcellenceAnimations();
+  document.addEventListener("astro:page-load", initAiExcellenceAnimations);
+</script>

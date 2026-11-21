@@ -1,0 +1,195 @@
+---
+// BrandingAiAndWorkflow.astro - "Brand design at speed, driven by AI" + "Your embedded brand team" (5 steps)
+import ServiceAiBanner from "./ServiceAiBanner.astro";
+
+const aiPillars = [
+  {
+    id: "exploration",
+    title: "Concept exploration",
+    description: "Test raw directions and find the right path sooner with AI.",
+  },
+  {
+    id: "production",
+    title: "Faster production",
+    description: "Compress asset delivery using generative tooling and automated layouts.",
+  },
+  {
+    id: "scale",
+    title: "On-brand at scale",
+    description: "Train tailored AI models that output ready-to-use, on-brand visuals and copy.",
+  },
+];
+
+const steps = [
+  {
+    num: "1",
+    title: "Collaborative kickoff",
+    desc: "Brand workshops get everyone aligned on objectives, market landscape, and creative ambition right out of the gate.",
+  },
+  {
+    num: "2",
+    title: "Strategic direction",
+    desc: "Crafting the messaging, voice, and narrative that anchor your brand’s foundation.",
+  },
+  {
+    num: "3",
+    title: "Visual exploration",
+    desc: "Concepts, moodboards, and look & feel work to broaden or renew your brand’s visual world.",
+  },
+  {
+    num: "4",
+    title: "Execution at scale",
+    desc: "Based on project scope, we hand over brand guidelines, logo, design system, final assets, or whatever else your team requires.",
+  },
+  {
+    num: "5",
+    title: "Ongoing support",
+    desc: "The best part about Adaptif? We’re more than a branding studio. Our creative support reaches well past the branding project, turning guidelines into ads, templates, videos, and complete campaigns.",
+  },
+];
+---
+
+<!-- 1. How Adaptif uses AI -->
+<ServiceAiBanner
+  id="branding-ai"
+  cmsPrefix="branding.ai"
+  titleLead="Brand design at speed,"
+  titleHighlight="driven by AI"
+  lead="Our brand specialists apply AI to shorten early exploration, tighten consistency, and accelerate delivery—never at the expense of original thinking."
+  image="/images/branding/ai-brand-canvas.jpg"
+  items={aiPillars}
+  showCta={true}
+  revealAttr="data-br-reveal"
+/>
+
+<!-- 2. How we work (5-step editorial split) -->
+<section class="br-work" id="branding-workflow" aria-labelledby="br-work-title">
+  <div class="container br-work__grid">
+    <div class="br-work__intro" data-br-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="branding.workflow.eyebrow">
+        How we work
+      </p>
+      <h2 id="br-work-title" class="br-work__title" data-cms-key="branding.workflow.title">
+        Your <span class="title-highlight">embedded brand team</span>, from first call to launch
+      </h2>
+      <p class="br-work__subtitle" data-cms-key="branding.workflow.subtitle">
+        We build alongside your team to shape, evolve, and grow your brand, minus the drag of a traditional agency.
+      </p>
+    </div>
+
+    <ol class="br-work__steps">
+      {steps.map((step, idx) => (
+        <li class="br-step" data-br-reveal style={`--br-delay: ${idx * 65}ms`}>
+          <span class="br-step__num" aria-hidden="true">{step.num}</span>
+          <div class="br-step__body">
+            <h3 class="br-step__title" data-cms-key={`branding.workflow.step${step.num}.title`}>
+              {step.title}
+            </h3>
+            <p class="br-step__desc" data-cms-key={`branding.workflow.step${step.num}.desc`}>
+              {step.desc}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* How we work */
+  .br-work {
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .br-work__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .br-work__intro {
+    position: sticky;
+    top: 112px;
+  }
+
+  .br-work__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.1vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .br-work__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.62;
+    color: var(--color-text-secondary);
+  }
+
+  .br-work__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .br-step {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .br-step:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .br-step__num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    margin-top: 2px;
+  }
+
+  .br-step__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .br-step__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 960px) {
+    .br-work__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .br-work__intro {
+      position: static;
+    }
+  }
+</style>

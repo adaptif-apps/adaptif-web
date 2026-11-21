@@ -1,0 +1,556 @@
+---
+// WebDesignWorkflowAndBottom.astro - "Website workflows, without the drag" (6 steps) + Creative power banner + Related articles
+
+const steps = [
+  {
+    num: "1",
+    title: "Discovery and onboarding",
+    desc: "We get clear together on your brand, audience, content requirements, and site objectives.",
+  },
+  {
+    num: "2",
+    title: "Team assignment",
+    desc: "You receive a dedicated creative team matched to your project, spanning strategists and designers through writers and motion specialists.",
+  },
+  {
+    num: "3",
+    title: "UX and UI design",
+    desc: "An ordered path from wireframes to refined UI, always designed around results.",
+  },
+  {
+    num: "4",
+    title: "Design systems and documentation",
+    desc: "Thorough design systems, component libraries, and documentation that let teams build with confidence.",
+  },
+  {
+    num: "5",
+    title: "Design review and refinement",
+    desc: "We examine layouts, interactions, accessibility, and user experience so every design clears the highest bar.",
+  },
+  {
+    num: "6",
+    title: "Continuous optimization",
+    desc: "Recurring UX audits, CRO recommendations, and design updates as your business expands.",
+  },
+];
+
+const articles = [
+  {
+    id: "art1",
+    category: "Creative Leadership",
+    readTime: "8 min read",
+    title: "6 AI applications that actually save time (with real examples)",
+    excerpt:
+      "Creative teams don’t need more AI hype. They need practical, proven applications and real results.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art2",
+    category: "Design Systems",
+    readTime: "6 min read",
+    title: "How Atomic Design cuts enterprise landing page turnaround in half",
+    excerpt:
+      "Build reusable component libraries that let marketing teams ship on-brand pages in days.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art3",
+    category: "CRO & UX",
+    readTime: "7 min read",
+    title: "Why UX audits unlock immediate conversion lift without a full rebuild",
+    excerpt:
+      "Spot hierarchy friction, form drop-off, and mobile layout leaks before spending on new traffic.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+  {
+    id: "art4",
+    category: "Web Strategy",
+    readTime: "5 min read",
+    title: "Connecting paid media creative directly to high-converting landing pages",
+    excerpt:
+      "Close the message-match gap between social ads and post-click web experiences.",
+    author: "Tessa",
+    role: "Sr. Content Marketing Manager",
+    href: "/blog",
+  },
+];
+---
+
+<!-- 1. Our process (6 steps) -->
+<section class="wd-work" id="web-process" aria-labelledby="wd-work-title">
+  <div class="container wd-work__grid">
+    <div class="wd-work__intro" data-wd-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="webdesign.process.eyebrow">
+        Our process
+      </p>
+      <h2 id="wd-work-title" class="wd-work__title" data-cms-key="webdesign.process.title">
+        Website workflows, <span class="title-highlight">without the drag</span>
+      </h2>
+      <p class="wd-work__subtitle" data-cms-key="webdesign.process.subtitle">
+        No creative guesswork, no needless layers. Just a tested system for scalable, on-brand web design.
+      </p>
+
+      <div class="wd-work__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="webdesign.process.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <ol class="wd-work__steps">
+      {steps.map((step, idx) => (
+        <li class="wd-step" data-wd-reveal style={`--wd-delay: ${idx * 55}ms`}>
+          <span class="wd-step__num" aria-hidden="true">{step.num}</span>
+          <div class="wd-step__body">
+            <h3 class="wd-step__title" data-cms-key={`webdesign.process.step${step.num}.title`}>
+              {step.title}
+            </h3>
+            <p class="wd-step__desc" data-cms-key={`webdesign.process.step${step.num}.desc`}>
+              {step.desc}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<!-- 2. Creative power banner -->
+<section class="wd-power" id="web-creative-power" aria-labelledby="wd-power-title">
+  <div class="wd-power__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/branding/creative-power-mobile.jpg" />
+      <img
+        src="/images/branding/creative-power-desktop.jpg"
+        alt=""
+        class="wd-power__bg"
+        loading="lazy"
+        decoding="async"
+        data-cms-key="webdesign.power.image"
+      />
+    </picture>
+    <div class="wd-power__scrim"></div>
+  </div>
+
+  <div class="container wd-power__container">
+    <div class="wd-power__content" data-wd-reveal>
+      <h2 id="wd-power-title" class="wd-power__title" data-cms-key="webdesign.power.title">
+        Now imagine this <span class="title-highlight">creative power</span> behind your next project
+      </h2>
+      <p class="wd-power__desc" data-cms-key="webdesign.power.desc">
+        This is just one of many creative services—what you do with them is up to you. Let’s chat.
+      </p>
+      <a
+        href="#book-a-call"
+        class="adaptif-btn"
+        data-open-book-call
+        data-cms-key="webdesign.power.cta"
+      >
+        <span>Book a Call</span>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path
+            d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Related articles -->
+<section class="wd-articles" id="web-articles" aria-labelledby="wd-articles-title">
+  <div class="container">
+    <header class="wd-articles__header" data-wd-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="webdesign.articles.eyebrow">
+        Related articles
+      </p>
+      <h2 id="wd-articles-title" class="wd-articles__title" data-cms-key="webdesign.articles.title">
+        Learn how <span class="title-highlight">web design</span> is used in marketing
+      </h2>
+    </header>
+
+    <div class="wd-articles__grid">
+      {articles.map((art, idx) => (
+        <a
+          href={art.href}
+          class="wd-article-card"
+          data-wd-reveal
+          style={`--wd-delay: ${idx * 65}ms`}
+        >
+          <div class="wd-article-card__media">
+            <img
+              src="/images/branding/article-cover.jpg"
+              alt={art.title}
+              class="wd-article-card__img"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <div class="wd-article-card__body">
+            <p class="wd-article-card__meta">
+              <span>{art.category}</span>
+              <span aria-hidden="true">•</span>
+              <span>{art.readTime}</span>
+            </p>
+            <h3 class="wd-article-card__title" data-cms-key={`webdesign.articles.${art.id}.title`}>
+              {art.title}
+            </h3>
+            <p class="wd-article-card__excerpt" data-cms-key={`webdesign.articles.${art.id}.excerpt`}>
+              {art.excerpt}
+            </p>
+
+            <div class="wd-article-card__author">
+              <img
+                src="/images/branding/author-tessa.jpg"
+                alt={art.author}
+                class="wd-article-card__avatar"
+                loading="lazy"
+                decoding="async"
+              />
+              <div>
+                <span class="wd-article-card__author-name">{art.author}</span>
+                <span class="wd-article-card__author-role">{art.role}</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .wd-work {
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .wd-work__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .wd-work__intro {
+    position: sticky;
+    top: 112px;
+  }
+
+  .wd-work__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.1vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .wd-work__subtitle {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.62;
+    color: var(--color-text-secondary);
+  }
+
+  .wd-work__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .wd-step {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .wd-step:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .wd-step__num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    margin-top: 2px;
+  }
+
+  .wd-step__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .wd-step__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Power banner */
+  .wd-power {
+    position: relative;
+    min-height: clamp(380px, 44vw, 520px);
+    display: flex;
+    align-items: center;
+    padding: clamp(64px, 8vw, 100px) 0;
+    overflow: hidden;
+    background: var(--color-void);
+  }
+
+  .wd-power__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .wd-power__media picture {
+    display: contents;
+  }
+
+  .wd-power__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .wd-power__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      rgba(1, 3, 7, 0.9) 0%,
+      rgba(1, 3, 7, 0.65) 48%,
+      rgba(1, 3, 7, 0.14) 100%
+    );
+  }
+
+  .wd-power__container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .wd-power__content {
+    max-width: 560px;
+  }
+
+  .wd-power__title {
+    margin: 0 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.3vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .wd-power__desc {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Related articles */
+  .wd-articles {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .wd-articles__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(36px, 5vw, 52px);
+  }
+
+  .wd-articles__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .wd-articles__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .wd-article-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: rgba(255, 255, 255, 0.025);
+    text-decoration: none;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease;
+  }
+
+  .wd-article-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .wd-article-card__media {
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+  }
+
+  .wd-article-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.55s ease;
+  }
+
+  .wd-article-card:hover .wd-article-card__img {
+    transform: scale(1.04);
+  }
+
+  .wd-article-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 18px;
+  }
+
+  .wd-article-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-brand-cyan);
+  }
+
+  .wd-article-card__title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .wd-article-card__excerpt {
+    margin: 0 0 18px;
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+
+  .wd-article-card__author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wd-article-card__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .wd-article-card__author-name {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .wd-article-card__author-role {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.7rem;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 1100px) {
+    .wd-articles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 960px) {
+    .wd-work__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .wd-work__intro {
+      position: static;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .wd-power__scrim {
+      background: linear-gradient(180deg, rgba(1, 3, 7, 0.86) 0%, rgba(1, 3, 7, 0.65) 55%, rgba(1, 3, 7, 0.9) 100%);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .wd-articles__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

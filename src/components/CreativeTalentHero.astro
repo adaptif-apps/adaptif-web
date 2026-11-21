@@ -1,0 +1,142 @@
+---
+// CreativeTalentHero.astro - Section 1: Hero (Our people)
+---
+
+<section class="ct-hero" id="our-people" aria-labelledby="ct-hero-title">
+  <div class="ct-hero__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/our-creative-talent/our-people-mobile.jpg" />
+      <img
+        src="/images/our-creative-talent/our-people-desktop.jpg"
+        alt=""
+        class="ct-hero__bg-img"
+        loading="eager"
+        decoding="async"
+      />
+    </picture>
+    <div class="ct-hero__scrim"></div>
+    <div class="ct-hero__bottom-fade"></div>
+  </div>
+
+  <div class="container ct-hero__container">
+    <div class="ct-hero__content">
+      <p class="adaptif-eyebrow" data-ct-reveal style="--ct-delay: 40ms">Our people</p>
+
+      <h1 id="ct-hero-title" class="ct-hero__title" data-ct-reveal style="--ct-delay: 120ms">
+        Scale your brand with a
+        <span class="title-highlight">senior creative team</span>
+        without adding headcount
+      </h1>
+
+      <p class="ct-hero__description" data-ct-reveal style="--ct-delay: 200ms">
+        Our team is our unfair advantage. Adaptif Lab brings together designers, strategists, product thinkers, motion specialists, copywriters and technologists so you can ship high-impact work without the pains of hiring, onboarding, and managing another in-house team.
+      </p>
+
+      <div class="ct-hero__actions" data-ct-reveal style="--ct-delay: 280ms">
+        <a href="#book-a-call" class="adaptif-btn" data-open-book-call>
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ct-hero {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    padding: clamp(110px, 14vh, 160px) 0 clamp(72px, 10vh, 110px);
+    overflow: hidden;
+    background-color: var(--color-void);
+  }
+
+  .ct-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .ct-hero__media picture {
+    display: contents;
+  }
+
+  .ct-hero__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+    opacity: 0.92;
+  }
+
+  .ct-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(1, 3, 7, 0.78) 0%, rgba(1, 3, 7, 0.42) 48%, rgba(1, 3, 7, 0.05) 100%),
+      radial-gradient(ellipse 65% 55% at 22% 45%, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+  }
+
+  .ct-hero__bottom-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 160px;
+    background: linear-gradient(180deg, transparent 0%, var(--color-void) 100%);
+  }
+
+  .ct-hero__container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .ct-hero__content {
+    max-width: 660px;
+  }
+
+  .ct-hero__title {
+    margin: 18px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.85rem, 5.4vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .ct-hero__description {
+    max-width: 560px;
+    margin: 0 0 34px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.2vw, 1.125rem);
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .ct-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .ct-hero__scrim {
+      background:
+        linear-gradient(180deg, rgba(1, 3, 7, 0.72) 0%, rgba(1, 3, 7, 0.9) 55%, var(--color-void) 100%);
+    }
+  }
+</style>

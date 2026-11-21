@@ -1,0 +1,449 @@
+---
+// AdCreativeOfferAndChannels.astro - "What we offer" (8-card mosaic) + "Built for every channel" (light 3x2 grid)
+
+const offers = [
+  {
+    id: "static",
+    title: "Static design",
+    description: "Bold, attention-grabbing assets for social, digital, and print.",
+    image: "/images/ad-creative/offer-static.jpg",
+    alt: "Static mobile ad creative",
+    area: "ac-offer--static",
+    pos: "bottom",
+  },
+  {
+    id: "localization",
+    title: "Localization & Translation",
+    description: "Adapted creative for local markets that connects globally without losing its essence.",
+    image: "/images/ad-creative/offer-localization.jpg",
+    alt: "Multilingual localized ad creative",
+    area: "ac-offer--localization",
+    pos: "top",
+  },
+  {
+    id: "strategy",
+    title: "Marketing strategy",
+    description: "Campaign direction, messaging, and insights that sharpen performance and connect creative to business goals.",
+    image: "/images/ad-creative/offer-strategy.jpg",
+    alt: "Data-driven campaign strategy",
+    area: "ac-offer--strategy",
+    pos: "top",
+  },
+  {
+    id: "motion",
+    title: "Motion graphics",
+    description: "Engaging motion work for web, social, and mobile channels.",
+    image: "/images/ad-creative/offer-motion.jpg",
+    alt: "Motion graphics editing workspace",
+    area: "ac-offer--motion",
+    pos: "top",
+  },
+  {
+    id: "illustration",
+    title: "Illustration",
+    description: "Distinctive brand-led illustrations that make your message more memorable.",
+    image: "/images/ad-creative/offer-illustration.jpg",
+    alt: "Custom brand character illustration",
+    area: "ac-offer--illustration",
+    pos: "top",
+  },
+  {
+    id: "concepting",
+    title: "Concepting",
+    description: "Big ideas and campaign platforms that work across formats.",
+    image: "/images/ad-creative/offer-concepting.jpg",
+    alt: "3D megaphone campaign concepting",
+    area: "ac-offer--concepting",
+    pos: "top",
+  },
+  {
+    id: "landing",
+    title: "Landing pages",
+    description: "High-performing landing pages designed to support paid media and campaigns.",
+    image: "/images/ad-creative/offer-landing.jpg",
+    alt: "Conversion-focused campaign landing page",
+    area: "ac-offer--landing",
+    pos: "bottom",
+  },
+  {
+    id: "video",
+    title: "Video production",
+    description: "End-to-end editing, animation, and production for ads, launches, and standout brand stories.",
+    image: "/images/ad-creative/offer-video.jpg",
+    alt: "Multi-track video ad production timeline",
+    area: "ac-offer--video",
+    pos: "bottom",
+  },
+];
+
+const channels = [
+  {
+    id: "digital",
+    title: "Digital",
+    desc: "Results-driven creative for search, programmatic, display, and video placements.",
+    icon: "digital",
+  },
+  {
+    id: "social",
+    title: "Social media",
+    desc: "Native-format design and video for Meta, TikTok, LinkedIn, and beyond.",
+    icon: "social",
+  },
+  {
+    id: "streaming",
+    title: "Streaming platforms",
+    desc: "Short- and long-form video made for CTV, YouTube, and streaming audiences.",
+    icon: "streaming",
+  },
+  {
+    id: "display",
+    title: "Display",
+    desc: "Static, animated, and rich-media units built to earn attention and action.",
+    icon: "display",
+  },
+  {
+    id: "print",
+    title: "Print",
+    desc: "Striking layouts for direct mail, magazines, inserts, flyers, and more.",
+    icon: "print",
+  },
+  {
+    id: "ooh",
+    title: "Out of home",
+    desc: "High-visibility creative for billboards, transit, and street-level formats.",
+    icon: "ooh",
+  },
+];
+---
+
+<!-- 1. What we offer -->
+<section class="ac-offer" id="ad-offer" aria-labelledby="ac-offer-title">
+  <div class="container">
+    <header class="ac-offer__header" data-ac-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="adcreative.offer.eyebrow">
+        What we offer
+      </p>
+      <h2 id="ac-offer-title" class="ac-offer__title" data-cms-key="adcreative.offer.title">
+        Ad creative services <span class="title-highlight">built to grow</span>
+      </h2>
+      <p class="ac-offer__subtitle" data-cms-key="adcreative.offer.subtitle">
+        From bold campaign thinking to polished video edits, we bring the creative firepower to keep your brand current, distinctive, and consistent across every platform and campaign.
+      </p>
+    </header>
+
+    <div class="ac-offer__mosaic">
+      {offers.map((item, idx) => (
+        <article
+          class={`ac-offer-card ${item.area} ac-offer-card--${item.pos}`}
+          data-ac-reveal
+          style={`--ac-delay: ${Math.min(idx * 45, 240)}ms`}
+        >
+          <img
+            src={item.image}
+            alt={item.alt}
+            class="ac-offer-card__img"
+            loading="lazy"
+            decoding="async"
+            data-cms-key={`adcreative.offer.${item.id}.image`}
+          />
+          <div class={`ac-offer-card__scrim ac-offer-card__scrim--${item.pos}`} aria-hidden="true"></div>
+          <div class="ac-offer-card__content">
+            <h3 class="ac-offer-card__title" data-cms-key={`adcreative.offer.${item.id}.title`}>
+              {item.title}
+            </h3>
+            <p class="ac-offer-card__desc" data-cms-key={`adcreative.offer.${item.id}.desc`}>
+              {item.description}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 2. Built for every channel (Light 3x2 grid) -->
+<section class="ac-channels" id="ad-channels" data-theme="light" aria-labelledby="ac-channels-title">
+  <div class="container">
+    <header class="ac-channels__header" data-ac-reveal>
+      <p class="adaptif-eyebrow adaptif-eyebrow--light" data-cms-key="adcreative.channels.eyebrow">
+        Built for every channel
+      </p>
+      <h2 id="ac-channels-title" class="ac-channels__title" data-cms-key="adcreative.channels.title">
+        Creative that performs <span class="title-highlight">where it matters</span>
+      </h2>
+    </header>
+
+    <div class="ac-channels__grid">
+      {channels.map((ch, idx) => (
+        <article class="ac-channel-item" data-ac-reveal style={`--ac-delay: ${idx * 55}ms`}>
+          <div class="ac-channel-item__icon" aria-hidden="true">
+            {ch.icon === "digital" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            )}
+            {ch.icon === "social" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                <line x1="12" y1="18" x2="12.01" y2="18" />
+              </svg>
+            )}
+            {ch.icon === "streaming" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            )}
+            {ch.icon === "display" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+            )}
+            {ch.icon === "print" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+            )}
+            {ch.icon === "ooh" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg>
+            )}
+          </div>
+          <h3 class="ac-channel-item__title" data-cms-key={`adcreative.channels.${ch.id}.title`}>
+            {ch.title}
+          </h3>
+          <p class="ac-channel-item__desc" data-cms-key={`adcreative.channels.${ch.id}.desc`}>
+            {ch.desc}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ac-offer {
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .ac-offer__header {
+    text-align: center;
+    max-width: 740px;
+    margin: 0 auto clamp(36px, 5vw, 56px);
+  }
+
+  .ac-offer__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .ac-offer__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .ac-offer__mosaic {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(270px, auto);
+    gap: 18px;
+  }
+
+  .ac-offer-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-obsidian-950);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+
+  .ac-offer-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.36);
+  }
+
+  .ac-offer-card--top { justify-content: flex-start; }
+  .ac-offer-card--bottom { justify-content: flex-end; }
+
+  .ac-offer--static { grid-column: 1 / span 4; grid-row: 1 / span 2; min-height: 550px; }
+  .ac-offer--localization { grid-column: 5 / span 4; grid-row: 1; min-height: 270px; }
+  .ac-offer--strategy { grid-column: 9 / span 4; grid-row: 1; min-height: 270px; }
+  .ac-offer--motion { grid-column: 5 / span 4; grid-row: 2; min-height: 270px; }
+  .ac-offer--illustration { grid-column: 9 / span 4; grid-row: 2; min-height: 270px; }
+  .ac-offer--concepting { grid-column: 1 / span 3; grid-row: 3; min-height: 310px; }
+  .ac-offer--landing { grid-column: 4 / span 3; grid-row: 3; min-height: 310px; }
+  .ac-offer--video { grid-column: 7 / span 6; grid-row: 3; min-height: 310px; }
+
+  .ac-offer-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .ac-offer-card:hover .ac-offer-card__img {
+    transform: scale(1.03);
+  }
+
+  .ac-offer-card__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .ac-offer-card__scrim--top {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.9) 0%,
+      rgba(1, 3, 7, 0.48) 48%,
+      rgba(1, 3, 7, 0.22) 100%
+    );
+  }
+
+  .ac-offer-card__scrim--bottom {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.1) 0%,
+      rgba(1, 3, 7, 0.46) 52%,
+      rgba(1, 3, 7, 0.92) 100%
+    );
+  }
+
+  .ac-offer-card__content {
+    position: relative;
+    z-index: 2;
+    padding: clamp(20px, 2.2vw, 26px);
+  }
+
+  .ac-offer-card__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.1rem, 1.28vw, 1.25rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+  }
+
+  .ac-offer-card__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: rgba(241, 245, 249, 0.84);
+  }
+
+  /* Channels (Light) */
+  .ac-channels {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: #ffffff;
+    color: #090d16;
+  }
+
+  .ac-channels__header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+
+  .ac-channels__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #090d16;
+  }
+
+  .ac-channels__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 40px;
+  }
+
+  .ac-channel-item {
+    padding-top: 24px;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+  }
+
+  .ac-channel-item__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 132, 199, 0.08);
+    border: 1px solid rgba(2, 132, 199, 0.22);
+    color: #0284c7;
+    margin-bottom: 14px;
+  }
+
+  .ac-channel-item__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #090d16;
+  }
+
+  .ac-channel-item__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.58;
+    color: #475569;
+  }
+
+  @media (max-width: 1024px) {
+    .ac-offer__mosaic {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: auto;
+    }
+
+    .ac-offer--static,
+    .ac-offer--localization,
+    .ac-offer--strategy,
+    .ac-offer--motion,
+    .ac-offer--illustration,
+    .ac-offer--concepting,
+    .ac-offer--landing,
+    .ac-offer--video {
+      grid-column: auto;
+      grid-row: auto;
+      min-height: 280px;
+    }
+
+    .ac-channels__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .ac-offer__mosaic,
+    .ac-channels__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

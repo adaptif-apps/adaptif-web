@@ -1,0 +1,511 @@
+---
+// AuditFocusesAndBrandDeepDive.astro
+// Sections: "The three focuses" (interactive selector) + "For brands that say" (Brand & Conversion deep-dive)
+
+interface FocusOption {
+  id: string;
+  quote: string;
+  label: string;
+  forYou: string[];
+  notForYou: string[];
+}
+
+const focuses: FocusOption[] = [
+  {
+    id: "email-retention",
+    quote: "“People buy once and we never see them again.”",
+    label: "Email & Retention →",
+    forYou: [
+      "You sell on Shopify (or similar) and your customers can buy more than once.",
+      "Klaviyo (or another ESP) is connected, but you're not sure it's actually working for you.",
+      "Customers buy once and you rarely see them again.",
+      "You're doing around $20k–$300k a month and have 1,000+ contacts.",
+      "Most of your email revenue comes from launches and discount campaigns, not automated flows.",
+    ],
+    notForYou: [
+      "You don't have a list yet, or fewer than 50 orders a month.",
+      "You need someone to build the flows this week, that's an implementation project.",
+    ],
+  },
+  {
+    id: "website-funnel",
+    quote: "“We get traffic, but it doesn't turn into sales.”",
+    label: "Website & Funnel →",
+    forYou: [
+      "You're already paying to bring people in through ads, influencers or content.",
+      "People browse, add to cart or land on a PDP, and then leave.",
+      "You're thinking about a redesign but don't know what actually needs to change.",
+      "Your site gets 2,000+ sessions a month, but sales don't match the traffic.",
+      "Mobile feels clunky and you know it.",
+    ],
+    notForYou: [
+      "Your site isn't live yet or gets almost no traffic.",
+      "You already know exactly what to fix and just need it built.",
+    ],
+  },
+  {
+    id: "brand-conversion",
+    quote: "“Our product is better than our brand makes it look.”",
+    label: "Brand & Conversion →",
+    forYou: [
+      "Your product is better than your brand makes it look.",
+      "Your brand looks different on the site, social, ads and email.",
+      "You're about to scale paid media, enter a new market, raise prices or pitch retail.",
+      "You charge premium prices, but your presentation reads mid-market.",
+      "Customers can't explain why they'd choose you over a competitor.",
+    ],
+    notForYou: [
+      "You're pre-launch and need a brand built from zero.",
+      "You want a new logo, not a diagnosis of why the brand isn't converting.",
+    ],
+  },
+];
+
+const brandQuotes = [
+  "“Our product is good, but the brand doesn't feel as strong as it should.”",
+  "“We look like everyone else.”",
+  "“We're not communicating why anyone should choose us.”",
+  "“The brand looks different on the site, social, ads and email.”",
+];
+
+const nextTags = [
+  "Brand strategy",
+  "Positioning and messaging",
+  "Visual identity",
+  "Logo and brand system",
+  "Brand guidelines",
+  "Campaign toolkit",
+  "Design system for web, email and paid media",
+];
+
+const reviewItems = [
+  "Perceived positioning.",
+  "Clarity of the value proposition.",
+  "Visible differentiation against competitors.",
+  "Key messages and verbal hierarchy.",
+  "Tone of voice and consistency of communication.",
+  "Visual system: identity, colour, type, imagery and creative direction.",
+  "Coherence across site, email, social, ads and other touchpoints.",
+  "Perception of value, quality and trust.",
+  "Gaps between the real product, the intended audience and how the brand presents itself.",
+  "Prioritised brand evolution recommendations.",
+];
+---
+
+<!-- The Three Focuses -->
+<section class="au-focuses" id="audit-focuses" aria-labelledby="au-focuses-title">
+  <div class="container">
+    <div class="au-focuses__header" data-audit-reveal>
+      <p class="adaptif-eyebrow">THE THREE FOCUSES</p>
+      <h2 id="au-focuses-title" class="au-section-title">
+        Choose the focus that{" "}
+        <span class="title-highlight">matches your bottleneck.</span>
+      </h2>
+    </div>
+
+    <div class="au-focus-tabs" role="tablist" aria-label="Audit focuses" data-audit-reveal style="--au-delay: 80ms">
+      {focuses.map((focus, idx) => (
+        <button
+          type="button"
+          role="tab"
+          aria-selected={idx === 0 ? "true" : "false"}
+          class:list={["au-focus-tab", { "is-active": idx === 0 }]}
+          data-focus-tab={focus.id}
+        >
+          <span class="au-focus-tab__quote">{focus.quote}</span>
+          <span class="au-focus-tab__label">{focus.label}</span>
+        </button>
+      ))}
+    </div>
+
+    <div class="glass-panel au-focus-panel" data-audit-reveal style="--au-delay: 140ms">
+      {focuses.map((focus, idx) => (
+        <div
+          class:list={["au-focus-detail", { "is-active": idx === 0 }]}
+          data-focus-panel={focus.id}
+          hidden={idx !== 0}
+        >
+          <div class="au-focus-detail__block">
+            <h3 class="au-focus-detail__heading">This audit is for you if…</h3>
+            <ul class="au-focus-detail__list au-focus-detail__list--yes">
+              {focus.forYou.map((line) => (
+                <li>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div class="au-focus-detail__divider"></div>
+
+          <div class="au-focus-detail__block">
+            <h3 class="au-focus-detail__heading au-focus-detail__heading--muted">It’s not for you if…</h3>
+            <ul class="au-focus-detail__list au-focus-detail__list--no">
+              {focus.notForYou.map((line) => (
+                <li>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M4.5 4.5L11.5 11.5M11.5 4.5L4.5 11.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  </svg>
+                  <span>{line}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- For Brands That Say (Open Editorial Split) -->
+<section class="au-brand-deep" id="audit-brand-deep" aria-labelledby="au-brand-deep-title">
+  <div class="container">
+    <div class="au-brand-deep__grid">
+      <!-- Left Column -->
+      <div class="au-brand-deep__left" data-audit-reveal>
+        <p class="adaptif-eyebrow">FOR BRANDS THAT SAY</p>
+        <h2 id="au-brand-deep-title" class="au-brand-deep__lead-quote">
+          {brandQuotes[0]}
+        </h2>
+
+        <div class="au-brand-deep__quotes">
+          {brandQuotes.slice(1).map((q) => (
+            <p class="au-brand-deep__subquote">{q}</p>
+          ))}
+        </div>
+
+        <div class="au-brand-deep__outcome">
+          <p class="adaptif-eyebrow">THE OUTCOME</p>
+          <p class="au-brand-deep__outcome-text">
+            Clarity on why the brand may be reading generic, inconsistent or less premium than it is, and which changes would move perception and conversion most.
+          </p>
+        </div>
+
+        <div class="au-brand-deep__next">
+          <p class="adaptif-eyebrow">WHAT USUALLY COMES NEXT</p>
+          <div class="au-brand-deep__tags">
+            {nextTags.map((tag) => (
+              <span class="adaptif-tag adaptif-tag--cyan">{tag}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="au-brand-deep__right" data-audit-reveal style="--au-delay: 110ms">
+        <p class="adaptif-eyebrow">WHAT WE REVIEW</p>
+        <ol class="au-review-list" data-audit-stagger>
+          {reviewItems.map((item, idx) => (
+            <li class="au-review-list__item">
+              <span class="au-review-list__num">{String(idx + 1).padStart(2, "0")}</span>
+              <span class="au-review-list__text">{item}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const initAuditFocuses = () => {
+    const root = document.getElementById("audit-focuses");
+    if (!root || root.dataset.auFocusInit === "1") return;
+    root.dataset.auFocusInit = "1";
+
+    const tabs = root.querySelectorAll("[data-focus-tab]");
+    const panels = root.querySelectorAll("[data-focus-panel]");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const id = tab.getAttribute("data-focus-tab");
+        tabs.forEach((t) => {
+          const active = t === tab;
+          t.classList.toggle("is-active", active);
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panels.forEach((panel) => {
+          const match = panel.getAttribute("data-focus-panel") === id;
+          panel.classList.toggle("is-active", match);
+          if (match) {
+            panel.removeAttribute("hidden");
+            panel.classList.remove("au-panel-enter");
+            void panel.offsetWidth;
+            panel.classList.add("au-panel-enter");
+          } else {
+            panel.setAttribute("hidden", "");
+          }
+        });
+      });
+    });
+  };
+
+  initAuditFocuses();
+  document.addEventListener("astro:page-load", initAuditFocuses);
+</script>
+
+<style>
+  .au-focuses {
+    padding: clamp(56px, 8vh, 96px) 0;
+    background-color: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-focuses__header {
+    max-width: 720px;
+    margin-bottom: 32px;
+  }
+
+  .au-section-title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 4.2vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .au-focus-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .au-focus-tab {
+    appearance: none;
+    text-align: left;
+    padding: 20px 22px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(8, 18, 44, 0.42);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    transition: all var(--duration-fast) var(--ease-spring);
+  }
+
+  .au-focus-tab:hover {
+    border-color: rgba(72, 200, 255, 0.35);
+    background: rgba(8, 18, 44, 0.7);
+  }
+
+  .au-focus-tab.is-active {
+    background: rgba(14, 28, 66, 0.78);
+    border-color: rgba(72, 200, 255, 0.6);
+    box-shadow: 0 0 28px -8px rgba(72, 200, 255, 0.42);
+  }
+
+  .au-focus-tab__quote {
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--color-text-primary);
+  }
+
+  .au-focus-tab__label {
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--color-brand-cyan);
+    white-space: nowrap;
+  }
+
+  .au-focus-panel {
+    border-radius: 18px;
+    padding: clamp(24px, 3vw, 34px);
+  }
+
+  .au-focus-detail.is-active {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) 1px minmax(0, 0.85fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .au-focus-detail__heading {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .au-focus-detail__heading--muted {
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .au-focus-detail__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .au-focus-detail__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+
+  .au-focus-detail__list--yes svg {
+    color: var(--color-brand-cyan);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .au-focus-detail__list--no svg {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .au-focus-detail__divider {
+    width: 1px;
+    height: 100%;
+    min-height: 180px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 0;
+  }
+
+  /* For brands that say */
+  .au-brand-deep {
+    padding: clamp(56px, 8vh, 96px) 0;
+    background-color: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-brand-deep__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .au-brand-deep__left {
+    position: sticky;
+    top: 112px;
+  }
+
+  .au-brand-deep__lead-quote {
+    margin: 14px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(1.95rem, 3.2vw, 2.7rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .au-brand-deep__quotes {
+    border-left: 2px solid rgba(72, 200, 255, 0.35);
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .au-brand-deep__subquote {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .au-brand-deep__outcome {
+    padding: 22px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 24px;
+  }
+
+  .au-brand-deep__outcome-text {
+    margin: 10px 0 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+  }
+
+  .au-brand-deep__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .au-brand-deep__tags .adaptif-tag {
+    white-space: nowrap;
+  }
+
+  /* What we review list */
+  .au-review-list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-review-list__item {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 14px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-review-list__num {
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--color-brand-cyan);
+  }
+
+  .au-review-list__text {
+    font-family: var(--font-family-body);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+  }
+
+  @media (max-width: 900px) {
+    .au-focus-tabs,
+    .au-focus-detail.is-active,
+    .au-brand-deep__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .au-focus-detail__divider {
+      width: 100%;
+      height: 1px;
+      min-height: 0;
+      margin: 4px 0;
+    }
+
+    .au-brand-deep__left {
+      position: static;
+    }
+  }
+</style>

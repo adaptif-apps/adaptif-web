@@ -1,0 +1,138 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import ServicesHero from "../components/ServicesHero.astro";
+import BrandLogos from "../components/BrandLogos.astro";
+import ServicesIntro from "../components/ServicesIntro.astro";
+import ServicesCatalog from "../components/ServicesCatalog.astro";
+import OurDifference from "../components/OurDifference.astro";
+import ServicesSocialProof from "../components/ServicesSocialProof.astro";
+import OurWorkGrid from "../components/OurWorkGrid.astro";
+import ServicesValueAndMetrics from "../components/ServicesValueAndMetrics.astro";
+import FaqSection from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+import { listProjects } from "../lib/portfolioDb";
+
+export const prerender = false;
+
+if (Astro.url.searchParams.get("edit") !== "1") {
+  Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+}
+
+const homeProjects = await listProjects({ onlyHome: true });
+---
+
+<Layout
+  title="Creative & Design Services — Adaptif"
+  description="Design services for ambitious brands. Access graphic design, print, motion, video, AI-enhanced creative, and marketing strategy through a transparent subscription model."
+>
+  <Header />
+  <main>
+    <ServicesHero />
+    <BrandLogos />
+    <ServicesIntro />
+    <ServicesCatalog />
+    <OurDifference />
+    <ServicesSocialProof />
+    <OurWorkGrid projects={homeProjects} />
+    <ServicesValueAndMetrics />
+    <FaqSection />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  /* Shared scroll-reveal system for /services */
+  :global([data-sv-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--sv-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--sv-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-sv-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-sv-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-sv-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initServicesPage = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-sv-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animateCounter = (el: HTMLElement) => {
+      const target = Number(el.dataset.svCount || "0");
+      const decimals = Number(el.dataset.svDecimals || "0");
+      const suffix = el.dataset.svSuffix || "";
+      if (!target || el.dataset.svCounted === "1") return;
+      el.dataset.svCounted = "1";
+
+      const formatVal = (val: number) =>
+        decimals > 0 ? val.toFixed(decimals) : String(Math.round(val));
+
+      if (prefersReducedMotion) {
+        el.textContent = `${formatVal(target)}${suffix}`;
+        return;
+      }
+
+      const duration = 950;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = `${formatVal(target * eased)}${suffix}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => {
+        el.classList.add("is-visible");
+        el.querySelectorAll<HTMLElement>("[data-sv-count]").forEach(animateCounter);
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          target.classList.add("is-visible");
+          target.querySelectorAll<HTMLElement>("[data-sv-count]").forEach(animateCounter);
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.01, rootMargin: "100px 0px 100px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initServicesPage();
+  document.addEventListener("astro:page-load", initServicesPage);
+</script>

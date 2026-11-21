@@ -1,0 +1,1314 @@
+---
+// AuditDeliverablePreview.astro - Interactive "See the deliverable before you buy it" preview
+// Supports 5 brand types and 5 deliverable tabs matching the exact PDF reference.
+
+interface ScorecardRow {
+  area: string;
+  note: string;
+  level: "Critical" | "Weak" | "Acceptable" | "Solid" | "Advanced";
+}
+
+interface OpportunityItem {
+  priority: string;
+  window: string;
+  title: string;
+  impact: "High" | "Medium";
+  effort: "Low" | "Medium" | "High";
+}
+
+interface RoadmapColumn {
+  number: string;
+  label: string;
+  items: string[];
+}
+
+interface BrandSample {
+  id: string;
+  pill: string;
+  brandName: string;
+  meta: string;
+  dashboardSlug: string;
+  dashboardFocus: string;
+  scorecard: ScorecardRow[];
+  finding: {
+    leakTitle: string;
+    leakDesc: string;
+    recTitle: string;
+    recDesc: string;
+  };
+  opportunities: OpportunityItem[];
+  roadmap: RoadmapColumn[];
+  dashboard: {
+    kpis: { value: string; label: string }[];
+    miniRows: { area: string; level: ScorecardRow["level"] }[];
+  };
+}
+
+const brandSamples: BrandSample[] = [
+  {
+    id: "coffee",
+    pill: "Coffee & specialty food",
+    brandName: "Nordwell Coffee Co.",
+    meta: "Illustrative example · $28k/mo · low ticket, high repeat",
+    dashboardSlug: "audit.adaptiflab.com / nordwell-coffee-co",
+    dashboardFocus: "Nordwell Coffee Co. — Email & Retention",
+    scorecard: [
+      { area: "Lead capture", note: "One 10% popup for every visitor, no origin segmenting.", level: "Weak" },
+      { area: "Abandonment", note: "No cart or checkout abandonment flow running at all.", level: "Acceptable" },
+      { area: "Post purchase & repeat", note: "Thank-you email only. Nothing tied to when the bag runs out.", level: "Acceptable" },
+      { area: "Winback", note: "Buyers from 6+ months ago never hear from you again.", level: "Critical" },
+      { area: "Homepage & value prop", note: "Origin story is on the About page, not where people decide.", level: "Critical" },
+      { area: "Mobile & checkout", note: "Checkout is clean and fast on mobile.", level: "Solid" },
+      { area: "Brand clarity", note: "Packaging voice is strong; the site doesn't carry it.", level: "Weak" },
+    ],
+    finding: {
+      leakTitle: "No replenishment flow, the bag runs out and nobody reminds them",
+      leakDesc:
+        "Average bag lasts about three weeks, and 41% of first-time buyers never place a second order. There is no timed reminder tied to consumption, so repeat purchase depends on the customer remembering you on their own.",
+      recTitle: "A consumption-timed replenishment sequence",
+      recDesc:
+        "Trigger at day 16 from delivery, segmented by grind and bag size, with one-tap reorder. Pair it with a subscribe-and-save nudge on the second order rather than the first.",
+    },
+    opportunities: [
+      { priority: "Priority 1", window: "First 30 days", title: "Build the replenishment flow, segmented by bag size", impact: "High", effort: "Medium" },
+      { priority: "Priority 2", window: "First 30 days", title: "Cart and checkout abandonment, three emails each", impact: "High", effort: "Low" },
+      { priority: "Priority 3", window: "Days 30–60", title: "Winback for buyers inactive 120+ days", impact: "Medium", effort: "Low" },
+      { priority: "Priority 4", window: "Days 60–90", title: "Move origin and roast story above the fold", impact: "Medium", effort: "Medium" },
+    ],
+    roadmap: [
+      {
+        number: "30",
+        label: "First 30 days",
+        items: [
+          "Cart and checkout abandonment live",
+          "Replenishment flow v1 shipped",
+          "Popup segmented by first product viewed",
+        ],
+      },
+      {
+        number: "60",
+        label: "Days 30–60",
+        items: [
+          "Winback flow for 120+ day buyers",
+          "Post-purchase brew guide & 2nd-order nudge",
+          "Welcome flow split by roast preference",
+        ],
+      },
+      {
+        number: "90",
+        label: "Days 60–90",
+        items: [
+          "Origin & roast story above homepage fold",
+          "Packaging-to-PDP visual & voice alignment",
+          "Subscription upgrade trigger after order 2",
+        ],
+      },
+    ],
+    dashboard: {
+      kpis: [
+        { value: "41%", label: "First-time buyers who never reorder" },
+        { value: "7", label: "Leaks found" },
+        { value: "3", label: "Quick wins for week one" },
+      ],
+      miniRows: [
+        { area: "Lead capture", level: "Weak" },
+        { area: "Abandonment", level: "Critical" },
+        { area: "Post purchase & repeat", level: "Weak" },
+        { area: "Winback", level: "Critical" },
+      ],
+    },
+  },
+  {
+    id: "skincare",
+    pill: "Skincare DTC",
+    brandName: "Vespera Botanicals",
+    meta: "Illustrative example · $65k/mo · routine-based, high LTV",
+    dashboardSlug: "audit.adaptiflab.com / vespera-botanicals",
+    dashboardFocus: "Vespera Botanicals — Website & Funnel",
+    scorecard: [
+      { area: "Above-the-fold clarity", note: "Hero headline speaks to lifestyle, not the skin problem solved.", level: "Weak" },
+      { area: "PDP hierarchy", note: "Ingredients and clinical proof sit below three folds of reviews.", level: "Critical" },
+      { area: "Routine bundling", note: "Single-SKU focus; no AM/PM regimen builder on PDP.", level: "Weak" },
+      { area: "Mobile speed & UX", note: "Sticky ATC overlaps variant selector on 375px viewports.", level: "Critical" },
+      { area: "Quiz & capture", note: "Skin quiz converts at 38% but sends generic welcome series.", level: "Acceptable" },
+      { area: "Checkout friction", note: "Express checkout and Shop Pay work cleanly.", level: "Solid" },
+      { area: "Visual consistency", note: "Ad creative looks clinical; PDP reads soft and editorial.", level: "Weak" },
+    ],
+    finding: {
+      leakTitle: "Paid traffic lands on PDPs with zero routine or proof above the fold",
+      leakDesc:
+        "Meta ads promise barrier repair in 14 days, but the PDP opens with poetic copy and hides clinical percentages beneath a 12-card review carousel. Mobile bounce rate on paid clicks sits at 64%.",
+      recTitle: "Align paid hook to PDP proof block & sticky variant bar",
+      recDesc:
+        "Lead the PDP with a 3-bullet clinical outcome summary, move ingredient proof directly under the buy box, and add a 2-step routine pairing upsell inside the slide cart.",
+    },
+    opportunities: [
+      { priority: "Priority 1", window: "First 30 days", title: "Restructure PDP buy-box and clinical proof hierarchy", impact: "High", effort: "Low" },
+      { priority: "Priority 2", window: "First 30 days", title: "Fix mobile sticky ATC overlap and variant clarity", impact: "High", effort: "Low" },
+      { priority: "Priority 3", window: "Days 30–60", title: "Add 2-step routine bundle inside slide cart", impact: "High", effort: "Medium" },
+      { priority: "Priority 4", window: "Days 60–90", title: "Segment post-quiz welcome flow by skin concern", impact: "Medium", effort: "Medium" },
+    ],
+    roadmap: [
+      {
+        number: "30",
+        label: "First 30 days",
+        items: [
+          "PDP clinical proof & outcome summary live",
+          "Mobile sticky ATC & variant selector fixed",
+          "Ad-to-PDP headline parity on top 3 campaigns",
+        ],
+      },
+      {
+        number: "60",
+        label: "Days 30–60",
+        items: [
+          "Slide-cart routine pairing upsell shipped",
+          "Quiz result emails branched by skin type",
+          "Before/after gallery moved near buy box",
+        ],
+      },
+      {
+        number: "90",
+        label: "Days 60–90",
+        items: [
+          "Dedicated landing pages per acquisition angle",
+          "Refill reminder flow synced to 45-day usage",
+          "Full PDP-to-ad visual system refresh",
+        ],
+      },
+    ],
+    dashboard: {
+      kpis: [
+        { value: "64%", label: "Paid mobile PDP bounce rate" },
+        { value: "7", label: "Leaks found" },
+        { value: "4", label: "Quick wins for week one" },
+      ],
+      miniRows: [
+        { area: "PDP hierarchy", level: "Critical" },
+        { area: "Mobile speed & UX", level: "Critical" },
+        { area: "Above-the-fold clarity", level: "Weak" },
+        { area: "Routine bundling", level: "Weak" },
+      ],
+    },
+  },
+  {
+    id: "apparel",
+    pill: "Apparel & accessories",
+    brandName: "Kestrel & Co.",
+    meta: "Illustrative example · $95k/mo · seasonal drops, high AOV",
+    dashboardSlug: "audit.adaptiflab.com / kestrel-and-co",
+    dashboardFocus: "Kestrel & Co. — Brand & Conversion",
+    scorecard: [
+      { area: "Positioning & pricing", note: "$180 outerwear presented with template-style product cards.", level: "Critical" },
+      { area: "Fit & sizing confidence", note: "Size chart is a tiny modal link; return rate is 22%.", level: "Weak" },
+      { area: "Visual direction", note: "Studio shots, street lookbook and ads feel like 3 brands.", level: "Critical" },
+      { area: "Navigation & discovery", note: "Collection filters work well across categories.", level: "Solid" },
+      { area: "Editorial storytelling", note: "Fabric origin and craft details buried in FAQ accordions.", level: "Weak" },
+      { area: "Cart & AOV", note: "No cross-sell for complementary accessories at checkout.", level: "Acceptable" },
+      { area: "Email & drop hype", note: "Launch emails rely on 15% off instead of scarcity and craft.", level: "Weak" },
+    ],
+    finding: {
+      leakTitle: "Premium price point undermined by inconsistent, mid-market presentation",
+      leakDesc:
+        "Kestrel prices alongside technical heritage brands, yet the site pairs flat studio cutouts with generic sans-serif badges and zero fabric storytelling above the fold. First-time visitors hesitate at $180 without proof of construction.",
+      recTitle: "Unify art direction & surface material craft at decision points",
+      recDesc:
+        "Standardize PDP imagery around consistent lighting and model-height fit callouts, elevate fabric weight/origin into a concise spec strip, and replace blanket launch discounts with early-access drop tiers.",
+    },
+    opportunities: [
+      { priority: "Priority 1", window: "First 30 days", title: "Add model-height fit callouts & fabric spec strip on PDPs", impact: "High", effort: "Low" },
+      { priority: "Priority 2", window: "First 30 days", title: "Align homepage hero & collection art direction", impact: "High", effort: "Medium" },
+      { priority: "Priority 3", window: "Days 30–60", title: "Replace discount-led drop emails with VIP early access", impact: "Medium", effort: "Low" },
+      { priority: "Priority 4", window: "Days 60–90", title: "Build unified visual system across ads, site and email", impact: "High", effort: "Medium" },
+    ],
+    roadmap: [
+      {
+        number: "30",
+        label: "First 30 days",
+        items: [
+          "Model fit & fabric spec strip live on top PDPs",
+          "Homepage hero rewritten around craft & utility",
+          "Generic promo badges removed from cards",
+        ],
+      },
+      {
+        number: "60",
+        label: "Days 30–60",
+        items: [
+          "VIP early-access drop sequence launched",
+          "Lookbook-to-PDP photography ruleset adopted",
+          "Accessory cross-sell added to slide cart",
+        ],
+      },
+      {
+        number: "90",
+        label: "Days 60–90",
+        items: [
+          "Cross-channel brand guidelines & ad templates",
+          "Seasonal campaign toolkit for paid & email",
+          "Post-purchase care & garment longevity guide",
+        ],
+      },
+    ],
+    dashboard: {
+      kpis: [
+        { value: "22%", label: "Size-related return rate" },
+        { value: "6", label: "Leaks found" },
+        { value: "3", label: "Quick wins for week one" },
+      ],
+      miniRows: [
+        { area: "Positioning & pricing", level: "Critical" },
+        { area: "Visual direction", level: "Critical" },
+        { area: "Fit & sizing confidence", level: "Weak" },
+        { area: "Editorial storytelling", level: "Weak" },
+      ],
+    },
+  },
+  {
+    id: "supplements",
+    pill: "Supplements & wellness",
+    brandName: "Forme Labs",
+    meta: "Illustrative example · $48k/mo · subscription-heavy",
+    dashboardSlug: "audit.adaptiflab.com / forme-labs",
+    dashboardFocus: "Forme Labs — Email & Retention",
+    scorecard: [
+      { area: "Subscription onboarding", note: "First 30 days have zero education on when effects appear.", level: "Critical" },
+      { area: "Churn & pause flow", note: "Subscribers cancel instead of skipping or swapping flavor.", level: "Critical" },
+      { area: "Lead capture", note: "15% off popup collects emails with no goal segmentation.", level: "Weak" },
+      { area: "Browse & cart recovery", note: "Basic 1-email reminder fires after 24 hours.", level: "Weak" },
+      { area: "Trust & compliance", note: "Third-party lab testing badges are clear on PDP.", level: "Solid" },
+      { area: "Winback", note: "Cancelled subscribers never receive a flavor-swap offer.", level: "Critical" },
+      { area: "Brand voice", note: "Science-backed tone is consistent across site and packaging.", level: "Solid" },
+    ],
+    finding: {
+      leakTitle: "Subscribers churn at day 28 because onboarding never sets expectations",
+      leakDesc:
+        "34% of new subscribers cancel before their second renewal. Post-purchase emails only confirm shipping—customers don't know what to expect in week 1 vs. week 4, or how to easily skip a month.",
+      recTitle: "30-day expectation onboarding + pre-renewal flexibility nudge",
+      recDesc:
+        "Deploy a 4-part post-purchase education series mapped to weeks 1–4, plus a day-24 pre-charge email offering one-click skip, delay or flavor swap.",
+    },
+    opportunities: [
+      { priority: "Priority 1", window: "First 30 days", title: "Launch 4-part subscriber onboarding & usage timeline", impact: "High", effort: "Low" },
+      { priority: "Priority 2", window: "First 30 days", title: "Add day-24 pre-renewal skip/swap reminder", impact: "High", effort: "Low" },
+      { priority: "Priority 3", window: "Days 30–60", title: "Expand cart recovery to 3-step objection sequence", impact: "Medium", effort: "Low" },
+      { priority: "Priority 4", window: "Days 60–90", title: "Build 60-day cancelled-subscriber winback flow", impact: "Medium", effort: "Medium" },
+    ],
+    roadmap: [
+      {
+        number: "30",
+        label: "First 30 days",
+        items: [
+          "Week 1–4 subscriber onboarding emails live",
+          "Day-24 pre-renewal skip/swap nudge shipped",
+          "3-step cart abandonment sequence active",
+        ],
+      },
+      {
+        number: "60",
+        label: "Days 30–60",
+        items: [
+          "Goal-segmented welcome popup & series",
+          "One-time buyer to subscription bridge flow",
+          "SMS reminder for upcoming renewals",
+        ],
+      },
+      {
+        number: "90",
+        label: "Days 60–90",
+        items: [
+          "Cancelled-subscriber winback with sample pack",
+          "VIP 90-day milestone reward campaign",
+          "Quarterly retention cohort review",
+        ],
+      },
+    ],
+    dashboard: {
+      kpis: [
+        { value: "34%", label: "Subscribers churning before month 2" },
+        { value: "7", label: "Leaks found" },
+        { value: "3", label: "Quick wins for week one" },
+      ],
+      miniRows: [
+        { area: "Subscription onboarding", level: "Critical" },
+        { area: "Churn & pause flow", level: "Critical" },
+        { area: "Winback", level: "Critical" },
+        { area: "Lead capture", level: "Weak" },
+      ],
+    },
+  },
+  {
+    id: "equipment",
+    pill: "Equipment & gear",
+    brandName: "Apex Trailworks",
+    meta: "Illustrative example · $120k/mo · high ticket, considered buy",
+    dashboardSlug: "audit.adaptiflab.com / apex-trailworks",
+    dashboardFocus: "Apex Trailworks — Website & Funnel",
+    scorecard: [
+      { area: "Comparison & buying guide", note: "Four flagship models with no side-by-side comparison.", level: "Critical" },
+      { area: "Technical spec clarity", note: "Specs live in downloadable PDFs instead of scannable tables.", level: "Weak" },
+      { area: "Warranty & financing", note: "0% APR and 5-year warranty mentioned only in footer.", level: "Critical" },
+      { area: "Browse abandonment", note: "High-intent viewers leave and receive zero follow-up.", level: "Weak" },
+      { area: "Checkout & shipping", note: "Freight and delivery timelines clearly stated at cart.", level: "Solid" },
+      { area: "Social proof", note: "Strong video reviews exist on YouTube, absent on PDPs.", level: "Weak" },
+      { area: "Brand authority", note: "Engineering heritage feels credible and distinct.", level: "Solid" },
+    ],
+    finding: {
+      leakTitle: "Considered $600+ buyers stall because they can't compare models",
+      leakDesc:
+        "Visitors view an average of 3.4 product pages before exiting without adding to cart. Without a side-by-side spec comparison or visible financing/warranty reassurance near the price, high-ticket intent leaks out.",
+      recTitle: "Inline model comparison + trust reassurance at the buy box",
+      recDesc:
+        "Surface the 5-year warranty and monthly financing directly beneath the price, embed a 3-row spec comparison table on every flagship PDP, and trigger a browse-abandonment comparison email.",
+    },
+    opportunities: [
+      { priority: "Priority 1", window: "First 30 days", title: "Place warranty & financing reassurance under PDP price", impact: "High", effort: "Low" },
+      { priority: "Priority 2", window: "First 30 days", title: "Add side-by-side model comparison block on PDPs", impact: "High", effort: "Medium" },
+      { priority: "Priority 3", window: "Days 30–60", title: "Embed real field video reviews above spec tabs", impact: "Medium", effort: "Low" },
+      { priority: "Priority 4", window: "Days 60–90", title: "Launch 2-step browse abandonment buying guide flow", impact: "Medium", effort: "Medium" },
+    ],
+    roadmap: [
+      {
+        number: "30",
+        label: "First 30 days",
+        items: [
+          "Warranty & 0% APR callout under buy box",
+          "Model comparison table on flagship PDPs",
+          "Convert PDF spec sheets to HTML tables",
+        ],
+      },
+      {
+        number: "60",
+        label: "Days 30–60",
+        items: [
+          "Field video reviews embedded on PDPs",
+          "Compatibility accessory cross-sell in cart",
+          "Interactive 'Which model fits me?' selector",
+        ],
+      },
+      {
+        number: "90",
+        label: "Days 60–90",
+        items: [
+          "Browse abandonment comparison email flow",
+          "Post-purchase setup & maintenance series",
+          "Dedicated paid search landing pages",
+        ],
+      },
+    ],
+    dashboard: {
+      kpis: [
+        { value: "3.4", label: "PDPs viewed before exiting" },
+        { value: "6", label: "Leaks found" },
+        { value: "3", label: "Quick wins for week one" },
+      ],
+      miniRows: [
+        { area: "Comparison & buying guide", level: "Critical" },
+        { area: "Warranty & financing", level: "Critical" },
+        { area: "Technical spec clarity", level: "Weak" },
+        { area: "Social proof", level: "Weak" },
+      ],
+    },
+  },
+];
+
+const deliverableTabs = [
+  { id: "scorecard", label: "Scorecard" },
+  { id: "finding", label: "A finding" },
+  { id: "opportunity", label: "Opportunity map" },
+  { id: "roadmap", label: "30/60/90 roadmap" },
+  { id: "dashboard", label: "The dashboard" },
+];
+---
+
+<section class="au-preview" id="audit-sample" aria-labelledby="au-preview-title">
+  <div class="container">
+    <div class="au-preview__header" data-audit-reveal>
+      <div class="au-preview__heading-col">
+        <p class="adaptif-eyebrow">WHAT YOU ACTUALLY RECEIVE</p>
+        <h2 id="au-preview-title" class="au-section-title">
+          See the deliverable <span class="title-highlight">before you buy it.</span>
+        </h2>
+      </div>
+      <p class="au-preview__note">
+        Illustrative examples based on the patterns we see in e-commerce audits. Switch the brand type to see how the same format reads for a different business.
+      </p>
+    </div>
+
+    <!-- Brand Type Selector Pills -->
+    <div class="au-brand-pills" role="tablist" aria-label="Brand types" data-audit-reveal style="--au-delay: 80ms">
+      {brandSamples.map((brand, idx) => (
+        <button
+          type="button"
+          role="tab"
+          aria-selected={idx === 0 ? "true" : "false"}
+          class:list={["au-brand-pill", { "is-active": idx === 0 }]}
+          data-brand-pill={brand.id}
+        >
+          {brand.pill}
+        </button>
+      ))}
+    </div>
+
+    <!-- Interactive Deliverable Window -->
+    <div class="glass-panel au-window" data-audit-reveal style="--au-delay: 140ms">
+      <!-- Deliverable View Tabs -->
+      <div class="au-window__tabs" role="tablist" aria-label="Deliverable views">
+        {deliverableTabs.map((tab, idx) => (
+          <button
+            type="button"
+            role="tab"
+            aria-selected={idx === 0 ? "true" : "false"}
+            class:list={["au-window__tab", { "is-active": idx === 0 }]}
+            data-view-tab={tab.id}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <!-- Brand Meta Header -->
+      <div class="au-window__meta-bar">
+        <span class="au-window__brand" data-preview-brand>{brandSamples[0].brandName}</span>
+        <span class="au-window__meta" data-preview-meta>{brandSamples[0].meta}</span>
+      </div>
+
+      <!-- Panel 1: Scorecard -->
+      <div class="au-view-panel is-active" data-view-panel="scorecard">
+        <div class="au-scorecard" data-scorecard-list>
+          {brandSamples[0].scorecard.map((row) => (
+            <div class="au-scorecard__row">
+              <div class="au-scorecard__area">{row.area}</div>
+              <div class="au-scorecard__note">{row.note}</div>
+              <div class="au-scorecard__badge-wrap">
+                <span class={`au-level-badge au-level-badge--${row.level.toLowerCase()}`}>
+                  {row.level}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p class="au-window__caption">Five levels: critical, weak, acceptable, solid, advanced.</p>
+      </div>
+
+      <!-- Panel 2: A finding -->
+      <div class="au-view-panel" data-view-panel="finding" hidden>
+        <div class="au-finding-grid">
+          <div class="au-finding-col">
+            <span class="au-finding__label au-finding__label--leak">THE LEAK</span>
+            <h3 class="au-finding__title" data-finding-leak-title>{brandSamples[0].finding.leakTitle}</h3>
+            <p class="au-finding__body" data-finding-leak-desc>{brandSamples[0].finding.leakDesc}</p>
+          </div>
+          <div class="au-finding-col">
+            <span class="au-finding__label au-finding__label--rec">THE RECOMMENDATION</span>
+            <h3 class="au-finding__title" data-finding-rec-title>{brandSamples[0].finding.recTitle}</h3>
+            <p class="au-finding__body" data-finding-rec-desc>{brandSamples[0].finding.recDesc}</p>
+          </div>
+        </div>
+        <p class="au-window__caption">
+          Every finding in the dashboard is written this way: what leaks, why, and what to do about it.
+        </p>
+      </div>
+
+      <!-- Panel 3: Opportunity map -->
+      <div class="au-view-panel" data-view-panel="opportunity" hidden>
+        <div class="au-opp-grid" data-opp-grid>
+          {brandSamples[0].opportunities.map((opp) => (
+            <div class="au-opp-card">
+              <div class="au-opp-card__top">
+                <span class="au-opp-card__priority">{opp.priority}</span>
+                <span class="au-opp-card__window">{opp.window}</span>
+              </div>
+              <h3 class="au-opp-card__title">{opp.title}</h3>
+              <div class="au-opp-card__metrics">
+                <div>
+                  <span class="au-opp-card__metric-label">IMPACT</span>
+                  <span class="au-opp-card__metric-val">{opp.impact}</span>
+                </div>
+                <div>
+                  <span class="au-opp-card__metric-label">EFFORT</span>
+                  <span class="au-opp-card__metric-val">{opp.effort}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Panel 4: 30/60/90 roadmap -->
+      <div class="au-view-panel" data-view-panel="roadmap" hidden>
+        <div class="au-roadmap-grid" data-roadmap-grid>
+          {brandSamples[0].roadmap.map((col) => (
+            <div class="au-roadmap-col">
+              <div class="au-roadmap-col__num">{col.number}</div>
+              <div class="au-roadmap-col__label">{col.label}</div>
+              <ul class="au-roadmap-col__list">
+                {col.items.map((item) => (
+                  <li>
+                    <span class="au-check-dot" aria-hidden="true"></span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Panel 5: The dashboard -->
+      <div class="au-view-panel" data-view-panel="dashboard" hidden>
+        <div class="au-dash-mock">
+          <div class="au-dash-mock__chrome">
+            <div class="au-dash-mock__dots" aria-hidden="true">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="au-dash-mock__url" data-dash-url>{brandSamples[0].dashboardSlug}</div>
+          </div>
+
+          <div class="au-dash-mock__body">
+            <p class="adaptif-eyebrow">PRIVATE AUDIT DASHBOARD</p>
+            <h3 class="au-dash-mock__title" data-dash-title>{brandSamples[0].dashboardFocus}</h3>
+
+            <div class="au-dash-mock__kpis" data-dash-kpis>
+              {brandSamples[0].dashboard.kpis.map((kpi) => (
+                <div class="au-dash-mock__kpi">
+                  <div class="au-dash-mock__kpi-val">{kpi.value}</div>
+                  <div class="au-dash-mock__kpi-label">{kpi.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div class="au-dash-mock__mini-list" data-dash-mini>
+              {brandSamples[0].dashboard.miniRows.map((row) => (
+                <div class="au-dash-mock__mini-row">
+                  <span>{row.area}</span>
+                  <span class={`au-level-badge au-level-badge--${row.level.toLowerCase()}`}>
+                    {row.level}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div class="au-dash-mock__cta-wrap">
+              <a href="#audit-pricing" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm">
+                Open the full example dashboard
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ brandSamples }}>
+  const initAuditPreview = () => {
+    const root = document.getElementById("audit-sample");
+    if (!root || root.dataset.auInit === "1") return;
+    root.dataset.auInit = "1";
+
+    const brandPills = root.querySelectorAll("[data-brand-pill]");
+    const viewTabs = root.querySelectorAll("[data-view-tab]");
+    const viewPanels = root.querySelectorAll("[data-view-panel]");
+
+    const brandEl = root.querySelector("[data-preview-brand]");
+    const metaEl = root.querySelector("[data-preview-meta]");
+    const scorecardList = root.querySelector("[data-scorecard-list]");
+    const leakTitle = root.querySelector("[data-finding-leak-title]");
+    const leakDesc = root.querySelector("[data-finding-leak-desc]");
+    const recTitle = root.querySelector("[data-finding-rec-title]");
+    const recDesc = root.querySelector("[data-finding-rec-desc]");
+    const oppGrid = root.querySelector("[data-opp-grid]");
+    const roadmapGrid = root.querySelector("[data-roadmap-grid]");
+    const dashUrl = root.querySelector("[data-dash-url]");
+    const dashTitle = root.querySelector("[data-dash-title]");
+    const dashKpis = root.querySelector("[data-dash-kpis]");
+    const dashMini = root.querySelector("[data-dash-mini]");
+
+    const renderBrand = (brandId) => {
+      const sample = brandSamples.find((b) => b.id === brandId) || brandSamples[0];
+      if (brandEl) brandEl.textContent = sample.brandName;
+      if (metaEl) metaEl.textContent = sample.meta;
+
+      if (scorecardList) {
+        scorecardList.innerHTML = sample.scorecard
+          .map(
+            (row) => `
+            <div class="au-scorecard__row">
+              <div class="au-scorecard__area">${row.area}</div>
+              <div class="au-scorecard__note">${row.note}</div>
+              <div class="au-scorecard__badge-wrap">
+                <span class="au-level-badge au-level-badge--${row.level.toLowerCase()}">${row.level}</span>
+              </div>
+            </div>`
+          )
+          .join("");
+      }
+
+      if (leakTitle) leakTitle.textContent = sample.finding.leakTitle;
+      if (leakDesc) leakDesc.textContent = sample.finding.leakDesc;
+      if (recTitle) recTitle.textContent = sample.finding.recTitle;
+      if (recDesc) recDesc.textContent = sample.finding.recDesc;
+
+      if (oppGrid) {
+        oppGrid.innerHTML = sample.opportunities
+          .map(
+            (opp) => `
+            <div class="au-opp-card">
+              <div class="au-opp-card__top">
+                <span class="au-opp-card__priority">${opp.priority}</span>
+                <span class="au-opp-card__window">${opp.window}</span>
+              </div>
+              <h3 class="au-opp-card__title">${opp.title}</h3>
+              <div class="au-opp-card__metrics">
+                <div>
+                  <span class="au-opp-card__metric-label">IMPACT</span>
+                  <span class="au-opp-card__metric-val">${opp.impact}</span>
+                </div>
+                <div>
+                  <span class="au-opp-card__metric-label">EFFORT</span>
+                  <span class="au-opp-card__metric-val">${opp.effort}</span>
+                </div>
+              </div>
+            </div>`
+          )
+          .join("");
+      }
+
+      if (roadmapGrid) {
+        roadmapGrid.innerHTML = sample.roadmap
+          .map(
+            (col) => `
+            <div class="au-roadmap-col">
+              <div class="au-roadmap-col__num">${col.number}</div>
+              <div class="au-roadmap-col__label">${col.label}</div>
+              <ul class="au-roadmap-col__list">
+                ${col.items
+                  .map(
+                    (item) =>
+                      `<li><span class="au-check-dot" aria-hidden="true"></span><span>${item}</span></li>`
+                  )
+                  .join("")}
+              </ul>
+            </div>`
+          )
+          .join("");
+      }
+
+      if (dashUrl) dashUrl.textContent = sample.dashboardSlug;
+      if (dashTitle) dashTitle.textContent = sample.dashboardFocus;
+
+      if (dashKpis) {
+        dashKpis.innerHTML = sample.dashboard.kpis
+          .map(
+            (kpi) => `
+            <div class="au-dash-mock__kpi">
+              <div class="au-dash-mock__kpi-val">${kpi.value}</div>
+              <div class="au-dash-mock__kpi-label">${kpi.label}</div>
+            </div>`
+          )
+          .join("");
+      }
+
+      if (dashMini) {
+        dashMini.innerHTML = sample.dashboard.miniRows
+          .map(
+            (row) => `
+            <div class="au-dash-mock__mini-row">
+              <span>${row.area}</span>
+              <span class="au-level-badge au-level-badge--${row.level.toLowerCase()}">${row.level}</span>
+            </div>`
+          )
+          .join("");
+      }
+    };
+
+    const triggerPanelEnter = (el) => {
+      if (!el) return;
+      el.classList.remove("au-panel-enter");
+      void el.offsetWidth;
+      el.classList.add("au-panel-enter");
+    };
+
+    brandPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        const id = pill.getAttribute("data-brand-pill");
+        brandPills.forEach((p) => {
+          const active = p === pill;
+          p.classList.toggle("is-active", active);
+          p.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        if (id) renderBrand(id);
+        const activePanel = root.querySelector("[data-view-panel].is-active");
+        triggerPanelEnter(activePanel);
+      });
+    });
+
+    viewTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.getAttribute("data-view-tab");
+        viewTabs.forEach((t) => {
+          const active = t === tab;
+          t.classList.toggle("is-active", active);
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        viewPanels.forEach((panel) => {
+          const match = panel.getAttribute("data-view-panel") === target;
+          panel.classList.toggle("is-active", match);
+          if (match) {
+            panel.removeAttribute("hidden");
+            triggerPanelEnter(panel);
+          } else {
+            panel.setAttribute("hidden", "");
+          }
+        });
+      });
+    });
+  };
+
+  initAuditPreview();
+  document.addEventListener("astro:page-load", initAuditPreview);
+</script>
+
+<style>
+  .au-preview {
+    padding: clamp(56px, 8vh, 96px) 0;
+    background-color: var(--color-void);
+  }
+
+  .au-preview__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr);
+    gap: 32px;
+    align-items: end;
+    margin-bottom: 32px;
+  }
+
+  .au-section-title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 4.2vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .au-preview__note {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Brand Type Pills */
+  .au-brand-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .au-brand-pill {
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(8, 18, 44, 0.45);
+    color: var(--color-text-secondary);
+    padding: 9px 16px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-spring);
+  }
+
+  .au-brand-pill:hover {
+    color: var(--color-text-primary);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .au-brand-pill.is-active {
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.55);
+    color: var(--color-text-primary);
+    box-shadow: 0 0 20px -6px rgba(72, 200, 255, 0.45);
+  }
+
+  /* Preview Glass Window */
+  .au-window {
+    border-radius: 20px;
+    padding: clamp(20px, 3vw, 32px);
+  }
+
+  .au-window__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-window__tab {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-secondary);
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .au-window__tab:hover {
+    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .au-window__tab.is-active {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: var(--color-text-primary);
+  }
+
+  .au-window__meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 18px 0 14px;
+  }
+
+  .au-window__brand {
+    font-family: var(--font-family-body);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .au-window__meta {
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  .au-window__caption {
+    margin: 18px 0 0;
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  /* Scorecard */
+  :global(.au-scorecard) {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.au-scorecard__row) {
+    display: grid;
+    grid-template-columns: minmax(170px, 0.9fr) minmax(0, 2fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  :global(.au-scorecard__area) {
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  :global(.au-scorecard__note) {
+    font-family: var(--font-family-body);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+  }
+
+  :global(.au-scorecard__badge-wrap) {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  :global(.au-level-badge) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  :global(.au-level-badge--critical) {
+    background: rgba(239, 68, 68, 0.14);
+    border-color: rgba(239, 68, 68, 0.38);
+    color: #fca5a5;
+  }
+
+  :global(.au-level-badge--weak) {
+    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.36);
+    color: #fcd34d;
+  }
+
+  :global(.au-level-badge--acceptable) {
+    background: rgba(148, 163, 184, 0.14);
+    border-color: rgba(148, 163, 184, 0.32);
+    color: #cbd5e1;
+  }
+
+  :global(.au-level-badge--solid) {
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.38);
+    color: #7dd3fc;
+  }
+
+  :global(.au-level-badge--advanced) {
+    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.38);
+    color: #6ee7b7;
+  }
+
+  /* A finding - open split with vertical divider (no nested boxes) */
+  .au-finding-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-finding-col {
+    padding: 8px 28px 8px 0;
+  }
+
+  .au-finding-col:last-child {
+    padding: 8px 0 8px 28px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-finding__label {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .au-finding__label--leak {
+    color: #fca5a5;
+  }
+
+  .au-finding__label--rec {
+    color: var(--color-brand-cyan);
+  }
+
+  .au-finding__title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .au-finding__body {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  /* Opportunity Map */
+  :global(.au-opp-grid) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.au-opp-card) {
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  :global(.au-opp-card__top) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  :global(.au-opp-card__priority) {
+    font-family: var(--font-family-body);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan);
+  }
+
+  :global(.au-opp-card__window) {
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  :global(.au-opp-card__title) {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-text-primary);
+  }
+
+  :global(.au-opp-card__metrics) {
+    display: flex;
+    gap: 28px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  :global(.au-opp-card__metric-label) {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+
+  :global(.au-opp-card__metric-val) {
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  /* 30/60/90 Roadmap - open 3-column timeline */
+  :global(.au-roadmap-grid) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.au-roadmap-col) {
+    padding: 6px 24px 6px 0;
+  }
+
+  :global(.au-roadmap-col + .au-roadmap-col) {
+    padding: 6px 24px;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global(.au-roadmap-col:last-child) {
+    padding-right: 0;
+  }
+
+  :global(.au-roadmap-col__num) {
+    font-family: var(--font-family-display);
+    font-size: 2.2rem;
+    line-height: 1;
+    color: var(--color-brand-cyan);
+    margin-bottom: 6px;
+  }
+
+  :global(.au-roadmap-col__label) {
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  :global(.au-roadmap-col__list) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  :global(.au-roadmap-col__list li) {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+  }
+
+  :global(.au-check-dot) {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-brand-cyan);
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  /* The Dashboard Mock */
+  .au-dash-mock {
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(2, 5, 14, 0.72);
+    overflow: hidden;
+  }
+
+  .au-dash-mock__chrome {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .au-dash-mock__dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .au-dash-mock__dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .au-dash-mock__url {
+    font-family: var(--font-family-body);
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+  }
+
+  .au-dash-mock__body {
+    padding: 24px;
+  }
+
+  .au-dash-mock__title {
+    margin: 8px 0 20px;
+    font-family: var(--font-family-body);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  :global(.au-dash-mock__kpis) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  :global(.au-dash-mock__kpi) {
+    padding: 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  :global(.au-dash-mock__kpi-val) {
+    font-family: var(--font-family-display);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
+  }
+
+  :global(.au-dash-mock__kpi-label) {
+    font-family: var(--font-family-body);
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+  }
+
+  :global(.au-dash-mock__mini-list) {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    margin-bottom: 20px;
+  }
+
+  :global(.au-dash-mock__mini-row) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-family: var(--font-family-body);
+    font-size: 0.88rem;
+    color: var(--color-text-primary);
+  }
+
+  .au-dash-mock__cta-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (max-width: 860px) {
+    .au-preview__header {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    :global(.au-scorecard__row) {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    :global(.au-scorecard__badge-wrap) {
+      justify-content: flex-start;
+      margin-top: 4px;
+    }
+
+    .au-finding-grid,
+    :global(.au-opp-grid),
+    :global(.au-roadmap-grid),
+    :global(.au-dash-mock__kpis) {
+      grid-template-columns: 1fr;
+    }
+
+    .au-finding-col,
+    .au-finding-col:last-child,
+    :global(.au-roadmap-col),
+    :global(.au-roadmap-col + .au-roadmap-col) {
+      padding: 18px 0;
+      border-left: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .au-finding-col:last-child,
+    :global(.au-roadmap-col:last-child) {
+      border-bottom: none;
+      padding-bottom: 4px;
+    }
+  }
+</style>

@@ -1,0 +1,158 @@
+---
+import StudioHeader from "./StudioHeader.astro";
+
+interface Props {
+  initialTurnstile: {
+    enabled: boolean;
+    siteKey: string;
+    hasSecretKey: boolean;
+  };
+}
+
+const { initialTurnstile } = Astro.props;
+---
+
+<div id="module-turnstile" hidden>
+  <StudioHeader
+    eyebrow="INTEGRATIONS"
+    title="Turnstile"
+  >
+    <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-turnstile">
+      Save Turnstile Settings
+    </button>
+  </StudioHeader>
+
+  <div class="acd-config-two-col">
+    <section class="studio-card acd-card">
+      <div class="ac-card-head">
+        <div>
+          <span class="acd-section-kicker">Bot Protection</span>
+          <h2 class="bc-cms-card-title" style="margin: 4px 0;">Invisible Challenge Configuration</h2>
+          <p class="field-hint" style="margin: 0;">
+            Paste your Cloudflare Turnstile Site Key and Secret Key. Challenges run silently on submit.
+          </p>
+        </div>
+
+        <label class={`studio-toggle-pill ${initialTurnstile.enabled ? "is-active" : "is-inactive"}`} id="ts-toggle-pill">
+          <input type="checkbox" class="studio-toggle-chk" id="ts-enabled-toggle" checked={initialTurnstile.enabled} />
+          <span class="studio-switch" aria-hidden="true"></span>
+          <span class="studio-toggle-text" id="ts-enabled-label">{initialTurnstile.enabled ? "Active" : "Inactive"}</span>
+        </label>
+      </div>
+
+      <div class="acd-settings-grid" style="margin-top: 18px;">
+        <label class="acd-field">
+          <span class="acd-label-row">
+            Site Key (Public)
+            <a
+              href="https://dash.cloudflare.com/?to=/:account/turnstile"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="studio-link studio-link--inline"
+            >
+              Open Cloudflare Turnstile ↗
+            </a>
+          </span>
+          <input
+            type="text"
+            id="ts-site-key"
+            value={initialTurnstile.siteKey}
+            placeholder="0x4AAAAAAA..."
+            autocomplete="off"
+          />
+        </label>
+
+        <label class="acd-field">
+          <span class="acd-label-row">
+            Secret Key (Server)
+          </span>
+          <input
+            type="password"
+            id="ts-secret-key"
+            placeholder={initialTurnstile.hasSecretKey ? "Saved (leave blank to keep)" : "0x4AAAAAAA..."}
+            autocomplete="off"
+          />
+        </label>
+      </div>
+    </section>
+
+    <aside class="studio-card acd-card" aria-label="Turnstile Setup Guide">
+      <div class="acd-prefs-head" style="margin-bottom: 14px;">
+        <div>
+          <span class="acd-section-kicker">Protected Endpoints</span>
+          <h3 class="acd-card-title">Active Form Coverage</h3>
+        </div>
+        <div class="acd-ai-status-pill">
+          <span
+            class:list={["acd-status-dot", { "is-ready": initialTurnstile.enabled && Boolean(initialTurnstile.siteKey) && initialTurnstile.hasSecretKey }]}
+            id="ts-status-dot"
+          ></span>
+          <span id="ts-status-text">
+            {initialTurnstile.enabled && initialTurnstile.siteKey && initialTurnstile.hasSecretKey
+              ? "Active (Invisible)"
+              : "Inactive"}
+          </span>
+        </div>
+      </div>
+
+      <div class="acd-stripe-guide" style="margin-top: 0;">
+        <ol class="acd-stripe-guide-steps">
+          <li>In Cloudflare Turnstile, create a widget with <strong>Widget Mode: Invisible</strong>.</li>
+          <li>Add your domains (e.g. <code>adaptif-web.vercel.app</code> and <code>localhost</code> for testing).</li>
+          <li>Automatically verifies <strong>Book a Call</strong> (<code>/api/book-call/submit</code>) and <strong>Guide Lead Forms</strong> (<code>/api/academy/leads</code>).</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+  const w = window as any;
+  const toggleEl = document.getElementById("ts-enabled-toggle") as HTMLInputElement | null;
+  const pillEl = document.getElementById("ts-toggle-pill");
+  const labelEl = document.getElementById("ts-enabled-label");
+  const siteKeyEl = document.getElementById("ts-site-key") as HTMLInputElement | null;
+  const secretKeyEl = document.getElementById("ts-secret-key") as HTMLInputElement | null;
+  const saveBtn = document.getElementById("btn-save-turnstile") as HTMLButtonElement | null;
+  const dotEl = document.getElementById("ts-status-dot");
+  const statusTextEl = document.getElementById("ts-status-text");
+
+  toggleEl?.addEventListener("change", () => {
+    const active = Boolean(toggleEl.checked);
+    pillEl?.classList.toggle("is-active", active);
+    pillEl?.classList.toggle("is-inactive", !active);
+    if (labelEl) labelEl.textContent = active ? "Active" : "Inactive";
+  });
+
+  saveBtn?.addEventListener("click", async () => {
+    const prev = saveBtn.textContent;
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+    try {
+      const res = await fetch("/api/studio/turnstile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          enabled: Boolean(toggleEl?.checked),
+          siteKey: siteKeyEl?.value.trim() || "",
+          secretKey: secretKeyEl?.value.trim() || "",
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Failed to save Turnstile settings");
+      if (secretKeyEl) secretKeyEl.value = "";
+      if (secretKeyEl && data.hasSecretKey) {
+        secretKeyEl.placeholder = "Saved (leave blank to keep)";
+      }
+      const ready = Boolean(data.enabled && data.siteKey && data.hasSecretKey);
+      dotEl?.classList.toggle("is-ready", ready);
+      if (statusTextEl) statusTextEl.textContent = ready ? "Active (Invisible)" : "Inactive";
+      w.__SHOW_STUDIO_TOAST__?.("Turnstile settings saved!");
+    } catch (err: any) {
+      w.__SHOW_STUDIO_TOAST__?.(err?.message || "Failed to save Turnstile settings", true);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = prev || "Save Turnstile Settings";
+    }
+  });
+</script>

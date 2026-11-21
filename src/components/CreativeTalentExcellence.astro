@@ -1,0 +1,219 @@
+---
+// CreativeTalentExcellence.astro - Adapted "Creative Excellence" section from adaptif-lab.com
+// Open editorial layout (minimal cards, hairline dividers) per design-system.md
+
+interface DisciplinePillar {
+  index: string;
+  title: string;
+  roles: string;
+  description: string;
+}
+
+const pillars: DisciplinePillar[] = [
+  {
+    index: "01",
+    title: "Direction & Brand Systems",
+    roles: "Creative Directors · Brand Designers",
+    description:
+      "We translate your positioning into cohesive visual identity systems, typography, and art direction—so every asset feels unmistakably yours.",
+  },
+  {
+    index: "02",
+    title: "Product, Web & UI/UX",
+    roles: "Product Thinkers · Web Designers",
+    description:
+      "From high-converting landing pages to full design systems, we craft digital experiences built for clarity, speed, and measurable conversion.",
+  },
+  {
+    index: "03",
+    title: "Motion, Video & Campaign Assets",
+    roles: "Motion Specialists · Visual Storytellers",
+    description:
+      "Scroll-stopping reels, product explainers, and paid social creative engineered to hold attention without sacrificing brand craft.",
+  },
+  {
+    index: "04",
+    title: "Copy, Strategy & Creative Tech",
+    roles: "Copywriters · Strategists · Technologists",
+    description:
+      "Sharp messaging paired with modern AI-assisted production workflows—helping your team ship more campaigns in less time.",
+  },
+];
+---
+
+<section
+  class="ct-excellence"
+  id="creative-excellence"
+  aria-labelledby="ct-excellence-title"
+>
+  <div class="container ct-excellence__container">
+    <div class="ct-excellence__grid">
+      <!-- Left Sticky Editorial Intro -->
+      <div class="ct-excellence__intro">
+        <span class="adaptif-eyebrow ct-excellence__eyebrow" data-cms-key="ct.excellence.eyebrow">
+          Creative Excellence
+        </span>
+        <h2 id="ct-excellence-title" class="ct-excellence__title" data-cms-key="ct.excellence.title">
+          The engine behind fast <span class="title-highlight ct-excellence__accent">moving brands</span>
+        </h2>
+        <p class="ct-excellence__subtitle" data-cms-key="ct.excellence.subtitle">
+          Senior specialists across direction, design, motion, copy, and technology—operating as one cohesive unit inside your workflow.
+        </p>
+      </div>
+
+      <!-- Right Open Hairline-Divided List (No Bento Cards) -->
+      <div class="ct-excellence__list" role="list">
+        {pillars.map((item) => (
+          <div class="ct-excellence__row" role="listitem">
+            <span class="ct-excellence__index" aria-hidden="true">{item.index}</span>
+            <div class="ct-excellence__body">
+              <div class="ct-excellence__row-head">
+                <h3 class="ct-excellence__row-title">{item.title}</h3>
+                <span class="ct-excellence__roles">{item.roles}</span>
+              </div>
+              <p class="ct-excellence__row-desc">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ct-excellence {
+    position: relative;
+    padding: clamp(72px, 10vh, 128px) 0;
+    background: var(--color-void, #010307);
+  }
+
+  .ct-excellence__grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.35fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .ct-excellence__intro {
+    position: sticky;
+    top: calc(var(--header-height, 80px) + 32px);
+  }
+
+  .ct-excellence__eyebrow {
+    margin-bottom: 14px;
+  }
+
+  .ct-excellence__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.4vw, 3.85rem);
+    line-height: 1.04;
+    letter-spacing: var(--font-letter-spacing-display, -0.04em);
+    font-weight: 400;
+    color: var(--color-text-white, #ffffff);
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+
+  .ct-excellence__accent {
+    font-style: italic;
+    padding-right: 0.06em;
+  }
+
+  .ct-excellence__subtitle {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-subhero, 1.08rem);
+    line-height: 1.6;
+    color: var(--color-text-secondary, #94a3b8);
+    max-width: 440px;
+  }
+
+  /* Open Editorial List */
+  .ct-excellence__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ct-excellence__row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 18px;
+    padding: clamp(22px, 2.8vw, 30px) 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background var(--duration-fast, 180ms) ease;
+  }
+
+  .ct-excellence__row:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .ct-excellence__row:hover {
+    background: linear-gradient(
+      90deg,
+      rgba(72, 200, 255, 0.04) 0%,
+      transparent 100%
+    );
+  }
+
+  .ct-excellence__index {
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-brand-cyan, #48c8ff);
+    padding-top: 4px;
+  }
+
+  .ct-excellence__row-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-bottom: 8px;
+  }
+
+  /* Rule #5: <= 24px headings MUST use --font-family-body (Roboto) */
+  .ct-excellence__row-title {
+    font-family: var(--font-family-body);
+    font-size: clamp(1.12rem, 1.4vw, 1.32rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--color-text-white, #ffffff);
+    margin: 0;
+  }
+
+  .ct-excellence__roles {
+    font-family: var(--font-family-body);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--color-brand-cyan, #48c8ff);
+    opacity: 0.9;
+  }
+
+  .ct-excellence__row-desc {
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.58;
+    color: var(--color-text-secondary, #94a3b8);
+    margin: 0;
+    max-width: 58ch;
+  }
+
+  @media (max-width: 900px) {
+    .ct-excellence__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ct-excellence__intro {
+      position: static;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .ct-excellence__row {
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 12px;
+      padding: 20px 0;
+    }
+  }
+</style>

@@ -17,6 +17,25 @@ import StudioHeader from "./StudioHeader.astro";
       </button>
   </StudioHeader>
 
+  <div class="act-kpi-strip" aria-label="Activity summary">
+    <div class="act-kpi">
+      <span class="act-kpi__label">Total Activity</span>
+      <span class="act-kpi__val" id="act-kpi-all">0</span>
+    </div>
+    <div class="act-kpi">
+      <span class="act-kpi__label">Book a Call</span>
+      <span class="act-kpi__val" id="act-kpi-book_call">0</span>
+    </div>
+    <div class="act-kpi">
+      <span class="act-kpi__label">Plan Purchases</span>
+      <span class="act-kpi__val" id="act-kpi-plan">0</span>
+    </div>
+    <div class="act-kpi">
+      <span class="act-kpi__label">Course Purchases</span>
+      <span class="act-kpi__val" id="act-kpi-course">0</span>
+    </div>
+  </div>
+
   <section class="studio-card act-toolbar-card">
     <div class="act-toolbar">
       <div class="act-filter-pills" role="tablist" aria-label="Filter activity by type">
@@ -92,6 +111,56 @@ import StudioHeader from "./StudioHeader.astro";
     border-color: rgba(72, 200, 255, 0.55);
     background: rgba(72, 200, 255, 0.14);
     color: var(--color-text-primary);
+  }
+
+  .act-kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 20px;
+  }
+
+  .act-kpi {
+    padding: 16px 20px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .act-kpi:last-child {
+    border-right: none;
+  }
+
+  .act-kpi__label {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+
+  .act-kpi__val {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    line-height: 1.05;
+    color: var(--color-text-primary);
+  }
+
+  @media (max-width: 820px) {
+    .act-kpi-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .act-kpi:nth-child(2n) {
+      border-right: none;
+    }
+
+    .act-kpi:nth-child(-n + 2) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
   }
 
   .act-toolbar-card {
@@ -518,8 +587,11 @@ import StudioHeader from "./StudioHeader.astro";
 
       const counts = data.counts || {};
       (["all", "book_call", "plan", "course"] as const).forEach((k) => {
+        const val = String(counts[k] ?? 0);
         const el = document.getElementById(`act-count-${k}`);
-        if (el) el.textContent = String(counts[k] ?? 0);
+        if (el) el.textContent = val;
+        const kpiEl = document.getElementById(`act-kpi-${k}`);
+        if (kpiEl) kpiEl.textContent = val;
       });
 
       renderActivityTable();

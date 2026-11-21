@@ -1,0 +1,349 @@
+---
+// ServicesValueAndMetrics.astro - Better rates 1-col + pipeline diagram + 20x/50%/70%/4.9/5 strip + Cube difference split
+import CreativePipelineDiagram from "./CreativePipelineDiagram.astro";
+
+const valueMetrics = [
+  { id: "faster", count: 20, decimals: 0, suffix: "x", label: "Faster than hiring creatives in-house" },
+  { id: "cost", count: 50, decimals: 0, suffix: "%", label: "Reduction in average cost per asset" },
+  { id: "turnaround", count: 70, decimals: 0, suffix: "%", label: "Lower turnaround time for digital assets" },
+  { id: "rating", count: 4.9, decimals: 1, suffix: "/5", label: "Average rating from customers" },
+];
+---
+
+<!-- 1. Better rates than hiring designers in-house (1-column layout + Pricing pipeline diagram) -->
+<section class="sv-rates" id="services-rates" aria-labelledby="sv-rates-title">
+  <div class="sv-rates__glow" aria-hidden="true"></div>
+
+  <div class="container sv-rates__container">
+    <header class="sv-rates__header" data-sv-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="services.rates.eyebrow">
+        Cost &amp; Velocity
+      </p>
+
+      <h2 id="sv-rates-title" class="sv-rates__title" data-cms-key="services.rates.title">
+        <span class="title-highlight">Better rates</span> than hiring designers in-house
+      </h2>
+
+      <p class="sv-rates__lead" data-cms-key="services.rates.lead">
+        Between the cost of hiring, retaining, supporting and growing the careers of designers and creatives, it ends up being a lot of money.
+      </p>
+
+      <p class="sv-rates__body" data-cms-key="services.rates.body">
+        Adaptif is 20x faster than hiring internally and about half the cost of traditional design agencies. Our people are continuously trained on all the latest tools and processes, so you don’t have to be.
+      </p>
+
+      <div class="sv-rates__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="services.rates.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <div class="sv-rates__diagram">
+      <CreativePipelineDiagram revealAttr="data-sv-reveal" />
+    </div>
+  </div>
+</section>
+
+<!-- 2. Unboxed Typographic Metric Strip (Light) -->
+<section class="sv-metrics-strip" data-theme="light" aria-label="Adaptif performance benchmarks">
+  <div class="container">
+    <dl class="sv-metrics-strip__grid">
+      {valueMetrics.map((m, idx) => (
+        <div class="sv-metrics-strip__item" data-sv-reveal style={`--sv-delay: ${idx * 60}ms`}>
+          <dt class="sv-metrics-strip__label" data-cms-key={`services.metrics.${m.id}.label`}>
+            {m.label}
+          </dt>
+          <dd
+            class="sv-metrics-strip__value"
+            data-sv-count={m.count}
+            data-sv-decimals={m.decimals}
+            data-sv-suffix={m.suffix}
+            data-cms-key={`services.metrics.${m.id}.value`}
+          >
+            {`${m.count}${m.suffix}`}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<!-- 3. What makes our design services different? -->
+<section class="sv-diff-cube" id="services-difference-detail" aria-labelledby="sv-diff-cube-title">
+  <div class="sv-diff-cube__glow" aria-hidden="true"></div>
+
+  <div class="container sv-diff-cube__grid">
+    <div class="sv-diff-cube__visual" data-sv-reveal="scale">
+      <div class="sv-diff-cube__frame">
+        <img
+          src="/images/services/cube-prism.jpg"
+          alt="Prismatic glass cube refracting cyan and amber light"
+          class="sv-diff-cube__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="services.cube.image"
+        />
+      </div>
+    </div>
+
+    <div class="sv-diff-cube__copy" data-sv-reveal style="--sv-delay: 100ms">
+      <h2 id="sv-diff-cube-title" class="sv-diff-cube__title" data-cms-key="services.cube.title">
+        What makes our design services <span class="title-highlight">different?</span>
+      </h2>
+
+      <p class="sv-diff-cube__lead" data-cms-key="services.cube.lead">
+        We deliver speedy, high-quality graphic design services through a transparent subscription model.
+      </p>
+
+      <p class="sv-diff-cube__body" data-cms-key="services.cube.body">
+        We are a tech-enabled company, developing proprietary software to brief, manage, and coordinate a high-volume of design projects—making it possible to keep pace with teams at Amazon, Puma, Facebook, and more.
+      </p>
+
+      <p class="sv-diff-cube__body" data-cms-key="services.cube.body2">
+        Learn how we can revolutionize the way your organization gets design work done. Book a call today.
+      </p>
+
+      <div class="sv-diff-cube__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="services.cube.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* 1. Better rates (1-column centered + pipeline diagram) */
+  .sv-rates {
+    position: relative;
+    padding: clamp(72px, 9vw, 120px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .sv-rates__glow {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 680px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .sv-rates__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .sv-rates__header {
+    max-width: 740px;
+    margin: 0 auto clamp(40px, 5vw, 60px);
+    text-align: center;
+  }
+
+  .sv-rates__title {
+    margin: 14px 0 20px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.45rem, 4.4vw, 3.65rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .sv-rates__lead {
+    margin: 0 auto 14px;
+    max-width: 640px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .sv-rates__body {
+    margin: 0 auto 28px;
+    max-width: 640px;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .sv-rates__actions {
+    display: flex;
+    justify-content: center;
+  }
+
+  .sv-rates__diagram {
+    position: relative;
+  }
+
+  /* 2. Metrics strip (Light) */
+  .sv-metrics-strip {
+    padding: clamp(56px, 7vw, 88px) 0;
+    background: #ffffff;
+    color: #090d16;
+  }
+
+  .sv-metrics-strip__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 28px 36px;
+    margin: 0;
+  }
+
+  .sv-metrics-strip__item {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding: 12px 8px;
+  }
+
+  .sv-metrics-strip__label {
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #475569;
+    max-width: 210px;
+  }
+
+  .sv-metrics-strip__value {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(3rem, 5vw, 4.25rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #0284c7;
+  }
+
+  /* 3. Cube difference split */
+  .sv-diff-cube {
+    position: relative;
+    padding: clamp(72px, 9vw, 120px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .sv-diff-cube__glow {
+    position: absolute;
+    bottom: 10%;
+    left: 10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .sv-diff-cube__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: center;
+  }
+
+  .sv-diff-cube__frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 28px 64px -20px rgba(0, 0, 0, 0.8),
+      0 0 42px -14px rgba(72, 200, 255, 0.16);
+    aspect-ratio: 1 / 1;
+  }
+
+  .sv-diff-cube__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sv-diff-cube__title {
+    margin: 0 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .sv-diff-cube__lead {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.05rem, 1.25vw, 1.18rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .sv-diff-cube__body {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .sv-diff-cube__actions {
+    margin-top: 28px;
+  }
+
+  @media (max-width: 960px) {
+    .sv-diff-cube__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sv-diff-cube__frame {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .sv-metrics-strip__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .sv-metrics-strip__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

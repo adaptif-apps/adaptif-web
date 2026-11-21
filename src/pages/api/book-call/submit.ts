@@ -2,10 +2,11 @@ import type { APIRoute } from "astro";
 import { createBookCallSubmission, getBookCallConfig } from "../../../lib/bookCallDb";
 import { getActiveCampaignConfig, syncLeadToActiveCampaign } from "../../../lib/activeCampaignDb";
 import { getKlaviyoConfig, syncLeadToKlaviyo } from "../../../lib/klaviyoDb";
+import { verifyTurnstileToken } from "../../../lib/turnstile";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
     const body = await request.json();
     const fullName = String(body?.fullName ?? "").trim();
@@ -15,6 +16,14 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(
         JSON.stringify({ error: "Please provide your full name and a valid work email." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const tsCheck = await verifyTurnstileToken(String(body?.turnstileToken ?? ""), clientAddress);
+    if (!tsCheck.ok) {
+      return new Response(
+        JSON.stringify({ error: tsCheck.error || "Security verification failed." }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
       );
     }
 

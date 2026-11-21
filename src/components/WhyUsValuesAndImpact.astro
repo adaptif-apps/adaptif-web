@@ -1,0 +1,299 @@
+---
+// WhyUsValuesAndImpact.astro - Core Values ("How we actually show up") + Sustainability ("Big impact")
+const values = [
+  {
+    eyebrow: "Be kind",
+    title: "We work to create a supportive environment where ambitious talent can thrive.",
+    description:
+      "We celebrate differences in thoughts and experiences. We give constructive and respectful feedback to each other. We take care of each other personally and professionally.",
+  },
+  {
+    eyebrow: "Seek the truth",
+    title: "We are transparent, direct, and obliged to share the truth.",
+    description:
+      "We care about making the right decision based on facts over emotions. Our beliefs are hypotheses and we take pride in admitting when we’re wrong and changing course.",
+  },
+  {
+    eyebrow: "Speed is safety",
+    title: "It is safer to move fast than to move slow, so we operate with urgency.",
+    description:
+      "We seek the shortest effective path and actively choose what not to do. We ask why to prioritize the most important outcomes. We look for simple and pragmatic solutions and iterate from there.",
+  },
+  {
+    eyebrow: "Roll up your sleeves",
+    title: "We pull our weight and we are happy to take one for the team.",
+    description:
+      "We execute with rigor, focus, and persistence. If it needs to get done, we do it. We believe in humility and the act of doing work that goes unrecognized.",
+  },
+  {
+    eyebrow: "Lead with Quality",
+    title: "We hold ourselves to high standards and own our outcomes.",
+    description:
+      "Excellence is a team effort, made possible when intention and process come together. We design structures and rituals that make quality scalable.",
+  },
+];
+
+const impactPillars = [
+  {
+    title: "100% remote",
+    description:
+      "Zero daily commute emissions. No office-related energy, water, waste, or office supplies.",
+  },
+  {
+    title: "Digital-first",
+    description:
+      "Digital tools replace physical ones for fully paperless ops and minimal hardware.",
+  },
+  {
+    title: "Sustainable cloud providers",
+    description: "Google Cloud (carbon neutral) and AWS (100% renewable energy by 2025).",
+  },
+  {
+    title: "Flexibility-powered sustainable living",
+    description:
+      "Remote work allows our team to live where they thrive: with more access to nature and more balanced lifestyles.",
+  },
+];
+---
+
+<!-- Section: Driven by more than output -->
+<section class="wu-values" id="how-we-show-up" aria-labelledby="wu-values-title">
+  <div class="container">
+    <div class="wu-values__layout">
+      <div class="wu-values__intro" data-why-reveal>
+        <p class="adaptif-eyebrow">Driven by more than output</p>
+        <h2 id="wu-values-title" class="wu-values__title">
+          How we actually <span class="title-highlight">show up</span>
+        </h2>
+        <p class="wu-values__desc">
+          This is what makes us who we are: embracing diversity, practicing empathy, and empowering our people to be autonomous and agile.
+        </p>
+        <div class="wu-values__cta">
+          <a href="#book-a-call" class="adaptif-btn" data-open-book-call>
+            <span>Book a Call</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path
+                d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <ul class="wu-values__list">
+        {values.map((val, idx) => (
+          <li class="wu-values__item" data-why-reveal style={`--why-delay: ${idx * 70}ms`}>
+            <p class="adaptif-eyebrow wu-values__item-eyebrow">{val.eyebrow}</p>
+            <h3 class="wu-values__item-title">{val.title}</h3>
+            <p class="wu-values__item-desc">{val.description}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Section: Sustainable by design -->
+<section class="wu-impact" id="big-impact" aria-labelledby="wu-impact-title">
+  <div class="container">
+    <div class="wu-impact__grid">
+      <div class="wu-impact__body">
+        <p class="adaptif-eyebrow" data-why-reveal>Sustainable by design</p>
+        <h2 id="wu-impact-title" class="wu-impact__title" data-why-reveal style="--why-delay: 80ms">
+          Big impact <span class="title-highlight">(just not the environmental kind)</span>
+        </h2>
+        <p class="wu-impact__intro" data-why-reveal style="--why-delay: 140ms">
+          Our remote-first model broadens opportunities while minimizing our footprint. We’re also looking ahead by exploring carbon offsets, cleaner AI, and smarter data practices.
+        </p>
+
+        <div class="wu-impact__pillars">
+          {impactPillars.map((item, idx) => (
+            <div class="wu-impact__pillar" data-why-reveal style={`--why-delay: ${180 + idx * 70}ms`}>
+              <h3 class="wu-impact__pillar-title">{item.title}</h3>
+              <p class="wu-impact__pillar-desc">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="wu-impact__media" data-why-reveal="scale" style="--why-delay: 120ms">
+        <img
+          src="/images/why-us/big-impact.jpg"
+          alt="Adaptif remote team embracing sustainable living"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="wu-impact__media-scrim" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .wu-values {
+    padding: clamp(72px, 9vw, 120px) 0;
+    background-color: var(--color-void);
+  }
+
+  .wu-values__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: start;
+  }
+
+  .wu-values__intro {
+    position: sticky;
+    top: 120px;
+  }
+
+  .wu-values__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 3.8vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .wu-values__desc {
+    margin: 0 0 30px;
+    max-width: 420px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .wu-values__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wu-values__item {
+    padding: 28px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wu-values__item-eyebrow {
+    font-size: 0.74rem;
+    margin-bottom: 8px;
+  }
+
+  .wu-values__item-title {
+    margin: 0 0 10px;
+    font-family: var(--font-family-body);
+    font-size: 1.24rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .wu-values__item-desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .wu-impact {
+    padding: clamp(64px, 8vw, 110px) 0 clamp(80px, 10vw, 128px);
+    background-color: var(--color-void);
+  }
+
+  .wu-impact__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: clamp(40px, 6vw, 76px);
+    align-items: center;
+  }
+
+  .wu-impact__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 3.8vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .wu-impact__intro {
+    margin: 0 0 36px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .wu-impact__pillars {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 32px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .wu-impact__pillar-title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-text-primary);
+  }
+
+  .wu-impact__pillar-desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .wu-impact__media {
+    position: relative;
+    aspect-ratio: 4 / 4.5;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: var(--shadow-bevel-card);
+  }
+
+  .wu-impact__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .wu-impact__media-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(1, 3, 7, 0.05) 55%, rgba(1, 3, 7, 0.45) 100%);
+  }
+
+  @media (max-width: 900px) {
+    .wu-values__layout,
+    .wu-impact__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .wu-values__intro {
+      position: static;
+    }
+
+    .wu-impact__media {
+      order: -1;
+    }
+
+    .wu-impact__pillars {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

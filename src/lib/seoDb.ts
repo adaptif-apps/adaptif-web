@@ -43,6 +43,7 @@ export const SEO_MANAGED_PAGES: { path: string; label: string }[] = [
   { path: "/pricing", label: "Pricing (/pricing)" },
   { path: "/our-work", label: "Our Work (/our-work)" },
   { path: "/dedicated-team", label: "Dedicated Team (/dedicated-team)" },
+  { path: "/audit", label: "Audit (/audit)" },
   { path: "/academy", label: "Academy (/academy)" },
 ];
 

@@ -43,16 +43,15 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
       <div class="wa-form-grid">
         <div class="wa-field">
           <span class="wa-label">Visibility</span>
-          <label class="wa-toggle-row" for="wa-cfg-enabled">
+          <label class={`studio-toggle-pill ${initialConfig.enabled ? "is-active" : "is-inactive"}`} id="wa-toggle-pill" for="wa-cfg-enabled">
             <input
               type="checkbox"
+              class="studio-toggle-chk"
               id="wa-cfg-enabled"
               checked={initialConfig.enabled}
             />
-            <span class="wa-toggle-track" aria-hidden="true">
-              <span class="wa-toggle-thumb"></span>
-            </span>
-            <span class="wa-toggle-label" id="wa-toggle-label">
+            <span class="studio-switch" aria-hidden="true"></span>
+            <span class="studio-toggle-text" id="wa-toggle-label">
               {initialConfig.enabled ? "Show floating button" : "Hide floating button"}
             </span>
           </label>
@@ -193,6 +192,7 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
 
   .wa-card-title {
     margin: 0;
+    font-family: var(--font-family-body);
     font-size: 18px;
     font-weight: 600;
     color: #f8fafc;
@@ -641,5 +641,15 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
       saveBtn.disabled = false;
       saveBtn.textContent = prevText || "Save WhatsApp Settings";
     }
+  });
+  document.getElementById("wa-cfg-enabled")?.addEventListener("change", (e) => {
+    const chk = e.target as HTMLInputElement;
+    const pill = document.getElementById("wa-toggle-pill");
+    if (pill) {
+      pill.classList.toggle("is-active", chk.checked);
+      pill.classList.toggle("is-inactive", !chk.checked);
+    }
+    const lbl = document.getElementById("wa-toggle-label");
+    if (lbl) lbl.textContent = chk.checked ? "Show floating button" : "Hide floating button";
   });
 </script>

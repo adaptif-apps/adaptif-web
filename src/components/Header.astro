@@ -27,47 +27,47 @@ interface WhyUsItem {
 const serviceCategories: ServiceCategory[] = [
   {
     title: "Creative Design Services",
-    href: "#creative-design",
+    href: "/services#creative-design",
     items: [
-      { title: "Ad creative", desc: "Eye-catching designs that perform", href: "#service-ad-creative" },
-      { title: "Social media creative", desc: "Engaging assets for all platforms", href: "#service-social-media" },
-      { title: "Presentation design", desc: "Captivating slides that tell your story", href: "#service-presentation-design" },
-      { title: "Illustration design", desc: "Visual storytelling for your brand", href: "#service-illustration-design" },
-      { title: "Branding services", desc: "Expertise & custom design services", href: "#service-branding-services" },
-      { title: "eBook & report design", desc: "Your digital content supercharged", href: "#service-ebook-report" },
-      { title: "Concept creation", desc: "Big ideas crafted for maximum impact", href: "#service-concept-creation" },
-      { title: "Print design", desc: "Tangible designs that leave a lasting impression", href: "#service-print-design" },
-      { title: "Packaging & merchandise design", desc: "Bring your brand to life", href: "#service-packaging-merchandise" }
+      { title: "Ad creative", desc: "Eye-catching designs that perform", href: "/ad-creative" },
+      { title: "Social media creative", desc: "Engaging assets for all platforms", href: "/social-media-creative" },
+      { title: "Presentation design", desc: "Captivating slides that tell your story", href: "/services#service-presentation-design" },
+      { title: "Illustration design", desc: "Visual storytelling for your brand", href: "/services#service-illustration-design" },
+      { title: "Branding services", desc: "Expertise & custom design services", href: "/branding" },
+      { title: "eBook & report design", desc: "Your digital content supercharged", href: "/services#service-ebook-report" },
+      { title: "Concept creation", desc: "Big ideas crafted for maximum impact", href: "/services#service-concept-creation" },
+      { title: "Print design", desc: "Tangible designs that leave a lasting impression", href: "/services#service-print-design" },
+      { title: "Packaging & merchandise design", desc: "Bring your brand to life", href: "/services#service-packaging-merchandise" }
     ]
   },
   {
     title: "Production Services",
-    href: "#production-services",
+    href: "/services#production-services",
     items: [
-      { title: "Video production", desc: "Effortless video production at scale", href: "#service-video-production" },
-      { title: "Motion design", desc: "For websites, ads, and presentations", href: "#service-motion-design" },
-      { title: "Email creation", desc: "Click-worthy emails that drive engagement", href: "#service-email-creation" },
-      { title: "Web design", desc: "High-converting websites and landing pages", href: "#service-web-design" },
-      { title: "Design Systems", desc: "Robust design systems that drive visual consistency", href: "#service-design-systems" },
-      { title: "Product Design", desc: "Engaging & intuitive experiences", href: "#service-product-design" },
-      { title: "Copywriting", desc: "Persuasive words for clarity and action", href: "#service-copywriting" }
+      { title: "Video production", desc: "Effortless video production at scale", href: "/services#service-video-production" },
+      { title: "Motion design", desc: "For websites, ads, and presentations", href: "/services#service-motion-design" },
+      { title: "Email creation", desc: "Click-worthy emails that drive engagement", href: "/email-design" },
+      { title: "Web design", desc: "High-converting websites and landing pages", href: "/web-design" },
+      { title: "Design Systems", desc: "Robust design systems that drive visual consistency", href: "/services#service-design-systems" },
+      { title: "Product Design", desc: "Engaging & intuitive experiences", href: "/product-design" },
+      { title: "Copywriting", desc: "Persuasive words for clarity and action", href: "/services#service-copywriting" }
     ]
   },
   {
     title: "AI Services",
-    href: "#ai-services",
+    href: "/services#ai-services",
     items: [
-      { title: "AI-powered creative", desc: "Human brilliance powered by AI", href: "#service-ai-powered-creative" },
-      { title: "AI consulting", desc: "Transform your team with AI", href: "#service-ai-consulting" },
-      { title: "Automation", desc: "Move fast without compromising craft", href: "#service-automation" },
-      { title: "Data services", desc: "Train your AI with creative data", href: "#service-data-services" }
+      { title: "AI-powered creative", desc: "Human brilliance powered by AI", href: "/services#service-ai-powered-creative" },
+      { title: "AI consulting", desc: "Transform your team with AI", href: "/services#service-ai-consulting" },
+      { title: "Automation", desc: "Move fast without compromising craft", href: "/services#service-automation" },
+      { title: "Data services", desc: "Train your AI with creative data", href: "/services#service-data-services" }
     ]
   },
   {
     title: "Marketing services",
-    href: "#marketing-services",
+    href: "/marketing-strategy",
     items: [
-      { title: "Campaign strategy", desc: "Strategy, messaging, and concept for multi-market campaigns", href: "#service-campaign-strategy" }
+      { title: "Campaign strategy", desc: "Strategy, messaging, and concept for multi-market campaigns", href: "/marketing-strategy" }
     ]
   }
 ];
@@ -76,19 +76,19 @@ const whyUsItems: WhyUsItem[] = [
   {
     title: "Our creative talent",
     desc: "Meet your dedicated team",
-    href: "#creative-talent",
+    href: "/our-creative-talent",
     image: "/images/why-us/creative-talent.jpg"
   },
   {
     title: "AI excellence",
     desc: "Your shortcut to AI’s creative advantage",
-    href: "#ai-excellence",
+    href: "/ai-excellence",
     image: "/images/why-us/ai-excellence.jpg"
   },
   {
     title: "Our technology",
     desc: "The tech powering your creative edge",
-    href: "#our-technology",
+    href: "/our-technology",
     image: "/images/why-us/our-technology.jpg"
   }
 ];
@@ -147,19 +147,20 @@ const academyItems: AcademyItem[] = [
       <ul class="nav-list">
         <!-- Services Mega Menu Item -->
         <li class="nav-item nav-item-services">
-          <button 
-            type="button" 
-            class="nav-link nav-link-services" 
+          <a 
+            href="/services"
+            class:list={["nav-link", "nav-link-services", { "is-active": isActiveRoute("/services") }]} 
             id="services-trigger" 
             aria-expanded="false" 
             aria-haspopup="true"
             aria-controls="services-mega-menu"
+            aria-current={isActiveRoute("/services") ? "page" : undefined}
           >
             <span>Services</span>
             <svg class="chevron-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </button>
+          </a>
 
           <!-- Mega Menu Dropdown Container -->
           <div class="mega-menu-wrapper" id="services-mega-menu" role="region" aria-label="Services Mega Menu">
@@ -176,7 +177,7 @@ const academyItems: AcademyItem[] = [
                   <ul class="mega-item-list">
                     {serviceCategories[0].items.map((item) => (
                       <li>
-                        <a href={item.href} class="mega-item">
+                        <a href={item.href} class={`mega-item ${!item.href.includes("#") ? "mega-item--has-page" : ""}`}>
                           <span class="mega-item-header">
                             <span class="mega-item-title">{item.title}</span>
                             <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -201,7 +202,7 @@ const academyItems: AcademyItem[] = [
                   <ul class="mega-item-list">
                     {serviceCategories[1].items.map((item) => (
                       <li>
-                        <a href={item.href} class="mega-item">
+                        <a href={item.href} class={`mega-item ${!item.href.includes("#") ? "mega-item--has-page" : ""}`}>
                           <span class="mega-item-header">
                             <span class="mega-item-title">{item.title}</span>
                             <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -228,7 +229,7 @@ const academyItems: AcademyItem[] = [
                     <ul class="mega-item-list">
                       {serviceCategories[2].items.map((item) => (
                         <li>
-                          <a href={item.href} class="mega-item">
+                          <a href={item.href} class={`mega-item ${!item.href.includes("#") ? "mega-item--has-page" : ""}`}>
                             <span class="mega-item-header">
                               <span class="mega-item-title">{item.title}</span>
                               <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -253,7 +254,7 @@ const academyItems: AcademyItem[] = [
                     <ul class="mega-item-list">
                       {serviceCategories[3].items.map((item) => (
                         <li>
-                          <a href={item.href} class="mega-item">
+                          <a href={item.href} class={`mega-item ${!item.href.includes("#") ? "mega-item--has-page" : ""}`}>
                             <span class="mega-item-header">
                               <span class="mega-item-title">{item.title}</span>
                               <svg class="item-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -298,19 +299,20 @@ const academyItems: AcademyItem[] = [
         
         <!-- Why Us Mega Menu Item -->
         <li class="nav-item nav-item-why-us">
-          <button 
-            type="button" 
-            class="nav-link nav-link-why-us" 
+          <a 
+            href="/why-us"
+            class:list={["nav-link", "nav-link-why-us", { "is-active": isActiveRoute("/why-us") }]}
             id="why-us-trigger" 
             aria-expanded="false" 
             aria-haspopup="true"
             aria-controls="why-us-mega-menu"
+            aria-current={isActiveRoute("/why-us") ? "page" : undefined}
           >
             <span>Why Us</span>
             <svg class="chevron-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3.5 6L8 10.5L12.5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </button>
+          </a>
 
           <!-- Why Us Mega Menu Dropdown Container -->
           <div class="mega-menu-wrapper why-us-wrapper" id="why-us-mega-menu" role="region" aria-label="Why Us Mega Menu">
@@ -448,6 +450,13 @@ const academyItems: AcademyItem[] = [
             aria-current={isActiveRoute("/dedicated-team") ? "page" : undefined}
           >Dedicated Team</a>
         </li>
+        <li>
+          <a
+            href="/audit"
+            class:list={["nav-link", { "is-active": isActiveRoute("/audit") }]}
+            aria-current={isActiveRoute("/audit") ? "page" : undefined}
+          >Audit</a>
+        </li>
       </ul>
     </nav>
 
@@ -522,7 +531,7 @@ const academyItems: AcademyItem[] = [
                           <ul class="mobile-category-items">
                             {category.items.map((item) => (
                               <li>
-                                <a href={item.href} class="mobile-service-subitem">
+                                <a href={item.href} class={`mobile-service-subitem ${!item.href.includes("#") ? "mobile-service-subitem--has-page" : ""}`}>
                                   <div class="mobile-subitem-top">
                                     <span class="mobile-service-title">{item.title}</span>
                                     <svg class="mobile-subitem-arrow" width="12" height="12" viewBox="0 0 16 16" fill="none">
@@ -676,6 +685,13 @@ const academyItems: AcademyItem[] = [
               class:list={["mobile-nav-link", { "is-active": isActiveRoute("/dedicated-team") }]}
               aria-current={isActiveRoute("/dedicated-team") ? "page" : undefined}
             >Dedicated Team</a>
+          </li>
+          <li>
+            <a
+              href="/audit"
+              class:list={["mobile-nav-link", { "is-active": isActiveRoute("/audit") }]}
+              aria-current={isActiveRoute("/audit") ? "page" : undefined}
+            >Audit</a>
           </li>
         </ul>
 
@@ -1239,6 +1255,16 @@ const academyItems: AcademyItem[] = [
   .mega-item:hover .item-arrow {
     opacity: 1;
     transform: translateX(0);
+  }
+
+  .mega-item--has-page .item-arrow {
+    opacity: 0.9;
+    transform: translateX(0);
+  }
+
+  .mega-item--has-page:hover .item-arrow {
+    opacity: 1;
+    transform: translateX(3px);
   }
 
   /* Spotlight Feature Card in Column 4 */
@@ -2118,8 +2144,12 @@ const academyItems: AcademyItem[] = [
 
   .mobile-subitem-arrow {
     color: #48C8FF;
-    opacity: 0.5;
+    opacity: 0.22;
     transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .mobile-service-subitem--has-page .mobile-subitem-arrow {
+    opacity: 0.95;
   }
 
   .mobile-service-subitem:hover .mobile-subitem-arrow,

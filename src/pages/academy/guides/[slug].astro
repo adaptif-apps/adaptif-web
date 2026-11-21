@@ -161,6 +161,7 @@ const resolvedUpsell = resolveUpsellBanner({
                   </label>
                 </div>
                 <p class="form-error" id="guide-form-error" hidden></p>
+                <div id="guide-turnstile-slot" hidden></div>
                 <button type="submit" class="btn-primary-cyan btn-submit-full" id="guide-submit-btn">
                   Unlock Guide &amp; PDF
                 </button>
@@ -197,9 +198,12 @@ const resolvedUpsell = resolveUpsellBanner({
 </Layout>
 
 <script>
+  import { executeInvisibleTurnstile } from "../../../lib/turnstileClient";
+
   const form = document.getElementById("guide-lead-form") as HTMLFormElement | null;
   const errorEl = document.getElementById("guide-form-error");
   const submitBtn = document.getElementById("guide-submit-btn") as HTMLButtonElement | null;
+  const turnstileSlot = document.getElementById("guide-turnstile-slot");
   const inlineSuccess = document.getElementById("guide-unlocked-inline");
   const slidesLink = document.getElementById("unlocked-slides-link") as HTMLAnchorElement | null;
   const pdfLink = document.getElementById("unlocked-pdf-link") as HTMLAnchorElement | null;
@@ -215,13 +219,15 @@ const resolvedUpsell = resolveUpsellBanner({
 
     const fd = new FormData(form);
     try {
+      const turnstileToken = await executeInvisibleTurnstile(turnstileSlot);
       const res = await fetch("/api/academy/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slug: form.dataset.slug,
           name: fd.get("name"),
-          email: fd.get("email")
+          email: fd.get("email"),
+          turnstileToken,
         })
       });
       const data = await res.json();
@@ -493,6 +499,7 @@ const resolvedUpsell = resolveUpsellBanner({
 
   .unlock-title {
     margin: 14px 0 8px;
+    font-family: var(--font-family-display);
     font-size: 1.75rem;
     font-weight: 600;
     color: var(--color-text-primary);

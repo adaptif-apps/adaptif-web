@@ -1,0 +1,348 @@
+---
+// AiExcellenceProduction.astro - Section 3: AI-powered creative production + Section 4: Results, not hype
+const productionCards = [
+  {
+    eyebrow: "No stock, no shoot",
+    title: "AI video production",
+    description:
+      "From scripting and storyboarding to generating footage and voiceovers, we handle every stage of video production without a crew or a studio day.",
+    image: "/images/ai-excellence/prod-video.jpg",
+    tall: false,
+  },
+  {
+    eyebrow: "The face of your brand",
+    title: "Character development",
+    description:
+      "We create relatable, on-brand characters using AI from initial concept to voice and visual identity. Built to scale across every format and campaign.",
+    image: "/images/ai-excellence/prod-character.jpg",
+    tall: true,
+  },
+  {
+    eyebrow: "Get every angle",
+    title: "Product visuals",
+    description:
+      "New season, new campaign, new market, no new shoot required. We generate product visuals, lifestyle mockups, and seasonal imagery on demand, in days.",
+    image: "/images/ai-excellence/prod-product.jpg",
+    tall: true,
+  },
+  {
+    eyebrow: "Upscale at scale",
+    title: "Image enhancements",
+    description:
+      "We upscale, sharpen, color-correct, and apply your brand aesthetic across entire image libraries in hours, not weeks. Consistent quality at campaign scale.",
+    image: "/images/ai-excellence/prod-enhance.jpg",
+    tall: false,
+  },
+  {
+    eyebrow: "Speak their language",
+    title: "Translation and transcreation",
+    description:
+      "Take your campaigns to new markets with copy and imagery that feel native, not translated. We localize across languages and cultural contexts.",
+    image: "/images/ai-excellence/prod-translation.jpg",
+    tall: true,
+  },
+  {
+    eyebrow: "Personalized brand presence",
+    title: "Avatar and voice cloning",
+    description:
+      "Scalable content without repeated studio sessions. We create digital brand personas matched to your tone and audience, ready to deploy across formats and markets.",
+    image: "/images/ai-excellence/prod-avatar.jpg",
+    tall: true,
+  },
+  {
+    eyebrow: "Scale with consistency",
+    title: "Production at scale",
+    description:
+      "One idea, a hundred assets. We adapt your creative across every channel and format without losing the brand consistency your audience uses to recognize you.",
+    image: "/images/ai-excellence/prod-scale.jpg",
+    tall: false,
+  },
+  {
+    eyebrow: "Beautifully on brand",
+    title: "Brand imagery",
+    description:
+      "A full library of on-brand visuals built for your brand. No usage fees, no shoots, no delays. Ready when your campaign is.",
+    image: "/images/ai-excellence/prod-brand.jpg",
+    tall: false,
+  },
+];
+
+const results = [
+  {
+    value: "AI-assisted",
+    label: "on every project",
+    count: null,
+  },
+  {
+    value: "Avg. 3x",
+    label: "Increase in creative output for clients who move from freelancers or agencies to Adaptif",
+    count: "3",
+    prefix: "Avg. ",
+    suffix: "x",
+  },
+  {
+    value: "100%",
+    label: "human-reviewed before delivery",
+    count: "100",
+    prefix: "",
+    suffix: "%",
+  },
+];
+---
+
+<section class="ai-prod" id="ai-production" aria-labelledby="ai-prod-title">
+  <div class="container">
+    <header class="ai-prod__header" data-ai-reveal>
+      <p class="adaptif-eyebrow">Let’s talk AI</p>
+      <h2 id="ai-prod-title" class="ai-prod__title">
+        <span class="title-highlight">AI-powered</span> creative production
+      </h2>
+      <p class="ai-prod__subtitle">
+        AI is most valuable when it's built into how we work, not added as an afterthought. Every Adaptif workflow is designed around real creative challenges, not around the tool.
+      </p>
+      <div class="ai-prod__cta">
+        <a href="#book-a-call" class="adaptif-btn" data-open-book-call>
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <div class="ai-prod__grid">
+      {productionCards.map((card, idx) => (
+        <article
+          class={`glass-panel ai-prod__card ${card.tall ? "ai-prod__card--tall" : ""}`}
+          data-ai-reveal="scale"
+          style={`--ai-delay: ${(idx % 3) * 80}ms`}
+        >
+          <img src={card.image} alt={card.title} class="ai-prod__card-img" loading="lazy" decoding="async" />
+          <div class="ai-prod__card-scrim" aria-hidden="true"></div>
+          <div class="ai-prod__card-top">
+            <p class="adaptif-eyebrow ai-prod__card-eyebrow">{card.eyebrow}</p>
+            <h3 class="ai-prod__card-title">{card.title}</h3>
+          </div>
+          <p class="ai-prod__card-desc">{card.description}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Results, not hype -->
+<section class="ai-results" id="results" aria-labelledby="ai-results-title">
+  <div class="container">
+    <header class="ai-results__header" data-ai-reveal>
+      <p class="adaptif-eyebrow">Results, not hype</p>
+      <h2 id="ai-results-title" class="ai-results__title">
+        What AI <span class="title-highlight">success</span> looks like
+      </h2>
+    </header>
+
+    <div class="ai-results__strip">
+      {results.map((item, idx) => (
+        <div class="ai-results__item" data-ai-reveal style={`--ai-delay: ${idx * 90}ms`}>
+          <div
+            class="ai-results__value"
+            data-ai-count={item.count ?? undefined}
+            data-ai-prefix={item.prefix ?? undefined}
+            data-ai-suffix={item.suffix ?? undefined}
+          >
+            {item.value}
+          </div>
+          <p class="ai-results__label">{item.label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .ai-prod {
+    padding: clamp(64px, 8vw, 110px) 0;
+    background-color: var(--color-void);
+  }
+
+  .ai-prod__header {
+    text-align: center;
+    max-width: 680px;
+    margin: 0 auto clamp(42px, 5.5vw, 64px);
+  }
+
+  .ai-prod__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.2rem, 4.2vw, 3.4rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .ai-prod__subtitle {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .ai-prod__cta {
+    display: flex;
+    justify-content: center;
+  }
+
+  .ai-prod__grid {
+    columns: 3 300px;
+    column-gap: 20px;
+  }
+
+  .ai-prod__card {
+    position: relative;
+    break-inside: avoid;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    overflow: hidden;
+    min-height: 310px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 90px;
+  }
+
+  .ai-prod__card--tall {
+    min-height: 440px;
+    gap: 190px;
+  }
+
+  .ai-prod__card-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.55s ease;
+  }
+
+  .ai-prod__card:hover .ai-prod__card-img {
+    transform: scale(1.04);
+  }
+
+  .ai-prod__card-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(1, 3, 7, 0.78) 0%, rgba(1, 3, 7, 0.16) 44%, rgba(1, 3, 7, 0.88) 100%);
+  }
+
+  .ai-prod__card-top,
+  .ai-prod__card-desc {
+    position: relative;
+    z-index: 1;
+  }
+
+  .ai-prod__card-eyebrow {
+    font-size: 0.72rem;
+    margin-bottom: 6px;
+  }
+
+  .ai-prod__card-title {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text-white);
+  }
+
+  .ai-prod__card-desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: rgba(248, 250, 252, 0.9);
+  }
+
+  .ai-results {
+    padding: clamp(56px, 7vw, 96px) 0;
+    background-color: var(--color-void);
+  }
+
+  .ai-results__header {
+    text-align: center;
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+
+  .ai-results__title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.1rem, 3.8vw, 3.1rem);
+    font-weight: 400;
+    line-height: 1.08;
+    color: var(--color-text-primary);
+  }
+
+  .ai-results__strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .ai-results__item {
+    padding: clamp(28px, 4vw, 44px) clamp(18px, 3vw, 32px);
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .ai-results__item:last-child {
+    border-right: none;
+  }
+
+  .ai-results__value {
+    font-family: var(--font-family-display);
+    font-style: italic;
+    font-size: clamp(2.8rem, 4.8vw, 4rem);
+    line-height: 1.05;
+    background: linear-gradient(135deg, var(--color-text-white) 0%, var(--color-brand-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .ai-results__label {
+    margin: 0 auto;
+    max-width: 280px;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 820px) {
+    .ai-prod__grid {
+      columns: 1;
+    }
+
+    .ai-results__strip {
+      grid-template-columns: 1fr;
+    }
+
+    .ai-results__item {
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ai-results__item:last-child {
+      border-bottom: none;
+    }
+  }
+</style>

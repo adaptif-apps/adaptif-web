@@ -1,0 +1,196 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import AuditHero from "../components/AuditHero.astro";
+import AuditDeliverablePreview from "../components/AuditDeliverablePreview.astro";
+import AuditOfferAndTeam from "../components/AuditOfferAndTeam.astro";
+import AuditFocusesAndBrandDeepDive from "../components/AuditFocusesAndBrandDeepDive.astro";
+import AuditDeliverablesAndProcess from "../components/AuditDeliverablesAndProcess.astro";
+import AuditPricingAndFaq from "../components/AuditPricingAndFaq.astro";
+import FaqSection, { type FaqItem } from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+const auditFaqs: FaqItem[] = [
+  {
+    question: "When does the 4–5 day clock start?",
+    answer:
+      "Once all three are in: payment, the completed intake form, and read-only access. Not before.",
+  },
+  {
+    question: "Can I audit more than one focus?",
+    answer:
+      "Each audit covers one focus. If you want two, they're booked separately and we run them in sequence.",
+  },
+  {
+    question: "What if I'm slow to share access?",
+    answer:
+      "The 4–5 day clock only starts once payment, intake and access are all in. If access is delayed, delivery moves by the same number of days.",
+  },
+  {
+    question: "Does it work for a small brand?",
+    answer:
+      "It works if you already have traffic, sales or a contact base. With no data yet, the diagnosis loses precision.",
+  },
+  {
+    question: "What access do you need?",
+    answer:
+      "Depends on the focus: read-only on Klaviyo, Shopify, analytics or the CMS. The intake tells you exactly what.",
+  },
+  {
+    question: "What if I want you to implement it?",
+    answer:
+      "You can book a one-off project or move to a monthly plan. 100% of the audit fee is credited if you start an implementation project or monthly plan within 30 days of delivery.",
+  },
+  {
+    question: "Is my data safe?",
+    answer:
+      "We only ask for read-only access, never store passwords, and can sign an NDA before you share anything. Access can be revoked the moment the audit is delivered.",
+  },
+  {
+    question: "Can I get a refund?",
+    answer:
+      "Yes, under our clarity guarantee: if your audit doesn't surface at least 10 prioritised opportunities, we refund you in full.",
+  },
+  {
+    question: "Is there a call?",
+    answer:
+      "Not a required one. After delivery you can use an optional 30-minute call to discuss implementation.",
+  },
+  {
+    question: "What's not included?",
+    answer:
+      "This is an audit, not consulting in disguise. The limits are what keep it fast and affordable.",
+    bullets: [
+      "No implementation.",
+      "No final design of screens, emails or assets.",
+      "No final copy.",
+      "No Klaviyo, Webflow or Shopify configuration.",
+      "No recurring meetings, no unlimited revisions.",
+      "No revenue guarantees.",
+      "No deep paid media, SEO or analytics work, unless it directly affects your focus.",
+    ],
+  },
+];
+---
+
+<Layout
+  title="Audit — Adaptif"
+  description="Find what's holding your digital growth back in 4–5 business days. Asynchronous strategic audit for e-commerce and growth brands."
+>
+  <Header />
+  <main>
+    <AuditHero />
+    <AuditDeliverablePreview />
+    <AuditOfferAndTeam />
+    <AuditFocusesAndBrandDeepDive />
+    <AuditDeliverablesAndProcess />
+    <AuditPricingAndFaq />
+    <FaqSection faqs={auditFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  :global([data-audit-reveal]) {
+    opacity: 0;
+    transform: translateY(22px) scale(0.99);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--au-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--au-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-audit-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Staggered child items on scroll */
+  :global([data-audit-stagger] > *) {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--au-stagger-delay, 0ms),
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1) var(--au-stagger-delay, 0ms);
+  }
+
+  :global([data-audit-stagger].is-visible > *) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes auPanelEnter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  :global(.au-panel-enter) {
+    animation: auPanelEnter 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-audit-reveal]),
+    :global([data-audit-stagger] > *) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    :global(.au-panel-enter) {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const initAuditAnimations = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-audit-reveal]");
+    const staggerEls = document.querySelectorAll<HTMLElement>("[data-audit-stagger]");
+    if (!revealEls.length && !staggerEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    staggerEls.forEach((group) => {
+      Array.from(group.children).forEach((child, idx) => {
+        (child as HTMLElement).style.setProperty("--au-stagger-delay", `${Math.min(idx * 55, 440)}ms`);
+      });
+    });
+
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => el.classList.add("is-visible"));
+      staggerEls.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          (entry.target as HTMLElement).classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -28px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+    staggerEls.forEach((el) => observer.observe(el));
+  };
+
+  initAuditAnimations();
+  document.addEventListener("astro:page-load", initAuditAnimations);
+</script>

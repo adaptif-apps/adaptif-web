@@ -4,7 +4,7 @@ import type { UpsellConfig } from "./upsell";
 export type { UpsellConfig } from "./upsell";
 export type BlogUpsellConfig = UpsellConfig;
 
-export type BlogStatus = "draft" | "published";
+export type BlogStatus = "draft" | "published" | "scheduled";
 export type BlogTextFormat =
   | "eyebrow"
   | "title"
@@ -47,6 +47,7 @@ export interface BlogPost {
   readTime: string;
   authorName: string;
   status: BlogStatus;
+  publishAt: string | null;
   sections: BlogSection[];
   upsell: BlogUpsellConfig;
   createdAt: string;
@@ -163,7 +164,8 @@ function mapRow(row: any): BlogPost {
     coverImage: String(row.cover_image ?? ""),
     readTime: String(row.read_time ?? "5 min read"),
     authorName: String(row.author_name ?? "Adaptif Team"),
-    status: row.status === "published" ? "published" : "draft",
+    status: row.status === "published" || row.status === "scheduled" ? row.status : "draft",
+    publishAt: row.publish_at ? new Date(row.publish_at).toISOString() : null,
     sections: sanitizeSections(row.sections),
     upsell: sanitizeUpsell(row.upsell),
     createdAt: row.created_at ? new Date(row.created_at).toISOString() : new Date().toISOString(),
@@ -185,6 +187,7 @@ const seedPost: Omit<BlogPost, "createdAt" | "updatedAt"> = {
   readTime: "4 min read",
   authorName: "Adaptif Editorial",
   status: "published",
+  publishAt: null,
   sections: [
     {
       id: "sec-1",
@@ -266,12 +269,15 @@ export async function ensureBlogTable() {
       read_time TEXT NOT NULL DEFAULT '5 min read',
       author_name TEXT NOT NULL DEFAULT 'Adaptif Team',
       status TEXT NOT NULL DEFAULT 'draft',
+      publish_at TIMESTAMPTZ NULL,
       sections JSONB NOT NULL DEFAULT '[]'::jsonb,
       upsell JSONB NOT NULL DEFAULT '{}'::jsonb,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+
+  await sql`ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS publish_at TIMESTAMPTZ NULL`;
 
   const countRows = await sql`SELECT COUNT(*)::int AS cnt FROM blog_posts`;
   if ((countRows[0]?.cnt ?? 0) === 0) {
@@ -297,7 +303,11 @@ export async function listBlogPosts(options?: { includeDrafts?: boolean }): Prom
     const sql = getSql();
     const rows = options?.includeDrafts
       ? await sql`SELECT * FROM blog_posts ORDER BY created_at DESC`
-      : await sql`SELECT * FROM blog_posts WHERE status = 'published' ORDER BY created_at DESC`;
+      : await sql`
+          SELECT * FROM blog_posts
+          WHERE status = 'published' OR (status = 'scheduled' AND publish_at <= NOW())
+          ORDER BY created_at DESC
+        `;
     return rows.map(mapRow);
   } catch (err) {
     console.error("[blogDb] Failed to list posts:", err);
@@ -314,7 +324,11 @@ export async function getBlogPostBySlug(
     const sql = getSql();
     const rows = includeDrafts
       ? await sql`SELECT * FROM blog_posts WHERE slug = ${slug} LIMIT 1`
-      : await sql`SELECT * FROM blog_posts WHERE slug = ${slug} AND status = 'published' LIMIT 1`;
+      : await sql`
+          SELECT * FROM blog_posts
+          WHERE slug = ${slug} AND (status = 'published' OR (status = 'scheduled' AND publish_at <= NOW()))
+          LIMIT 1
+        `;
     if (rows.length === 0) return null;
     return mapRow(rows[0]);
   } catch (err) {
@@ -348,12 +362,14 @@ export async function createBlogPost(
 
   const sections = sanitizeSections(input.sections);
   const upsell = sanitizeUpsell(input.upsell);
-  const status: BlogStatus = input.status === "published" ? "published" : "draft";
+  const status: BlogStatus =
+    input.status === "published" || input.status === "scheduled" ? input.status : "draft";
+  const publishAt = status === "scheduled" && input.publishAt ? input.publishAt : null;
 
   const rows = await sql`
     INSERT INTO blog_posts (
       id, slug, title, subtitle, eyebrow, excerpt, category, cover_image,
-      read_time, author_name, status, sections, upsell
+      read_time, author_name, status, publish_at, sections, upsell
     ) VALUES (
       ${id},
       ${slug},
@@ -366,6 +382,7 @@ export async function createBlogPost(
       ${(input.readTime || "5 min read").trim()},
       ${(input.authorName || "Adaptif Team").trim()},
       ${status},
+      ${publishAt},
       ${JSON.stringify(sections)}::jsonb,
       ${JSON.stringify(upsell)}::jsonb
     )
@@ -389,7 +406,15 @@ export async function updateBlogPost(
   const sections = patch.sections !== undefined ? sanitizeSections(patch.sections) : existing.sections;
   const upsell = patch.upsell !== undefined ? sanitizeUpsell(patch.upsell) : existing.upsell;
   const status: BlogStatus =
-    patch.status === "published" ? "published" : patch.status === "draft" ? "draft" : existing.status;
+    patch.status === "published" || patch.status === "draft" || patch.status === "scheduled"
+      ? patch.status
+      : existing.status;
+  const publishAt =
+    status === "scheduled"
+      ? patch.publishAt !== undefined
+        ? patch.publishAt
+        : existing.publishAt
+      : null;
 
   const sql = getSql();
   const rows = await sql`
@@ -405,6 +430,7 @@ export async function updateBlogPost(
       read_time = ${typeof patch.readTime === "string" ? patch.readTime.trim() : existing.readTime},
       author_name = ${typeof patch.authorName === "string" ? patch.authorName.trim() : existing.authorName},
       status = ${status},
+      publish_at = ${publishAt},
       sections = ${JSON.stringify(sections)}::jsonb,
       upsell = ${JSON.stringify(upsell)}::jsonb,
       updated_at = NOW()

@@ -135,7 +135,12 @@ const courses = academyItems
               <select id="blog-f-status" class="blog-input">
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
+                <option value="scheduled">Scheduled</option>
               </select>
+            </label>
+            <label class="blog-field" id="blog-publish-at-wrap" hidden>
+              <span>Publish Date &amp; Time</span>
+              <input type="datetime-local" id="blog-f-publish-at" class="blog-input" />
             </label>
             <label class="blog-field">
               <span>Eyebrow</span>
@@ -630,9 +635,31 @@ const courses = academyItems
 
     if (statusBadgeEl) {
       const st = post.status || "draft";
-      statusBadgeEl.textContent = st === "published" ? "Published" : "Draft";
+      statusBadgeEl.textContent =
+        st === "published" ? "Published" : st === "scheduled" ? "Scheduled" : "Draft";
       statusBadgeEl.className = `cms-status-badge is-${st}`;
     }
+
+    const toLocalInput = (iso: string | null | undefined) => {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return "";
+      const pad = (n: number) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    };
+
+    const syncPublishAtVisibility = (st: string) => {
+      const wrap = document.getElementById("blog-publish-at-wrap");
+      const inp = document.getElementById("blog-f-publish-at") as HTMLInputElement | null;
+      if (!wrap) return;
+      const isSched = st === "scheduled";
+      wrap.hidden = !isSched;
+      if (isSched && inp && !inp.value) {
+        const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        tomorrow.setHours(9, 0, 0, 0);
+        inp.value = toLocalInput(tomorrow.toISOString());
+      }
+    };
 
     const setVal = (id: string, val: string) => {
       const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
@@ -645,6 +672,8 @@ const courses = academyItems
     setVal("blog-f-title", post.title);
     setVal("blog-f-slug", post.slug);
     setVal("blog-f-status", post.status || "draft");
+    setVal("blog-f-publish-at", toLocalInput(post.publishAt));
+    syncPublishAtVisibility(post.status || "draft");
     setVal("blog-f-eyebrow", post.eyebrow);
     setVal("blog-f-category", post.category);
     setVal("blog-f-readtime", post.readTime);
@@ -763,12 +792,41 @@ const courses = academyItems
     }
   });
 
+  document.getElementById("blog-f-status")?.addEventListener("change", (e) => {
+    const st = (e.target as HTMLSelectElement).value;
+    const wrap = document.getElementById("blog-publish-at-wrap");
+    const inp = document.getElementById("blog-f-publish-at") as HTMLInputElement | null;
+    if (wrap) wrap.hidden = st !== "scheduled";
+    if (st === "scheduled" && inp && !inp.value) {
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      tomorrow.setHours(9, 0, 0, 0);
+      const pad = (n: number) => String(n).padStart(2, "0");
+      inp.value = `${tomorrow.getFullYear()}-${pad(tomorrow.getMonth() + 1)}-${pad(tomorrow.getDate())}T${pad(tomorrow.getHours())}:${pad(tomorrow.getMinutes())}`;
+    }
+  });
+
   // Save post metadata
   document.getElementById("btn-blog-save")?.addEventListener("click", async () => {
     const post = getSelectedPost();
     if (!post) return;
     const val = (id: string) =>
       (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)?.value.trim() || "";
+
+    const statusVal = val("blog-f-status");
+    const rawPublishAt = val("blog-f-publish-at");
+    let publishAt: string | null = null;
+    if (statusVal === "scheduled") {
+      if (!rawPublishAt) {
+        w.__SHOW_STUDIO_TOAST__?.("Please select a publish date & time for scheduled posts.", true);
+        return;
+      }
+      const parsed = new Date(rawPublishAt);
+      if (Number.isNaN(parsed.getTime())) {
+        w.__SHOW_STUDIO_TOAST__?.("Invalid publish date & time.", true);
+        return;
+      }
+      publishAt = parsed.toISOString();
+    }
 
     try {
       const res = await fetch(`/api/blog/posts/${post.id}`, {
@@ -777,7 +835,8 @@ const courses = academyItems
         body: JSON.stringify({
           title: val("blog-f-title"),
           slug: val("blog-f-slug"),
-          status: val("blog-f-status"),
+          status: statusVal,
+          publishAt,
           eyebrow: val("blog-f-eyebrow"),
           category: val("blog-f-category"),
           readTime: val("blog-f-readtime"),

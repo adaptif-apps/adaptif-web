@@ -1,0 +1,125 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import CreativeTalentHero from "../components/CreativeTalentHero.astro";
+import CreativeTalentSocialProof from "../components/CreativeTalentSocialProof.astro";
+import CreativeTalentRemote from "../components/CreativeTalentRemote.astro";
+import CreativeTalentWorkflow from "../components/CreativeTalentWorkflow.astro";
+import CreativeTalentExpertise from "../components/CreativeTalentExpertise.astro";
+import CreativeTalentBottom from "../components/CreativeTalentBottom.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+---
+
+<Layout
+  title="Our Creative Talent — Adaptif"
+  description="Scale your brand with a senior creative team without adding headcount. Adaptif Lab brings together designers, strategists, product thinkers, motion specialists, copywriters and technologists."
+>
+  <Header />
+  <main>
+    <CreativeTalentHero />
+    <CreativeTalentSocialProof />
+    <CreativeTalentRemote />
+    <CreativeTalentWorkflow />
+    <CreativeTalentExpertise />
+    <CreativeTalentBottom />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  /* Shared scroll-reveal system for Our Creative Talent */
+  :global([data-ct-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--ct-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--ct-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-ct-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-ct-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-ct-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initCreativeTalentAnimations = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-ct-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animateCounter = (el: HTMLElement) => {
+      const target = Number(el.dataset.ctCount || "0");
+      const suffix = el.dataset.ctSuffix || "";
+      if (!target || el.dataset.ctCounted === "1") return;
+      el.dataset.ctCounted = "1";
+
+      if (prefersReducedMotion) {
+        el.textContent = `${target}${suffix}`;
+        return;
+      }
+
+      const duration = 1100;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = `${Math.round(target * eased)}${suffix}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => {
+        el.classList.add("is-visible");
+        el.querySelectorAll<HTMLElement>("[data-ct-count]").forEach(animateCounter);
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          target.classList.add("is-visible");
+          if (target.hasAttribute("data-ct-count")) {
+            animateCounter(target);
+          } else {
+            target.querySelectorAll<HTMLElement>("[data-ct-count]").forEach(animateCounter);
+          }
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -36px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initCreativeTalentAnimations();
+  document.addEventListener("astro:page-load", initCreativeTalentAnimations);
+</script>

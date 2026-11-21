@@ -1,0 +1,202 @@
+---
+// MarketingAiAndWorkflow.astro - "AI-powered research" + "Strategy lives inside the work" (5 steps)
+import ServiceAiBanner from "./ServiceAiBanner.astro";
+
+const aiFeatures = [
+  { id: "mapping", description: "Compress competitor mapping and market discovery" },
+  { id: "personas", description: "Build personas, message territories, and customer journeys in a fraction of the time" },
+  { id: "analysis", description: "Read ad and content performance through AI-driven analysis tools" },
+];
+
+const steps = [
+  {
+    num: "1",
+    title: "Discovery and kickoff",
+    desc: "Day one is about getting clear on objectives, audiences, and blind spots.",
+  },
+  {
+    num: "2",
+    title: "Embedded support",
+    desc: "Need a strategist beside you? One steps in wherever the gap happens to be.",
+  },
+  {
+    num: "3",
+    title: "Collaborative execution",
+    desc: "Thinking runs through the brief, the creative, and everything we ship.",
+  },
+  {
+    num: "4",
+    title: "AI-powered insights",
+    desc: "Research and analysis accelerated by AI feed sharper, more evidence-based recommendations.",
+  },
+  {
+    num: "5",
+    title: "Performance alignment",
+    desc: "Outcomes stay visible and get tuned as we go. Every brief makes the next one stronger.",
+  },
+];
+---
+
+<!-- 1. How Adaptif uses AI (1-column banner with background image) -->
+<ServiceAiBanner
+  id="marketing-ai"
+  cmsPrefix="marketing.ai"
+  titleLead="AI-powered research,"
+  titleHighlight="human-owned insight and strategy"
+  lead="Nuance never gets lost because our marketing strategists stay in the driver’s seat end to end. AI simply lets us cover ground quicker."
+  image="/images/marketing-strategy/ai-cosmic-desk.jpg"
+  items={aiFeatures}
+  revealAttr="data-mk-reveal"
+/>
+
+<!-- 2. Working together -->
+<section class="mk-work" id="marketing-workflow" aria-labelledby="mk-work-title">
+  <div class="container mk-work__grid">
+    <div class="mk-work__intro" data-mk-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="marketing.workflow.eyebrow">
+        Working together
+      </p>
+      <h2 id="mk-work-title" class="mk-work__title" data-cms-key="marketing.workflow.title">
+        Strategy lives <span class="title-highlight">inside the work</span>
+      </h2>
+      <p class="mk-work__subtitle" data-cms-key="marketing.workflow.subtitle">
+        No handing over decks and walking away. We stay in it with your team and chase outcomes together. When you win, we win.
+      </p>
+
+      <div class="mk-work__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="marketing.workflow.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <ol class="mk-work__steps">
+      {steps.map((step, idx) => (
+        <li class="mk-step" data-mk-reveal style={`--mk-delay: ${idx * 65}ms`}>
+          <span class="mk-step__num" aria-hidden="true">{step.num}</span>
+          <div class="mk-step__body">
+            <h3 class="mk-step__title" data-cms-key={`marketing.workflow.step${step.num}.title`}>
+              {step.title}
+            </h3>
+            <p class="mk-step__desc" data-cms-key={`marketing.workflow.step${step.num}.desc`}>
+              {step.desc}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  /* Working together */
+  .mk-work {
+    padding: clamp(64px, 8.5vw, 112px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .mk-work__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .mk-work__intro {
+    position: sticky;
+    top: 112px;
+  }
+
+  .mk-work__title {
+    margin: 14px 0 18px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.1vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .mk-work__subtitle {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.62;
+    color: var(--color-text-secondary);
+  }
+
+  .mk-work__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mk-step {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 18px;
+    padding: 24px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .mk-step:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .mk-step__num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    margin-top: 2px;
+  }
+
+  .mk-step__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .mk-step__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 960px) {
+    .mk-work__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .mk-work__intro {
+      position: static;
+    }
+  }
+</style>

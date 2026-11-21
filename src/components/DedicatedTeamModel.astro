@@ -1,5 +1,5 @@
 ---
-// DedicatedTeamModel.astro - Unified explanation of Adaptif's subscription model
+// DedicatedTeamModel.astro - Infographic explanation of Adaptif's subscription model
 interface Props {
   flexibilityTitle?: string;
   flexibilityDescription?: string;
@@ -11,38 +11,18 @@ const {
     "Your subscription adapts to your pipeline. Upgrade, downgrade, or pause between billing cycles when your workload shifts—without managing separate per-project agreements.",
 } = Astro.props;
 
-interface ModelPillar {
-  key: string;
-  tag: string;
-  title: string;
-  description: string;
-  icon: "disciplines" | "retainer" | "flexibility";
-}
+const disciplines = [
+  { name: "Brand & Identity", code: "SYS-01", tags: ["Logos", "Guidelines", "Visual Systems"] },
+  { name: "Product & Web", code: "SYS-02", tags: ["UI/UX", "Landing Pages", "Design Systems"] },
+  { name: "Motion & 3D", code: "SYS-03", tags: ["Reels", "Lottie", "3D Assets"] },
+  { name: "Creative Direction", code: "SYS-04", tags: ["Art Direction", "Campaigns", "Decks"] },
+];
 
-const pillars: ModelPillar[] = [
-  {
-    key: "disciplines",
-    tag: "01 · Scope",
-    title: "One team. Every discipline.",
-    description:
-      "Access design, branding, motion, and web capabilities from a single working relationship, aligned with your chosen plan’s scope—no sourcing or coordinating separate vendors for every need.",
-    icon: "disciplines",
-  },
-  {
-    key: "retainer",
-    tag: "02 · Predictability",
-    title: "Flat monthly retainer.",
-    description:
-      "One defined rate covers your plan’s active capacity and queue—whether billed monthly or annually—so you don’t negotiate separate quotes for every included request or revision.",
-    icon: "retainer",
-  },
-  {
-    key: "flexibility",
-    tag: "03 · Pace",
-    title: flexibilityTitle,
-    description: flexibilityDescription,
-    icon: "flexibility",
-  },
+const timelineSteps = [
+  { cycle: "Cycle 01", label: "Launch Sprint", state: "active", badge: "Active" },
+  { cycle: "Cycle 02", label: "Scale Capacity", state: "upgrade", badge: "Upgrade" },
+  { cycle: "Cycle 03", label: "Hold Between Launches", state: "paused", badge: "Paused $0" },
+  { cycle: "Cycle 04", label: "Resume On Demand", state: "active", badge: "Resume" },
 ];
 ---
 
@@ -66,59 +46,169 @@ const pillars: ModelPillar[] = [
       </p>
     </header>
 
-    <!-- Unified 3-Part Architectural Model Frame -->
-    <div class="dt-model__shell" role="region" aria-label="How the Adaptif subscription model works">
-      <!-- Top Connector Bar -->
-      <div class="dt-model__system-bar" aria-hidden="true">
-        <span class="dt-model__system-label">ADAPTIF SUBSCRIPTION ARCHITECTURE</span>
-        <span class="dt-model__system-flow">
-          <span>Scope</span>
-          <span class="dt-model__flow-sep">→</span>
-          <span>Cost</span>
-          <span class="dt-model__flow-sep">→</span>
-          <span>Flexibility</span>
-        </span>
+    <!-- Infographic Blueprint Canvas -->
+    <div class="dt-model__blueprint" role="region" aria-label="Adaptif subscription model infographic">
+      <!-- Top Schematic Bar -->
+      <div class="dt-model__bar" aria-hidden="true">
+        <div class="dt-model__bar-left">
+          <span class="dt-model__pulse-dot"></span>
+          <span class="dt-model__bar-label">ADAPTIF SUBSCRIPTION ARCHITECTURE</span>
+        </div>
+        <div class="dt-model__bar-flow">
+          <span class="dt-model__flow-pill">01 Scope</span>
+          <span class="dt-model__flow-arrow">→</span>
+          <span class="dt-model__flow-pill">02 Predictability</span>
+          <span class="dt-model__flow-arrow">→</span>
+          <span class="dt-model__flow-pill">03 Pace</span>
+        </div>
       </div>
 
-      <!-- Connected Pillars Grid -->
-      <div class="dt-model__pillars">
-        {pillars.map((pillar, index) => (
-          <article
-            class="dt-model__pillar reveal-model"
-            style={`--model-delay: ${index * 80}ms;`}
-          >
-            <div class="dt-model__pillar-top">
-              <span class="dt-model__icon" aria-hidden="true">
-                {pillar.icon === "disciplines" && (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Asymmetric Infographic Grid -->
+      <div class="dt-model__grid">
+        <!-- 01 · SCOPE: Hub-and-Spoke Discipline Convergence (7 cols) -->
+        <article class="dt-model__module dt-model__module--scope reveal-model" style="--model-delay: 0ms;">
+          <div class="dt-model__module-head">
+            <span class="dt-model__tag">01 · Scope</span>
+            <span class="dt-model__meta-pill">Zero vendor juggling</span>
+          </div>
+
+          <div class="dt-model__scope-layout">
+            <div class="dt-model__copy-block">
+              <h3 class="dt-model__module-title">One team. Every discipline.</h3>
+              <p class="dt-model__module-copy">
+                Access design, branding, motion, and web capabilities from a single working relationship, aligned with your chosen plan’s scope—no sourcing or coordinating separate vendors for every need.
+              </p>
+            </div>
+
+            <!-- Visual Hub-and-Spoke Diagram -->
+            <div class="dt-model__hub-diagram" aria-hidden="true">
+              <div class="dt-model__hub-nodes">
+                {disciplines.map((d) => (
+                  <div class="dt-model__node">
+                    <span class="dt-model__node-code">{d.code}</span>
+                    <span class="dt-model__node-name">{d.name}</span>
+                    <div class="dt-model__node-tags">
+                      {d.tags.map((tag) => (
+                        <span class="dt-model__node-tag">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="dt-model__hub-connector">
+                <svg class="dt-model__connector-svg" viewBox="0 0 120 160" fill="none" preserveAspectRatio="none">
+                  <path d="M0 20 C55 20, 55 80, 118 80" stroke="url(#hubGrad)" stroke-width="1.5" />
+                  <path d="M0 60 C55 60, 55 80, 118 80" stroke="url(#hubGrad)" stroke-width="1.5" />
+                  <path d="M0 100 C55 100, 55 80, 118 80" stroke="url(#hubGrad)" stroke-width="1.5" />
+                  <path d="M0 140 C55 140, 55 80, 118 80" stroke="url(#hubGrad)" stroke-width="1.5" />
+                  <defs>
+                    <linearGradient id="hubGrad" x1="0" y1="0" x2="120" y2="0" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stop-color="rgba(72, 200, 255, 0.18)" />
+                      <stop offset="100%" stop-color="rgba(72, 200, 255, 0.75)" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              <div class="dt-model__hub-core">
+                <div class="dt-model__core-ring">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="5.5" r="2.5" />
                     <circle cx="6" cy="17.5" r="2.5" />
                     <circle cx="18" cy="17.5" r="2.5" />
                     <path d="M10.8 7.7L7.2 15.3M13.2 7.7L16.8 15.3M8.5 17.5H15.5" />
                   </svg>
-                )}
-                {pillar.icon === "retainer" && (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" />
-                    <path d="M3.5 10H20.5M7.5 14.5H12" />
-                  </svg>
-                )}
-                {pillar.icon === "flexibility" && (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M4 12a8 8 0 0 1 13.66-5.66L20 8.5" />
-                    <path d="M20 4v4.5h-4.5" />
-                    <path d="M20 12a8 8 0 0 1-13.66 5.66L4 15.5" />
-                    <path d="M4 20v-4.5h4.5" />
-                  </svg>
-                )}
-              </span>
-              <span class="dt-model__tag">{pillar.tag}</span>
+                </div>
+                <span class="dt-model__core-title">1 Team</span>
+                <span class="dt-model__core-sub">Unified Queue</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 02 · PREDICTABILITY: Flat Retainer vs Variable Quotes Chart -->
+        <article class="dt-model__module dt-model__module--retainer reveal-model" style="--model-delay: 90ms;">
+          <div class="dt-model__module-head">
+            <span class="dt-model__tag">02 · Predictability</span>
+            <span class="dt-model__meta-pill">Monthly or Annual</span>
+          </div>
+
+          <div class="dt-model__retainer-layout">
+            <div class="dt-model__copy-block">
+              <h3 class="dt-model__module-title">Flat monthly retainer.</h3>
+              <p class="dt-model__module-copy">
+                One defined rate covers your plan’s active capacity and queue—whether billed monthly or annually—so you don’t negotiate separate quotes for every included request or revision.
+              </p>
             </div>
 
-            <h3 class="dt-model__pillar-title">{pillar.title}</h3>
-            <p class="dt-model__pillar-copy">{pillar.description}</p>
-          </article>
-        ))}
+            <!-- Visual Cost Stability Comparison -->
+            <div class="dt-model__chart" aria-hidden="true">
+              <div class="dt-model__chart-row dt-model__chart-row--legacy">
+                <div class="dt-model__chart-meta">
+                  <span>Traditional Quotes</span>
+                  <span class="dt-model__chart-note">Variable + Extras</span>
+                </div>
+                <div class="dt-model__bars">
+                  <span style="height: 38%"></span>
+                  <span style="height: 76%"></span>
+                  <span style="height: 52%"></span>
+                  <span style="height: 94%"></span>
+                  <span style="height: 64%"></span>
+                  <span style="height: 85%"></span>
+                </div>
+              </div>
+
+              <div class="dt-model__chart-row dt-model__chart-row--adaptif">
+                <div class="dt-model__chart-meta">
+                  <span>Adaptif Retainer</span>
+                  <span class="dt-model__chart-note dt-model__chart-note--cyan">1 Flat Rate</span>
+                </div>
+                <div class="dt-model__flat-line">
+                  <span class="dt-model__flat-fill"></span>
+                  <span class="dt-model__flat-tag">Active capacity & revisions included</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 03 · PACE: Full-Width Lifecycle Timeline (12 cols) -->
+        <article class="dt-model__module dt-model__module--pace reveal-model" style="--model-delay: 160ms;">
+          <div class="dt-model__pace-top">
+            <div class="dt-model__pace-copy">
+              <div class="dt-model__module-head">
+                <span class="dt-model__tag">03 · Pace</span>
+              </div>
+              <h3 class="dt-model__module-title">{flexibilityTitle}</h3>
+              <p class="dt-model__module-copy">{flexibilityDescription}</p>
+            </div>
+
+            <!-- Interactive-feeling Pipeline Timeline -->
+            <div class="dt-model__timeline" aria-hidden="true">
+              <div class="dt-model__timeline-track"></div>
+              <div class="dt-model__timeline-steps">
+                {timelineSteps.map((step) => (
+                  <div class={`dt-model__step dt-model__step--${step.state}`}>
+                    <div class="dt-model__step-node">
+                      {step.state === "paused" && (
+                        <span class="dt-model__lockin-pill">No lock-in</span>
+                      )}
+                      <span class="dt-model__step-dot"></span>
+                    </div>
+                    <div class="dt-model__step-card">
+                      <div class="dt-model__step-top">
+                        <span class="dt-model__step-cycle">{step.cycle}</span>
+                        <span class="dt-model__step-badge">{step.badge}</span>
+                      </div>
+                      <span class="dt-model__step-label">{step.label}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   </div>
@@ -144,7 +234,7 @@ const pillars: ModelPillar[] = [
           }
         });
       },
-      { threshold: 0.14, rootMargin: "0px 0px -30px 0px" }
+      { threshold: 0.12, rootMargin: "0px 0px -30px 0px" }
     );
 
     items.forEach((item) => observer.observe(item));
@@ -212,117 +302,504 @@ const pillars: ModelPillar[] = [
     margin: 0;
   }
 
-  /* Unified Architectural Shell */
-  .dt-model__shell {
+  /* Blueprint Shell */
+  .dt-model__blueprint {
     border-radius: 24px;
-    background: linear-gradient(
-      180deg,
-      rgba(8, 18, 42, 0.65) 0%,
-      rgba(4, 9, 24, 0.78) 100%
-    );
+    background:
+      radial-gradient(rgba(72, 200, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(8, 18, 42, 0.72) 0%, rgba(4, 9, 24, 0.88) 100%);
+    background-size: 22px 22px, 100% 100%;
     border: 1px solid rgba(255, 255, 255, 0.11);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 24px 60px -20px rgba(0, 0, 0, 0.8);
+      0 28px 70px -24px rgba(0, 0, 0, 0.85);
     overflow: hidden;
   }
 
-  .dt-model__system-bar {
+  /* Top Schematic Bar */
+  .dt-model__bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
     padding: 14px clamp(20px, 3vw, 34px);
-    background: rgba(2, 6, 16, 0.55);
+    background: rgba(2, 6, 16, 0.72);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
   }
 
-  .dt-model__system-label {
-    font-family: var(--font-family-mono, monospace);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    color: #64748b;
-  }
-
-  .dt-model__system-flow {
+  .dt-model__bar-left {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 0.78rem;
-    font-weight: 500;
+  }
+
+  .dt-model__pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--color-brand-cyan, #48C8FF);
+    box-shadow: 0 0 10px rgba(72, 200, 255, 0.85);
+  }
+
+  .dt-model__bar-label {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    color: #94a3b8;
+  }
+
+  .dt-model__bar-flow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .dt-model__flow-pill {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.7rem;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
     color: #cbd5e1;
+    white-space: nowrap;
   }
 
-  .dt-model__flow-sep {
+  .dt-model__flow-arrow {
     color: var(--color-brand-cyan, #48C8FF);
-    opacity: 0.75;
+    font-size: 0.78rem;
+    opacity: 0.8;
   }
 
-  .dt-model__pillars {
+  /* Asymmetric 12-col Grid */
+  .dt-model__grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
-  .dt-model__pillar {
-    position: relative;
-    padding: clamp(26px, 3.4vw, 40px);
+  .dt-model__module {
+    padding: clamp(24px, 3.2vw, 38px);
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
     transition: background 0.25s ease;
   }
 
-  .dt-model__pillar + .dt-model__pillar {
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
+  .dt-model__module:hover {
+    background: rgba(72, 200, 255, 0.025);
   }
 
-  .dt-model__pillar:hover {
-    background: rgba(72, 200, 255, 0.03);
+  .dt-model__module--scope {
+    grid-column: span 12;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  .dt-model__pillar-top {
+  .dt-model__module--retainer {
+    grid-column: span 12;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-model__module--pace {
+    grid-column: span 12;
+  }
+
+  .dt-model__module-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .dt-model__icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-brand-cyan, #48C8FF);
-    background: rgba(72, 200, 255, 0.08);
-    border: 1px solid rgba(72, 200, 255, 0.24);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    flex-shrink: 0;
+    margin-bottom: 14px;
   }
 
   .dt-model__tag {
     font-family: var(--font-family-mono, monospace);
     font-size: 0.74rem;
+    letter-spacing: 0.05em;
+    color: var(--color-brand-cyan, #48C8FF);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .dt-model__meta-pill {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.68rem;
     letter-spacing: 0.04em;
     color: #94a3b8;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    white-space: nowrap;
   }
 
-  .dt-model__pillar-title {
+  .dt-model__module-title {
     font-family: var(--font-family-display);
-    font-size: clamp(1.55rem, 2.1vw, 1.95rem);
-    line-height: 1.14;
+    font-size: clamp(1.55rem, 2.2vw, 2rem);
+    line-height: 1.12;
     letter-spacing: -0.025em;
     font-weight: 400;
-    color: var(--color-text-primary);
-    margin-bottom: 12px;
+    color: var(--color-text-primary, #ffffff);
+    margin: 0 0 12px;
   }
 
-  .dt-model__pillar-copy {
-    font-size: 0.96rem;
+  .dt-model__module-copy {
+    font-size: 0.95rem;
     line-height: 1.62;
     color: #cbd5e1;
     margin: 0;
+  }
+
+  /* 01 · Scope Hub Diagram & 02 · Retainer Horizontal Split */
+  .dt-model__scope-layout,
+  .dt-model__retainer-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.35fr);
+    gap: clamp(24px, 4vw, 48px);
+    align-items: center;
+    flex: 1;
+  }
+
+  .dt-model__hub-diagram {
+    display: grid;
+    grid-template-columns: 1fr 48px auto;
+    align-items: center;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(2, 6, 18, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-model__hub-nodes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dt-model__node {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .dt-model__module--scope:hover .dt-model__node {
+    border-color: rgba(72, 200, 255, 0.25);
+    background: rgba(72, 200, 255, 0.05);
+  }
+
+  .dt-model__node-code {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.62rem;
+    color: var(--color-brand-cyan, #48C8FF);
+    opacity: 0.85;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .dt-model__node-name {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    white-space: nowrap;
+  }
+
+  .dt-model__node-tags {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .dt-model__node-tag {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+    color: #94a3b8;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    white-space: nowrap;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .dt-model__module--scope:hover .dt-model__node-tag {
+    color: #cbd5e1;
+    border-color: rgba(72, 200, 255, 0.16);
+  }
+
+  .dt-model__hub-connector {
+    height: 148px;
+    display: flex;
+    align-items: center;
+  }
+
+  .dt-model__connector-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .dt-model__hub-core {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 14px 12px;
+    border-radius: 14px;
+    background: radial-gradient(circle at 50% 0%, rgba(72, 200, 255, 0.16), rgba(72, 200, 255, 0.04));
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    box-shadow: 0 0 28px -8px rgba(72, 200, 255, 0.4);
+  }
+
+  .dt-model__core-ring {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-brand-cyan, #48C8FF);
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    margin-bottom: 8px;
+  }
+
+  .dt-model__core-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  .dt-model__core-sub {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.64rem;
+    color: #94a3b8;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  /* 02 · Predictability Chart */
+  .dt-model__chart {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(2, 6, 18, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dt-model__chart-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.76rem;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+  }
+
+  .dt-model__chart-note {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.66rem;
+    color: #64748b;
+  }
+
+  .dt-model__chart-note--cyan {
+    color: var(--color-brand-cyan, #48C8FF);
+  }
+
+  .dt-model__bars {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    align-items: end;
+    gap: 6px;
+    height: 36px;
+    padding: 4px 0 0;
+  }
+
+  .dt-model__bars span {
+    border-radius: 4px 4px 2px 2px;
+    background: rgba(148, 163, 184, 0.25);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+  }
+
+  .dt-model__flat-line {
+    position: relative;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(72, 200, 255, 0.08);
+    border: 1px solid rgba(72, 200, 255, 0.35);
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    overflow: hidden;
+  }
+
+  .dt-model__flat-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(90deg, rgba(72, 200, 255, 0.22), rgba(72, 200, 255, 0.06));
+  }
+
+  .dt-model__flat-tag {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.68rem;
+    color: #e0f2fe;
+    white-space: nowrap;
+  }
+
+  /* 03 · Pace Timeline */
+  .dt-model__pace-top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.45fr);
+    gap: clamp(24px, 3.6vw, 44px);
+    align-items: center;
+  }
+
+  .dt-model__timeline {
+    position: relative;
+    padding: 32px 0 8px;
+  }
+
+  .dt-model__timeline-track {
+    position: absolute;
+    top: 46px;
+    left: 24px;
+    right: 24px;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      rgba(72, 200, 255, 0.65) 0%,
+      rgba(72, 200, 255, 0.5) 45%,
+      rgba(148, 163, 184, 0.25) 65%,
+      rgba(72, 200, 255, 0.65) 100%
+    );
+  }
+
+  .dt-model__timeline-steps {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .dt-model__step {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dt-model__step-node {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 14px;
+    height: 28px;
+  }
+
+  .dt-model__lockin-pill {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 20px;
+    transform: translateX(-50%);
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    white-space: nowrap;
+  }
+
+  .dt-model__step-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    background: #040918;
+    border: 2px solid var(--color-brand-cyan, #48C8FF);
+    box-shadow: 0 0 12px rgba(72, 200, 255, 0.6);
+  }
+
+  .dt-model__step--paused .dt-model__step-dot {
+    border-color: #64748b;
+    box-shadow: none;
+  }
+
+  .dt-model__step-card {
+    padding: 12px 10px;
+    border-radius: 12px;
+    background: rgba(2, 6, 18, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .dt-model__step--paused .dt-model__step-card {
+    border-style: dashed;
+    border-color: rgba(148, 163, 184, 0.28);
+    background: rgba(2, 6, 18, 0.45);
+  }
+
+  .dt-model__module--pace:hover .dt-model__step-card {
+    border-color: rgba(72, 200, 255, 0.24);
+  }
+
+  .dt-model__step-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+  }
+
+  .dt-model__step-cycle {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.64rem;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .dt-model__step-badge {
+    font-family: var(--font-family-mono, monospace);
+    font-size: 0.62rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(72, 200, 255, 0.1);
+    color: var(--color-brand-cyan, #48C8FF);
+    border: 1px solid rgba(72, 200, 255, 0.25);
+    white-space: nowrap;
+  }
+
+  .dt-model__step--paused .dt-model__step-badge {
+    background: rgba(148, 163, 184, 0.1);
+    color: #94a3b8;
+    border-color: rgba(148, 163, 184, 0.22);
+  }
+
+  .dt-model__step-label {
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: #e2e8f0;
   }
 
   /* Subtle reveal animation */
@@ -348,22 +825,47 @@ const pillars: ModelPillar[] = [
     }
   }
 
-  @media (max-width: 960px) {
-    .dt-model__pillars {
+  @media (max-width: 1080px) {
+    .dt-model__scope-layout,
+    .dt-model__retainer-layout,
+    .dt-model__pace-top {
       grid-template-columns: 1fr;
     }
+  }
 
-    .dt-model__pillar + .dt-model__pillar {
-      border-left: none;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
+  @media (max-width: 720px) {
+
+    .dt-model__timeline-track {
+      display: none;
+    }
+
+    .dt-model__timeline-steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dt-model__step-node {
+      display: none;
     }
   }
 
   @media (max-width: 600px) {
-    .dt-model__system-bar {
+    .dt-model__bar {
       flex-direction: column;
       align-items: flex-start;
-      gap: 6px;
+      gap: 10px;
+    }
+
+    .dt-model__hub-diagram {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .dt-model__hub-connector {
+      display: none;
+    }
+
+    .dt-model__timeline-steps {
+      grid-template-columns: 1fr;
     }
   }
 </style>

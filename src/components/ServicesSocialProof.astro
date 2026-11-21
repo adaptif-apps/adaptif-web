@@ -1,0 +1,221 @@
+---
+// ServicesSocialProof.astro - Marc Vitulli testimonial, 4x/60%/60+ metrics, and S&S Activewear story
+---
+
+<section class="sv-proof" id="services-social-proof" data-theme="light" aria-label="Client testimonial and impact">
+  <div class="container">
+    <div class="sv-proof__grid" data-sv-reveal>
+      <div class="sv-proof__portrait">
+        <img
+          src="/images/why-us/marc-vitulli.jpg"
+          alt="Marc Vitulli, VP Marketing at S&S Activewear"
+          class="sv-proof__avatar"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="services.proof.avatar"
+        />
+      </div>
+
+      <div class="sv-proof__body">
+        <blockquote class="sv-proof__quote" data-cms-key="services.proof.quote">
+          “Thanks to Adaptif, we’ve elevated ourselves. We’ve changed marketing in the industry by acting as more of a marketing agency for our brands, and streamlining that into robust marketing campaigns that move the needle.”
+        </blockquote>
+
+        <p class="sv-proof__author" data-cms-key="services.proof.author">
+          Marc Vitulli, VP Marketing at S&amp;S Activewear
+        </p>
+
+        <div class="sv-proof__bottom">
+          <dl class="sv-proof__metrics">
+            <div class="sv-proof__metric">
+              <dt data-cms-key="services.proof.metric1.label">Increase in design capacity</dt>
+              <dd data-sv-count="4" data-sv-suffix="x" data-cms-key="services.proof.metric1.value">4x</dd>
+            </div>
+            <div class="sv-proof__metric">
+              <dt data-cms-key="services.proof.metric2.label">Reduction in time to market</dt>
+              <dd data-sv-count="60" data-sv-suffix="%" data-cms-key="services.proof.metric2.value">60%</dd>
+            </div>
+            <div class="sv-proof__metric">
+              <dt data-cms-key="services.proof.metric3.label">Number of brands</dt>
+              <dd data-sv-count="60" data-sv-suffix="+" data-cms-key="services.proof.metric3.value">60+</dd>
+            </div>
+          </dl>
+
+          <a href="/our-work" class="sv-proof__story" data-cms-key="services.proof.story">
+            <img
+              src="/images/ai-excellence/blog-thumb.jpg"
+              alt="S&S Activewear creative showcase"
+              class="sv-proof__story-thumb"
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="sv-proof__story-meta">
+              <span class="sv-proof__story-eyebrow">S&amp;S Activewear</span>
+              <span class="sv-proof__story-title">How To Keep Creative Fresh for 60+ Different Brands</span>
+            </div>
+            <span class="sv-proof__story-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sv-proof {
+    position: relative;
+    padding: clamp(56px, 7vw, 96px) 0;
+    background: #ffffff;
+    color: #090d16;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .sv-proof__grid {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 52px);
+    align-items: start;
+    max-width: 1060px;
+    margin: 0 auto;
+  }
+
+  .sv-proof__portrait {
+    width: clamp(92px, 11vw, 132px);
+    height: clamp(92px, 11vw, 132px);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    box-shadow: 0 16px 36px -14px rgba(15, 23, 42, 0.25);
+  }
+
+  .sv-proof__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+  }
+
+  .sv-proof__quote {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.12rem, 1.55vw, 1.38rem);
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    color: #090d16;
+  }
+
+  .sv-proof__author {
+    margin: 0 0 28px;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #475569;
+  }
+
+  .sv-proof__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px 36px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+  }
+
+  .sv-proof__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px 42px;
+    margin: 0;
+  }
+
+  .sv-proof__metric {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+  }
+
+  .sv-proof__metric dt {
+    font-family: var(--font-family-body);
+    font-size: 0.8rem;
+    color: #475569;
+  }
+
+  .sv-proof__metric dd {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.1rem, 3vw, 2.7rem);
+    font-weight: 400;
+    line-height: 1;
+    color: #0284c7;
+  }
+
+  .sv-proof__story {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px 10px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    background: #f8fafc;
+    text-decoration: none;
+    max-width: 340px;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .sv-proof__story:hover {
+    transform: translateY(-2px);
+    border-color: rgba(2, 132, 199, 0.35);
+    box-shadow: 0 12px 28px -12px rgba(15, 23, 42, 0.18);
+  }
+
+  .sv-proof__story-thumb {
+    width: 64px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .sv-proof__story-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sv-proof__story-eyebrow {
+    font-family: var(--font-family-body);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0284c7;
+  }
+
+  .sv-proof__story-title {
+    font-family: var(--font-family-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #0f172a;
+  }
+
+  .sv-proof__story-arrow {
+    font-size: 1rem;
+    color: #0284c7;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 720px) {
+    .sv-proof__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sv-proof__story {
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+</style>

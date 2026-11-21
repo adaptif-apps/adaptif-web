@@ -1,0 +1,755 @@
+---
+// ServicesCatalog.astro - Creative, Production, AI & Marketing service showcases
+
+interface ServiceCard {
+  id: string;
+  cmsKey: string;
+  title: string;
+  description: string;
+  image: string;
+  alt: string;
+  href?: string;
+  areaClass?: string;
+  scrimVariant?: "bottom" | "top-bottom" | "full-soft";
+  textPos?: "bottom" | "top";
+}
+
+const creativeCards: ServiceCard[] = [
+  {
+    id: "service-ad-creative",
+    cmsKey: "ad-creative",
+    title: "Ad creative",
+    description:
+      "Get original designs for your social media channels. Static, animated or video, from Instagram to YouTube or Facebook.",
+    image: "/images/services/ad-creative.jpg",
+    alt: "Ad creative showcased on mobile social feed",
+    href: "/ad-creative",
+    areaClass: "sv-tile--ad",
+    scrimVariant: "bottom",
+    textPos: "bottom",
+  },
+  {
+    id: "service-branding-services",
+    cmsKey: "branding",
+    title: "Branding",
+    description:
+      "Get the brand expertise you need, however you need it, from brand development and design to custom branding solutions.",
+    image: "/images/services/branding.jpg",
+    alt: "RiizeUp outdoor brand campaign billboard",
+    href: "/branding",
+    areaClass: "sv-tile--branding",
+    scrimVariant: "top-bottom",
+    textPos: "bottom",
+  },
+  {
+    id: "service-web-design",
+    cmsKey: "web-design",
+    title: "Web design",
+    description:
+      "Get landing pages designed from scratch or based on existing materials with thoughtful UI/UX wireframes and designs.",
+    image: "/images/services/web-design.jpg",
+    alt: "Protea responsive website displayed on laptop",
+    href: "/web-design",
+    areaClass: "sv-tile--web",
+    scrimVariant: "top-bottom",
+    textPos: "top",
+  },
+  {
+    id: "service-social-media",
+    cmsKey: "social-media",
+    title: "Social media creative",
+    description:
+      "Get static and motion ad creative, concepts, and variations for testing your way to better results across social media.",
+    image: "/images/services/social-media.jpg",
+    alt: "Multi-format social media creative templates",
+    href: "/social-media-creative",
+    areaClass: "sv-tile--social",
+    scrimVariant: "bottom",
+    textPos: "bottom",
+  },
+  {
+    id: "service-email-creation",
+    cmsKey: "email-design",
+    title: "Email design",
+    description:
+      "Invigorate your communications with original email designs, templates, and creative that capture your audience’s attention.",
+    image: "/images/services/email-design.jpg",
+    alt: "Mobile email campaign design on smartphone",
+    href: "/email-design",
+    areaClass: "sv-tile--email",
+    scrimVariant: "top-bottom",
+    textPos: "top",
+  },
+  {
+    id: "service-ebook-report",
+    cmsKey: "ebooks-reports",
+    title: "eBooks & report design",
+    description:
+      "Get eBooks and reports with designs that demand attention. Supercharge your reports, eBooks, and digital learning content.",
+    image: "/images/services/ebooks-reports.jpg",
+    alt: "Interactive report and guide layout on tablet",
+    areaClass: "sv-tile--ebooks",
+    scrimVariant: "bottom",
+    textPos: "bottom",
+  },
+  {
+    id: "service-illustration-design",
+    cmsKey: "illustration",
+    title: "Illustration design",
+    description:
+      "Get custom, on-brand illustrations for your business or marketing efforts that act as an extension of your company.",
+    image: "/images/services/illustration.jpg",
+    alt: "Custom editorial illustration drawn on tablet",
+    areaClass: "sv-tile--illustration",
+    scrimVariant: "top-bottom",
+    textPos: "top",
+  },
+  {
+    id: "service-packaging-merchandise",
+    cmsKey: "packaging",
+    title: "Packaging & merchandise design",
+    description:
+      "Bring your brand to life with tactile packaging, unboxing experiences, and custom merchandise designed to stand out.",
+    image: "/images/services/packaging.jpg",
+    alt: "Custom Morganic product packaging and box design",
+    areaClass: "sv-tile--packaging",
+    scrimVariant: "bottom",
+    textPos: "bottom",
+  },
+  {
+    id: "service-presentation-design",
+    cmsKey: "presentation",
+    title: "Presentation design",
+    description:
+      "Get original presentations designed for your persuasive pitch decks, sales decks, or executive keynote presentations.",
+    image: "/images/services/presentation.jpg",
+    alt: "Keynote presentation deck on conference stage",
+    areaClass: "sv-tile--presentation",
+    scrimVariant: "top-bottom",
+    textPos: "top",
+  },
+  {
+    id: "service-concept-creation",
+    cmsKey: "concept-creation",
+    title: "Concept creation",
+    description:
+      "Get 360 campaigns, designs, and concept ideas for ads that capture and entice your audience, online or offline.",
+    image: "/images/services/concept-creation.jpg",
+    alt: "Creative concept sketching in brand notebook",
+    areaClass: "sv-tile--concept",
+    scrimVariant: "bottom",
+    textPos: "bottom",
+  },
+  {
+    id: "service-print-design",
+    cmsKey: "print-design",
+    title: "Print design",
+    description:
+      "Create stunning print designs that demand attention. Supercharge your books, brochures, flyers, and print materials with editorial layouts.",
+    image: "/images/services/print-design.jpg",
+    alt: "Editorial print book spread layout",
+    areaClass: "sv-tile--print",
+    scrimVariant: "top-bottom",
+    textPos: "top",
+  },
+];
+
+const productionCards: ServiceCard[] = [
+  {
+    id: "service-video-production",
+    cmsKey: "video-production",
+    title: "Video production",
+    description:
+      "Get strategy-aligned videos and video ads from pre-production to final edit to perform across every channel.",
+    image: "/images/services/video-production.jpg",
+    alt: "Video editor working at dual-monitor post-production suite",
+    textPos: "top",
+  },
+  {
+    id: "service-motion-design",
+    cmsKey: "motion-design",
+    title: "Motion design",
+    description:
+      "Get on-brand motion graphics designed to enhance your website, digital campaigns, presentations, and ads.",
+    image: "/images/services/motion-design.jpg",
+    alt: "3D kinetic ribbon and motion design composition",
+    textPos: "top",
+  },
+  {
+    id: "service-3d-ar-design",
+    cmsKey: "3d-ar-design",
+    title: "3D & AR design",
+    description:
+      "Push your creative boundaries into a new dimension with social AR and 3D design to capture your audience’s attention.",
+    image: "/images/services/3d-ar-design.jpg",
+    alt: "Designer wearing futuristic AR headset in 3D environment",
+    textPos: "bottom",
+  },
+];
+
+const aiCards: ServiceCard[] = [
+  {
+    id: "service-ai-powered-creative",
+    cmsKey: "ai-enhanced-creative",
+    title: "AI enhanced creative",
+    description:
+      "Leverage AI experts for your design tasks to achieve 30%–60% production efficiency and reduce costs while maintaining quality and consistent branding.",
+    image: "/images/services/ai-enhanced-creative.jpg",
+    alt: "AI-enhanced creative portrait with vibrant lighting",
+    textPos: "top",
+  },
+  {
+    id: "service-ai-consulting",
+    cmsKey: "ai-consulting",
+    title: "AI consulting",
+    description:
+      "Our AI consulting services make integrating AI into your workflows seamless and practical. We design solutions tailored to your team, processes, and goals.",
+    image: "/images/services/ai-consulting.jpg",
+    alt: "Team collaborating on AI workflow strategy",
+    textPos: "bottom",
+  },
+];
+
+const marketingCards: ServiceCard[] = [
+  {
+    id: "service-campaign-strategy",
+    cmsKey: "marketing-strategy",
+    title: "Marketing strategy",
+    description:
+      "Empower your business with data-driven digital marketing initiatives, plans, and exceptional insights from our team of expert consultants.",
+    image: "/images/services/marketing-strategy.jpg",
+    alt: "Creative marketing strategy lightbulbs concept",
+    href: "/marketing-strategy",
+    textPos: "bottom",
+  },
+  {
+    id: "service-marketing-efficiency",
+    cmsKey: "marketing-efficiency",
+    title: "Save up to 70% on production costs",
+    description:
+      "Through AI-accelerated workflows, enterprise teams spend less than half of what they normally would on high-volume campaign production.",
+    image: "/images/services/marketing-efficiency.jpg",
+    alt: "Marketer reviewing multi-channel campaign creative on laptop",
+    textPos: "top",
+  },
+];
+---
+
+<section class="sv-catalog" aria-label="Adaptif Service Catalog">
+  <div class="container">
+    <!-- 1. Creative Services -->
+    <div class="sv-cat-block" id="creative-design">
+      <header class="sv-cat-header" data-sv-reveal>
+        <h2 class="sv-cat-title" data-cms-key="services.creative.title">
+          Creative <span class="title-highlight">services</span>
+        </h2>
+      </header>
+
+      <div class="sv-creative-mosaic">
+        {creativeCards.map((card, idx) => (
+          <article
+            id={card.id}
+            class={`sv-tile ${card.areaClass ?? ""} sv-tile--pos-${card.textPos ?? "bottom"}`}
+            data-sv-reveal
+            style={`--sv-delay: ${Math.min(idx * 40, 240)}ms`}
+          >
+            <img
+              src={card.image}
+              alt={card.alt}
+              class="sv-tile__img"
+              loading="lazy"
+              decoding="async"
+              data-cms-key={`services.creative.${card.cmsKey}.image`}
+            />
+            <div class={`sv-tile__scrim sv-tile__scrim--${card.scrimVariant ?? "bottom"}`} aria-hidden="true"></div>
+
+            <div class="sv-tile__content">
+              <h3 class="sv-tile__title" data-cms-key={`services.creative.${card.cmsKey}.title`}>
+                {card.title}
+              </h3>
+              <p class="sv-tile__desc" data-cms-key={`services.creative.${card.cmsKey}.desc`}>
+                {card.description}
+              </p>
+              <a
+                href={card.href ?? "#book-a-call"}
+                class="sv-tile__link"
+                data-open-book-call={card.href ? undefined : true}
+                data-cms-key={`services.creative.${card.cmsKey}.cta`}
+              >
+                <span>Learn more</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M3.33337 8H12.6667M12.6667 8L8.66671 4M12.6667 8L8.66671 12"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <!-- 2. Specialized Production Services -->
+    <div class="sv-cat-block" id="production-services">
+      <header class="sv-cat-header" data-sv-reveal>
+        <h2 class="sv-cat-title" data-cms-key="services.production.title">
+          Specialized <span class="title-highlight">production services</span>
+        </h2>
+      </header>
+
+      <div class="sv-grid-3">
+        {productionCards.map((card, idx) => (
+          <article
+            id={card.id}
+            class={`sv-tile sv-tile--prod sv-tile--pos-${card.textPos ?? "bottom"}`}
+            data-sv-reveal
+            style={`--sv-delay: ${idx * 70}ms`}
+          >
+            <img
+              src={card.image}
+              alt={card.alt}
+              class="sv-tile__img"
+              loading="lazy"
+              decoding="async"
+              data-cms-key={`services.production.${card.cmsKey}.image`}
+            />
+            <div class={`sv-tile__scrim sv-tile__scrim--${card.textPos === "top" ? "top-bottom" : "bottom"}`} aria-hidden="true"></div>
+
+            <div class="sv-tile__content">
+              <h3 class="sv-tile__title" data-cms-key={`services.production.${card.cmsKey}.title`}>
+                {card.title}
+              </h3>
+              <p class="sv-tile__desc" data-cms-key={`services.production.${card.cmsKey}.desc`}>
+                {card.description}
+              </p>
+              <a
+                href="#book-a-call"
+                class="sv-tile__link"
+                data-open-book-call
+                data-cms-key={`services.production.${card.cmsKey}.cta`}
+              >
+                <span>Learn more</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M3.33337 8H12.6667M12.6667 8L8.66671 4M12.6667 8L8.66671 12"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <!-- 3. AI Services -->
+    <div class="sv-cat-block" id="ai-services">
+      <header class="sv-cat-header" data-sv-reveal>
+        <h2 class="sv-cat-title" data-cms-key="services.ai.title">
+          AI <span class="title-highlight">services</span>
+        </h2>
+      </header>
+
+      <div class="sv-grid-2">
+        {aiCards.map((card, idx) => (
+          <article
+            id={card.id}
+            class={`sv-tile sv-tile--feature sv-tile--pos-${card.textPos ?? "bottom"}`}
+            data-sv-reveal
+            style={`--sv-delay: ${idx * 80}ms`}
+          >
+            <img
+              src={card.image}
+              alt={card.alt}
+              class="sv-tile__img"
+              loading="lazy"
+              decoding="async"
+              data-cms-key={`services.ai.${card.cmsKey}.image`}
+            />
+            <div class={`sv-tile__scrim sv-tile__scrim--${card.textPos === "top" ? "top-bottom" : "bottom"}`} aria-hidden="true"></div>
+
+            <div class="sv-tile__content">
+              <h3 class="sv-tile__title" data-cms-key={`services.ai.${card.cmsKey}.title`}>
+                {card.title}
+              </h3>
+              <p class="sv-tile__desc" data-cms-key={`services.ai.${card.cmsKey}.desc`}>
+                {card.description}
+              </p>
+              <a
+                href="#book-a-call"
+                class="sv-tile__link"
+                data-open-book-call
+                data-cms-key={`services.ai.${card.cmsKey}.cta`}
+              >
+                <span>Learn more</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M3.33337 8H12.6667M12.6667 8L8.66671 4M12.6667 8L8.66671 12"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <!-- 4. Marketing Services -->
+    <div class="sv-cat-block" id="marketing-services">
+      <header class="sv-cat-header" data-sv-reveal>
+        <h2 class="sv-cat-title" data-cms-key="services.marketing.title">
+          Marketing <span class="title-highlight">services</span>
+        </h2>
+      </header>
+
+      <div class="sv-grid-2">
+        {marketingCards.map((card, idx) => (
+          <article
+            id={card.id}
+            class={`sv-tile sv-tile--feature sv-tile--pos-${card.textPos ?? "bottom"}`}
+            data-sv-reveal
+            style={`--sv-delay: ${idx * 80}ms`}
+          >
+            <img
+              src={card.image}
+              alt={card.alt}
+              class="sv-tile__img"
+              loading="lazy"
+              decoding="async"
+              data-cms-key={`services.marketing.${card.cmsKey}.image`}
+            />
+            <div class={`sv-tile__scrim sv-tile__scrim--${card.textPos === "top" ? "top-bottom" : "bottom"}`} aria-hidden="true"></div>
+
+            <div class="sv-tile__content">
+              <h3 class="sv-tile__title" data-cms-key={`services.marketing.${card.cmsKey}.title`}>
+                {card.title}
+              </h3>
+              <p class="sv-tile__desc" data-cms-key={`services.marketing.${card.cmsKey}.desc`}>
+                {card.description}
+              </p>
+              <a
+                href={card.href ?? "#book-a-call"}
+                class="sv-tile__link"
+                data-open-book-call={card.href ? undefined : true}
+                data-cms-key={`services.marketing.${card.cmsKey}.cta`}
+              >
+                <span>Learn more</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path
+                    d="M3.33337 8H12.6667M12.6667 8L8.66671 4M12.6667 8L8.66671 12"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sv-catalog {
+    position: relative;
+    padding: clamp(24px, 4vw, 48px) 0 clamp(80px, 10vw, 128px);
+    background: var(--color-void);
+  }
+
+  .sv-cat-block {
+    scroll-margin-top: 108px;
+  }
+
+  .sv-cat-block + .sv-cat-block {
+    margin-top: clamp(72px, 9vw, 118px);
+  }
+
+  .sv-cat-header {
+    text-align: center;
+    margin-bottom: clamp(32px, 4vw, 48px);
+  }
+
+  .sv-cat-title {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.4vw, 3.5rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  /* Shared editorial tile */
+  .sv-tile {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-obsidian-950);
+    display: flex;
+    flex-direction: column;
+    min-height: 280px;
+    scroll-margin-top: 112px;
+    transition:
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.35s ease,
+      box-shadow 0.45s ease;
+  }
+
+  .sv-tile:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.36);
+    box-shadow: 0 24px 56px -20px rgba(0, 0, 0, 0.78), 0 0 32px -12px rgba(72, 200, 255, 0.18);
+  }
+
+  .sv-tile--pos-bottom {
+    justify-content: flex-end;
+  }
+
+  .sv-tile--pos-top {
+    justify-content: flex-start;
+  }
+
+  .sv-tile__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .sv-tile:hover .sv-tile__img {
+    transform: scale(1.035);
+  }
+
+  .sv-tile__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .sv-tile__scrim--bottom {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.08) 0%,
+      rgba(1, 3, 7, 0.35) 45%,
+      rgba(1, 3, 7, 0.9) 100%
+    );
+  }
+
+  .sv-tile__scrim--top-bottom {
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.88) 0%,
+      rgba(1, 3, 7, 0.45) 48%,
+      rgba(1, 3, 7, 0.72) 100%
+    );
+  }
+
+  .sv-tile__content {
+    position: relative;
+    z-index: 2;
+    padding: clamp(20px, 2.4vw, 28px);
+    max-width: 440px;
+  }
+
+  .sv-tile__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.12rem, 1.35vw, 1.32rem);
+    font-weight: 600;
+    line-height: 1.24;
+    letter-spacing: -0.01em;
+    color: var(--color-text-primary);
+  }
+
+  .sv-tile__desc {
+    margin: 0 0 14px;
+    font-family: var(--font-family-body);
+    font-size: 0.88rem;
+    line-height: 1.52;
+    color: rgba(241, 245, 249, 0.84);
+  }
+
+  .sv-tile__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--color-brand-cyan);
+    text-decoration: none;
+    transition: gap 0.25s ease, color 0.25s ease;
+  }
+
+  .sv-tile__link:hover {
+    color: #ffffff;
+    gap: 10px;
+  }
+
+  /* Creative Services 12-column asymmetric mosaic matching PDF rhythm */
+  .sv-creative-mosaic {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(250px, auto);
+    gap: 18px;
+  }
+
+  .sv-tile--ad {
+    grid-column: 1 / span 4;
+    grid-row: 1 / span 2;
+    min-height: 540px;
+  }
+
+  .sv-tile--branding {
+    grid-column: 5 / span 4;
+    grid-row: 1;
+    min-height: 270px;
+  }
+
+  .sv-tile--web {
+    grid-column: 9 / span 4;
+    grid-row: 1;
+    min-height: 270px;
+  }
+
+  .sv-tile--social {
+    grid-column: 5 / span 8;
+    grid-row: 2;
+    min-height: 260px;
+  }
+
+  .sv-tile--email {
+    grid-column: 1 / span 3;
+    grid-row: 3;
+    min-height: 290px;
+  }
+
+  .sv-tile--ebooks {
+    grid-column: 4 / span 4;
+    grid-row: 3;
+    min-height: 290px;
+  }
+
+  .sv-tile--illustration {
+    grid-column: 8 / span 5;
+    grid-row: 3;
+    min-height: 290px;
+  }
+
+  .sv-tile--packaging {
+    grid-column: 1 / span 6;
+    grid-row: 4;
+    min-height: 280px;
+  }
+
+  .sv-tile--presentation {
+    grid-column: 7 / span 6;
+    grid-row: 4 / span 2;
+    min-height: 540px;
+  }
+
+  .sv-tile--concept {
+    grid-column: 1 / span 3;
+    grid-row: 5;
+    min-height: 270px;
+  }
+
+  .sv-tile--print {
+    grid-column: 4 / span 3;
+    grid-row: 5;
+    min-height: 270px;
+  }
+
+  /* Production 3-column */
+  .sv-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .sv-tile--prod {
+    min-height: 360px;
+  }
+
+  /* AI & Marketing 2-column */
+  .sv-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .sv-tile--feature {
+    min-height: 340px;
+  }
+
+  @media (max-width: 1024px) {
+    .sv-creative-mosaic {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: auto;
+    }
+
+    .sv-tile--ad,
+    .sv-tile--branding,
+    .sv-tile--web,
+    .sv-tile--social,
+    .sv-tile--email,
+    .sv-tile--ebooks,
+    .sv-tile--illustration,
+    .sv-tile--packaging,
+    .sv-tile--presentation,
+    .sv-tile--concept,
+    .sv-tile--print {
+      grid-column: auto;
+      grid-row: auto;
+      min-height: 300px;
+    }
+
+    .sv-tile--social,
+    .sv-tile--packaging {
+      grid-column: span 2;
+    }
+
+    .sv-grid-3 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 680px) {
+    .sv-creative-mosaic,
+    .sv-grid-3,
+    .sv-grid-2 {
+      grid-template-columns: 1fr;
+    }
+
+    .sv-tile--social,
+    .sv-tile--packaging {
+      grid-column: span 1;
+    }
+
+    .sv-tile,
+    .sv-tile--ad,
+    .sv-tile--presentation,
+    .sv-tile--prod,
+    .sv-tile--feature {
+      min-height: 280px;
+    }
+  }
+</style>

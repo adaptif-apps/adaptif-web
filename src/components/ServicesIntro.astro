@@ -1,0 +1,159 @@
+---
+// ServicesIntro.astro - Split editorial overview ("Get graphic design, print, motion, video and more")
+---
+
+<section class="sv-intro" id="services-overview" aria-labelledby="sv-intro-title">
+  <div class="sv-intro__glow" aria-hidden="true"></div>
+
+  <div class="container sv-intro__grid">
+    <div class="sv-intro__copy" data-sv-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="services.intro.eyebrow">
+        A variety of design services at your fingertips
+      </p>
+
+      <h2 id="sv-intro-title" class="sv-intro__title" data-cms-key="services.intro.title">
+        Get graphic design, print, <span class="title-highlight">motion, video and more</span>
+      </h2>
+
+      <p class="sv-intro__lead" data-cms-key="services.intro.lead">
+        Whether you need an out-of-this-world illustration, beautiful print designs, or engaging digital marketing assets, Adaptif’s world-class graphic designers from around the world will make it happen.
+      </p>
+
+      <p class="sv-intro__body" data-cms-key="services.intro.body">
+        Unlike traditional graphic design agencies, Adaptif is a tech-enabled, Creative-as-a-Service design solution built to keep up with the evolving needs and fast pace of enterprise teams. Access a full suite of design services through a transparent design subscription model.
+      </p>
+
+      <div class="sv-intro__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="services.intro.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="sv-intro__visual" data-sv-reveal="scale" style="--sv-delay: 120ms">
+      <div class="sv-intro__frame">
+        <img
+          src="/images/services/intro-workspace.jpg"
+          alt="Creative designer working across multi-screen digital and cosmic brand interfaces"
+          class="sv-intro__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="services.intro.image"
+        />
+        <div class="sv-intro__frame-vignette" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .sv-intro {
+    position: relative;
+    padding: clamp(72px, 9vw, 120px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .sv-intro__glow {
+    position: absolute;
+    top: 10%;
+    right: 6%;
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .sv-intro__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: clamp(36px, 5vw, 72px);
+    align-items: center;
+  }
+
+  .sv-intro__title {
+    margin: 14px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.25rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .sv-intro__lead {
+    margin: 0 0 18px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.05rem, 1.3vw, 1.18rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .sv-intro__body {
+    margin: 0 0 32px;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.68;
+    color: var(--color-text-secondary);
+  }
+
+  .sv-intro__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .sv-intro__frame {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 28px 64px -20px rgba(0, 0, 0, 0.78),
+      0 0 40px -14px rgba(72, 200, 255, 0.18);
+    aspect-ratio: 1 / 1;
+  }
+
+  .sv-intro__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .sv-intro__frame-vignette {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 60%, rgba(1, 3, 7, 0.45) 100%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 960px) {
+    .sv-intro__grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .sv-intro__frame {
+      max-width: 540px;
+      margin: 0 auto;
+    }
+  }
+</style>

@@ -1,0 +1,432 @@
+---
+// MarketingOfferAndFunnel.astro - "What we offer" (4-card mosaic) + "Full-funnel" (light 3-col editorial)
+
+const funnelPillars = [
+  {
+    id: "launches",
+    title: "Brand & product launches",
+    desc: "Precise positioning and messaging that unite teams across departments and power launches with real weight behind them.",
+    icon: "flag",
+  },
+  {
+    id: "paid",
+    title: "Social, digital & paid channels",
+    desc: "Structured playbooks covering ad funnels, paid social, SEO content, and performance marketing designed to grow.",
+    icon: "phone",
+  },
+  {
+    id: "lifecycle",
+    title: "Web, email & lifecycle",
+    desc: "Joined-up thinking across the full user journey—landing page through retention email—grounded in evidence rather than guesswork.",
+    icon: "web",
+  },
+];
+---
+
+<!-- 1. What we offer -->
+<section class="mk-offer" id="marketing-offer" aria-labelledby="mk-offer-title">
+  <div class="container">
+    <header class="mk-offer__header" data-mk-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="marketing.offer.eyebrow">
+        What we offer
+      </p>
+      <h2 id="mk-offer-title" class="mk-offer__title" data-cms-key="marketing.offer.title">
+        Adaptable marketing strategy <span class="title-highlight">services that slot into your team</span>
+      </h2>
+      <p class="mk-offer__subtitle" data-cms-key="marketing.offer.subtitle">
+        From core positioning to mid-flight performance audits, we bring you strategic clarity exactly when it counts. And we go further, handing you the creative muscle to put it to work and scale it.
+      </p>
+    </header>
+
+    <div class="mk-offer__mosaic">
+      <!-- Card 1: Standalone strategy projects -->
+      <article class="mk-offer-card mk-offer--standalone" data-mk-reveal>
+        <img
+          src="/images/marketing-strategy/offer-compass.jpg"
+          alt="Golden compass representing strategic positioning and direction"
+          class="mk-offer-card__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="marketing.offer.standalone.image"
+        />
+        <div class="mk-offer-card__scrim" aria-hidden="true"></div>
+        <div class="mk-offer-card__content">
+          <h3 class="mk-offer-card__title" data-cms-key="marketing.offer.standalone.title">
+            Standalone strategy projects
+          </h3>
+          <p class="mk-offer-card__desc" data-cms-key="marketing.offer.standalone.desc">
+            Positioning work, audience intelligence, message architecture, and base playbooks that direct everything you market afterward.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 2: Strategic creative projects -->
+      <article class="mk-offer-card mk-offer--creative" data-mk-reveal style="--mk-delay: 60ms">
+        <img
+          src="/images/marketing-strategy/offer-tablet.jpg"
+          alt="Tablet displaying strategic campaign creative"
+          class="mk-offer-card__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="marketing.offer.creative.image"
+        />
+        <div class="mk-offer-card__scrim" aria-hidden="true"></div>
+        <div class="mk-offer-card__content">
+          <h3 class="mk-offer-card__title" data-cms-key="marketing.offer.creative.title">
+            Strategic creative projects
+          </h3>
+          <p class="mk-offer-card__desc" data-cms-key="marketing.offer.creative.desc">
+            Thinking and making rolled into one continuous engagement. Brief shaping, message cohesion, editorial planning, and results analysis.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 3: Content & channel strategy -->
+      <article class="mk-offer-card mk-offer--content" data-mk-reveal style="--mk-delay: 120ms">
+        <img
+          src="/images/marketing-strategy/offer-cassettes.jpg"
+          alt="Color-coded cassette tapes representing multi-channel content strategy"
+          class="mk-offer-card__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="marketing.offer.content.image"
+        />
+        <div class="mk-offer-card__scrim" aria-hidden="true"></div>
+        <div class="mk-offer-card__content">
+          <h3 class="mk-offer-card__title" data-cms-key="marketing.offer.content.title">
+            Content &amp; channel strategy
+          </h3>
+          <p class="mk-offer-card__desc" data-cms-key="marketing.offer.content.desc">
+            Launch roadmaps, content themes, distribution mapping, funnel design, and specialist playbooks for channels built to scale.
+          </p>
+        </div>
+      </article>
+
+      <!-- Card 4: Analysis & measurement -->
+      <article class="mk-offer-card mk-offer--analysis" data-mk-reveal style="--mk-delay: 180ms">
+        <div class="mk-offer-card__content">
+          <h3 class="mk-offer-card__title" data-cms-key="marketing.offer.analysis.title">
+            Analysis &amp; measurement
+          </h3>
+          <p class="mk-offer-card__desc" data-cms-key="marketing.offer.analysis.desc">
+            Creative reviews, optimization recommendations for live campaigns, benchmark reporting, and engagement plus conversion readouts.
+          </p>
+        </div>
+
+        <div class="mk-analysis-visual" aria-hidden="true">
+          <div class="mk-analysis-bars">
+            <span style="--bar-h: 42%"></span>
+            <span style="--bar-h: 68%"></span>
+            <span style="--bar-h: 55%"></span>
+            <span style="--bar-h: 84%"></span>
+            <span style="--bar-h: 96%"></span>
+          </div>
+          <div class="mk-analysis-meta">
+            <span>Conversion lift</span>
+            <strong>+38.4%</strong>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Full-funnel (Light) -->
+<section class="mk-funnel" id="marketing-funnel" data-theme="light" aria-labelledby="mk-funnel-title">
+  <div class="container">
+    <header class="mk-funnel__header" data-mk-reveal>
+      <p class="adaptif-eyebrow adaptif-eyebrow--light" data-cms-key="marketing.funnel.eyebrow">
+        Full-funnel
+      </p>
+      <h2 id="mk-funnel-title" class="mk-funnel__title" data-cms-key="marketing.funnel.title">
+        Intentional at <span class="title-highlight">every single touchpoint</span>
+      </h2>
+      <p class="mk-funnel__subtitle" data-cms-key="marketing.funnel.subtitle">
+        Whichever channel you’re working in, we tie brand, content, and performance marketing into one coherent system built around results you can measure.
+      </p>
+    </header>
+
+    <div class="mk-funnel__grid">
+      {funnelPillars.map((p, idx) => (
+        <article class="mk-funnel-item" data-mk-reveal style={`--mk-delay: ${idx * 70}ms`}>
+          <div class="mk-funnel-item__icon" aria-hidden="true">
+            {p.icon === "flag" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                <line x1="4" y1="22" x2="4" y2="15" />
+              </svg>
+            )}
+            {p.icon === "phone" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                <line x1="12" y1="18" x2="12.01" y2="18" />
+              </svg>
+            )}
+            {p.icon === "web" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            )}
+          </div>
+          <h3 class="mk-funnel-item__title" data-cms-key={`marketing.funnel.${p.id}.title`}>
+            {p.title}
+          </h3>
+          <p class="mk-funnel-item__desc" data-cms-key={`marketing.funnel.${p.id}.desc`}>
+            {p.desc}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .mk-offer {
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+  }
+
+  .mk-offer__header {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto clamp(36px, 5vw, 56px);
+  }
+
+  .mk-offer__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .mk-offer__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .mk-offer__mosaic {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(290px, auto);
+    gap: 18px;
+  }
+
+  .mk-offer-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-obsidian-950);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+
+  .mk-offer-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.36);
+  }
+
+  .mk-offer--standalone { grid-column: 1 / span 4; min-height: 310px; }
+  .mk-offer--creative { grid-column: 5 / span 8; min-height: 310px; }
+  .mk-offer--content { grid-column: 1 / span 8; min-height: 310px; }
+  .mk-offer--analysis {
+    grid-column: 9 / span 4;
+    min-height: 310px;
+    justify-content: space-between;
+    background: radial-gradient(circle at 80% 90%, rgba(72, 200, 255, 0.16) 0%, rgba(10, 18, 34, 0.94) 70%);
+  }
+
+  .mk-offer-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mk-offer-card:hover .mk-offer-card__img {
+    transform: scale(1.03);
+  }
+
+  .mk-offer-card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.88) 0%,
+      rgba(1, 3, 7, 0.5) 48%,
+      rgba(1, 3, 7, 0.28) 100%
+    );
+    pointer-events: none;
+  }
+
+  .mk-offer-card__content {
+    position: relative;
+    z-index: 2;
+    padding: clamp(20px, 2.4vw, 28px);
+    max-width: 440px;
+  }
+
+  .mk-offer-card__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.12rem, 1.3vw, 1.28rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+  }
+
+  .mk-offer-card__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.88rem;
+    line-height: 1.52;
+    color: rgba(241, 245, 249, 0.84);
+  }
+
+  .mk-analysis-visual {
+    position: relative;
+    z-index: 2;
+    padding: 0 clamp(20px, 2.4vw, 28px) clamp(20px, 2.4vw, 28px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .mk-analysis-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 82px;
+  }
+
+  .mk-analysis-bars span {
+    width: 14px;
+    height: var(--bar-h);
+    border-radius: 6px 6px 2px 2px;
+    background: linear-gradient(180deg, #48c8ff 0%, rgba(72, 200, 255, 0.2) 100%);
+  }
+
+  .mk-analysis-meta {
+    text-align: right;
+  }
+
+  .mk-analysis-meta span {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 0.72rem;
+    color: var(--color-text-secondary);
+  }
+
+  .mk-analysis-meta strong {
+    font-family: var(--font-family-display);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--color-brand-cyan);
+    line-height: 1;
+  }
+
+  /* Full-funnel (Light) */
+  .mk-funnel {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: #ffffff;
+    color: #090d16;
+  }
+
+  .mk-funnel__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+
+  .mk-funnel__title {
+    margin: 14px 0 14px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #090d16;
+  }
+
+  .mk-funnel__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #475569;
+  }
+
+  .mk-funnel__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 40px;
+  }
+
+  .mk-funnel-item {
+    padding-top: 24px;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+  }
+
+  .mk-funnel-item__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 132, 199, 0.08);
+    border: 1px solid rgba(2, 132, 199, 0.22);
+    color: #0284c7;
+    margin-bottom: 14px;
+  }
+
+  .mk-funnel-item__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #090d16;
+  }
+
+  .mk-funnel-item__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.58;
+    color: #475569;
+  }
+
+  @media (max-width: 960px) {
+    .mk-offer__mosaic {
+      grid-template-columns: 1fr;
+      grid-auto-rows: auto;
+    }
+
+    .mk-offer--standalone,
+    .mk-offer--creative,
+    .mk-offer--content,
+    .mk-offer--analysis {
+      grid-column: auto;
+      min-height: 280px;
+    }
+
+    .mk-funnel__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

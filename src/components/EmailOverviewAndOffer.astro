@@ -1,0 +1,550 @@
+---
+// EmailOverviewAndOffer.astro - "Every email shapes perception" + "A smarter email workflow" (6-card mosaic) + "Purpose-built email flows" (light)
+
+const offers = [
+  {
+    id: "campaign",
+    title: "Email campaign creation",
+    description:
+      "Custom-branded email design and copy for single sends, ongoing campaigns, and recurring communications.",
+    image: "/images/email-design/offer-campaign.jpg",
+    alt: "Black Friday email campaign displayed on tablet",
+    area: "em-offer--campaign",
+    pos: "top",
+  },
+  {
+    id: "systems",
+    title: "Email design systems",
+    description:
+      "Flexible, reusable email components that keep your brand consistent as your communication needs grow.",
+    image: "/images/email-design/offer-systems.jpg",
+    alt: "Modular email design system components",
+    area: "em-offer--systems",
+    pos: "top",
+  },
+  {
+    id: "platforms",
+    title: "Platform-ready email design",
+    description:
+      "We create emails for the platforms and workflows your team already uses, including HubSpot, Salesforce, Klaviyo, and Mailchimp.",
+    image: "/images/email-design/offer-platforms.jpg",
+    alt: "HubSpot, Salesforce, Klaviyo, and Mailchimp integration",
+    area: "em-offer--platforms",
+    pos: "top",
+  },
+  {
+    id: "lifecycle",
+    title: "Growth and lifecycle flows",
+    description:
+      "Strategic email journeys that turn new contacts into customers, guide leads forward, and build stronger customer relationships.",
+    image: "/images/email-design/offer-lifecycle.jpg",
+    alt: "Growth and lifecycle email journeys",
+    area: "em-offer--lifecycle",
+    pos: "top",
+  },
+  {
+    id: "modular",
+    title: "Modular templates",
+    description:
+      "Modular, ready-to-use email blocks that make production faster and simplify testing.",
+    image: "/images/email-design/offer-modular.jpg",
+    alt: "Modular promotional email templates",
+    area: "em-offer--modular",
+    pos: "top",
+  },
+  {
+    id: "optimization",
+    title: "Email performance optimization",
+    description:
+      "Email audits, creative experimentation, and design refinements focused on increasing engagement and driving more conversions.",
+    image: "/images/email-design/offer-optimization.jpg",
+    alt: "A/B testing and email conversion optimization",
+    area: "em-offer--optimization",
+    pos: "top",
+  },
+];
+
+const flows = [
+  {
+    id: "promotional",
+    title: "Promotional campaigns",
+    desc: "Branded, high-impact campaigns created to generate clicks and encourage action.",
+    icon: "promo",
+  },
+  {
+    id: "onboarding",
+    title: "Onboarding series",
+    desc: "Automated email sequences that introduce your brand, guide new users, and help them to start.",
+    icon: "onboarding",
+  },
+  {
+    id: "transactional",
+    title: "Transactional messages",
+    desc: "Reliable operational messages that remain clear, useful, and unmistakably on-brand at any volume.",
+    icon: "transactional",
+  },
+  {
+    id: "internal",
+    title: "Internal communications",
+    desc: "Professional internal updates designed to inform employees with clarity and polish.",
+    icon: "internal",
+  },
+  {
+    id: "announcements",
+    title: "Product announcements",
+    desc: "Compelling launch and feature emails that build excitement and inspire adoption.",
+    icon: "announcements",
+  },
+  {
+    id: "localized",
+    title: "Localized campaigns",
+    desc: "Adapted email content for specific regions, languages, audience segments, and devices.",
+    icon: "localized",
+  },
+];
+---
+
+<!-- 1. Every email shapes perception -->
+<section class="em-overview" id="email-overview" aria-labelledby="em-overview-title">
+  <div class="em-overview__glow" aria-hidden="true"></div>
+
+  <div class="container em-overview__grid">
+    <div class="em-overview__copy" data-em-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="email.overview.eyebrow">
+        Every email shapes perception
+      </p>
+
+      <h2 id="em-overview-title" class="em-overview__title" data-cms-key="email.overview.title">
+        Your brand should never feel like <span class="title-highlight">just another message in the inbox</span>
+      </h2>
+
+      <p class="em-overview__lead" data-cms-key="email.overview.lead">
+        Disjointed email design and inefficient production workflows can weaken both campaign results and the way customers see your brand.
+      </p>
+
+      <p class="em-overview__body" data-cms-key="email.overview.body">
+        Internal teams are often already at capacity, while off-the-shelf templates fail to reflect a distinct brand identity. Producing email at scale becomes time-consuming and difficult to manage. With the right creative support, your team can move faster while maintaining quality and consistency.
+      </p>
+    </div>
+
+    <div class="em-overview__visual" data-em-reveal="scale" style="--em-delay: 120ms">
+      <div class="em-overview__frame">
+        <img
+          src="/images/email-design/email-perception.jpg"
+          alt="On-brand promotional email rendered on smartphone"
+          class="em-overview__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="email.overview.image"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. The better way -->
+<section class="em-offer" id="email-offer" aria-labelledby="em-offer-title">
+  <div class="container">
+    <header class="em-offer__header" data-em-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="email.offer.eyebrow">
+        The better way
+      </p>
+      <h2 id="em-offer-title" class="em-offer__title" data-cms-key="email.offer.title">
+        A smarter email workflow, <span class="title-highlight">built with Adaptif</span>
+      </h2>
+      <p class="em-offer__subtitle" data-cms-key="email.offer.subtitle">
+        From individual campaigns to complete email design systems, we create and develop high-performing emails directly within the platforms your team already relies on.
+      </p>
+    </header>
+
+    <div class="em-offer__mosaic">
+      {offers.map((item, idx) => (
+        <article
+          class={`em-offer-card ${item.area}`}
+          data-em-reveal
+          style={`--em-delay: ${Math.min(idx * 50, 240)}ms`}
+        >
+          <img
+            src={item.image}
+            alt={item.alt}
+            class="em-offer-card__img"
+            loading="lazy"
+            decoding="async"
+            data-cms-key={`email.offer.${item.id}.image`}
+          />
+          <div class="em-offer-card__scrim" aria-hidden="true"></div>
+          <div class="em-offer-card__content">
+            <h3 class="em-offer-card__title" data-cms-key={`email.offer.${item.id}.title`}>
+              {item.title}
+            </h3>
+            <p class="em-offer-card__desc" data-cms-key={`email.offer.${item.id}.desc`}>
+              {item.description}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- 3. Purpose-built email flows (Light 3x2 grid) -->
+<section class="em-flows" id="email-flows" data-theme="light" aria-labelledby="em-flows-title">
+  <div class="container">
+    <header class="em-flows__header" data-em-reveal>
+      <p class="adaptif-eyebrow adaptif-eyebrow--light" data-cms-key="email.flows.eyebrow">
+        Purpose-built email flows
+      </p>
+      <h2 id="em-flows-title" class="em-flows__title" data-cms-key="email.flows.title">
+        Emails that feel sharper, move faster, <span class="title-highlight">and drive stronger results</span>
+      </h2>
+      <p class="em-flows__subtitle" data-cms-key="email.flows.subtitle">
+        A promotional offer should not follow the same approach as a company-wide update. We tailor every email experience to its purpose, audience, and delivery environment.
+      </p>
+    </header>
+
+    <div class="em-flows__grid">
+      {flows.map((flow, idx) => (
+        <article class="em-flow-item" data-em-reveal style={`--em-delay: ${idx * 55}ms`}>
+          <div class="em-flow-item__icon" aria-hidden="true">
+            {flow.icon === "promo" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 11l18-5v12L3 14v-3z" />
+                <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+              </svg>
+            )}
+            {flow.icon === "onboarding" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="8.5" cy="7" r="4" />
+                <polyline points="17 11 19 13 23 9" />
+              </svg>
+            )}
+            {flow.icon === "transactional" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+            {flow.icon === "internal" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            )}
+            {flow.icon === "announcements" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+                <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+              </svg>
+            )}
+            {flow.icon === "localized" && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="2" y1="12" x2="22" y2="12" />
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+            )}
+          </div>
+          <h3 class="em-flow-item__title" data-cms-key={`email.flows.${flow.id}.title`}>
+            {flow.title}
+          </h3>
+          <p class="em-flow-item__desc" data-cms-key={`email.flows.${flow.id}.desc`}>
+            {flow.desc}
+          </p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .em-overview {
+    position: relative;
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .em-overview__glow {
+    position: absolute;
+    top: 16%;
+    right: 8%;
+    width: 480px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .em-overview__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: clamp(32px, 5vw, 68px);
+    align-items: center;
+  }
+
+  .em-overview__title {
+    margin: 14px 0 20px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.3rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .em-overview__lead {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .em-overview__body {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.66;
+    color: var(--color-text-secondary);
+  }
+
+  .em-overview__frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 26px 60px -20px rgba(0, 0, 0, 0.8),
+      0 0 38px -14px rgba(72, 200, 255, 0.16);
+    aspect-ratio: 1 / 1;
+  }
+
+  .em-overview__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Offer mosaic */
+  .em-offer {
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .em-offer__header {
+    text-align: center;
+    max-width: 740px;
+    margin: 0 auto clamp(36px, 5vw, 56px);
+  }
+
+  .em-offer__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .em-offer__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .em-offer__mosaic {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: minmax(290px, auto);
+    gap: 18px;
+  }
+
+  .em-offer-card {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-obsidian-950);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+  }
+
+  .em-offer-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.36);
+  }
+
+  .em-offer--campaign { grid-column: 1 / span 6; min-height: 310px; }
+  .em-offer--systems { grid-column: 7 / span 6; min-height: 310px; }
+  .em-offer--platforms { grid-column: 1 / span 3; min-height: 310px; }
+  .em-offer--lifecycle { grid-column: 4 / span 3; min-height: 310px; }
+  .em-offer--modular { grid-column: 7 / span 3; min-height: 310px; }
+  .em-offer--optimization { grid-column: 10 / span 3; min-height: 310px; }
+
+  .em-offer-card__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .em-offer-card:hover .em-offer-card__img {
+    transform: scale(1.03);
+  }
+
+  .em-offer-card__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(1, 3, 7, 0.92) 0%,
+      rgba(1, 3, 7, 0.56) 52%,
+      rgba(1, 3, 7, 0.28) 100%
+    );
+    pointer-events: none;
+  }
+
+  .em-offer-card__content {
+    position: relative;
+    z-index: 2;
+    padding: clamp(20px, 2.2vw, 26px);
+  }
+
+  .em-offer-card__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.08rem, 1.25vw, 1.22rem);
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+  }
+
+  .em-offer-card__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: rgba(241, 245, 249, 0.84);
+  }
+
+  /* Flows (Light) */
+  .em-flows {
+    padding: clamp(68px, 8.5vw, 112px) 0;
+    background: #ffffff;
+    color: #090d16;
+  }
+
+  .em-flows__header {
+    text-align: center;
+    max-width: 740px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+
+  .em-flows__title {
+    margin: 14px 0 14px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: #090d16;
+  }
+
+  .em-flows__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: #475569;
+  }
+
+  .em-flows__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 40px;
+  }
+
+  .em-flow-item {
+    padding-top: 24px;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+  }
+
+  .em-flow-item__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 132, 199, 0.08);
+    border: 1px solid rgba(2, 132, 199, 0.22);
+    color: #0284c7;
+    margin-bottom: 14px;
+  }
+
+  .em-flow-item__title {
+    margin: 0 0 8px;
+    font-family: var(--font-family-body);
+    font-size: 1.08rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: #090d16;
+  }
+
+  .em-flow-item__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.58;
+    color: #475569;
+  }
+
+  @media (max-width: 1024px) {
+    .em-overview__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .em-overview__frame {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .em-offer__mosaic {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: auto;
+    }
+
+    .em-offer--campaign,
+    .em-offer--systems,
+    .em-offer--platforms,
+    .em-offer--lifecycle,
+    .em-offer--modular,
+    .em-offer--optimization {
+      grid-column: auto;
+      min-height: 290px;
+    }
+
+    .em-flows__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .em-offer__mosaic,
+    .em-flows__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

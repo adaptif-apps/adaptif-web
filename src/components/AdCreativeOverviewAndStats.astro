@@ -1,0 +1,256 @@
+---
+// AdCreativeOverviewAndStats.astro - "Fighting ad fatigue?" + "The numbers speak" (20k+ / 4.9/5 / 60%)
+
+const stats = [
+  {
+    id: "projects",
+    count: 20,
+    decimals: 0,
+    suffix: "k+",
+    desc: "Ad creation projects delivered so far",
+  },
+  {
+    id: "approval",
+    count: 4.9,
+    decimals: 1,
+    suffix: "/5",
+    desc: "Average approval score across ad creative projects",
+  },
+  {
+    id: "turnaround",
+    count: 60,
+    decimals: 0,
+    suffix: "%",
+    desc: "Up to 60% quicker turnaround with AI",
+  },
+];
+---
+
+<!-- 1. Fighting ad fatigue? -->
+<section class="ac-overview" id="ad-fatigue" aria-labelledby="ac-overview-title">
+  <div class="ac-overview__glow" aria-hidden="true"></div>
+
+  <div class="container ac-overview__grid">
+    <div class="ac-overview__copy" data-ac-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="adcreative.overview.eyebrow">
+        New creative drives results
+      </p>
+
+      <h2 id="ac-overview-title" class="ac-overview__title" data-cms-key="adcreative.overview.title">
+        Fighting ad fatigue? <span class="title-highlight">Time to rethink how you produce ads</span>
+      </h2>
+
+      <p class="ac-overview__lead" data-cms-key="adcreative.overview.lead">
+        Ads burn out fast. If your audience hasn’t tuned out yet, the algorithm already has.
+      </p>
+
+      <p class="ac-overview__body" data-cms-key="adcreative.overview.body">
+        You know exactly how that hits your ROI, but pressing deadlines, thin resources, and missing skill sets make it tough to feed the demand for creative that actually lands. That’s where Adaptif steps in.
+      </p>
+    </div>
+
+    <div class="ac-overview__visual" data-ac-reveal="scale" style="--ac-delay: 120ms">
+      <div class="ac-overview__frame">
+        <img
+          src="/images/ad-creative/ad-fatigue.jpg"
+          alt="Viewer engaging with mobile social ad creative"
+          class="ac-overview__img"
+          loading="lazy"
+          decoding="async"
+          data-cms-key="adcreative.overview.image"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. The numbers speak -->
+<section class="ac-stats" id="ad-stats" aria-labelledby="ac-stats-title">
+  <div class="container">
+    <header class="ac-stats__header" data-ac-reveal>
+      <p class="adaptif-eyebrow" data-cms-key="adcreative.stats.eyebrow">
+        The numbers speak
+      </p>
+      <h2 id="ac-stats-title" class="ac-stats__title" data-cms-key="adcreative.stats.title">
+        Adaptif is <span class="title-highlight">your fast track</span> to ad success
+      </h2>
+      <p class="ac-stats__subtitle" data-cms-key="adcreative.stats.subtitle">
+        Working as an extension of your team, we speed up your ad production pipeline, turning out high-impact creative reliably and without the friction.
+      </p>
+    </header>
+
+    <dl class="ac-stats__grid">
+      {stats.map((s, idx) => (
+        <div class="ac-stats__item" data-ac-reveal style={`--ac-delay: ${idx * 70}ms`}>
+          <dt class="ac-stats__desc" data-cms-key={`adcreative.stats.${s.id}.label`}>
+            {s.desc}
+          </dt>
+          <dd
+            class="ac-stats__value"
+            data-ac-count={s.count}
+            data-ac-decimals={s.decimals}
+            data-ac-suffix={s.suffix}
+            data-cms-key={`adcreative.stats.${s.id}.value`}
+          >
+            {`${s.count}${s.suffix}`}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .ac-overview {
+    position: relative;
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--color-void);
+    overflow: hidden;
+  }
+
+  .ac-overview__glow {
+    position: absolute;
+    top: 16%;
+    right: 8%;
+    width: 480px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .ac-overview__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+    gap: clamp(32px, 5vw, 68px);
+    align-items: center;
+  }
+
+  .ac-overview__title {
+    margin: 14px 0 20px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.3rem, 4vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .ac-overview__lead {
+    margin: 0 0 16px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  .ac-overview__body {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.96rem;
+    line-height: 1.66;
+    color: var(--color-text-secondary);
+  }
+
+  .ac-overview__frame {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 26px 60px -20px rgba(0, 0, 0, 0.8),
+      0 0 38px -14px rgba(72, 200, 255, 0.16);
+    aspect-ratio: 1 / 1;
+  }
+
+  .ac-overview__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Stats */
+  .ac-stats {
+    padding: clamp(56px, 7vw, 96px) 0;
+    background: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .ac-stats__header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto clamp(40px, 5vw, 56px);
+  }
+
+  .ac-stats__title {
+    margin: 14px 0 16px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.35rem, 4.2vw, 3.45rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .ac-stats__subtitle {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .ac-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px 40px;
+    margin: 0;
+  }
+
+  .ac-stats__item {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 28px 16px 12px;
+  }
+
+  .ac-stats__desc {
+    margin: 0;
+    max-width: 260px;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .ac-stats__value {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(3.1rem, 5vw, 4.4rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-brand-cyan);
+  }
+
+  @media (max-width: 960px) {
+    .ac-overview__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ac-overview__frame {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .ac-stats__grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>

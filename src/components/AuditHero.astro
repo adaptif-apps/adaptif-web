@@ -1,0 +1,232 @@
+---
+// AuditHero.astro - Hero & 4-Column Key Stats Strip for /audit
+import AuditHeroCanvas from "./AuditHeroCanvas.astro";
+
+const stats = [
+  {
+    value: "4–5 days",
+    desc: "Business days, from completed payment, intake and access.",
+  },
+  {
+    value: "100%",
+    desc: "Asynchronous. No mandatory kick-off call.",
+  },
+  {
+    value: "1 focus",
+    desc: "You pick the bottleneck we go deep on.",
+  },
+  {
+    value: "15 min",
+    desc: "Loom walkthrough of the diagnosis and the plan.",
+  },
+];
+---
+
+<section class="au-hero" id="audit-hero" aria-labelledby="au-hero-title">
+  <AuditHeroCanvas />
+  <div class="au-hero__backdrop" aria-hidden="true">
+    <div class="au-hero__glow au-hero__glow--top"></div>
+    <div class="au-hero__glow au-hero__glow--horizon"></div>
+  </div>
+
+  <div class="container au-hero__container">
+    <div class="au-hero__content">
+      <p class="adaptif-eyebrow" data-audit-reveal style="--au-delay: 40ms">
+        ASYNCHRONOUS STRATEGIC AUDIT
+      </p>
+
+      <h1 id="au-hero-title" class="au-hero__title" data-audit-reveal style="--au-delay: 110ms">
+        Find what’s holding your digital growth back in{" "}
+        <span class="title-highlight">4–5 business days.</span>
+      </h1>
+
+      <p class="au-hero__description" data-audit-reveal style="--au-delay: 180ms">
+        For e-commerce and growth brands that need to know what’s limiting their conversion, their brand clarity or their retention. You choose one focus. We analyse the system, prioritise the opportunities and deliver a clear plan in 4–5 business days. No recurring calls.
+      </p>
+
+      <div class="au-hero__actions" data-audit-reveal style="--au-delay: 250ms">
+        <a href="#audit-pricing" class="adaptif-btn">
+          <span>Start your audit</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+        <a href="#audit-sample" class="adaptif-btn adaptif-btn--dark">
+          <span>See a sample audit</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Open Editorial 4-Column Stats Strip -->
+    <div class="au-stats" data-audit-stagger>
+      {stats.map((item) => (
+        <div class="au-stat">
+          <div class="au-stat__value">{item.value}</div>
+          <p class="au-stat__desc">{item.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .au-hero {
+    position: relative;
+    width: 100%;
+    padding: clamp(136px, 16vh, 184px) 0 clamp(64px, 8vh, 96px);
+    background-color: var(--color-void);
+    overflow: hidden;
+  }
+
+  .au-hero__backdrop {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .au-hero__glow {
+    position: absolute;
+    inset: 0;
+  }
+
+  .au-hero__glow--top {
+    background: radial-gradient(
+      ellipse 70% 52% at 50% 8%,
+      rgba(72, 200, 255, 0.14) 0%,
+      rgba(43, 127, 255, 0.08) 42%,
+      transparent 74%
+    );
+  }
+
+  .au-hero__glow--horizon {
+    background: radial-gradient(
+      ellipse 85% 40% at 50% 62%,
+      rgba(22, 61, 168, 0.18) 0%,
+      transparent 72%
+    );
+  }
+
+  .au-hero__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, #000 15%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 50% 30%, #000 15%, transparent 80%);
+  }
+
+  .au-hero__container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .au-hero__content {
+    max-width: 860px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .au-hero__title {
+    margin: 18px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.85rem, 6vw, 4.9rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--color-text-primary);
+  }
+
+  .au-hero__description {
+    max-width: 680px;
+    margin: 0 0 34px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.35vw, 1.14rem);
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .au-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  /* Open Editorial 4-Column Key Stats Strip */
+  .au-stats {
+    margin-top: clamp(56px, 8vh, 88px);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-stat {
+    padding: 28px 24px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-stat:last-child {
+    border-right: none;
+  }
+
+  .au-stat__value {
+    font-family: var(--font-family-display);
+    font-size: clamp(2rem, 3.2vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+  }
+
+  .au-stat__desc {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 960px) {
+    .au-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .au-stat:nth-child(2n) {
+      border-right: none;
+    }
+
+    .au-stat:nth-child(-n + 2) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .au-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .au-stat {
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 22px 4px;
+    }
+
+    .au-stat:last-child {
+      border-bottom: none;
+    }
+  }
+</style>

@@ -1,0 +1,218 @@
+---
+// AuditPricingAndFaq.astro - "Launch price" + "Included" + "Clarity guarantee"
+
+const includedItems = [
+  "Full audit of your chosen focus",
+  "Private dashboard with all eight deliverables",
+  "30/60/90-day roadmap",
+  "15–20 minute Loom walkthrough",
+  "Delivery in 4–5 business days",
+  "Optional 30-minute call to discuss implementation",
+];
+---
+
+<!-- Launch Price -->
+<section class="au-pricing" id="audit-pricing" aria-labelledby="au-pricing-title">
+  <div class="container">
+    <div class="au-pricing__grid">
+      <!-- Left: Price Card -->
+      <div class="glass-panel au-price-card" data-audit-reveal>
+        <div class="au-price-card__top">
+          <span class="adaptif-eyebrow">LAUNCH PRICE</span>
+          <span class="adaptif-tag adaptif-tag--cyan">5 of 5 launch spots left</span>
+        </div>
+
+        <div class="au-price-card__amount-row" id="au-pricing-title">
+          <span class="au-price-card__price">$750</span>
+          <span class="au-price-card__old">$1,000</span>
+        </div>
+
+        <p class="au-price-card__desc">
+          USD, same price for any of the three focuses. Launch pricing for the first five clients, in exchange for a testimonial and feedback.
+        </p>
+
+        <div class="au-price-card__cta">
+          <a href="#book-a-call" class="adaptif-btn au-price-card__btn" data-open-book-call>
+            <span>Start your audit</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path
+                d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        </div>
+
+        <p class="au-price-card__credit">
+          100% of the audit fee is credited if you start an implementation project or monthly plan within 30 days of delivery.
+        </p>
+      </div>
+
+      <!-- Right: Included + Clarity Guarantee -->
+      <div class="glass-panel au-included-card" data-audit-reveal style="--au-delay: 100ms">
+        <p class="adaptif-eyebrow">INCLUDED</p>
+
+        <ul class="au-included-list" data-audit-stagger>
+          {includedItems.map((item) => (
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div class="au-guarantee">
+          <p class="adaptif-eyebrow">CLARITY GUARANTEE</p>
+          <p class="au-guarantee__text">
+            If your audit doesn’t surface at least 10 prioritised opportunities, we refund you in full.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .au-pricing {
+    padding: clamp(56px, 8vh, 96px) 0;
+    background-color: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-pricing__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: stretch;
+  }
+
+  .au-price-card,
+  .au-included-card {
+    border-radius: 20px;
+    padding: clamp(26px, 3.5vw, 38px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .au-price-card {
+    border-color: rgba(72, 200, 255, 0.35);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(127, 226, 255, 0.22),
+      0 18px 46px -14px rgba(10, 163, 248, 0.25);
+  }
+
+  .au-price-card__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .au-price-card__top .adaptif-tag {
+    white-space: nowrap;
+  }
+
+  .au-price-card__amount-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .au-price-card__price {
+    font-family: var(--font-family-display);
+    font-size: clamp(3.2rem, 5vw, 4.4rem);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--color-text-primary);
+  }
+
+  .au-price-card__old {
+    font-family: var(--font-family-body);
+    font-size: 1.35rem;
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+  }
+
+  .au-price-card__desc {
+    margin: 0 0 26px;
+    font-family: var(--font-family-body);
+    font-size: 0.94rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+  }
+
+  .au-price-card__cta {
+    margin-bottom: 20px;
+  }
+
+  .au-price-card__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .au-price-card__credit {
+    margin: auto 0 0;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: var(--font-family-body);
+    font-size: 0.84rem;
+    line-height: 1.55;
+    color: var(--color-text-muted);
+  }
+
+  /* Included Card */
+  .au-included-list {
+    list-style: none;
+    margin: 20px 0 28px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .au-included-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: var(--font-family-body);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+  }
+
+  .au-included-list svg {
+    color: var(--color-brand-cyan);
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .au-guarantee {
+    margin-top: auto;
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: rgba(72, 200, 255, 0.06);
+    border: 1px solid rgba(72, 200, 255, 0.25);
+  }
+
+  .au-guarantee__text {
+    margin: 8px 0 0;
+    font-family: var(--font-family-body);
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 900px) {
+    .au-pricing__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

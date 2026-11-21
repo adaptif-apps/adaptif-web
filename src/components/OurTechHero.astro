@@ -1,0 +1,362 @@
+---
+// OurTechHero.astro - Hero + Integrations logo marquee
+const toolLogos = [
+  { name: "Jira", src: "/images/our-technology/logos/jira.png" },
+  { name: "monday.com", src: "/images/our-technology/logos/monday.png" },
+  { name: "ClickUp", src: "/images/our-technology/logos/clickup.png" },
+  { name: "Slack", src: "/images/our-technology/logos/slack.png" },
+  { name: "Wrike", src: "/images/our-technology/logos/wrike.png" },
+];
+---
+
+<section class="tech-hero" id="our-technology-hero" aria-labelledby="tech-hero-title">
+  <canvas class="tech-hero__canvas" id="tech-hero-canvas" aria-hidden="true"></canvas>
+  <div class="tech-hero__glow" aria-hidden="true"></div>
+
+  <div class="container tech-hero__container">
+    <div class="tech-hero__content">
+      <p class="adaptif-eyebrow" data-tech-reveal style="--tech-delay: 40ms">Our technology</p>
+
+      <h1 id="tech-hero-title" class="tech-hero__title" data-tech-reveal style="--tech-delay: 120ms">
+        The tech powering <span class="title-highlight">your creative edge</span>
+      </h1>
+
+      <p class="tech-hero__desc" data-tech-reveal style="--tech-delay: 200ms">
+        Adaptif runs on the tools your team already knows — ClickUp, Asana, Slack, and more. We’ve built the workflow on top of them so you don’t have to. No new platform to learn. Just a creative operation that runs like clockwork from day one.
+      </p>
+    </div>
+
+    <div class="tech-integrations" data-tech-reveal style="--tech-delay: 280ms">
+      <p class="adaptif-eyebrow tech-integrations__eyebrow">Integrations</p>
+      <h2 class="tech-integrations__title">
+        Built to work with your <span class="title-highlight">favorite tools</span>
+      </h2>
+
+      <div class="tech-marquee" aria-label="Supported tools">
+        <div class="tech-marquee__track">
+          {[...toolLogos, ...toolLogos, ...toolLogos, ...toolLogos].map((logo, idx) => (
+            <img
+              src={logo.src}
+              alt={idx < toolLogos.length ? logo.name : ""}
+              aria-hidden={idx >= toolLogos.length ? "true" : undefined}
+              class="tech-marquee__logo"
+              loading="eager"
+              decoding="async"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tech-hero {
+    position: relative;
+    padding: clamp(140px, 18vh, 200px) 0 clamp(64px, 8vw, 96px);
+    background-color: var(--color-void);
+    overflow: hidden;
+  }
+
+  .tech-hero__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .tech-hero__glow {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    width: min(920px, 95vw);
+    height: 460px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(72, 200, 255, 0.14) 0%, rgba(22, 61, 168, 0.08) 45%, transparent 72%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .tech-hero__container {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .tech-hero__content {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .tech-hero__title {
+    margin: 16px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.85rem, 5.4vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .tech-hero__desc {
+    max-width: 620px;
+    margin: 0 auto;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.2vw, 1.1rem);
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .tech-integrations {
+    margin-top: clamp(56px, 7vw, 88px);
+    padding-top: clamp(40px, 5vw, 56px);
+  }
+
+  .tech-integrations__eyebrow {
+    font-size: 0.74rem;
+  }
+
+  .tech-integrations__title {
+    margin: 10px 0 28px;
+    font-family: var(--font-family-display);
+    font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--color-text-primary);
+  }
+
+  .tech-marquee {
+    position: relative;
+    max-width: 980px;
+    margin: 0 auto;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  }
+
+  .tech-marquee__track {
+    display: flex;
+    align-items: center;
+    gap: clamp(44px, 6vw, 76px);
+    padding-right: clamp(44px, 6vw, 76px);
+    width: max-content;
+    animation: techMarquee 24s linear infinite;
+  }
+
+  .tech-marquee:hover .tech-marquee__track {
+    animation-play-state: paused;
+  }
+
+  .tech-marquee__logo {
+    height: 36px;
+    width: auto;
+    max-width: none;
+    flex-shrink: 0;
+    opacity: 0.92;
+  }
+
+  @keyframes techMarquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tech-marquee__track {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import * as THREE from "three";
+
+  const initTechHeroCanvas = () => {
+    const section = document.getElementById("our-technology-hero");
+    const canvas = document.getElementById("tech-hero-canvas") as HTMLCanvasElement | null;
+    if (!section || !canvas || canvas.dataset.techInit === "1") return;
+    canvas.dataset.techInit = "1";
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" });
+    } catch {
+      return;
+    }
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+    camera.position.set(0, 1.2, 8.2);
+    camera.lookAt(0, -0.2, 0);
+
+    // Abstract energy-lattice field: undulating connected nodes & luminous particles
+    const cols = 34;
+    const rows = 18;
+    const count = cols * rows;
+    const spacingX = 0.56;
+    const spacingZ = 0.52;
+
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const baseCoords = new Float32Array(count * 2);
+
+    const cyan = new THREE.Color("#48C8FF");
+    const cobalt = new THREE.Color("#2b7fff");
+    const deep = new THREE.Color("#0e1c42");
+
+    let idx = 0;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = (c - (cols - 1) / 2) * spacingX;
+        const z = (r - (rows - 1) / 2) * spacingZ;
+        baseCoords[idx * 2] = x;
+        baseCoords[idx * 2 + 1] = z;
+
+        positions[idx * 3] = x;
+        positions[idx * 3 + 1] = 0;
+        positions[idx * 3 + 2] = z;
+
+        const dist = Math.hypot(x / 8.5, z / 4.5);
+        const mixCol = deep.clone().lerp(cobalt, Math.max(0, 1 - dist)).lerp(cyan, Math.max(0, 0.75 - dist));
+        colors[idx * 3] = mixCol.r;
+        colors[idx * 3 + 1] = mixCol.g;
+        colors[idx * 3 + 2] = mixCol.b;
+        idx++;
+      }
+    }
+
+    const pointGeo = new THREE.BufferGeometry();
+    pointGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    pointGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+    const pointMat = new THREE.PointsMaterial({
+      size: 0.055,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
+    const points = new THREE.Points(pointGeo, pointMat);
+    scene.add(points);
+
+    // Connecting horizontal & diagonal energy threads
+    const lineIndices: number[] = [];
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const i = r * cols + c;
+        if (c + 1 < cols) lineIndices.push(i, i + 1);
+        if (r + 1 < rows) lineIndices.push(i, i + cols);
+      }
+    }
+
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute("position", pointGeo.getAttribute("position"));
+    lineGeo.setAttribute("color", pointGeo.getAttribute("color"));
+    lineGeo.setIndex(lineIndices);
+
+    const lineMat = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.18,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
+    const lines = new THREE.LineSegments(lineGeo, lineMat);
+    scene.add(lines);
+
+    const group = new THREE.Group();
+    group.add(points);
+    group.add(lines);
+    group.position.y = -0.75;
+    group.rotation.x = -0.18;
+    scene.add(group);
+
+    let pointerX = 0;
+    let pointerY = 0;
+    const onPointerMove = (e: PointerEvent) => {
+      const rect = section.getBoundingClientRect();
+      pointerX = ((e.clientX - rect.left) / Math.max(rect.width, 1) - 0.5) * 2;
+      pointerY = ((e.clientY - rect.top) / Math.max(rect.height, 1) - 0.5) * 2;
+    };
+    section.addEventListener("pointermove", onPointerMove, { passive: true });
+
+    const resize = () => {
+      const w = section.clientWidth;
+      const h = section.clientHeight;
+      if (!w || !h) return;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    };
+    resize();
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(section);
+
+    const updateWave = (t: number) => {
+      const posAttr = pointGeo.getAttribute("position") as THREE.BufferAttribute;
+      for (let i = 0; i < count; i++) {
+        const x = baseCoords[i * 2];
+        const z = baseCoords[i * 2 + 1];
+        const wave =
+          Math.sin(x * 0.65 + t * 1.15) * 0.28 +
+          Math.cos(z * 0.85 - t * 0.9) * 0.22 +
+          Math.sin((x + z) * 0.45 + t * 0.7) * 0.16;
+        posAttr.setY(i, wave);
+      }
+      posAttr.needsUpdate = true;
+    };
+
+    if (prefersReducedMotion) {
+      updateWave(0.8);
+      renderer.render(scene, camera);
+      return;
+    }
+
+    let rafId = 0;
+    let visible = false;
+    const start = performance.now();
+
+    const renderFrame = (now: number) => {
+      if (!visible) return;
+      const t = (now - start) * 0.001;
+      updateWave(t);
+
+      // Subtle parallax & rotation
+      group.rotation.y += (pointerX * 0.12 - group.rotation.y) * 0.04;
+      group.rotation.x += (-0.18 + pointerY * 0.05 - group.rotation.x) * 0.04;
+
+      renderer.render(scene, camera);
+      rafId = requestAnimationFrame(renderFrame);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) {
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(renderFrame);
+        } else {
+          cancelAnimationFrame(rafId);
+        }
+      },
+      { threshold: 0.02 }
+    );
+    io.observe(section);
+  };
+
+  initTechHeroCanvas();
+  document.addEventListener("astro:page-load", initTechHeroCanvas);
+</script>

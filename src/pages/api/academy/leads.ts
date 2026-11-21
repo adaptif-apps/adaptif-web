@@ -1,10 +1,11 @@
 import type { APIRoute } from "astro";
 import { getAcademyItemBySlug, recordGuideLeadAndCreateToken } from "../../../lib/academyDb";
 import { syncLeadToActiveCampaign } from "../../../lib/activeCampaignDb";
+import { verifyTurnstileToken } from "../../../lib/turnstile";
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ request, cookies, clientAddress }) => {
   try {
     const body = await request.json();
     const slug = String(body?.slug ?? "").trim();
@@ -15,6 +16,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(
         JSON.stringify({ error: "Please enter your name and a valid email address." }),
         { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const tsCheck = await verifyTurnstileToken(String(body?.turnstileToken ?? ""), clientAddress);
+    if (!tsCheck.ok) {
+      return new Response(
+        JSON.stringify({ error: tsCheck.error || "Security verification failed." }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
       );
     }
 

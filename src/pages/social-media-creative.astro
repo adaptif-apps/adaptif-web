@@ -1,0 +1,151 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import SocialHero from "../components/SocialHero.astro";
+import BrandLogos from "../components/BrandLogos.astro";
+import SocialOverviewAndOffer from "../components/SocialOverviewAndOffer.astro";
+import SocialAiAndWorkflow from "../components/SocialAiAndWorkflow.astro";
+import FaqSection, { type FaqItem } from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+if (Astro.url.searchParams.get("edit") !== "1") {
+  Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+}
+
+const socialFaqs: FaqItem[] = [
+  {
+    question: "Are social media design services part of my Adaptif subscription?",
+    answer:
+      "Yes! Social media creative is included in every Adaptif design subscription. Your selected tier gives you access to our full range of creative capabilities—including motion graphics, video production, and campaign development.",
+  },
+  {
+    question: "Can you put together a custom plan?",
+    answer:
+      "Yes! If your needs are larger or more complex, we can tailor a budget to match the scope of your work. Every plan provides access to the same range of Adaptif services.",
+  },
+  {
+    question: "What is the minimum commitment for social media creative support?",
+    answer:
+      "All Adaptif subscriptions are built around ongoing creative partnerships rather than individual one-off projects, giving you access to our complete range of design services as your team develops deeper brand alignment over time.",
+  },
+  {
+    question: "How does Adaptif approach social media creative?",
+    answer:
+      "We start by understanding your business goals, target audiences, and brand identity, then develop a creative direction tailored to each platform and intended audience.",
+  },
+  {
+    question: "Who typically uses Adaptif’s social media design services?",
+    answer:
+      "We support scale-ups and enterprises looking to strengthen their social presence—especially when internal resources are stretched, fresh creative ideas are needed, or social content must scale rapidly.",
+  },
+  {
+    question: "What makes Adaptif’s social media design services stand out?",
+    answer:
+      "Your dedicated creative project manager connects you with global specialists across motion, video, AI, AR, and 3D—with briefs and updates flowing seamlessly through our platform, Slack, Asana, Monday.com, or Jira.",
+  },
+  {
+    question: "What payment options are available?",
+    answer: "We offer payment by credit card or through invoicing.",
+  },
+  {
+    question: "What does social media design involve?",
+    answer:
+      "Social media design combines visual craft with platform-native strategy across static posts, carousels, video, motion graphics, 3D effects, and AR overlays.",
+  },
+  {
+    question: "Why does on-brand content matter in social media campaigns?",
+    answer:
+      "Social content featuring relevant, on-brand imagery receives 94% more views than generic visuals—helping your posts stand out while building brand awareness and trust.",
+  },
+  {
+    question: "Why include motion graphics in your social media content?",
+    answer:
+      "Motion graphics help your content catch the eye in busy feeds. On average, posts featuring motion graphics generate 55% more engagement than static posts alone.",
+  },
+  {
+    question: "How does Adaptif compare with a traditional social media creative agency?",
+    answer:
+      "Adaptif offers flexible, transparent subscription pricing and access to a broader range of creative disciplines—including AI, AR, and 3D—under one ongoing creative partnership.",
+  },
+];
+---
+
+<Layout
+  title="Social Media Creative Services — Adaptif"
+  description="Attention-grabbing social work made quickly on-brand. Performance-led creative for Meta, LinkedIn, TikTok, YouTube, and beyond."
+>
+  <Header />
+  <main>
+    <SocialHero />
+    <BrandLogos />
+    <SocialOverviewAndOffer />
+    <SocialAiAndWorkflow />
+    <FaqSection faqs={socialFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  :global([data-sm-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--sm-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--sm-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-sm-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-sm-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-sm-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initSocialPage = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-sm-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => el.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.01, rootMargin: "100px 0px 100px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initSocialPage();
+  document.addEventListener("astro:page-load", initSocialPage);
+</script>

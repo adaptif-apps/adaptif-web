@@ -78,11 +78,18 @@ body::before {
 /* ==========================================================================
    Typography Utilities
    ========================================================================== */
-h1, h2, h3, h4, h5, h6 {
+h1, h2 {
   font-family: var(--font-family-display);
   font-weight: 400;
   color: var(--color-text-white);
   letter-spacing: var(--font-letter-spacing-display, -0.04em);
+}
+
+h3, h4, h5, h6 {
+  font-family: var(--font-family-body);
+  font-weight: 500;
+  color: var(--color-text-white);
+  letter-spacing: -0.015em;
 }
 
 a {
@@ -141,14 +148,13 @@ img, svg {
   color: #48C8FF;
   background: linear-gradient(135deg, #7fe2ff 0%, #48C8FF 50%, #1da5ff 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
-  display: inline-block;
-  line-height: 1.15;
-  padding-top: 0.04em;
-  padding-bottom: 0.16em;
-  margin-bottom: -0.16em;
+  display: inline;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
   padding-left: 0.03em;
-  padding-right: 0.1em;
+  padding-right: 0.08em;
   filter: drop-shadow(0 2px 14px rgba(72, 200, 255, 0.35));
 }
 
@@ -252,24 +258,53 @@ img, svg {
   gap: 8px;
 }
 
-/* Interchangeable Dark / Obsidian Variant (same volume, bevel & glow mechanics) */
+/* Secondary Glass Pill Variant (same volume & spring mechanics, matches "Get Started") */
 .adaptif-btn--dark {
-  --btn-bg-top: #263147;
-  --btn-bg-mid: #141c2c;
-  --btn-bg-bottom: #090d16;
-  --btn-color: #ffffff;
-  --btn-specular: rgba(255, 255, 255, 0.24);
-  --btn-glow: rgba(148, 197, 255, 0.35);
+  --btn-bg-top: rgba(10, 20, 48, 0.45);
+  --btn-bg-mid: rgba(10, 20, 48, 0.45);
+  --btn-bg-bottom: rgba(10, 20, 48, 0.45);
+  --btn-color: #e2e8f0;
+  --btn-specular: rgba(255, 255, 255, 0.15);
+  --btn-glow: rgba(72, 200, 255, 0.15);
   --btn-shadow:
-    0 0 22px rgba(11, 15, 25, 0.2),
-    0 8px 20px rgba(11, 15, 25, 0.28),
-    inset 0 1px 1px rgba(255, 255, 255, 0.28),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.45);
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    0 0 20px -5px rgba(72, 200, 255, 0.15),
+    0 8px 24px -6px rgba(0, 0, 0, 0.6);
   --btn-shadow-hover:
-    0 0 28px rgba(14, 165, 233, 0.28),
-    0 12px 26px rgba(11, 15, 25, 0.38),
-    inset 0 1px 2px rgba(255, 255, 255, 0.38);
-  --btn-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    0 0 24px -4px rgba(72, 200, 255, 0.3),
+    0 10px 26px -6px rgba(0, 0, 0, 0.7);
+  --btn-text-shadow: none;
+  border: 1px solid rgba(72, 200, 255, 0.35);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+}
+
+.adaptif-btn--dark:hover {
+  border-color: #48C8FF;
+  color: #48C8FF;
+}
+
+/* Light-Surface Pill Button (matches "Explore all our work ->" on light sections) */
+.adaptif-btn--light {
+  --btn-bg-top: #ffffff;
+  --btn-bg-mid: #ffffff;
+  --btn-bg-bottom: #f8fafc;
+  --btn-color: #0f172a;
+  --btn-specular: rgba(255, 255, 255, 0.8);
+  --btn-glow: rgba(15, 23, 42, 0.08);
+  --btn-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.08);
+  --btn-shadow-hover: 0 8px 20px -4px rgba(15, 23, 42, 0.24);
+  --btn-text-shadow: none;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+}
+
+.adaptif-btn--light:hover {
+  --btn-bg-top: #0b0f19;
+  --btn-bg-mid: #0b0f19;
+  --btn-bg-bottom: #0b0f19;
+  color: var(--color-text-primary);
+  border-color: #0b0f19;
 }
 
 /* Interchangeable Danger / Destructive Variant */

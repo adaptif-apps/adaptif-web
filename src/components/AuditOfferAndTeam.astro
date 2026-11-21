@@ -1,0 +1,224 @@
+---
+// AuditOfferAndTeam.astro - "The offer" & "Who runs your audit" sections
+
+const leaders = [
+  {
+    role: "Strategy Lead",
+    name: "Valentina Lugo",
+    bio: "Leads Email & Retention and Website & Funnel audits: offer, funnel, lifecycle, pricing and conversion.",
+    image: "/images/ai-excellence/expert-valentina.jpg",
+  },
+  {
+    role: "Creative Director",
+    name: "Néstor Paredes",
+    bio: "Leads Brand & Conversion audits: positioning, messaging, visual system and consistency.",
+    image: "/images/ai-excellence/expert-nestor.jpg",
+  },
+];
+---
+
+<section class="au-offer" id="audit-offer" aria-labelledby="au-offer-title">
+  <div class="container">
+    <div class="au-offer__split" data-audit-reveal>
+      <div class="au-offer__left">
+        <p class="adaptif-eyebrow">THE OFFER</p>
+        <h2 id="au-offer-title" class="au-section-title">
+          We don’t sell consulting hours.{" "}
+          <span class="title-highlight">We deliver clarity.</span>
+        </h2>
+      </div>
+
+      <div class="au-offer__right">
+        <p>
+          A strategic, asynchronous audit that finds what’s limiting your growth and turns it into priorities you can act on. No calendar tetris, no discovery calls, no hundred-page report nobody reads.
+        </p>
+        <p>
+          You get a private micro-site with the diagnosis, a 30/60/90-day roadmap and a video walking through every decision. A 30-minute call stays available if you want to discuss implementation.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="au-team" id="audit-team" aria-labelledby="au-team-title">
+  <div class="container">
+    <div class="au-team__header" data-audit-reveal>
+      <p class="adaptif-eyebrow">WHO RUNS YOUR AUDIT</p>
+      <h2 id="au-team-title" class="au-section-title">
+        Senior eyes on your system,{" "}
+        <span class="title-highlight">not a junior checklist.</span>
+      </h2>
+    </div>
+
+    <div class="au-team__grid">
+      {leaders.map((leader, idx) => (
+        <article
+          class="glass-panel au-leader-card"
+          data-audit-reveal
+          style={`--au-delay: ${idx * 90}ms`}
+        >
+          <div class="au-leader-card__media">
+            <img
+              src={leader.image}
+              alt={`${leader.name} — ${leader.role}`}
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div class="au-leader-card__body">
+            <span class="au-leader-card__role">{leader.role}</span>
+            <h3 class="au-leader-card__name">{leader.name}</h3>
+            <p class="au-leader-card__bio">{leader.bio}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <p class="au-team__caption" data-audit-reveal style="--au-delay: 180ms">
+      Every audit is reviewed by both before delivery.
+    </p>
+  </div>
+</section>
+
+<style>
+  .au-offer {
+    padding: clamp(56px, 8vh, 96px) 0;
+    background-color: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-offer__split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(28px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .au-section-title {
+    margin: 14px 0 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.15rem, 4.2vw, 3.35rem);
+    font-weight: 400;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .au-offer__right {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 8px;
+  }
+
+  .au-offer__right p {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: clamp(0.98rem, 1.2vw, 1.06rem);
+    line-height: 1.68;
+    color: var(--color-text-secondary);
+  }
+
+  .au-offer__right p:first-child {
+    font-size: clamp(1.06rem, 1.35vw, 1.18rem);
+    color: var(--color-text-primary);
+  }
+
+  /* Who runs your audit */
+  .au-team {
+    padding: clamp(56px, 8vh, 96px) 0;
+    background-color: var(--color-void);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .au-team__header {
+    max-width: 720px;
+    margin-bottom: 36px;
+  }
+
+  .au-team__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .au-leader-card {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 24px;
+    padding: 20px;
+    border-radius: 18px;
+    align-items: center;
+  }
+
+  .au-leader-card__media {
+    width: 160px;
+    height: 185px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-obsidian-900);
+  }
+
+  .au-leader-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  .au-leader-card__role {
+    display: inline-block;
+    font-family: var(--font-family-body);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-brand-cyan);
+    margin-bottom: 6px;
+  }
+
+  .au-leader-card__name {
+    margin: 0 0 10px;
+    font-family: var(--font-family-display);
+    font-size: clamp(1.65rem, 2.4vw, 2rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--color-text-primary);
+  }
+
+  .au-leader-card__bio {
+    margin: 0;
+    font-family: var(--font-family-body);
+    font-size: 0.92rem;
+    line-height: 1.58;
+    color: var(--color-text-secondary);
+  }
+
+  .au-team__caption {
+    margin: 20px 0 0;
+    font-family: var(--font-family-body);
+    font-size: 0.86rem;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 960px) {
+    .au-offer__split,
+    .au-team__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .au-leader-card {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .au-leader-card__media {
+      width: 100%;
+      height: 240px;
+    }
+  }
+</style>

@@ -1,0 +1,245 @@
+---
+// SocialHero.astro - Full-bleed Hero + bottom service marquee strip for /social-media-creative
+
+const stripCards = [
+  { label: "Organic Social Content", image: "/images/social-media-creative/offer-organic.jpg", href: "#social-offer" },
+  { label: "Paid Social Ads", image: "/images/social-media-creative/offer-paid.jpg", href: "#social-offer" },
+  { label: "Video", image: "/images/social-media-creative/offer-video.jpg", href: "#social-offer" },
+  { label: "AI Production", image: "/images/social-media-creative/offer-ai.jpg", href: "#social-offer" },
+  { label: "Campaign Concepts", image: "/images/social-media-creative/offer-concepts.jpg", href: "#social-offer" },
+  { label: "Immersive Experiences", image: "/images/social-media-creative/offer-immersive.jpg", href: "#social-offer" },
+];
+---
+
+<section class="sm-hero" id="social-hero" aria-labelledby="sm-hero-title">
+  <div class="sm-hero__media" aria-hidden="true">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/images/social-media-creative/hero-mobile.jpg" />
+      <img
+        src="/images/social-media-creative/hero-desktop.jpg"
+        alt=""
+        class="sm-hero__bg"
+        loading="eager"
+        decoding="async"
+        data-cms-key="social.hero.image"
+      />
+    </picture>
+    <div class="sm-hero__scrim"></div>
+    <div class="sm-hero__bottom-fade"></div>
+  </div>
+
+  <div class="container sm-hero__container">
+    <div class="sm-hero__content">
+      <p class="adaptif-eyebrow" data-cms-key="social.hero.eyebrow">
+        Social-first creative services
+      </p>
+
+      <h1 id="sm-hero-title" class="sm-hero__title" data-cms-key="social.hero.title">
+        Attention-grabbing social work <span class="title-highlight">made quickly on-brand</span>
+      </h1>
+
+      <p class="sm-hero__description" data-cms-key="social.hero.description">
+        Get performance-led creative for every platform, placement, and dimension. From sponsored LinkedIn content and educational TikTok videos to AR activations and YouTube pre-roll, one dedicated creative team handles it all.
+      </p>
+
+      <div class="sm-hero__actions">
+        <a
+          href="#book-a-call"
+          class="adaptif-btn"
+          data-open-book-call
+          data-cms-key="social.hero.cta"
+        >
+          <span>Book a Call</span>
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path
+              d="M4.16666 10H15.8333M15.8333 10L10 4.16666M15.8333 10L10 15.8333"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm-strip" aria-label="Social media creative deliverables overview">
+    <div class="sm-strip__track">
+      {[...stripCards, ...stripCards].map((card, i) => (
+        <a href={card.href} class="sm-strip__card" tabindex={i >= stripCards.length ? -1 : undefined}>
+          <img src={card.image} alt={card.label} class="sm-strip__img" loading="lazy" decoding="async" />
+          <div class="sm-strip__scrim" aria-hidden="true"></div>
+          <span class="sm-strip__label">{card.label}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .sm-hero {
+    position: relative;
+    width: 100%;
+    padding: clamp(128px, 16vh, 175px) 0 36px;
+    overflow: hidden;
+    background-color: var(--color-void);
+  }
+
+  .sm-hero__media {
+    position: absolute;
+    inset: 0 0 110px 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .sm-hero__media picture {
+    display: contents;
+  }
+
+  .sm-hero__bg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 68% 25%;
+    opacity: 0.9;
+  }
+
+  .sm-hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(1, 3, 7, 0.92) 0%, rgba(1, 3, 7, 0.72) 48%, rgba(1, 3, 7, 0.16) 100%),
+      radial-gradient(ellipse 55% 55% at 22% 45%, rgba(72, 200, 255, 0.1) 0%, transparent 70%);
+  }
+
+  .sm-hero__bottom-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 150px;
+    background: linear-gradient(180deg, transparent 0%, var(--color-void) 100%);
+  }
+
+  .sm-hero__container {
+    position: relative;
+    z-index: 2;
+    padding-bottom: clamp(44px, 6vw, 72px);
+  }
+
+  .sm-hero__content {
+    max-width: 640px;
+  }
+
+  .sm-hero__title {
+    margin: 16px 0 22px;
+    font-family: var(--font-family-display);
+    font-size: clamp(2.85rem, 5.4vw, 4.5rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+  }
+
+  .sm-hero__description {
+    max-width: 540px;
+    margin: 0 0 32px;
+    font-family: var(--font-family-body);
+    font-size: clamp(1rem, 1.2vw, 1.12rem);
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+  }
+
+  .sm-hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .sm-strip {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  }
+
+  .sm-strip__track {
+    display: flex;
+    gap: 14px;
+    width: max-content;
+    padding: 4px 0;
+    animation: smStripScroll 38s linear infinite;
+  }
+
+  .sm-strip:hover .sm-strip__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes smStripScroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .sm-strip__card {
+    position: relative;
+    width: 172px;
+    height: 112px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px 12px;
+    text-decoration: none;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .sm-strip__card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(72, 200, 255, 0.45);
+  }
+
+  .sm-strip__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .sm-strip__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(1, 3, 7, 0.08) 0%, rgba(1, 3, 7, 0.88) 100%);
+  }
+
+  .sm-strip__label {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-family-body);
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    .sm-hero {
+      padding: 120px 0 28px;
+    }
+
+    .sm-hero__scrim {
+      background: linear-gradient(180deg, rgba(1, 3, 7, 0.88) 0%, rgba(1, 3, 7, 0.68) 60%, rgba(1, 3, 7, 0.94) 100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sm-strip__track {
+      animation: none;
+    }
+  }
+</style>

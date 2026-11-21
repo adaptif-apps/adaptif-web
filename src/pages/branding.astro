@@ -1,0 +1,176 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import BrandingHero from "../components/BrandingHero.astro";
+import BrandLogos from "../components/BrandLogos.astro";
+import BrandingImpactAndStats from "../components/BrandingImpactAndStats.astro";
+import BrandingOfferAndChannels from "../components/BrandingOfferAndChannels.astro";
+import BrandingAiAndWorkflow from "../components/BrandingAiAndWorkflow.astro";
+import BrandingBottomAndArticles from "../components/BrandingBottomAndArticles.astro";
+import FaqSection, { type FaqItem } from "../components/FaqSection.astro";
+import Footer from "../components/Footer.astro";
+
+export const prerender = false;
+
+if (Astro.url.searchParams.get("edit") !== "1") {
+  Astro.response.headers.set("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+}
+
+const brandingFaqs: FaqItem[] = [
+  {
+    question: "Is this service available with every Adaptif subscription?",
+    answer:
+      "Yes! Every Adaptif subscription includes access to our full range of creative services, not just graphic design. Whichever tier you choose, you can tap into these services and scale your creative efforts as your needs evolve.",
+  },
+  {
+    question: "How long is the minimum commitment?",
+    answer:
+      "All Adaptif subscriptions offer month-to-month or annual options. We focus on building long-term creative partnerships rather than delivering one-off projects, giving you access to our complete creative offering while allowing us to develop a deeper understanding of your brand over time.",
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "You can pay by credit card or through invoicing.",
+  },
+  {
+    question: "Can you create a custom branding plan?",
+    answer:
+      "Absolutely! We tailor our brand development plans to each client’s needs. Our subscription tiers are flexible, allowing us to adjust capacity when a project requires a more involved approach.",
+  },
+  {
+    question: "What do branding services include?",
+    answer:
+      "Branding services bring together strategy, design, and storytelling to define a company’s identity and strengthen how its audience recognizes and connects with it—encompassing your logo, colors, typography, visual style, guidelines, and story.",
+  },
+  {
+    question: "How can branding services benefit my business?",
+    answer:
+      "Professional branding strengthens visibility, builds credibility, and helps your business stand out. A clear, consistent identity builds trust—a factor 81% of consumers consider essential before making a purchase—and supports greater loyalty and retention.",
+  },
+  {
+    question: "Who are your branding services best suited for?",
+    answer:
+      "Adaptif is a strong fit for high-growth businesses preparing to launch, refresh their identity, or expand across multiple channels, as well as enterprise teams needing a cohesive brand identity at scale. We also handle focused projects like logo design and iconography.",
+  },
+  {
+    question: "What do traditional branding agencies typically charge?",
+    answer:
+      "Traditional branding agencies can charge up to $1,000 USD per hour with comprehensive packages reaching $100,000 or more. Adaptif offers a transparent subscription structure that saves on comprehensive branding while giving you ongoing access to all creative services.",
+  },
+];
+---
+
+<Layout
+  title="Branding Services — Adaptif"
+  description="Build a brand people remember, and ready to grow. Adaptif shapes, refreshes, and expands brand identities with clarity, brand guidelines, and scalable visual systems."
+>
+  <Header />
+  <main>
+    <BrandingHero />
+    <BrandLogos />
+    <BrandingImpactAndStats />
+    <BrandingOfferAndChannels />
+    <BrandingAiAndWorkflow />
+    <BrandingBottomAndArticles />
+    <FaqSection faqs={brandingFaqs} />
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+  }
+
+  :global([data-br-reveal]) {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--br-delay, 0ms),
+      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) var(--br-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  :global([data-br-reveal="scale"]) {
+    transform: translateY(16px) scale(0.975);
+  }
+
+  :global([data-br-reveal].is-visible) {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global([data-br-reveal]) {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const initBrandingPage = () => {
+    const revealEls = document.querySelectorAll<HTMLElement>("[data-br-reveal]");
+    if (!revealEls.length) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const animateCounter = (el: HTMLElement) => {
+      const target = Number(el.dataset.brCount || "0");
+      const decimals = Number(el.dataset.brDecimals || "0");
+      const suffix = el.dataset.brSuffix || "";
+      const useComma = el.dataset.brComma === "1";
+      if (!target || el.dataset.brCounted === "1") return;
+      el.dataset.brCounted = "1";
+
+      const formatVal = (val: number) => {
+        if (decimals > 0) return val.toFixed(decimals);
+        const rounded = Math.round(val);
+        return useComma ? rounded.toLocaleString("en-US") : String(rounded);
+      };
+
+      if (prefersReducedMotion) {
+        el.textContent = `${formatVal(target)}${suffix}`;
+        return;
+      }
+
+      const duration = 950;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = `${formatVal(target * eased)}${suffix}`;
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    if (prefersReducedMotion) {
+      revealEls.forEach((el) => {
+        el.classList.add("is-visible");
+        el.querySelectorAll<HTMLElement>("[data-br-count]").forEach(animateCounter);
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const target = entry.target as HTMLElement;
+          target.classList.add("is-visible");
+          target.querySelectorAll<HTMLElement>("[data-br-count]").forEach(animateCounter);
+          observer.unobserve(target);
+        });
+      },
+      { threshold: 0.01, rootMargin: "100px 0px 100px 0px" }
+    );
+
+    revealEls.forEach((el) => observer.observe(el));
+  };
+
+  initBrandingPage();
+  document.addEventListener("astro:page-load", initBrandingPage);
+</script>

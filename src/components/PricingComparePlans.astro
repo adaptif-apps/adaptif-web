@@ -57,24 +57,12 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   </div>
 
   <div class="container compare-container">
-    <!-- Section Header + Essential Differences Synthesis -->
+    <!-- Section Header -->
     <header class="compare-header">
       <span class="adaptif-eyebrow">PLAN COMPARISON</span>
       <h2 id="compare-plans-heading" class="compare-title">
         Compare our <span class="title-highlight">plans</span>
       </h2>
-
-      <!-- Essential Differences Synthesis -->
-      <div class="compare-synthesis" role="region" aria-label="Key differences summary">
-        {
-          PLAN_CONFIGS.map((plan) => (
-            <div class={`synthesis-item ${plan.id === "full-stack" ? "synthesis-item--highlight" : ""}`}>
-              <span class="synthesis-item__label">{plan.name}</span>
-              <p class="synthesis-item__copy">{plan.summaryLine}</p>
-            </div>
-          ))
-        }
-      </div>
     </header>
 
     <!-- Billing Cycle Selector -->
@@ -388,8 +376,10 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
   }
 
   .cmp-fixed-plan__name {
-    font-family: var(--font-family-display);
-    font-size: 1.25rem;
+    font-family: var(--font-family-body);
+    font-size: 1.12rem;
+    font-weight: 500;
+    letter-spacing: -0.015em;
     color: var(--color-text-white);
     line-height: 1;
   }
@@ -432,49 +422,6 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
     line-height: 1.08;
     letter-spacing: -0.02em;
     color: var(--color-text-white);
-    margin: 0;
-  }
-
-  .compare-synthesis {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-top: 0.5rem;
-    text-align: left;
-  }
-
-  .synthesis-item {
-    padding: 1rem 1.25rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .synthesis-item--highlight {
-    background: linear-gradient(135deg, rgba(72, 200, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 100%);
-    border-color: rgba(72, 200, 255, 0.24);
-  }
-
-  .synthesis-item__label {
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-text-white);
-  }
-
-  .synthesis-item--highlight .synthesis-item__label {
-    color: var(--color-brand-cyan);
-  }
-
-  .synthesis-item__copy {
-    font-size: 0.9rem;
-    line-height: 1.45;
-    color: var(--color-text-secondary);
     margin: 0;
   }
 
@@ -905,10 +852,6 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
 
     .cmp-fixed-bar {
       display: none;
-    }
-
-    .compare-synthesis {
-      grid-template-columns: 1fr;
     }
 
     .plan-header-grid {

@@ -687,6 +687,14 @@ try {
     <button slot="actions" type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-refresh-general-info">Refresh Status</button>
   </StudioHeader>
 
+  <section class="acd-glass-card gi-summary-card" aria-label="Plain-language architecture summary">
+    <span class="acd-section-kicker">Plain-Language Overview</span>
+    <h2 class="acd-card-title" style="margin-bottom: 8px;">How Adaptif Web Is Connected</h2>
+    <p class="gi-summary-text">
+      Adaptif Web is hosted on <strong>Vercel</strong> and uses a <strong>Neon Postgres</strong> database to store all pages, courses, blog posts, SEO settings, and customer activity, while uploaded images, videos, and PDFs are stored in <strong>Vercel Blob</strong>. Content generation and SEO writing are powered by <strong id="gi-summary-ai">{initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}</strong>, payments and checkout are currently routed through <strong id="gi-summary-payment">{paymentSettings.activeProvider === "shopify" ? `Shopify API (${paymentSettings.shopifyStoreDomain})` : "Stripe"}</strong> (switchable in one click under Payment), and automated course-access emails are sent via <strong>Resend</strong> with <strong>Cloudflare Turnstile</strong> protecting public forms.
+    </p>
+  </section>
+
   <div class="gi-grid">
     <!-- Card 1: Stripe & Checkout Flow -->
     <section class="acd-glass-card gi-card">
@@ -1408,6 +1416,11 @@ try {
             body: JSON.stringify({ activeProvider: nextProvider })
           });
           if (res.ok) {
+            const summaryPayEl = document.getElementById("gi-summary-payment");
+            const domainVal = (document.getElementById("pay-shopify-domain") as HTMLInputElement)?.value?.trim() || "adaptif-dev.myshopify.com";
+            if (summaryPayEl) {
+              summaryPayEl.textContent = nextProvider === "shopify" ? `Shopify API (${domainVal})` : "Stripe";
+            }
             showStudioToast(
               nextProvider === "shopify"
                 ? "Switched active checkout to Shopify API!"
@@ -1497,6 +1510,10 @@ try {
           if (data?.settings?.hasAiApiKey) {
             aiDot?.classList.add("is-ready");
             if (aiStatusText) aiStatusText.textContent = `${provider === "openai" ? "OpenAI" : "Gemini"} Ready`;
+            const summaryAiEl = document.getElementById("gi-summary-ai");
+            if (summaryAiEl) {
+              summaryAiEl.textContent = provider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)";
+            }
           }
           showStudioToast("AI Engine configuration saved!");
         } else {
@@ -2825,5 +2842,22 @@ try {
     height: 1px;
     margin: 22px 0;
     background: rgba(148, 163, 184, 0.16);
+  }
+
+  .gi-summary-card {
+    margin-bottom: 18px;
+  }
+
+  .gi-summary-text {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.7;
+    color: rgba(226, 232, 240, 0.86);
+    max-width: 92ch;
+  }
+
+  .gi-summary-text strong {
+    color: #f8fafc;
+    font-weight: 600;
   }
 </style>

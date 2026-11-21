@@ -4,6 +4,19 @@ import {
   COMPARISON_CATEGORIES,
   type FeatureAvailability,
 } from "../data/pricingComparison";
+import { getPaymentSettings, resolveCatalogCheckoutHref, type PaymentSettings } from "../lib/paymentDb";
+
+let paymentSettings: PaymentSettings | null = null;
+try {
+  paymentSettings = await getPaymentSettings();
+} catch {
+  paymentSettings = null;
+}
+
+const getPlanHref = (planId: string, fallback: string) => {
+  const key = planId === "full-stack" ? "plan-fullstack" : "plan-creative";
+  return resolveCatalogCheckoutHref(paymentSettings, key, fallback);
+};
 
 const creativePlan = PLAN_CONFIGS[0];
 const fullStackPlan = PLAN_CONFIGS[1];
@@ -43,7 +56,9 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
                 </span>
               </div>
               <a
-                href={plan.ctaHref}
+                href={getPlanHref(plan.id, plan.ctaHref).href}
+                target={getPlanHref(plan.id, plan.ctaHref).isCheckout ? "_blank" : undefined}
+                rel={getPlanHref(plan.id, plan.ctaHref).isCheckout ? "noopener noreferrer" : undefined}
                 class={`adaptif-btn cmp-fixed-cta ${plan.id === "creative" ? "adaptif-btn--dark" : ""}`}
                 tabindex="-1"
               >
@@ -146,7 +161,9 @@ const isDifferent = (a: FeatureAvailability, b: FeatureAvailability) => a !== b;
             </div>
 
             <a
-              href={plan.ctaHref}
+              href={getPlanHref(plan.id, plan.ctaHref).href}
+              target={getPlanHref(plan.id, plan.ctaHref).isCheckout ? "_blank" : undefined}
+              rel={getPlanHref(plan.id, plan.ctaHref).isCheckout ? "noopener noreferrer" : undefined}
               class={`adaptif-btn cmp-plan-cta ${plan.id === "creative" ? "adaptif-btn--dark" : ""}`}
             >
               <span>{plan.ctaLabel}</span>

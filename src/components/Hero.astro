@@ -42,9 +42,8 @@ import ReelGallery from "./ReelGallery.astro";
         </span>
       </a>
 
-      <a href="/pricing" class="btn-secondary-hero" data-cms-key="home.hero.ctaSecondary">
+      <a href="/pricing" class="adaptif-btn adaptif-btn--dark hero-cta-secondary" data-cms-key="home.hero.ctaSecondary">
         <span>Get Started</span>
-        <span class="btn-secondary-glow" aria-hidden="true"></span>
       </a>
     </div>
 
@@ -316,50 +315,6 @@ import ReelGallery from "./ReelGallery.astro";
     transform: translateX(4px);
   }
 
-  .btn-secondary-hero {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 28px;
-    border-radius: var(--radius-pill);
-    background: rgba(10, 20, 48, 0.45);
-    backdrop-filter: var(--glass-blur-sm);
-    -webkit-backdrop-filter: var(--glass-blur-sm);
-    border: 1px solid rgba(72, 200, 255, 0.35);
-    box-shadow: 
-      inset 0 1px 1px rgba(255, 255, 255, 0.15),
-      0 0 20px -5px rgba(72, 200, 255, 0.15),
-      0 8px 24px -6px rgba(0, 0, 0, 0.6);
-    color: #e2e8f0;
-    font-size: var(--font-size-btn);
-    font-weight: 600;
-    cursor: pointer;
-    overflow: hidden;
-    transition: 
-      transform var(--duration-fast) var(--ease-spring),
-      border-color var(--duration-fast),
-      color var(--duration-fast);
-  }
-
-  .btn-secondary-glow {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(72, 200, 255, 0.1) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity var(--duration-fast);
-  }
-
-  .btn-secondary-hero:hover {
-    transform: translateY(-2px);
-    border-color: #48C8FF;
-    color: #48C8FF;
-  }
-
-  .btn-secondary-hero:hover .btn-secondary-glow {
-    opacity: 1;
-  }
-
   /* Perks List */
   .hero-perks {
     display: flex;
@@ -494,7 +449,7 @@ import ReelGallery from "./ReelGallery.astro";
     }
 
     .btn-primary-hero,
-    .btn-secondary-hero {
+    .hero-cta-secondary {
       width: 100%;
     }
 

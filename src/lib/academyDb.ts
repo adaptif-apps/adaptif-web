@@ -178,6 +178,7 @@ export interface AcademyItem {
   publishAt: string | null;
   priceLabel: string;
   stripeCheckoutUrl: string;
+  shopifyVariantId: string;
   accessMode: CourseAccessMode;
   toolName: string;
   toolType: string;
@@ -229,6 +230,7 @@ const SEED_GUIDE: Omit<AcademyItem, "createdAt" | "updatedAt"> = {
   publishAt: null,
   priceLabel: "Free",
   stripeCheckoutUrl: "",
+  shopifyVariantId: "",
   accessMode: "open",
   toolName: "",
   toolType: "",
@@ -323,6 +325,7 @@ const SEED_COURSE: Omit<AcademyItem, "createdAt" | "updatedAt"> = {
   publishAt: null,
   priceLabel: "$49",
   stripeCheckoutUrl: "https://buy.stripe.com/test_example",
+  shopifyVariantId: "",
   accessMode: "stripe_webhook",
   toolName: "Adaptif Prompt & Token Kit",
   toolType: "Template + Micro-App",
@@ -414,6 +417,7 @@ export async function ensureAcademySchema(): Promise<void> {
         publish_at TIMESTAMPTZ NULL,
         price_label TEXT NOT NULL DEFAULT '',
         stripe_checkout_url TEXT NOT NULL DEFAULT '',
+        shopify_variant_id TEXT NOT NULL DEFAULT '',
         access_mode TEXT NOT NULL DEFAULT 'stripe_webhook',
         tool_name TEXT NOT NULL DEFAULT '',
         tool_type TEXT NOT NULL DEFAULT '',
@@ -424,6 +428,11 @@ export async function ensureAcademySchema(): Promise<void> {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
+    `;
+
+    await sql`
+      ALTER TABLE academy_items
+      ADD COLUMN IF NOT EXISTS shopify_variant_id TEXT NOT NULL DEFAULT ''
     `;
 
     await sql`
@@ -533,6 +542,7 @@ function mapItem(row: Record<string, any>): AcademyItem {
     publishAt: row.publish_at ? new Date(row.publish_at).toISOString() : null,
     priceLabel: String(row.price_label ?? ""),
     stripeCheckoutUrl: String(row.stripe_checkout_url ?? ""),
+    shopifyVariantId: String(row.shopify_variant_id ?? ""),
     accessMode:
       row.access_mode === "checkout_redirect" || row.access_mode === "open"
         ? row.access_mode
@@ -681,7 +691,7 @@ export async function createAcademyItem(
   const rows = await sql`
     INSERT INTO academy_items (
       id, slug, kind, title, subtitle, description, category, cover_image,
-      status, publish_at, price_label, stripe_checkout_url, access_mode,
+      status, publish_at, price_label, stripe_checkout_url, shopify_variant_id, access_mode,
       tool_name, tool_type, tool_url, landing_data, slides, sort_order
     ) VALUES (
       ${id},
@@ -696,6 +706,7 @@ export async function createAcademyItem(
       ${input.publishAt ?? null},
       ${input.priceLabel ?? (input.kind === "guide" ? "Free" : "$49")},
       ${input.stripeCheckoutUrl ?? ""},
+      ${input.shopifyVariantId ?? ""},
       ${input.accessMode ?? (input.kind === "guide" ? "open" : "stripe_webhook")},
       ${input.toolName ?? ""},
       ${input.toolType ?? ""},
@@ -734,6 +745,7 @@ export async function updateAcademyItem(
       publish_at = ${patch.publishAt !== undefined ? patch.publishAt : existing.publishAt},
       price_label = ${patch.priceLabel ?? existing.priceLabel},
       stripe_checkout_url = ${patch.stripeCheckoutUrl ?? existing.stripeCheckoutUrl},
+      shopify_variant_id = ${patch.shopifyVariantId ?? existing.shopifyVariantId},
       access_mode = ${patch.accessMode ?? existing.accessMode},
       tool_name = ${patch.toolName ?? existing.toolName},
       tool_type = ${patch.toolType ?? existing.toolType},

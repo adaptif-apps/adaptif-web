@@ -45,6 +45,7 @@ export const POST: APIRoute = async ({ request }) => {
       publishAt: body.publishAt ? String(body.publishAt) : null,
       priceLabel: String(body.priceLabel ?? (body.kind === "guide" ? "Free" : "$49")),
       stripeCheckoutUrl: String(body.stripeCheckoutUrl ?? ""),
+      shopifyVariantId: String(body.shopifyVariantId ?? ""),
       accessMode:
         body.accessMode === "checkout_redirect" || body.accessMode === "open"
           ? body.accessMode

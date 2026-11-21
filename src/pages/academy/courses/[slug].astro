@@ -15,6 +15,7 @@ import {
   verifyAccessToken
 } from "../../../lib/academyDb";
 import { resolveUpsellBanner } from "../../../lib/upsell";
+import { getPaymentSettings } from "../../../lib/paymentDb";
 
 export const prerender = false;
 
@@ -276,7 +277,20 @@ function withStripeClientRef(rawUrl: string, courseId: string): string {
   }
 }
 
-const checkoutHref = withStripeClientRef(item.stripeCheckoutUrl, item.id);
+let activePaymentProvider: "stripe" | "shopify" = "stripe";
+try {
+  const paySettings = await getPaymentSettings();
+  activePaymentProvider = paySettings.activeProvider;
+} catch {
+  activePaymentProvider = "stripe";
+}
+
+const checkoutHref =
+  activePaymentProvider === "shopify"
+    ? item.shopifyVariantId
+      ? `/api/payments/checkout?kind=course&id=${encodeURIComponent(item.id)}`
+      : ""
+    : withStripeClientRef(item.stripeCheckoutUrl, item.id);
 const primaryCtaHref = isUnlocked
   ? `/academy/courses/${item.slug}/slides`
   : checkoutHref || "#course-enroll";
@@ -335,7 +349,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
                   rel={primaryCtaExternal ? "noopener noreferrer" : undefined}
                   class="btn-primary-cyan"
                 >
-                  {item.stripeCheckoutUrl
+                  {checkoutHref
                     ? `Buy Course ${item.priceLabel ? `— ${item.priceLabel}` : ""}`
                     : "Get Course Access"}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -802,7 +816,7 @@ const primaryCtaExternal = !isUnlocked && Boolean(checkoutHref);
                     Buy Course {item.priceLabel ? `— ${item.priceLabel}` : ""}
                   </a>
                 ) : (
-                  <span class="tool-locked-pill">Stripe Checkout URL not configured yet</span>
+                  <span class="tool-locked-pill">Checkout URL not configured yet</span>
                 )}
               </div>
               <div class="cf-closing-trust">

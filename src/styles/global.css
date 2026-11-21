@@ -258,11 +258,11 @@ img, svg {
   gap: 8px;
 }
 
-/* Secondary Glass Pill Variant (same volume & spring mechanics, matches "Get Started") */
+/* Secondary Glass Pill Variant (matches "See Pricing" in Dedicated Team) */
 .adaptif-btn--dark {
-  --btn-bg-top: rgba(10, 20, 48, 0.45);
-  --btn-bg-mid: rgba(10, 20, 48, 0.45);
-  --btn-bg-bottom: rgba(10, 20, 48, 0.45);
+  --btn-bg-top: rgba(10, 20, 48, 0.52);
+  --btn-bg-mid: rgba(10, 20, 48, 0.52);
+  --btn-bg-bottom: rgba(10, 20, 48, 0.52);
   --btn-color: #e2e8f0;
   --btn-specular: rgba(255, 255, 255, 0.15);
   --btn-glow: rgba(72, 200, 255, 0.15);
@@ -271,8 +271,8 @@ img, svg {
     0 0 20px -5px rgba(72, 200, 255, 0.15),
     0 8px 24px -6px rgba(0, 0, 0, 0.6);
   --btn-shadow-hover:
-    inset 0 1px 1px rgba(255, 255, 255, 0.2),
-    0 0 24px -4px rgba(72, 200, 255, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.22),
+    0 0 24px -4px rgba(72, 200, 255, 0.28),
     0 10px 26px -6px rgba(0, 0, 0, 0.7);
   --btn-text-shadow: none;
   border: 1px solid rgba(72, 200, 255, 0.35);
@@ -281,8 +281,11 @@ img, svg {
 }
 
 .adaptif-btn--dark:hover {
-  border-color: #48C8FF;
-  color: #48C8FF;
+  --btn-bg-top: rgba(24, 52, 108, 0.78);
+  --btn-bg-mid: rgba(14, 28, 66, 0.74);
+  --btn-bg-bottom: rgba(10, 20, 48, 0.72);
+  border-color: rgba(72, 200, 255, 0.72);
+  color: var(--color-text-primary);
 }
 
 /* Light-Surface Pill Button (matches "Explore all our work ->" on light sections) */

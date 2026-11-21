@@ -543,6 +543,8 @@ export const POST: APIRoute = async ({ request }) => {
           priceLabel: kind === "course" ? String(body?.priceLabel || existingItem.priceLabel || "$49") : "Free",
           stripeCheckoutUrl:
             kind === "course" ? String(body?.stripeCheckoutUrl ?? existingItem.stripeCheckoutUrl ?? "") : "",
+          shopifyVariantId:
+            kind === "course" ? String(body?.shopifyVariantId ?? existingItem.shopifyVariantId ?? "") : "",
           toolName: kind === "course" ? String(body?.toolName ?? existingItem.toolName ?? "") : "",
           toolType: kind === "course" ? String(body?.toolType ?? existingItem.toolType ?? "") : "",
           toolUrl: kind === "course" ? String(body?.toolUrl ?? existingItem.toolUrl ?? "") : "",
@@ -569,6 +571,7 @@ export const POST: APIRoute = async ({ request }) => {
           publishAt: status === "scheduled" && body?.publishAt ? String(body.publishAt) : null,
           priceLabel: kind === "course" ? String(body?.priceLabel || "$49") : "Free",
           stripeCheckoutUrl: kind === "course" ? String(body?.stripeCheckoutUrl || "") : "",
+          shopifyVariantId: kind === "course" ? String(body?.shopifyVariantId || "") : "",
           accessMode: kind === "course" ? "stripe_webhook" : "open",
           toolName: kind === "course" ? String(body?.toolName || "") : "",
           toolType: kind === "course" ? String(body?.toolType || "") : "",

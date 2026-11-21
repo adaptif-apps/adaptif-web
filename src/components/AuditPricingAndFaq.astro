@@ -1,5 +1,15 @@
 ---
 // AuditPricingAndFaq.astro - "Launch price" + "Included" + "Clarity guarantee"
+import { getPaymentSettings, resolveCatalogCheckoutHref, type PaymentSettings } from "../lib/paymentDb";
+
+let paymentSettings: PaymentSettings | null = null;
+try {
+  paymentSettings = await getPaymentSettings();
+} catch {
+  paymentSettings = null;
+}
+
+const auditCheckout = resolveCatalogCheckoutHref(paymentSettings, "audit-standard", "#book-a-call");
 
 const includedItems = [
   "Full audit of your chosen focus",
@@ -32,7 +42,13 @@ const includedItems = [
         </p>
 
         <div class="au-price-card__cta">
-          <a href="#book-a-call" class="adaptif-btn au-price-card__btn" data-open-book-call>
+          <a
+            href={auditCheckout.href}
+            target={auditCheckout.isCheckout ? "_blank" : undefined}
+            rel={auditCheckout.isCheckout ? "noopener noreferrer" : undefined}
+            class="adaptif-btn au-price-card__btn"
+            data-open-book-call={!auditCheckout.isCheckout ? true : undefined}
+          >
             <span>Start your audit</span>
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <path

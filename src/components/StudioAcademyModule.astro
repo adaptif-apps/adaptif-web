@@ -1,5 +1,10 @@
 ---
 import { FUNNEL_BLOCKS, type AcademyItem, type AcademySettings } from "../lib/academyDb";
+import {
+  DEFAULT_PAYMENT_CATALOG,
+  getPaymentSettings,
+  type PaymentSettings
+} from "../lib/paymentDb";
 import AcademyGeneratorModal from "./AcademyGeneratorModal.astro";
 import StudioHeader from "./StudioHeader.astro";
 import StudioUpsellPanel from "./StudioUpsellPanel.astro";
@@ -10,6 +15,20 @@ interface Props {
 }
 
 const { initialItems, initialSettings } = Astro.props;
+
+let paymentSettings: PaymentSettings = {
+  activeProvider: "stripe",
+  shopifyStoreDomain: "eqkk7t-qy.myshopify.com",
+  hasShopifyStorefrontToken: false,
+  hasShopifyWebhookSecret: false,
+  catalog: DEFAULT_PAYMENT_CATALOG
+};
+
+try {
+  paymentSettings = await getPaymentSettings();
+} catch {
+  // Fallback to defaults if DB env is not configured yet
+}
 ---
 
 <div id="module-academy" hidden>
@@ -166,7 +185,7 @@ const { initialItems, initialSettings } = Astro.props;
                   </span>
                   <input type="text" id="gen-price" placeholder="$49" value="$49" />
                 </label>
-                <label class="acd-field acd-span-2">
+                <label class="acd-field">
                   <span class="acd-label-row">
                     Stripe Checkout Link
                     <span class="acd-tip-wrap">
@@ -177,6 +196,18 @@ const { initialItems, initialSettings } = Astro.props;
                     </span>
                   </span>
                   <input type="url" id="gen-stripe-url" placeholder="https://buy.stripe.com/..." />
+                </label>
+                <label class="acd-field">
+                  <span class="acd-label-row">
+                    Shopify Variant ID
+                    <span class="acd-tip-wrap">
+                      <button type="button" class="acd-tip-btn" aria-label="Shopify Variant ID info">?</button>
+                      <span class="acd-tip-box" role="tooltip">
+                        Paste the Shopify Product Variant ID (numeric or <code>gid://shopify/ProductVariant/...</code>) used when Shopify is the active payment provider.
+                      </span>
+                    </span>
+                  </span>
+                  <input type="text" id="gen-shopify-variant-id" placeholder="e.g. 49281736451234" />
                 </label>
               </div>
 
@@ -260,14 +291,45 @@ const { initialItems, initialSettings } = Astro.props;
   </div>
 </div>
 
-<!-- General Payment & Stripe Access Control Module (Left Sidebar: Payment) -->
+<!-- General Payment & Stripe / Shopify Access Control Module (Left Sidebar: Payment) -->
 <div id="module-payment" hidden>
   <StudioHeader eyebrow="CONFIGURATION" title="Payment">
     <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-settings">Save Preferences</button>
   </StudioHeader>
 
+  <section class="acd-glass-card acd-prefs-card pay-switcher-card" aria-label="Active Payment Provider">
+    <div class="pay-switcher-row">
+      <div>
+        <span class="acd-section-kicker">1-Click Checkout Engine</span>
+        <h2 class="acd-card-title" style="margin-bottom: 4px;">Active Payment Provider</h2>
+        <p class="acd-card-sub" style="margin: 0;">
+          Switch between Stripe and Shopify with one click across Academy courses, Pricing plans, and Strategic Audit.
+        </p>
+      </div>
+      <div class="pay-provider-pills" role="group" aria-label="Select active payment provider">
+        <button
+          type="button"
+          class:list={["pay-provider-btn", { "is-active": paymentSettings.activeProvider === "stripe" }]}
+          data-payment-provider="stripe"
+        >
+          <span class="pay-provider-dot"></span>
+          Stripe
+        </button>
+        <button
+          type="button"
+          class:list={["pay-provider-btn", { "is-active": paymentSettings.activeProvider === "shopify" }]}
+          data-payment-provider="shopify"
+        >
+          <span class="pay-provider-dot"></span>
+          Shopify API
+        </button>
+      </div>
+    </div>
+  </section>
+
   <div class="acd-config-two-col">
-    <section class="acd-glass-card acd-prefs-card" aria-label="Course Access & Stripe Preferences">
+    <div class="pay-left-stack">
+      <section class="acd-glass-card acd-prefs-card" aria-label="Course Access & Stripe Preferences">
       <div class="acd-prefs-head">
         <div>
           <span class="acd-section-kicker">Global Course Checkout</span>
@@ -345,7 +407,139 @@ const { initialItems, initialSettings } = Astro.props;
       </div>
     </section>
 
-    <aside class="acd-glass-card acd-prefs-card acd-guide-aside" aria-label="Stripe Setup Guide">
+      <section class="acd-glass-card acd-prefs-card" aria-label="Shopify Storefront API Preferences">
+        <div class="acd-prefs-head">
+          <div>
+            <span class="acd-section-kicker">Shopify Storefront API</span>
+            <h2 class="acd-card-title">Shopify Checkout Credentials</h2>
+            <p class="acd-card-sub">
+              Creates dynamic Shopify checkouts via Storefront API (<code>cartCreate</code>) and unlocks courses via <code>orders/paid</code> webhook.
+            </p>
+          </div>
+        </div>
+
+        <div class="acd-prefs-grid">
+          <label class="acd-field">
+            <span class="acd-label-row">
+              Shopify Store Domain
+              <a
+                href={`https://admin.shopify.com/store/${(paymentSettings.shopifyStoreDomain || "eqkk7t-qy.myshopify.com").replace(/\.myshopify\.com$/i, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="studio-link studio-link--inline"
+              >
+                Open Shopify Admin ↗
+              </a>
+            </span>
+            <input
+              type="text"
+              id="pay-shopify-domain"
+              value={paymentSettings.shopifyStoreDomain}
+              placeholder="eqkk7t-qy.myshopify.com"
+            />
+          </label>
+
+          <label class="acd-field">
+            <span class="acd-label-row">
+              Storefront Access Token
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="Storefront Access Token info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Found in Shopify Admin → Sales channels → Headless → Storefront API → Public access token.
+                </span>
+              </span>
+            </span>
+            <input
+              type="password"
+              id="pay-shopify-token"
+              placeholder={paymentSettings.hasShopifyStorefrontToken ? "Saved (leave blank to keep)" : "shpat_... or public storefront token"}
+            />
+          </label>
+
+          <label class="acd-field">
+            <span class="acd-label-row">
+              Shopify Webhook Secret
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="Shopify Webhook Secret info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Found in Shopify Admin → Settings → Notifications → Webhooks (signing secret at the bottom of the page).
+                </span>
+              </span>
+            </span>
+            <input
+              type="password"
+              id="pay-shopify-secret"
+              placeholder={paymentSettings.hasShopifyWebhookSecret ? "Saved (leave blank to keep)" : "Webhook signing secret"}
+            />
+          </label>
+
+          <div class="acd-field">
+            <span class="acd-label-row">Shopify Webhook Endpoint</span>
+            <div class="acd-copy-row">
+              <input type="text" id="pay-shopify-webhook-url" readonly value="/api/payments/shopify-webhook" />
+              <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-copy-shopify-webhook">Copy</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="acd-glass-card acd-prefs-card" aria-label="Plans & Audit Product Mapping">
+        <div class="acd-prefs-head">
+          <div>
+            <span class="acd-section-kicker">Pricing &amp; Audit Pages</span>
+            <h2 class="acd-card-title">Plans &amp; Audit Checkout Mapping</h2>
+            <p class="acd-card-sub">
+              Map each Pricing Plan and the Strategic Audit to its Stripe Payment Link and Shopify Variant ID. Leave blank to keep the default Contact / Book a Call flow.
+            </p>
+          </div>
+        </div>
+
+        <div class="pay-catalog-list">
+          {paymentSettings.catalog.map((entry) => (
+            <div class="pay-catalog-row" data-catalog-key={entry.key}>
+              <div class="pay-catalog-head">
+                <span class="pay-catalog-badge">{entry.kind === "audit" ? "AUDIT" : "PLAN"}</span>
+                <strong>{entry.label}</strong>
+                <code class="pay-catalog-key">{entry.key}</code>
+              </div>
+              <div class="pay-catalog-fields">
+                <label class="acd-field">
+                  <span class="acd-label-row">Stripe Payment Link</span>
+                  <input
+                    type="url"
+                    class="pay-cat-stripe"
+                    value={entry.stripeCheckoutUrl}
+                    placeholder="https://buy.stripe.com/..."
+                  />
+                </label>
+                <label class="acd-field">
+                  <span class="acd-label-row">Shopify Variant ID</span>
+                  <input
+                    type="text"
+                    class="pay-cat-variant"
+                    value={entry.shopifyVariantId}
+                    placeholder="e.g. 49281736451234"
+                  />
+                </label>
+                {entry.kind === "plan" && (
+                  <label class="acd-field">
+                    <span class="acd-label-row">Selling Plan ID (Optional)</span>
+                    <input
+                      type="text"
+                      class="pay-cat-selling-plan"
+                      value={entry.shopifySellingPlanId}
+                      placeholder="For monthly subscriptions"
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <aside class="acd-glass-card acd-prefs-card acd-guide-aside" aria-label="Payment Setup Guide">
       <span class="acd-section-kicker">Quick Setup</span>
       <h3 class="acd-card-title" style="margin-bottom: 10px;">Connect Your Stripe Account</h3>
       <div class="acd-stripe-guide" style="margin-top: 0;">
@@ -366,6 +560,28 @@ const { initialItems, initialSettings } = Astro.props;
           </li>
           <li>
             Copy the <strong>Signing secret (<code>whsec_...</code>)</strong> from Stripe, paste it into <strong>Stripe Webhook Secret</strong>, and click <strong>Save Preferences</strong>.
+          </li>
+        </ol>
+      </div>
+
+      <div class="pay-guide-divider"></div>
+
+      <span class="acd-section-kicker">Shopify API Setup</span>
+      <h3 class="acd-card-title" style="margin-bottom: 10px;">Connect Your Shopify Store</h3>
+      <div class="acd-stripe-guide" style="margin-top: 0;">
+        <ol class="acd-stripe-guide-steps">
+          <li>
+            In Shopify Admin, go to <strong>Sales channels → Headless</strong> (install if needed) and copy your <strong>Storefront API Public access token</strong>.
+          </li>
+          <li>
+            Create products for your Courses, Plans, and Audit, and copy each <strong>Variant ID</strong> into the corresponding field.
+          </li>
+          <li>
+            Under <strong>Settings → Notifications → Webhooks</strong>, add the <strong>Shopify Webhook Endpoint</strong> for event:
+            <span class="acd-event-chip">
+              <code>orders/paid</code>
+              <button type="button" class="acd-chip-copy" id="btn-copy-shopify-event">Copy Event</button>
+            </span>
           </li>
         </ol>
       </div>
@@ -867,6 +1083,7 @@ const { initialItems, initialSettings } = Astro.props;
       };
       setSharedVal("gen-price", item.priceLabel || "$49");
       setSharedVal("gen-stripe-url", item.stripeCheckoutUrl || "");
+      setSharedVal("gen-shopify-variant-id", item.shopifyVariantId || "");
       setSharedVal("gen-tool-name", item.toolName || "");
       setSharedVal("gen-tool-type", item.toolType || "");
       setSharedVal("gen-tool-url", item.toolUrl || "");
@@ -1137,6 +1354,7 @@ const { initialItems, initialSettings } = Astro.props;
         priceLabel: item.kind === "course" ? genVal("gen-price") || item.priceLabel : "Free",
         accessMode: item.accessMode,
         stripeCheckoutUrl: item.kind === "course" ? genVal("gen-stripe-url") : "",
+        shopifyVariantId: item.kind === "course" ? genVal("gen-shopify-variant-id") : "",
         toolName: item.kind === "course" ? genVal("gen-tool-name") : "",
         toolType: item.kind === "course" ? genVal("gen-tool-type") : "",
         toolUrl: item.kind === "course" ? genVal("gen-tool-url") : "",
@@ -1177,16 +1395,74 @@ const { initialItems, initialSettings } = Astro.props;
       }
     });
 
+    // 1-Click Payment Provider Switcher (Stripe <-> Shopify)
+    const providerBtns = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-payment-provider]"));
+    providerBtns.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const nextProvider = btn.dataset.paymentProvider === "shopify" ? "shopify" : "stripe";
+        providerBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
+        try {
+          const res = await fetch("/api/payments/settings", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ activeProvider: nextProvider })
+          });
+          if (res.ok) {
+            showStudioToast(
+              nextProvider === "shopify"
+                ? "Switched active checkout to Shopify API!"
+                : "Switched active checkout to Stripe!"
+            );
+          } else {
+            const data = await res.json().catch(() => ({}));
+            showStudioToast(data?.error || "Failed to switch payment provider");
+          }
+        } catch {
+          showStudioToast("Network error while switching provider");
+        }
+      });
+    });
+
     document.getElementById("btn-save-acd-settings")?.addEventListener("click", async () => {
       const mode = (document.getElementById("acd-default-access-mode") as HTMLSelectElement)?.value;
       const secret = (document.getElementById("acd-stripe-secret") as HTMLInputElement)?.value;
-      const res = await fetch("/api/academy/settings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ defaultCourseAccessMode: mode, stripeWebhookSecret: secret })
-      });
-      if (res.ok) {
-        showStudioToast("Payment preferences saved!");
+      const shopifyStoreDomain = (document.getElementById("pay-shopify-domain") as HTMLInputElement)?.value?.trim();
+      const shopifyStorefrontToken = (document.getElementById("pay-shopify-token") as HTMLInputElement)?.value;
+      const shopifyWebhookSecret = (document.getElementById("pay-shopify-secret") as HTMLInputElement)?.value;
+
+      const activeBtn = document.querySelector<HTMLButtonElement>("[data-payment-provider].is-active");
+      const activeProvider = activeBtn?.dataset.paymentProvider === "shopify" ? "shopify" : "stripe";
+
+      const catalog = Array.from(document.querySelectorAll<HTMLElement>("[data-catalog-key]")).map((row) => ({
+        key: row.dataset.catalogKey || "",
+        stripeCheckoutUrl: (row.querySelector(".pay-cat-stripe") as HTMLInputElement)?.value?.trim() || "",
+        shopifyVariantId: (row.querySelector(".pay-cat-variant") as HTMLInputElement)?.value?.trim() || "",
+        shopifySellingPlanId: (row.querySelector(".pay-cat-selling-plan") as HTMLInputElement)?.value?.trim() || ""
+      }));
+
+      const [acdRes, payRes] = await Promise.all([
+        fetch("/api/academy/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ defaultCourseAccessMode: mode, stripeWebhookSecret: secret })
+        }),
+        fetch("/api/payments/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            activeProvider,
+            shopifyStoreDomain,
+            shopifyStorefrontToken,
+            shopifyWebhookSecret,
+            catalog
+          })
+        })
+      ]);
+
+      if (acdRes.ok && payRes.ok) {
+        showStudioToast("Payment & Shopify preferences saved!");
+      } else {
+        showStudioToast("Some preferences failed to save.");
       }
     });
 
@@ -1241,6 +1517,19 @@ const { initialItems, initialSettings } = Astro.props;
     document.getElementById("btn-copy-stripe-event")?.addEventListener("click", () => {
       navigator.clipboard?.writeText("checkout.session.completed");
       showStudioToast("Event name copied!");
+    });
+
+    document.getElementById("btn-copy-shopify-webhook")?.addEventListener("click", () => {
+      const input = document.getElementById("pay-shopify-webhook-url") as HTMLInputElement | null;
+      if (input) {
+        navigator.clipboard?.writeText(input.value);
+        showStudioToast("Shopify webhook URL copied!");
+      }
+    });
+
+    document.getElementById("btn-copy-shopify-event")?.addEventListener("click", () => {
+      navigator.clipboard?.writeText("orders/paid");
+      showStudioToast("Shopify event copied!");
     });
 
     async function refreshGeneralInfo() {
@@ -2415,5 +2704,126 @@ const { initialItems, initialSettings } = Astro.props;
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Payment Provider Switcher & Shopify Catalog ── */
+  .pay-switcher-card {
+    margin-bottom: 18px;
+  }
+
+  .pay-switcher-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .pay-provider-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 999px;
+    background: rgba(6, 13, 24, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+  }
+
+  .pay-provider-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(226, 232, 240, 0.72);
+    font-size: 0.84rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .pay-provider-btn:hover {
+    color: #f8fafc;
+  }
+
+  .pay-provider-btn.is-active {
+    background: rgba(72, 200, 255, 0.16);
+    border-color: rgba(72, 200, 255, 0.45);
+    color: #e6f6ff;
+    box-shadow: 0 0 18px rgba(72, 200, 255, 0.18);
+  }
+
+  .pay-provider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(148, 163, 184, 0.45);
+  }
+
+  .pay-provider-btn.is-active .pay-provider-dot {
+    background: #48c8ff;
+    box-shadow: 0 0 8px #48c8ff;
+  }
+
+  .pay-left-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .pay-catalog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .pay-catalog-row {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(6, 13, 24, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .pay-catalog-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pay-catalog-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    background: rgba(72, 200, 255, 0.14);
+    border: 1px solid rgba(72, 200, 255, 0.3);
+    color: #7dd3fc;
+  }
+
+  .pay-catalog-key {
+    margin-left: auto;
+    font-size: 0.72rem;
+    color: rgba(148, 163, 184, 0.8);
+  }
+
+  .pay-catalog-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+  }
+
+  .pay-guide-divider {
+    height: 1px;
+    margin: 22px 0;
+    background: rgba(148, 163, 184, 0.16);
   }
 </style>

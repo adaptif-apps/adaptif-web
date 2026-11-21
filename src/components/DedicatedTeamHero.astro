@@ -51,9 +51,8 @@
           </svg>
         </a>
 
-        <a href="/pricing" class="dt-hero__cta-secondary">
+        <a href="/pricing" class="adaptif-btn adaptif-btn--dark dt-hero__cta-secondary">
           <span>See Pricing</span>
-          <span class="dt-hero__cta-secondary-glow" aria-hidden="true"></span>
         </a>
       </div>
 
@@ -228,53 +227,6 @@
   .dt-hero__cta-primary {
     padding: 14px 30px;
     font-size: var(--font-size-btn);
-  }
-
-  .dt-hero__cta-secondary {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 28px;
-    border-radius: var(--radius-pill);
-    background: rgba(10, 20, 48, 0.52);
-    backdrop-filter: var(--glass-blur-sm);
-    -webkit-backdrop-filter: var(--glass-blur-sm);
-    border: 1px solid rgba(72, 200, 255, 0.35);
-    box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 0.15),
-      0 0 20px -5px rgba(72, 200, 255, 0.15),
-      0 8px 24px -6px rgba(0, 0, 0, 0.6);
-    color: #e2e8f0;
-    font-size: var(--font-size-btn);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    overflow: hidden;
-    transition:
-      transform var(--duration-fast) var(--ease-spring),
-      border-color var(--duration-fast) ease,
-      background var(--duration-fast) ease,
-      color var(--duration-fast) ease;
-  }
-
-  .dt-hero__cta-secondary:hover {
-    transform: translateY(-2px);
-    border-color: rgba(72, 200, 255, 0.72);
-    background: rgba(14, 28, 66, 0.72);
-    color: var(--color-text-primary);
-  }
-
-  .dt-hero__cta-secondary-glow {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(72, 200, 255, 0.22) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity var(--duration-fast) ease;
-    pointer-events: none;
-  }
-
-  .dt-hero__cta-secondary:hover .dt-hero__cta-secondary-glow {
-    opacity: 1;
   }
 
   /* Statistics Strip */

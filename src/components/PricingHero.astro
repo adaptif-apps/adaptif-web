@@ -1,6 +1,7 @@
 ---
 // PricingHero.astro - Adaptif Luminous Obsidian Glass Pricing Hero / Section
 import UnderwaterLightRays from "./UnderwaterLightRays.astro";
+import { getPaymentSettings, resolveCatalogCheckoutHref, type PaymentSettings } from "../lib/paymentDb";
 
 interface Props {
   eyebrow?: string;
@@ -19,7 +20,16 @@ const {
   showBackground = !asSection,
   sectionId = "pricing-hero",
 } = Astro.props;
-import UnderwaterLightRays from "./UnderwaterLightRays.astro";
+
+let paymentSettings: PaymentSettings | null = null;
+try {
+  paymentSettings = await getPaymentSettings();
+} catch {
+  paymentSettings = null;
+}
+
+const creativeCheckout = resolveCatalogCheckoutHref(paymentSettings, "plan-creative", "#contact");
+const fullStackCheckout = resolveCatalogCheckoutHref(paymentSettings, "plan-fullstack", "#contact");
 
 interface PlanFeature {
   id: string;
@@ -366,7 +376,12 @@ const fullStackFeatures: PlanFeature[] = [
               ))}
             </ul>
 
-            <a href="#contact" class="adaptif-btn adaptif-btn--dark plan-cta plan-cta--creative">
+            <a
+              href={creativeCheckout.href}
+              target={creativeCheckout.isCheckout ? "_blank" : undefined}
+              rel={creativeCheckout.isCheckout ? "noopener noreferrer" : undefined}
+              class="adaptif-btn adaptif-btn--dark plan-cta plan-cta--creative"
+            >
               <span>Start with Creative →</span>
             </a>
           </article>
@@ -486,7 +501,12 @@ const fullStackFeatures: PlanFeature[] = [
               ))}
             </ul>
 
-            <a href="#contact" class="adaptif-btn plan-cta">
+            <a
+              href={fullStackCheckout.href}
+              target={fullStackCheckout.isCheckout ? "_blank" : undefined}
+              rel={fullStackCheckout.isCheckout ? "noopener noreferrer" : undefined}
+              class="adaptif-btn plan-cta"
+            >
               <span>Get Full Stack →</span>
             </a>
           </article>

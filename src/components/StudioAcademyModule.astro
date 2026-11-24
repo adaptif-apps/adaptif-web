@@ -34,39 +34,6 @@ try {
 <div id="module-academy" hidden>
   <StudioHeader eyebrow="CMS" title="Courses" titleId="acd-module-title" actionsId="acd-header-actions">
     <Fragment slot="actions">
-      <div class="cms-header-dropdown" id="acd-edit-dropdown">
-        <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
-          Edit ▾
-        </button>
-        <div class="cms-dropdown-menu" hidden>
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-content" class="cms-dropdown-item">
-            Edit Content ↗
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-slides" class="cms-dropdown-item">
-            Edit PDF / Slides ↗
-          </a>
-        </div>
-      </div>
-
-      <div class="cms-header-dropdown" id="acd-preview-dropdown">
-        <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
-          Preview ▾
-        </button>
-        <div class="cms-dropdown-menu" hidden>
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="cms-dropdown-item">
-            Preview Landing ↗
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-slides" class="cms-dropdown-item">
-            Preview Slides / PDF ↗
-          </a>
-        </div>
-      </div>
-
-      <button type="button" class="cms-btn cms-btn--danger" id="btn-delete-acd-item">Delete</button>
-      <button type="submit" form="acd-editor-form" class="cms-btn cms-btn--save" id="btn-save-acd-item" disabled>Save Changes</button>
-
-      <span class="studio-actions-divider" id="acd-actions-divider"></span>
-
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-guide">+ New Guide</button>
       <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-new-course">+ New Course</button>
     </Fragment>
@@ -74,7 +41,7 @@ try {
 
   <div class="acd-studio-workspace">
     <!-- Left List: Courses or Guides -->
-    <section class="acd-list-panel" aria-label="Academy items list">
+    <section class="studio-bento-card acd-list-panel" aria-label="Academy items list">
       <div class="panel-search-wrap">
         <input
           type="search"
@@ -87,20 +54,55 @@ try {
       <div class="acd-studio-list" id="acd-studio-list"></div>
     </section>
 
-    <!-- Right Column: Title + Tabs (Settings & Assets | AI Generator) -->
-    <div class="acd-editor-col">
-      <div class="cms-item-title-bar" id="acd-item-title-bar" hidden>
-        <input
-          type="text"
-          id="acd-item-title-input"
-          class="cms-item-title-input"
-          placeholder="Course title..."
-          aria-label="Item title"
-        />
-        <span class="cms-status-badge" id="acd-item-status-badge">Draft</span>
+    <!-- Right Unified Editor Card (Single Bento Container) -->
+    <section class="studio-bento-card studio-bento-card--flush acd-editor-shell-card" aria-label="Academy item editor">
+      <div class="acd-editor-topbar" id="acd-item-title-bar" hidden>
+        <div class="acd-title-group">
+          <input
+            type="text"
+            id="acd-item-title-input"
+            class="cms-item-title-input"
+            placeholder="Course title..."
+            aria-label="Item title"
+          />
+          <span class="cms-status-badge" id="acd-item-status-badge">Draft</span>
+        </div>
+
+        <div class="acd-item-actions" id="acd-item-actions">
+          <div class="cms-header-dropdown" id="acd-edit-dropdown">
+            <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
+              Edit ▾
+            </button>
+            <div class="cms-dropdown-menu" hidden>
+              <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-content" class="cms-dropdown-item">
+                Edit Content ↗
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" id="acd-edit-slides" class="cms-dropdown-item">
+                Edit PDF / Slides ↗
+              </a>
+            </div>
+          </div>
+
+          <div class="cms-header-dropdown" id="acd-preview-dropdown">
+            <button type="button" class="cms-btn cms-dropdown-trigger" aria-expanded="false">
+              Preview ▾
+            </button>
+            <div class="cms-dropdown-menu" hidden>
+              <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-landing" class="cms-dropdown-item">
+                Preview Landing ↗
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" id="acd-preview-slides" class="cms-dropdown-item">
+                Preview Slides / PDF ↗
+              </a>
+            </div>
+          </div>
+
+          <button type="button" class="cms-btn cms-btn--danger" id="btn-delete-acd-item">Delete</button>
+          <button type="submit" form="acd-editor-form" class="cms-btn cms-btn--save" id="btn-save-acd-item" disabled>Save Changes</button>
+        </div>
       </div>
 
-      <div class="cms-tabs-bar" id="acd-tabs-bar" role="tablist">
+      <div class="acd-editor-tabs" id="acd-tabs-bar" role="tablist">
         <button type="button" class="cms-tab-btn is-active" data-acd-tab="settings" role="tab" aria-selected="true">
           Settings &amp; Assets
         </button>
@@ -113,7 +115,7 @@ try {
       </div>
 
       <!-- Tab 1: Settings & Assets (First / Default) -->
-      <section class="acd-glass-card acd-settings-card" id="acd-tab-settings" aria-label="Course Settings and Assets">
+      <div class="acd-tab-pane" id="acd-tab-settings" aria-label="Course Settings and Assets">
         <div class="acd-editor-shell">
           <div class="acd-empty-editor" id="acd-empty-editor">
             Select an item from the list on the left, or click <strong>+ New</strong> above.
@@ -276,18 +278,18 @@ try {
             </div>
           </form>
         </div>
-      </section>
+      </div>
 
       <!-- Tab 2: AI Curriculum Engine -->
-      <section class="acd-glass-card" id="acd-tab-generator" aria-label="AI Curriculum Engine" hidden>
+      <div class="acd-tab-pane" id="acd-tab-generator" aria-label="AI Curriculum Engine" hidden>
         <AcademyGeneratorModal initialSettings={initialSettings} />
-      </section>
+      </div>
 
       <!-- Tab 3: Upselling -->
-      <section class="acd-glass-card" id="acd-tab-upselling" aria-label="Upselling configuration" hidden>
+      <div class="acd-tab-pane" id="acd-tab-upselling" aria-label="Upselling configuration" hidden>
         <StudioUpsellPanel prefix="acd" allowGuide={false} showPlacement={false} />
-      </section>
-    </div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -1096,7 +1098,7 @@ try {
     });
 
     // Header dropdowns (Edit / Preview)
-    document.querySelectorAll<HTMLElement>("#acd-header-actions .cms-header-dropdown").forEach((dd) => {
+    document.querySelectorAll<HTMLElement>("#module-academy .cms-header-dropdown").forEach((dd) => {
       const trigger = dd.querySelector<HTMLButtonElement>(".cms-dropdown-trigger");
       const menu = dd.querySelector<HTMLElement>(".cms-dropdown-menu");
       trigger?.addEventListener("click", (e) => {
@@ -1848,11 +1850,86 @@ try {
     align-items: start;
   }
 
+  /* .acd-list-panel inherits surface from global .studio-bento-card */
   .acd-list-panel {
-    background: linear-gradient(180deg, rgba(16, 22, 34, 0.88) 0%, rgba(10, 14, 23, 0.94) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 18px;
+    padding: 20px;
+  }
+
+  .acd-editor-shell-card {
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .acd-editor-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(72, 200, 255, 0.12);
+    flex-wrap: wrap;
+  }
+
+  .acd-editor-topbar[hidden] {
+    display: none;
+  }
+
+  .acd-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 260px;
+    min-width: 0;
+  }
+
+  .acd-title-group .cms-item-title-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin-left: -8px;
+    font-size: 1.12rem;
+    font-weight: 600;
+    color: #f8fafc;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .acd-title-group .cms-item-title-input:focus {
+    outline: none;
+    background: rgba(5, 10, 22, 0.55);
+    border-color: rgba(72, 200, 255, 0.35);
+  }
+
+  .acd-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .acd-editor-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(4, 10, 24, 0.35);
+    flex-wrap: wrap;
+  }
+
+  .acd-tab-pane {
+    padding: 22px 24px 24px;
+  }
+
+  .acd-tab-pane[hidden] {
+    display: none;
+  }
+
+  .acd-field[hidden] {
+    display: none;
   }
 
   .acd-studio-list {
@@ -1918,22 +1995,21 @@ try {
   }
 
   .acd-glass-card {
-    background: var(--glass-bg-card, rgba(8, 18, 44, 0.65));
-    backdrop-filter: var(--glass-blur-md, blur(24px));
-    -webkit-backdrop-filter: var(--glass-blur-md, blur(24px));
-    border: var(--border-subtle, 1px solid rgba(255, 255, 255, 0.12));
-    border-radius: 20px;
-    padding: 24px 26px;
-    box-shadow: var(--shadow-bevel-card, inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 12px 36px -8px rgba(0, 4, 15, 0.8));
+    background: linear-gradient(160deg, rgba(14, 34, 70, 0.56) 0%, rgba(7, 18, 40, 0.78) 100%);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(72, 200, 255, 0.16);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 16px 40px -12px rgba(0, 4, 15, 0.65);
   }
 
   .acd-prefs-card {
     position: relative;
     z-index: 30;
     margin-bottom: 24px;
-    background:
-      radial-gradient(ellipse 65% 55% at 100% 0%, rgba(72, 200, 255, 0.1) 0%, transparent 65%),
-      var(--glass-bg-card, rgba(8, 18, 44, 0.65));
   }
 
   .acd-config-two-col {

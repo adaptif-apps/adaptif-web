@@ -70,6 +70,8 @@ Used for secondary/item header actions and utility controls across both public a
 | --- | --- |
 | `.container` | Centered max-width container (`--container-max`) with responsive horizontal padding |
 | `.glass-panel` | Frosted dark glass surface (`--glass-bg-card`, `--glass-blur-md`, `--border-hairline`, `--shadow-bevel-card`) |
+| `.studio-bento-card` / `.studio-card` | Canonical Preferences bento section card (18px radius, 24px padding, cyan-tinted obsidian glass, `blur(18px)`, inner bevel) |
+| `.studio-bento-card--flush` | Flush variant (`padding: 0; overflow: hidden`) for split list/editor panels |
 | `.adaptif-upsell-banner` | Cross-sell / upsell banner card (`.adaptif-upsell-banner--compact` for mid-article/preview) |
 | `.adaptif-input` | Standard dark glass form input |
 | `.cms-item-title-bar` / `.cms-item-title-input` | Inline editable serif title bar with status badge |

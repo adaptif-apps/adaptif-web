@@ -19,7 +19,7 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
   </StudioHeader>
 
   <div class="wa-studio-grid">
-    <section class="wa-glass-card" aria-label="WhatsApp Floating Button Configuration">
+    <section class="studio-bento-card wa-glass-card" aria-label="WhatsApp Floating Button Configuration">
       <div class="wa-card-head">
         <div>
           <span class="wa-kicker">Global Site Widget</span>
@@ -99,7 +99,7 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
       </div>
     </section>
 
-    <section class="wa-glass-card wa-preview-card" aria-label="WhatsApp Widget Preview">
+    <section class="studio-bento-card wa-glass-card wa-preview-card" aria-label="WhatsApp Widget Preview">
       <div class="wa-card-head">
         <div>
           <span class="wa-kicker">Live Preview</span>
@@ -163,13 +163,7 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
     align-items: start;
   }
 
-  .wa-glass-card {
-    background: linear-gradient(180deg, rgba(16, 22, 34, 0.88) 0%, rgba(10, 14, 23, 0.94) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-  }
+  /* .wa-glass-card inherits surface from global .studio-bento-card */
 
   .wa-card-head {
     display: flex;

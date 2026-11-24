@@ -53,7 +53,7 @@ const { initialConfig } = Astro.props;
   <!-- TAB 1: Global SEO & Social -->
   <div class="seo-pane" data-seo-pane="global">
     <div class="seo-two-col">
-      <section class="seo-card">
+      <section class="studio-bento-card seo-card">
         <div class="seo-card-head">
           <div>
             <span class="seo-kicker">Defaults</span>
@@ -259,7 +259,7 @@ const { initialConfig } = Astro.props;
       </section>
 
       <!-- Live SERP & Social Preview -->
-      <section class="seo-card">
+      <section class="studio-bento-card seo-card">
         <div class="seo-card-head">
           <div>
             <span class="seo-kicker">Live Simulator</span>
@@ -307,7 +307,7 @@ const { initialConfig } = Astro.props;
 
   <!-- TAB 2: Per-Page Overrides -->
   <div class="seo-pane" data-seo-pane="pages" hidden>
-    <section class="seo-card">
+    <section class="studio-bento-card seo-card">
       <div class="seo-card-head">
         <div>
           <span class="seo-kicker">Page Settings</span>
@@ -442,7 +442,7 @@ const { initialConfig } = Astro.props;
   <!-- TAB 3: Indexing, Sitemap & Brand -->
   <div class="seo-pane" data-seo-pane="indexing" hidden>
     <div class="seo-two-col">
-      <section class="seo-card">
+      <section class="studio-bento-card seo-card">
         <div class="seo-card-head">
           <div>
             <span class="seo-kicker">Search Visibility</span>
@@ -527,7 +527,7 @@ const { initialConfig } = Astro.props;
         </div>
       </section>
 
-      <section class="seo-card">
+      <section class="studio-bento-card seo-card">
         <div class="seo-card-head">
           <div>
             <span class="seo-kicker">Brand &amp; Analytics</span>
@@ -646,7 +646,7 @@ const { initialConfig } = Astro.props;
 
   <!-- TAB 4: URL Redirects -->
   <div class="seo-pane" data-seo-pane="redirects" hidden>
-    <section class="seo-card">
+    <section class="studio-bento-card seo-card">
       <div class="seo-card-head">
         <div>
           <span class="seo-kicker">Traffic Protection</span>
@@ -719,13 +719,7 @@ const { initialConfig } = Astro.props;
     align-items: start;
   }
 
-  .seo-card {
-    background: linear-gradient(180deg, rgba(16, 22, 34, 0.88) 0%, rgba(10, 14, 23, 0.94) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 18px;
-    padding: 24px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-  }
+  /* .seo-card inherits surface from global .studio-bento-card */
 
   .seo-card-head {
     display: flex;

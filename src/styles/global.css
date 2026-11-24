@@ -770,6 +770,34 @@ img, svg {
   }
 }
 
+/* ==========================================================================
+   Studio Preferences Bento Card (Single Source of Truth)
+   Shared across all Preferences modules (Portfolio, Blogs, Courses, Guides,
+   Activity, Book a Call, Integrations, General Info, Payment, AI Engine).
+   ========================================================================== */
+.studio-bento-card,
+.studio-card {
+  background: linear-gradient(160deg, rgba(14, 34, 70, 0.56) 0%, rgba(7, 18, 40, 0.78) 100%);
+  border: 1px solid rgba(72, 200, 255, 0.16);
+  border-radius: 18px;
+  padding: 24px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 40px -12px rgba(0, 4, 15, 0.65);
+}
+
+.studio-bento-card[hidden],
+.studio-card[hidden] {
+  display: none;
+}
+
+.studio-bento-card--flush {
+  padding: 0;
+  overflow: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

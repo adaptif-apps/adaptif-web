@@ -276,21 +276,15 @@ const tagPresets = [
         <div id="module-portfolio">
           <StudioHeader eyebrow="CMS" title="Portfolio">
             <Fragment slot="actions">
-              <button type="button" class="cms-btn cms-btn--danger" id="btn-delete-brand">
-                Delete Brand
-              </button>
-              <button type="button" class="cms-btn" id="btn-add-brand">
+              <button type="button" class="adaptif-btn adaptif-btn--sm" id="btn-add-brand">
                 + Add Brand
-              </button>
-              <button type="submit" form="brand-editor-form" class="adaptif-btn adaptif-btn--sm" id="btn-save-brand">
-                Save Changes
               </button>
             </Fragment>
           </StudioHeader>
 
           <div class="studio-workspace">
           <!-- Left List: Brands -->
-          <section class="brand-list-panel" aria-label="Brands list">
+          <section class="studio-bento-card studio-bento-card--flush brand-list-panel" aria-label="Brands list">
             <div class="panel-search-wrap">
               <input
                 type="search"
@@ -304,7 +298,7 @@ const tagPresets = [
           </section>
 
           <!-- Right Editor: Selected Brand -->
-          <section class="brand-editor-panel" aria-label="Brand editor">
+          <section class="studio-bento-card studio-bento-card--flush brand-editor-panel" aria-label="Brand editor">
             <div id="editor-empty" class="editor-empty" hidden>
               Select a brand or click <strong>+ Add Brand</strong> to create one.
             </div>
@@ -335,6 +329,12 @@ const tagPresets = [
                     <span class="studio-switch" aria-hidden="true"></span>
                     <span class="studio-toggle-text">Show on Home</span>
                   </label>
+                  <button type="button" class="cms-btn cms-btn--danger" id="btn-delete-brand">
+                    Delete Brand
+                  </button>
+                  <button type="submit" form="brand-editor-form" class="cms-btn cms-btn--save" id="btn-save-brand">
+                    Save Changes
+                  </button>
                 </div>
               </div>
 
@@ -2108,16 +2108,7 @@ const tagPresets = [
         align-items: start;
       }
 
-      .brand-list-panel,
-      .brand-editor-panel {
-        background: linear-gradient(160deg, rgba(14, 34, 70, 0.56) 0%, rgba(7, 18, 40, 0.78) 100%);
-        border: 1px solid rgba(72, 200, 255, 0.16);
-        border-radius: 18px;
-        backdrop-filter: blur(18px);
-        -webkit-backdrop-filter: blur(18px);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        overflow: hidden;
-      }
+      /* .brand-list-panel & .brand-editor-panel inherit surface from global .studio-bento-card */
 
       .panel-search-wrap {
         padding: 12px;
@@ -2645,6 +2636,7 @@ const tagPresets = [
         gap: 20px;
       }
 
+      /* .bc-cms-card inherits surface from global .studio-bento-card; keep global.css in sync */
       .bc-cms-card {
         background: linear-gradient(160deg, rgba(14, 34, 70, 0.56) 0%, rgba(7, 18, 40, 0.78) 100%);
         border: 1px solid rgba(72, 200, 255, 0.16);
@@ -2652,7 +2644,9 @@ const tagPresets = [
         padding: 24px;
         backdrop-filter: blur(18px);
         -webkit-backdrop-filter: blur(18px);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.08),
+          0 16px 40px -12px rgba(0, 4, 15, 0.65);
       }
 
       .bc-cms-card-title {

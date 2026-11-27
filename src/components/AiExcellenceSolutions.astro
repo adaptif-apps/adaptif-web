@@ -2,21 +2,25 @@
 // AiExcellenceSolutions.astro - Section 2: Solutions for modern teams
 const pillars = [
   {
+    icon: "clock",
     title: "Saving time and money",
     description:
       "We've run hundreds of AI-enhanced projects, cutting production costs by an average of 40% vs. traditional agencies, without sacrificing brand quality or turnaround time.",
   },
   {
+    icon: "integrated",
     title: "Human + AI, fully integrated",
     description:
       "Every Adaptif creative is trained on AI-powered workflows. They move faster because the tools handle the repetitive work and they deliver better because they know your brand.",
   },
   {
+    icon: "evolving",
     title: "Always evolving",
     description:
       "We test every major AI tool before recommending it. When off-the-shelf isn't enough, we build custom workflows and prompts to keep your brand ahead of where the market is going.",
   },
   {
+    icon: "shield",
     title: "Transparency and control",
     description:
       "You decide how AI is used in your projects: fully human, AI-enhanced, or a mix of both. Your brand guidelines and legal requirements always come first. No surprises.",
@@ -49,6 +53,33 @@ const pillars = [
         <div class="ai-solutions__pillars">
           {pillars.map((pillar, idx) => (
             <div class="ai-solutions__pillar" data-ai-reveal style={`--ai-delay: ${180 + idx * 70}ms`}>
+              <span class="ai-solutions__pillar-icon" aria-hidden="true">
+                {pillar.icon === "clock" && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="9" />
+                    <polyline points="12 7 12 12 15.5 14" />
+                  </svg>
+                )}
+                {pillar.icon === "integrated" && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M19 8v6M16 11h6" />
+                  </svg>
+                )}
+                {pillar.icon === "evolving" && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                    <polyline points="16 7 22 7 22 13" />
+                  </svg>
+                )}
+                {pillar.icon === "shield" && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="m9 12 2 2 4-4" />
+                  </svg>
+                )}
+              </span>
               <h3 class="ai-solutions__pillar-title">{pillar.title}</h3>
               <p class="ai-solutions__pillar-desc">{pillar.description}</p>
             </div>
@@ -116,6 +147,18 @@ const pillars = [
     gap: 28px 32px;
     padding-top: 28px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .ai-solutions__pillar-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 14px;
+    color: var(--color-brand-cyan);
+    background: rgba(72, 200, 255, 0.1);
+    border: 1px solid rgba(72, 200, 255, 0.24);
   }
 
   .ai-solutions__pillar-title {

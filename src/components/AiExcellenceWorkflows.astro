@@ -10,7 +10,7 @@ const approaches = [
       "High-volume output at low cost per asset",
       "Always-on, no capacity constraints",
       "Ideal for repeatable, rules-based formats",
-      "Needs a clear brief and brand model to perform",
+      "Requires a clear brief and brand model",
     ],
   },
   {
@@ -31,10 +31,10 @@ const approaches = [
     summary:
       "100% human-crafted for high-concept, high-stakes work where nuance, emotion, and originality are non-negotiable.",
     bullets: [
-      "Brand launches, rebrands, and campaign concepting",
-      "Original storytelling that needs to feel genuinely human",
-      "Work that challenges the brief, not just executes it",
-      "When craft and creative judgment are the differentiator",
+      "Brand launches, rebrands & concepts",
+      "Storytelling that feels genuinely human",
+      "Work that challenges the brief itself",
+      "When craft and judgment set you apart",
     ],
   },
 ];
@@ -43,23 +43,34 @@ const approaches = [
 <!-- Section 5: Workflows that work -->
 <section class="ai-wf" id="ai-workflows" aria-labelledby="ai-wf-title">
   <div class="container">
-    <header class="ai-wf__header" data-ai-reveal>
-      <p class="adaptif-eyebrow">Workflows that work</p>
-      <h2 id="ai-wf-title" class="ai-wf__title">
-        AI workflows <span class="title-highlight">aren’t</span> just about speed
-      </h2>
-      <p class="ai-wf__subtitle">
-        Every project runs through a defined sequence of human-guided, AI-powered steps from briefing through to final delivery. The result is consistent quality without the coordination overhead.
-      </p>
-      <p class="ai-wf__subnote">
-        We’ve purpose-built workflows for ads, brand identity, social content, video, and web so your team never starts from zero, and nothing falls through the gaps.
-      </p>
-    </header>
+    <div class="ai-wf__intro-grid">
+      <header class="ai-wf__header" data-ai-reveal>
+        <p class="adaptif-eyebrow">Workflows that work</p>
+        <h2 id="ai-wf-title" class="ai-wf__title">
+          AI workflows <span class="title-highlight">aren’t</span> just about speed
+        </h2>
+        <p class="ai-wf__subtitle">
+          Every project runs through a defined sequence of human-guided, AI-powered steps from briefing through to final delivery. The result is consistent quality without the coordination overhead.
+        </p>
+        <p class="ai-wf__subnote">
+          We’ve purpose-built workflows for ads, brand identity, social content, video, and web so your team never starts from zero, and nothing falls through the gaps.
+        </p>
+      </header>
+
+      <div class="ai-wf__intro-media" data-ai-reveal="scale" style="--ai-delay: 120ms">
+        <img
+          src="/images/ai-excellence/workflows-preview.png"
+          alt="Adaptif presentation and collaborative review workflow"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
 
     <!-- Feature 1: Custom AI image models -->
     <div class="ai-wf__split">
-      <div class="ai-wf__media glass-panel" data-ai-reveal="scale">
-        <img src="/images/ai-excellence/custom-models.jpg" alt="Custom AI workflow from brief to delivery" loading="lazy" decoding="async" />
+      <div class="ai-wf__media ai-wf__media--frameless" data-ai-reveal="scale">
+        <img src="/images/ai-excellence/custom-models.png" alt="Custom AI workflow from brief to delivery" loading="lazy" decoding="async" />
       </div>
       <div class="ai-wf__body" data-ai-reveal style="--ai-delay: 100ms">
         <p class="adaptif-eyebrow">Custom AI image models</p>
@@ -87,8 +98,8 @@ const approaches = [
           Describe your project in plain language or upload an existing brief. We handle the structure, the specs, and the gaps.
         </p>
       </div>
-      <div class="ai-wf__media glass-panel" data-ai-reveal="scale" style="--ai-delay: 100ms">
-        <img src="/images/ai-excellence/ai-briefing.jpg" alt="AI-guided project briefing interface" loading="lazy" decoding="async" />
+      <div class="ai-wf__media ai-wf__media--frameless" data-ai-reveal="scale" style="--ai-delay: 100ms">
+        <img src="/images/ai-excellence/ai-briefing.png" alt="AI-guided project briefing interface" loading="lazy" decoding="async" />
       </div>
     </div>
 
@@ -105,7 +116,7 @@ const approaches = [
           <img src="/images/ai-excellence/consult-3.jpg" alt="" loading="lazy" decoding="async" />
         </div>
         <div class="ai-wf__tile ai-wf__tile--brand" data-ai-reveal="scale" style="--ai-delay: 240ms">
-          <span class="ai-wf__mark">a</span>
+          <img src="/images/ai-excellence/consult-brand-mark.png" alt="" loading="lazy" decoding="async" />
         </div>
       </div>
 
@@ -181,9 +192,24 @@ const approaches = [
     background-color: var(--color-void);
   }
 
-  .ai-wf__header {
-    max-width: 720px;
+  .ai-wf__intro-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
     margin-bottom: clamp(48px, 7vw, 84px);
+  }
+
+  .ai-wf__header {
+    max-width: none;
+    margin-bottom: 0;
+  }
+
+  .ai-wf__intro-media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
   }
 
   .ai-wf__title {
@@ -217,7 +243,6 @@ const approaches = [
     gap: clamp(36px, 6vw, 76px);
     align-items: center;
     padding: clamp(36px, 5vw, 56px) 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .ai-wf__media {
@@ -225,11 +250,23 @@ const approaches = [
     overflow: hidden;
   }
 
+  .ai-wf__media--frameless {
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
   .ai-wf__media img {
     display: block;
     width: 100%;
     height: auto;
     object-fit: cover;
+  }
+
+  .ai-wf__media--frameless img {
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
   }
 
   .ai-wf__split-title {
@@ -283,19 +320,8 @@ const approaches = [
   }
 
   .ai-wf__tile--brand {
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, rgba(72, 200, 255, 0.32), rgba(14, 28, 66, 0.92));
-    border-color: rgba(72, 200, 255, 0.35);
-  }
-
-  .ai-wf__mark {
-    font-family: var(--font-family-display);
-    font-style: italic;
-    font-size: clamp(4.5rem, 7vw, 6rem);
-    line-height: 1;
-    color: var(--color-text-white);
-    text-shadow: 0 0 28px rgba(72, 200, 255, 0.7);
+    border: none;
+    background: transparent;
   }
 
   .ai-approach {
@@ -393,6 +419,7 @@ const approaches = [
   }
 
   @media (max-width: 900px) {
+    .ai-wf__intro-grid,
     .ai-wf__split {
       grid-template-columns: 1fr;
     }

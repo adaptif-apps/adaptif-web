@@ -44,7 +44,16 @@ const approaches = [
 <section class="ai-wf" id="ai-workflows" aria-labelledby="ai-wf-title">
   <div class="container">
     <div class="ai-wf__intro-grid">
-      <header class="ai-wf__header" data-ai-reveal>
+      <div class="ai-wf__intro-media" data-ai-reveal="scale">
+        <img
+          src="/images/ai-excellence/workflows-preview.png"
+          alt="Adaptif presentation and collaborative review workflow"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      <header class="ai-wf__header" data-ai-reveal style="--ai-delay: 120ms">
         <p class="adaptif-eyebrow">Workflows that work</p>
         <h2 id="ai-wf-title" class="ai-wf__title">
           AI workflows <span class="title-highlight">aren’t</span> just about speed
@@ -56,23 +65,11 @@ const approaches = [
           We’ve purpose-built workflows for ads, brand identity, social content, video, and web so your team never starts from zero, and nothing falls through the gaps.
         </p>
       </header>
-
-      <div class="ai-wf__intro-media" data-ai-reveal="scale" style="--ai-delay: 120ms">
-        <img
-          src="/images/ai-excellence/workflows-preview.png"
-          alt="Adaptif presentation and collaborative review workflow"
-          loading="lazy"
-          decoding="async"
-        />
-      </div>
     </div>
 
     <!-- Feature 1: Custom AI image models -->
-    <div class="ai-wf__split">
-      <div class="ai-wf__media ai-wf__media--frameless" data-ai-reveal="scale">
-        <img src="/images/ai-excellence/custom-models.png" alt="Custom AI workflow from brief to delivery" loading="lazy" decoding="async" />
-      </div>
-      <div class="ai-wf__body" data-ai-reveal style="--ai-delay: 100ms">
+    <div class="ai-wf__split ai-wf__split--reverse">
+      <div class="ai-wf__body" data-ai-reveal>
         <p class="adaptif-eyebrow">Custom AI image models</p>
         <h3 class="ai-wf__split-title">
           Custom models: <span class="title-highlight">Your brand, your AI</span>
@@ -82,11 +79,17 @@ const approaches = [
           An Adaptif custom AI image model is trained on your brand: your visual language, your palette, your aesthetic rules. The result is on-brand imagery generated in minutes, usable by your internal team or executed by us.
         </p>
       </div>
+      <div class="ai-wf__media ai-wf__media--frameless" data-ai-reveal="scale" style="--ai-delay: 100ms">
+        <img src="/images/ai-excellence/custom-models.png" alt="Custom AI workflow from brief to delivery" loading="lazy" decoding="async" />
+      </div>
     </div>
 
     <!-- Feature 2: AI briefing -->
-    <div class="ai-wf__split ai-wf__split--reverse">
-      <div class="ai-wf__body" data-ai-reveal>
+    <div class="ai-wf__split">
+      <div class="ai-wf__media ai-wf__media--frameless" data-ai-reveal="scale">
+        <img src="/images/ai-excellence/ai-briefing.png" alt="AI-guided project briefing interface" loading="lazy" decoding="async" />
+      </div>
+      <div class="ai-wf__body" data-ai-reveal style="--ai-delay: 100ms">
         <p class="adaptif-eyebrow">AI briefing</p>
         <h3 class="ai-wf__split-title">
           A briefing expert <span class="title-highlight">at your fingertips</span>
@@ -98,29 +101,11 @@ const approaches = [
           Describe your project in plain language or upload an existing brief. We handle the structure, the specs, and the gaps.
         </p>
       </div>
-      <div class="ai-wf__media ai-wf__media--frameless" data-ai-reveal="scale" style="--ai-delay: 100ms">
-        <img src="/images/ai-excellence/ai-briefing.png" alt="AI-guided project briefing interface" loading="lazy" decoding="async" />
-      </div>
     </div>
 
     <!-- Feature 3: AI consultancy -->
-    <div class="ai-wf__split">
-      <div class="ai-wf__mosaic" aria-hidden="true">
-        <div class="ai-wf__tile" data-ai-reveal="scale" style="--ai-delay: 0ms">
-          <img src="/images/ai-excellence/consult-1.jpg" alt="" loading="lazy" decoding="async" />
-        </div>
-        <div class="ai-wf__tile" data-ai-reveal="scale" style="--ai-delay: 80ms">
-          <img src="/images/ai-excellence/consult-2.jpg" alt="" loading="lazy" decoding="async" />
-        </div>
-        <div class="ai-wf__tile" data-ai-reveal="scale" style="--ai-delay: 160ms">
-          <img src="/images/ai-excellence/consult-3.jpg" alt="" loading="lazy" decoding="async" />
-        </div>
-        <div class="ai-wf__tile ai-wf__tile--brand" data-ai-reveal="scale" style="--ai-delay: 240ms">
-          <img src="/images/ai-excellence/consult-brand-mark.png" alt="" loading="lazy" decoding="async" />
-        </div>
-      </div>
-
-      <div class="ai-wf__body" data-ai-reveal style="--ai-delay: 120ms">
+    <div class="ai-wf__split ai-wf__split--reverse">
+      <div class="ai-wf__body" data-ai-reveal>
         <p class="adaptif-eyebrow">AI consultancy</p>
         <h3 class="ai-wf__split-title">
           Transform your <span class="title-highlight">creative operations</span>
@@ -144,6 +129,21 @@ const approaches = [
               />
             </svg>
           </a>
+        </div>
+      </div>
+
+      <div class="ai-wf__mosaic" aria-hidden="true">
+        <div class="ai-wf__tile" data-ai-reveal="scale" style="--ai-delay: 0ms">
+          <img src="/images/ai-excellence/consult-1.jpg" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="ai-wf__tile" data-ai-reveal="scale" style="--ai-delay: 80ms">
+          <img src="/images/ai-excellence/consult-2.jpg" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="ai-wf__tile" data-ai-reveal="scale" style="--ai-delay: 160ms">
+          <img src="/images/ai-excellence/consult-3.jpg" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="ai-wf__tile ai-wf__tile--brand" data-ai-reveal="scale" style="--ai-delay: 240ms">
+          <img src="/images/ai-excellence/consult-brand-mark.png" alt="" loading="lazy" decoding="async" />
         </div>
       </div>
     </div>
@@ -194,7 +194,7 @@ const approaches = [
 
   .ai-wf__intro-grid {
     display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
     gap: clamp(32px, 5vw, 64px);
     align-items: center;
     margin-bottom: clamp(48px, 7vw, 84px);
@@ -424,7 +424,8 @@ const approaches = [
       grid-template-columns: 1fr;
     }
 
-    .ai-wf__split--reverse .ai-wf__media {
+    .ai-wf__split--reverse .ai-wf__media,
+    .ai-wf__split--reverse .ai-wf__mosaic {
       order: -1;
     }
 

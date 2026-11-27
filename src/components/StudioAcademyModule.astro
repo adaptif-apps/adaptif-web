@@ -41,7 +41,7 @@ try {
 
   <div class="acd-studio-workspace">
     <!-- Left List: Courses or Guides -->
-    <section class="studio-bento-card acd-list-panel" aria-label="Academy items list">
+    <section class="acd-list-panel" aria-label="Academy items list">
       <div class="panel-search-wrap">
         <input
           type="search"
@@ -54,8 +54,8 @@ try {
       <div class="acd-studio-list" id="acd-studio-list"></div>
     </section>
 
-    <!-- Right Unified Editor Card (Single Bento Container) -->
-    <section class="studio-bento-card studio-bento-card--flush acd-editor-shell-card" aria-label="Academy item editor">
+    <!-- Right Unified Editor Pane -->
+    <section class="acd-editor-shell-card" aria-label="Academy item editor">
       <div class="acd-editor-topbar" id="acd-item-title-bar" hidden>
         <div class="acd-title-group">
           <input
@@ -299,326 +299,340 @@ try {
     <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-acd-settings">Save Preferences</button>
   </StudioHeader>
 
-  <!-- 1. Active Live Checkout Switcher -->
-  <section class="acd-glass-card acd-prefs-card pay-switcher-card" aria-label="Active Payment Provider">
-    <div class="pay-switcher-row">
-      <div>
-        <span class="acd-section-kicker">Live Checkout Engine</span>
-        <h2 class="acd-card-title" style="margin-bottom: 2px;">Active Payment Provider</h2>
-        <p class="acd-card-sub" style="margin: 0;">
-          Select which checkout runs live on Courses, Plans, and Audit.
-        </p>
+  <div class="pay-flat-layout">
+    <!-- 1. Active Live Checkout Switcher (flat header band) -->
+    <section class="pay-switcher-band" aria-label="Active Payment Provider">
+      <div class="pay-switcher-row">
+        <div>
+          <span class="acd-section-kicker">Live Checkout Engine</span>
+          <h2 class="gi-section-heading" style="margin-bottom: 4px;">Active Payment Provider</h2>
+          <p class="gi-section-sub">
+            Select which checkout runs live on Courses, Plans, and Audit.
+          </p>
+        </div>
+        <div class="pay-provider-pills" role="group" aria-label="Select active payment provider">
+          <button
+            type="button"
+            class:list={["pay-provider-btn", { "is-active": paymentSettings.activeProvider === "stripe" }]}
+            data-payment-provider="stripe"
+          >
+            <span class="pay-provider-dot"></span>
+            Stripe
+          </button>
+          <button
+            type="button"
+            class:list={["pay-provider-btn", { "is-active": paymentSettings.activeProvider === "shopify" }]}
+            data-payment-provider="shopify"
+          >
+            <span class="pay-provider-dot"></span>
+            Shopify API
+          </button>
+        </div>
       </div>
-      <div class="pay-provider-pills" role="group" aria-label="Select active payment provider">
-        <button
-          type="button"
-          class:list={["pay-provider-btn", { "is-active": paymentSettings.activeProvider === "stripe" }]}
-          data-payment-provider="stripe"
-        >
-          <span class="pay-provider-dot"></span>
-          Stripe
-        </button>
-        <button
-          type="button"
-          class:list={["pay-provider-btn", { "is-active": paymentSettings.activeProvider === "shopify" }]}
-          data-payment-provider="shopify"
-        >
-          <span class="pay-provider-dot"></span>
-          Shopify API
-        </button>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 2. Provider Configuration Tabs (Keeps Stripe & Shopify 100% separated) -->
-  <div class="pay-view-tabs" role="tablist" aria-label="Configure payment provider">
-    <button
-      type="button"
-      role="tab"
-      class:list={["pay-view-tab pay-view-tab--stripe", { "is-active": paymentSettings.activeProvider === "stripe" }]}
-      aria-selected={paymentSettings.activeProvider === "stripe" ? "true" : "false"}
-      data-pay-view-tab="stripe"
-    >
-      <span class="pay-brand-pill pay-brand-pill--stripe">STRIPE</span>
-      <span>Stripe Configuration</span>
-      <span class="pay-live-tag" data-pay-live-tag="stripe" hidden={paymentSettings.activeProvider !== "stripe"}>LIVE</span>
-    </button>
-    <button
-      type="button"
-      role="tab"
-      class:list={["pay-view-tab pay-view-tab--shopify", { "is-active": paymentSettings.activeProvider === "shopify" }]}
-      aria-selected={paymentSettings.activeProvider === "shopify" ? "true" : "false"}
-      data-pay-view-tab="shopify"
-    >
-      <span class="pay-brand-pill pay-brand-pill--shopify">SHOPIFY</span>
-      <span>Shopify API Configuration</span>
-      <span class="pay-live-tag" data-pay-live-tag="shopify" hidden={paymentSettings.activeProvider !== "shopify"}>LIVE</span>
-    </button>
-  </div>
-
-  <!-- STRIPE PANE -->
-  <div id="pay-pane-stripe" class="pay-top-grid" hidden={paymentSettings.activeProvider !== "stripe"}>
-    <div class="pay-left-stack">
-      <section class="acd-glass-card acd-prefs-card pay-card--stripe" aria-label="Stripe Credentials & Access">
-        <div class="pay-card-head">
-          <span class="pay-brand-pill pay-brand-pill--stripe">STRIPE</span>
-          <h2 class="acd-card-title" style="margin: 0;">Credentials &amp; Course Access</h2>
-        </div>
-
-        <div class="pay-fields-grid">
-          <label class="acd-field pay-span-2">
-            <span class="acd-label-row">
-              Course Access Mode
-              <span class="acd-tip-wrap">
-                <button type="button" class="acd-tip-btn" aria-label="Access mode info">?</button>
-                <span class="acd-tip-box" role="tooltip">
-                  <strong>Stripe Webhook</strong> verifies tokens &amp; sends backup email; <strong>Checkout Redirect</strong> unlocks via <code>?checkout=success</code>; <strong>Open</strong> disables the paywall.
-                </span>
-              </span>
-            </span>
-            <select id="acd-default-access-mode" class="ac-select">
-              <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
-                Stripe Webhook + Secure Token (Recommended)
-              </option>
-              <option value="checkout_redirect" selected={initialSettings.defaultCourseAccessMode === "checkout_redirect"}>
-                Checkout Redirect (?checkout=success)
-              </option>
-              <option value="open" selected={initialSettings.defaultCourseAccessMode === "open"}>
-                Open Access (No Gate)
-              </option>
-            </select>
-          </label>
-
-          <label class="acd-field pay-span-2">
-            <span class="acd-label-row">
-              Webhook Secret (whsec_...)
-              <a
-                href="https://dashboard.stripe.com/webhooks"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="studio-link studio-link--inline"
-              >
-                Open Stripe Webhooks ↗
-              </a>
-            </span>
-            <input
-              type="password"
-              id="acd-stripe-secret"
-              placeholder={initialSettings.hasStripeWebhookSecret ? "Saved (leave blank to keep)" : "whsec_..."}
-            />
-          </label>
-
-          <div class="acd-field pay-span-2">
-            <span class="acd-label-row">Webhook Endpoint</span>
-            <div class="acd-copy-row">
-              <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
-              <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-copy-webhook">Copy</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="acd-glass-card acd-prefs-card pay-card--stripe" aria-label="Stripe Payment Links">
-        <div class="pay-card-head">
-          <span class="pay-brand-pill pay-brand-pill--stripe">STRIPE</span>
-          <h2 class="acd-card-title" style="margin: 0;">Plans &amp; Audit Payment Links</h2>
-        </div>
-
-        <div class="pay-compact-list">
-          {paymentSettings.catalog.map((entry) => (
-            <div class="pay-compact-row" data-stripe-catalog-key={entry.key}>
-              <div class="pay-compact-meta">
-                <span class="pay-catalog-badge">{entry.kind === "audit" ? "AUDIT" : "PLAN"}</span>
-                <strong>{entry.label}</strong>
-              </div>
-              <input
-                type="url"
-                class="pay-cat-stripe"
-                value={entry.stripeCheckoutUrl}
-                placeholder="https://buy.stripe.com/..."
-                aria-label={`${entry.label} Stripe Payment Link`}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+    <!-- 2. Provider Configuration Underline Tabs -->
+    <div class="pay-view-tabs" role="tablist" aria-label="Configure payment provider">
+      <button
+        type="button"
+        role="tab"
+        class:list={["pay-view-tab pay-view-tab--stripe", { "is-active": paymentSettings.activeProvider === "stripe" }]}
+        aria-selected={paymentSettings.activeProvider === "stripe" ? "true" : "false"}
+        data-pay-view-tab="stripe"
+      >
+        <span class="pay-brand-pill pay-brand-pill--stripe">STRIPE</span>
+        <span>Stripe Configuration</span>
+        <span class="pay-live-tag" data-pay-live-tag="stripe" hidden={paymentSettings.activeProvider !== "stripe"}>LIVE</span>
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class:list={["pay-view-tab pay-view-tab--shopify", { "is-active": paymentSettings.activeProvider === "shopify" }]}
+        aria-selected={paymentSettings.activeProvider === "shopify" ? "true" : "false"}
+        data-pay-view-tab="shopify"
+      >
+        <span class="pay-brand-pill pay-brand-pill--shopify">SHOPIFY</span>
+        <span>Shopify API Configuration</span>
+        <span class="pay-live-tag" data-pay-live-tag="shopify" hidden={paymentSettings.activeProvider !== "shopify"}>LIVE</span>
+      </button>
     </div>
 
-    <aside class="acd-glass-card acd-prefs-card acd-guide-aside pay-guide-aside" aria-label="Stripe Setup Guide">
-      <span class="acd-section-kicker">3-Step Setup</span>
-      <h3 class="acd-card-title" style="margin-bottom: 12px;">Connect Stripe</h3>
-      <ol class="acd-stripe-guide-steps">
-        <li>
-          Open
-          <a href="https://dashboard.stripe.com/webhooks/create" target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
-            Stripe Webhooks ↗
-          </a>
-          and click <strong>Add endpoint</strong>.
-        </li>
-        <li>
-          Paste the <strong>Webhook Endpoint</strong> and select:
-          <span class="acd-event-chip">
-            <code>checkout.session.completed</code>
-            <button type="button" class="acd-chip-copy" id="btn-copy-stripe-event">Copy</button>
-          </span>
-        </li>
-        <li>
-          Paste the <strong>Signing secret</strong> (<code>whsec_...</code>) and click <strong>Save Preferences</strong>.
-        </li>
-      </ol>
-    </aside>
-  </div>
-
-  <!-- SHOPIFY PANE -->
-  <div id="pay-pane-shopify" class="pay-top-grid" hidden={paymentSettings.activeProvider !== "shopify"}>
-    <div class="pay-left-stack">
-      <section class="acd-glass-card acd-prefs-card pay-card--shopify" aria-label="Shopify Storefront Credentials">
-        <div class="pay-card-head">
-          <span class="pay-brand-pill pay-brand-pill--shopify">SHOPIFY</span>
-          <h2 class="acd-card-title" style="margin: 0;">Storefront API Credentials</h2>
-        </div>
-
-        <div class="pay-fields-grid">
-          <label class="acd-field pay-span-2">
-            <span class="acd-label-row">
-              Store Domain
-              <a
-                href={`https://admin.shopify.com/store/${(paymentSettings.shopifyStoreDomain || "eqkk7t-qy.myshopify.com").replace(/\.myshopify\.com$/i, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="studio-link studio-link--inline"
-              >
-                Open Shopify Admin ↗
-              </a>
-            </span>
-            <input
-              type="text"
-              id="pay-shopify-domain"
-              value={paymentSettings.shopifyStoreDomain}
-              placeholder="eqkk7t-qy.myshopify.com"
-            />
-          </label>
-
-          <label class="acd-field">
-            <span class="acd-label-row">
-              Storefront Access Token
-              <span class="acd-tip-wrap">
-                <button type="button" class="acd-tip-btn" aria-label="Storefront Access Token info">?</button>
-                <span class="acd-tip-box" role="tooltip">
-                  Shopify Admin → Sales channels → Headless → Storefront API → Public access token.
+    <!-- STRIPE PANE -->
+    <div id="pay-pane-stripe" class="pay-pane" hidden={paymentSettings.activeProvider !== "stripe"}>
+      <section class="gi-section-band pay-section-band--first" aria-label="Stripe Credentials & Access">
+        <div class="gi-section-aside">
+          <div class="gi-aside-top">
+            <span class="pay-brand-pill pay-brand-pill--stripe">STRIPE</span>
+          </div>
+          <h2 class="gi-section-heading">Credentials &amp; Course Access</h2>
+          <p class="gi-section-sub">Configure course paywall mode, webhook signing secret, and endpoint.</p>
+          <div class="pay-inline-guide" aria-label="Stripe Setup Guide">
+            <span class="acd-section-kicker" style="margin-bottom: 4px; display: block;">3-Step Setup</span>
+            <ol class="acd-stripe-guide-steps">
+              <li>
+                Open
+                <a href="https://dashboard.stripe.com/webhooks/create" target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
+                  Stripe Webhooks ↗
+                </a>
+                and click <strong>Add endpoint</strong>.
+              </li>
+              <li>
+                Paste the <strong>Webhook Endpoint</strong> and select:
+                <span class="acd-event-chip">
+                  <code>checkout.session.completed</code>
+                  <button type="button" class="acd-chip-copy" id="btn-copy-stripe-event">Copy</button>
                 </span>
-              </span>
-            </span>
-            <input
-              type="password"
-              id="pay-shopify-token"
-              placeholder={paymentSettings.hasShopifyStorefrontToken ? "Saved (leave blank to keep)" : "Public storefront token"}
-            />
-          </label>
-
-          <label class="acd-field">
-            <span class="acd-label-row">
-              Webhook Secret
-              <span class="acd-tip-wrap">
-                <button type="button" class="acd-tip-btn" aria-label="Shopify Webhook Secret info">?</button>
-                <span class="acd-tip-box" role="tooltip">
-                  Shopify Admin → Settings → Notifications → Webhooks (signing secret at bottom).
-                </span>
-              </span>
-            </span>
-            <input
-              type="password"
-              id="pay-shopify-secret"
-              placeholder={paymentSettings.hasShopifyWebhookSecret ? "Saved (leave blank to keep)" : "Webhook signing secret"}
-            />
-          </label>
-
-          <div class="acd-field pay-span-2">
-            <span class="acd-label-row">Webhook Endpoint</span>
-            <div class="acd-copy-row">
-              <input type="text" id="pay-shopify-webhook-url" readonly value="/api/payments/shopify-webhook" />
-              <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-copy-shopify-webhook">Copy</button>
-            </div>
+              </li>
+              <li>
+                Paste the <strong>Signing secret</strong> (<code>whsec_...</code>) and click <strong>Save Preferences</strong>.
+              </li>
+            </ol>
           </div>
         </div>
-      </section>
 
-      <section class="acd-glass-card acd-prefs-card pay-card--shopify" aria-label="Shopify Product Mapping">
-        <div class="pay-card-head">
-          <span class="pay-brand-pill pay-brand-pill--shopify">SHOPIFY</span>
-          <h2 class="acd-card-title" style="margin: 0;">Plans &amp; Audit Variant Mapping</h2>
-        </div>
-
-        <div class="pay-compact-list">
-          {paymentSettings.catalog.map((entry) => (
-            <div class="pay-catalog-row" data-shopify-catalog-key={entry.key}>
-              <div class="pay-catalog-head">
-                <span class="pay-catalog-badge">{entry.kind === "audit" ? "AUDIT" : "PLAN"}</span>
-                <strong>{entry.label}</strong>
-              </div>
-              <div class:list={["pay-catalog-fields", entry.kind === "plan" ? "pay-catalog-fields--2" : "pay-catalog-fields--1"]}>
-                <label class="acd-field">
-                  <span class="acd-label-row">
-                    Variant ID
-                    <span class="acd-tip-wrap">
-                      <button type="button" class="acd-tip-btn" aria-label="Shopify Variant ID info">?</button>
-                      <span class="acd-tip-box" role="tooltip">
-                        Shopify Admin → Products → open product → click a variant (or add <code>.json</code> to the URL) and copy the numeric <code>variant_id</code>. Leave blank to keep the default Book a Call / Contact flow.
-                      </span>
-                    </span>
+        <div class="gi-section-main">
+          <div class="pay-fields-grid">
+            <label class="acd-field pay-span-2">
+              <span class="acd-label-row">
+                Course Access Mode
+                <span class="acd-tip-wrap">
+                  <button type="button" class="acd-tip-btn" aria-label="Access mode info">?</button>
+                  <span class="acd-tip-box" role="tooltip">
+                    <strong>Stripe Webhook</strong> verifies tokens &amp; sends backup email; <strong>Checkout Redirect</strong> unlocks via <code>?checkout=success</code>; <strong>Open</strong> disables the paywall.
                   </span>
-                  <input
-                    type="text"
-                    class="pay-cat-variant"
-                    value={entry.shopifyVariantId}
-                    placeholder="e.g. 49281736451234"
-                  />
-                </label>
-                {entry.kind === "plan" && (
+                </span>
+              </span>
+              <select id="acd-default-access-mode" class="ac-select">
+                <option value="stripe_webhook" selected={initialSettings.defaultCourseAccessMode === "stripe_webhook"}>
+                  Stripe Webhook + Secure Token (Recommended)
+                </option>
+                <option value="checkout_redirect" selected={initialSettings.defaultCourseAccessMode === "checkout_redirect"}>
+                  Checkout Redirect (?checkout=success)
+                </option>
+                <option value="open" selected={initialSettings.defaultCourseAccessMode === "open"}>
+                  Open Access (No Gate)
+                </option>
+              </select>
+            </label>
+
+            <label class="acd-field pay-span-2">
+              <span class="acd-label-row">
+                Webhook Secret (whsec_...)
+                <a
+                  href="https://dashboard.stripe.com/webhooks"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="studio-link studio-link--inline"
+                >
+                  Open Stripe Webhooks ↗
+                </a>
+              </span>
+              <input
+                type="password"
+                id="acd-stripe-secret"
+                placeholder={initialSettings.hasStripeWebhookSecret ? "Saved (leave blank to keep)" : "whsec_..."}
+              />
+            </label>
+
+            <div class="acd-field pay-span-2">
+              <span class="acd-label-row">Webhook Endpoint</span>
+              <div class="acd-copy-row">
+                <input type="text" id="acd-webhook-url" readonly value="/api/academy/stripe-webhook" />
+                <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-copy-webhook">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="gi-section-band" aria-label="Stripe Payment Links">
+        <div class="gi-section-aside">
+          <div class="gi-aside-top">
+            <span class="pay-brand-pill pay-brand-pill--stripe">STRIPE</span>
+          </div>
+          <h2 class="gi-section-heading">Plans &amp; Audit Payment Links</h2>
+          <p class="gi-section-sub">Direct Stripe Payment Link URLs for each plan and audit tier.</p>
+        </div>
+
+        <div class="gi-section-main">
+          <div class="pay-flat-list">
+            {paymentSettings.catalog.map((entry) => (
+              <div class="pay-compact-row" data-stripe-catalog-key={entry.key}>
+                <div class="pay-compact-meta">
+                  <span class="pay-catalog-badge">{entry.kind === "audit" ? "AUDIT" : "PLAN"}</span>
+                  <strong>{entry.label}</strong>
+                </div>
+                <input
+                  type="url"
+                  class="pay-cat-stripe"
+                  value={entry.stripeCheckoutUrl}
+                  placeholder="https://buy.stripe.com/..."
+                  aria-label={`${entry.label} Stripe Payment Link`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- SHOPIFY PANE -->
+    <div id="pay-pane-shopify" class="pay-pane" hidden={paymentSettings.activeProvider !== "shopify"}>
+      <section class="gi-section-band pay-section-band--first" aria-label="Shopify Storefront Credentials">
+        <div class="gi-section-aside">
+          <div class="gi-aside-top">
+            <span class="pay-brand-pill pay-brand-pill--shopify">SHOPIFY</span>
+          </div>
+          <h2 class="gi-section-heading">Storefront API Credentials</h2>
+          <p class="gi-section-sub">Connect your Shopify Headless storefront token and webhook secret.</p>
+          <div class="pay-inline-guide pay-inline-guide--shopify" aria-label="Shopify Setup Guide">
+            <span class="acd-section-kicker" style="margin-bottom: 4px; display: block;">3-Step Setup</span>
+            <ol class="acd-stripe-guide-steps">
+              <li>
+                In <strong>Sales channels → Headless</strong>, copy your <strong>Storefront Public access token</strong>.
+              </li>
+              <li>
+                Paste each product's <strong>Variant ID</strong> into Variant Mapping below.
+              </li>
+              <li>
+                In <strong>Settings → Notifications → Webhooks</strong>, add the <strong>Webhook Endpoint</strong> for:
+                <span class="acd-event-chip">
+                  <code>orders/paid</code>
+                  <button type="button" class="acd-chip-copy" id="btn-copy-shopify-event">Copy</button>
+                </span>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="gi-section-main">
+          <div class="pay-fields-grid">
+            <label class="acd-field pay-span-2">
+              <span class="acd-label-row">
+                Store Domain
+                <a
+                  href={`https://admin.shopify.com/store/${(paymentSettings.shopifyStoreDomain || "eqkk7t-qy.myshopify.com").replace(/\.myshopify\.com$/i, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="studio-link studio-link--inline"
+                >
+                  Open Shopify Admin ↗
+                </a>
+              </span>
+              <input
+                type="text"
+                id="pay-shopify-domain"
+                value={paymentSettings.shopifyStoreDomain}
+                placeholder="eqkk7t-qy.myshopify.com"
+              />
+            </label>
+
+            <label class="acd-field">
+              <span class="acd-label-row">
+                Storefront Access Token
+                <span class="acd-tip-wrap">
+                  <button type="button" class="acd-tip-btn" aria-label="Storefront Access Token info">?</button>
+                  <span class="acd-tip-box" role="tooltip">
+                    Shopify Admin → Sales channels → Headless → Storefront API → Public access token.
+                  </span>
+                </span>
+              </span>
+              <input
+                type="password"
+                id="pay-shopify-token"
+                placeholder={paymentSettings.hasShopifyStorefrontToken ? "Saved (leave blank to keep)" : "Public storefront token"}
+              />
+            </label>
+
+            <label class="acd-field">
+              <span class="acd-label-row">
+                Webhook Secret
+                <span class="acd-tip-wrap">
+                  <button type="button" class="acd-tip-btn" aria-label="Shopify Webhook Secret info">?</button>
+                  <span class="acd-tip-box" role="tooltip">
+                    Shopify Admin → Settings → Notifications → Webhooks (signing secret at bottom).
+                  </span>
+                </span>
+              </span>
+              <input
+                type="password"
+                id="pay-shopify-secret"
+                placeholder={paymentSettings.hasShopifyWebhookSecret ? "Saved (leave blank to keep)" : "Webhook signing secret"}
+              />
+            </label>
+
+            <div class="acd-field pay-span-2">
+              <span class="acd-label-row">Webhook Endpoint</span>
+              <div class="acd-copy-row">
+                <input type="text" id="pay-shopify-webhook-url" readonly value="/api/payments/shopify-webhook" />
+                <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-copy-shopify-webhook">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="gi-section-band" aria-label="Shopify Product Mapping">
+        <div class="gi-section-aside">
+          <div class="gi-aside-top">
+            <span class="pay-brand-pill pay-brand-pill--shopify">SHOPIFY</span>
+          </div>
+          <h2 class="gi-section-heading">Plans &amp; Audit Variant Mapping</h2>
+          <p class="gi-section-sub">Map each plan and audit to its Shopify Variant ID and optional Selling Plan ID.</p>
+        </div>
+
+        <div class="gi-section-main">
+          <div class="pay-flat-list">
+            {paymentSettings.catalog.map((entry) => (
+              <div class="pay-catalog-row" data-shopify-catalog-key={entry.key}>
+                <div class="pay-catalog-head">
+                  <span class="pay-catalog-badge">{entry.kind === "audit" ? "AUDIT" : "PLAN"}</span>
+                  <strong>{entry.label}</strong>
+                </div>
+                <div class:list={["pay-catalog-fields", entry.kind === "plan" ? "pay-catalog-fields--2" : "pay-catalog-fields--1"]}>
                   <label class="acd-field">
                     <span class="acd-label-row">
-                      Selling Plan ID (Optional)
+                      Variant ID
                       <span class="acd-tip-wrap">
-                        <button type="button" class="acd-tip-btn" aria-label="Shopify Selling Plan ID info">?</button>
+                        <button type="button" class="acd-tip-btn" aria-label="Shopify Variant ID info">?</button>
                         <span class="acd-tip-box" role="tooltip">
-                          Optional numeric ID from your Shopify Subscriptions app (e.g. Shopify Subscriptions, Recharge, or Seal) to charge this plan as a recurring monthly subscription. Leave blank for one-time checkout.
+                          Shopify Admin → Products → open product → click a variant (or add <code>.json</code> to the URL) and copy the numeric <code>variant_id</code>. Leave blank to keep the default Book a Call / Contact flow.
                         </span>
                       </span>
                     </span>
                     <input
                       type="text"
-                      class="pay-cat-selling-plan"
-                      value={entry.shopifySellingPlanId}
-                      placeholder="For monthly subscriptions"
+                      class="pay-cat-variant"
+                      value={entry.shopifyVariantId}
+                      placeholder="e.g. 49281736451234"
                     />
                   </label>
-                )}
+                  {entry.kind === "plan" && (
+                    <label class="acd-field">
+                      <span class="acd-label-row">
+                        Selling Plan ID (Optional)
+                        <span class="acd-tip-wrap">
+                          <button type="button" class="acd-tip-btn" aria-label="Shopify Selling Plan ID info">?</button>
+                          <span class="acd-tip-box" role="tooltip">
+                            Optional numeric ID from your Shopify Subscriptions app (e.g. Shopify Subscriptions, Recharge, or Seal) to charge this plan as a recurring monthly subscription. Leave blank for one-time checkout.
+                          </span>
+                        </span>
+                      </span>
+                      <input
+                        type="text"
+                        class="pay-cat-selling-plan"
+                        value={entry.shopifySellingPlanId}
+                        placeholder="For monthly subscriptions"
+                      />
+                    </label>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
     </div>
-
-    <aside class="acd-glass-card acd-prefs-card acd-guide-aside pay-guide-aside" aria-label="Shopify Setup Guide">
-      <span class="acd-section-kicker">3-Step Setup</span>
-      <h3 class="acd-card-title" style="margin-bottom: 12px;">Connect Shopify</h3>
-      <ol class="acd-stripe-guide-steps">
-        <li>
-          In <strong>Sales channels → Headless</strong>, copy your <strong>Storefront Public access token</strong>.
-        </li>
-        <li>
-          Paste each product's <strong>Variant ID</strong> into Variant Mapping.
-        </li>
-        <li>
-          In <strong>Settings → Notifications → Webhooks</strong>, add the <strong>Webhook Endpoint</strong> for:
-          <span class="acd-event-chip">
-            <code>orders/paid</code>
-            <button type="button" class="acd-chip-copy" id="btn-copy-shopify-event">Copy</button>
-          </span>
-        </li>
-      </ol>
-    </aside>
   </div>
 </div>
 
@@ -628,89 +642,99 @@ try {
     <button slot="actions" type="button" class="adaptif-btn adaptif-btn--sm" id="btn-save-ai-key">Save AI Configuration</button>
   </StudioHeader>
 
-  <div class="acd-config-two-col">
-    <section class="acd-glass-card acd-prefs-card" aria-label="AI Engine Configuration">
-      <div class="acd-prefs-head">
-        <div>
-          <span class="acd-section-kicker">Provider &amp; Credentials</span>
-          <h2 class="acd-card-title">AI Generator Model &amp; API Key</h2>
-          <p class="acd-card-sub">
-            Choose the LLM provider used to synthesize uploaded docs, links, and notes into Courses and Guides.
-          </p>
-        </div>
+  <div class="gi-flat-layout">
+    <section class="gi-section-band pay-section-band--first" aria-label="AI Engine Configuration">
+      <div class="gi-section-aside">
+        <span class="acd-section-kicker">Provider &amp; Credentials</span>
+        <h2 class="gi-section-heading">AI Generator Model &amp; API Key</h2>
+        <p class="gi-section-sub">
+          Choose the LLM provider used to synthesize uploaded docs, links, and notes into Courses and Guides.
+        </p>
       </div>
 
-      <div class="acd-prefs-grid">
-        <label class="acd-field">
-          <span class="acd-label-row">
-            AI Provider
-            <span class="acd-tip-wrap">
-              <button type="button" class="acd-tip-btn" aria-label="AI Provider info">?</button>
-              <span class="acd-tip-box" role="tooltip">
-                Select the LLM engine used by the AI Curriculum Generator to synthesize docs, links, and notes into full course funnels.
+      <div class="gi-section-main">
+        <div class="pay-fields-grid">
+          <label class="acd-field">
+            <span class="acd-label-row">
+              AI Provider
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="AI Provider info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Select the LLM engine used by the AI Curriculum Generator to synthesize docs, links, and notes into full course funnels.
+                </span>
               </span>
             </span>
-          </span>
-          <select id="gen-ai-provider" class="ac-select">
-            <option value="gemini" selected={initialSettings.aiProvider !== "openai"}>Google Gemini (2.5 Flash)</option>
-            <option value="openai" selected={initialSettings.aiProvider === "openai"}>OpenAI (GPT-4o Mini)</option>
-          </select>
-        </label>
+            <select id="gen-ai-provider" class="ac-select">
+              <option value="gemini" selected={initialSettings.aiProvider !== "openai"}>Google Gemini (2.5 Flash)</option>
+              <option value="openai" selected={initialSettings.aiProvider === "openai"}>OpenAI (GPT-4o Mini)</option>
+            </select>
+          </label>
 
-        <label class="acd-field acd-span-2">
-          <span class="acd-label-row">
-            <a
-              id="gen-ai-key-link"
-              class="studio-link studio-link--inline"
-              href={initialSettings.aiProvider === "openai"
-                ? "https://platform.openai.com/api-keys"
-                : "https://aistudio.google.com/app/apikey"}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={initialSettings.aiProvider === "openai"
-                ? "Open OpenAI API Keys"
-                : "Open Google AI Studio API Keys"}
-            >
-              API Key ↗
-            </a>
-            <span class="acd-tip-wrap">
-              <button type="button" class="acd-tip-btn" aria-label="API Key info">?</button>
-              <span class="acd-tip-box" role="tooltip">
-                Stored encrypted in Postgres. Leave blank when saving if you want to keep your existing saved key.
+          <label class="acd-field">
+            <span class="acd-label-row">
+              <a
+                id="gen-ai-key-link"
+                class="studio-link studio-link--inline"
+                href={initialSettings.aiProvider === "openai"
+                  ? "https://platform.openai.com/api-keys"
+                  : "https://aistudio.google.com/app/apikey"}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={initialSettings.aiProvider === "openai"
+                  ? "Open OpenAI API Keys"
+                  : "Open Google AI Studio API Keys"}
+              >
+                API Key ↗
+              </a>
+              <span class="acd-tip-wrap">
+                <button type="button" class="acd-tip-btn" aria-label="API Key info">?</button>
+                <span class="acd-tip-box" role="tooltip">
+                  Stored encrypted in Postgres. Leave blank when saving if you want to keep your existing saved key.
+                </span>
               </span>
             </span>
-          </span>
-          <input
-            type="password"
-            id="gen-ai-key"
-            placeholder={initialSettings.hasAiApiKey ? "Saved (leave blank to keep)" : "Paste Gemini or OpenAI API key..."}
-          />
-        </label>
+            <input
+              type="password"
+              id="gen-ai-key"
+              placeholder={initialSettings.hasAiApiKey ? "Saved (leave blank to keep)" : "Paste Gemini or OpenAI API key..."}
+            />
+          </label>
+        </div>
       </div>
     </section>
 
-    <aside class="acd-glass-card acd-prefs-card acd-guide-aside" aria-label="AI Engine Status">
-      <div class="acd-prefs-head" style="margin-bottom: 14px;">
-        <div>
+    <section class="gi-section-band" aria-label="AI Engine Status">
+      <div class="gi-section-aside">
+        <div class="gi-aside-top">
           <span class="acd-section-kicker">Connection Status</span>
-          <h3 class="acd-card-title">Active Generator</h3>
+          <div class="acd-ai-status-pill">
+            <span class:list={["acd-status-dot", { "is-ready": initialSettings.hasAiApiKey }]} id="gen-ai-dot"></span>
+            <span id="gen-ai-status-text">
+              {initialSettings.hasAiApiKey
+                ? `${initialSettings.aiProvider === "openai" ? "OpenAI" : "Gemini"} Ready`
+                : "Not Configured"}
+            </span>
+          </div>
         </div>
-        <div class="acd-ai-status-pill">
-          <span class:list={["acd-status-dot", { "is-ready": initialSettings.hasAiApiKey }]} id="gen-ai-dot"></span>
-          <span id="gen-ai-status-text">
-            {initialSettings.hasAiApiKey
-              ? `${initialSettings.aiProvider === "openai" ? "OpenAI" : "Gemini"} Ready`
-              : "Not Configured"}
-          </span>
+        <h2 class="gi-section-heading">Active Generator</h2>
+        <p class="gi-section-sub">
+          Powers curriculum synthesis, slide generation, and structured guide creation inside <strong>Courses</strong> and <strong>Guides</strong>.
+        </p>
+      </div>
+
+      <div class="gi-section-main">
+        <div class="gi-kv-list">
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Capabilities</span>
+            <strong class="gi-kv-val">Curriculum synthesis, slides &amp; structured guides</strong>
+          </div>
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Key Storage</span>
+            <strong class="gi-kv-val">Encrypted at rest in Postgres (private)</strong>
+          </div>
         </div>
       </div>
-      <p class="acd-card-sub" style="margin: 0 0 12px;">
-        Powers curriculum synthesis, slide generation, and structured guide creation inside <strong>Courses</strong> and <strong>Guides</strong>.
-      </p>
-      <p class="acd-card-sub" style="margin: 0; font-size: 0.8rem; color: #94a3b8;">
-        Keys are encrypted at rest in Postgres and never exposed to the public website.
-      </p>
-    </aside>
+    </section>
   </div>
 </div>
 
@@ -720,219 +744,235 @@ try {
     <button slot="actions" type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-refresh-general-info">Refresh Status</button>
   </StudioHeader>
 
-  <section class="acd-glass-card gi-summary-card" aria-label="Plain-language architecture summary">
-    <span class="acd-section-kicker">Plain-Language Overview</span>
-    <h2 class="acd-card-title" style="margin-bottom: 8px;">How Adaptif Web Is Connected</h2>
-    <p class="gi-summary-text">
-      Adaptif Web is hosted on
-      <span class="gi-svc-wrap">
-        <button type="button" class="gi-svc-trigger">Vercel</button>
-        <span class="gi-svc-tip" role="tooltip">
-          <span class="gi-svc-tip-desc">Cloud hosting, serverless APIs, and production deployments.</span>
-          <a href="https://vercel.com/adaptif-apps-projects/adaptif-web" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Vercel Project ↗</a>
-        </span>
-      </span>
-      and uses a
-      <span class="gi-svc-wrap">
-        <button type="button" class="gi-svc-trigger">Neon Postgres</button>
-        <span class="gi-svc-tip" role="tooltip">
-          <span class="gi-svc-tip-desc">Serverless PostgreSQL database storing pages, courses, SEO, and orders.</span>
-          <a href="https://vercel.com/adaptif-apps-projects/adaptif-web/stores" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Vercel Stores ↗</a>
-        </span>
-      </span>
-      database to store all pages, courses, blog posts, SEO settings, and customer activity, while uploaded images, videos, and PDFs are stored in
-      <span class="gi-svc-wrap">
-        <button type="button" class="gi-svc-trigger">Vercel Blob</button>
-        <span class="gi-svc-tip" role="tooltip">
-          <span class="gi-svc-tip-desc">Fast CDN object storage for uploaded media, images, and course PDFs.</span>
-          <a href="https://vercel.com/adaptif-apps-projects/adaptif-web/stores" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Blob Storage ↗</a>
-        </span>
-      </span>.
-      Content generation and SEO writing are powered by
-      <span class="gi-svc-wrap">
-        <button type="button" class="gi-svc-trigger" id="gi-summary-ai">
-          {initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}
-        </button>
-        <span class="gi-svc-tip" role="tooltip">
-          <span class="gi-svc-tip-desc" id="gi-summary-ai-desc">AI model generating course curricula, slides, and SEO copy.</span>
-          <a
-            href={initialSettings.aiProvider === "openai" ? "https://platform.openai.com/api-keys" : "https://aistudio.google.com/app/apikey"}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="gi-svc-tip-link"
-            id="gi-summary-ai-link"
-          >
-            {initialSettings.aiProvider === "openai" ? "Open OpenAI Keys ↗" : "Open Google AI Studio ↗"}
-          </a>
-        </span>
-      </span>,
-      payments and checkout are currently routed through
-      <span class="gi-svc-wrap">
-        <button type="button" class="gi-svc-trigger" id="gi-summary-payment">
-          {paymentSettings.activeProvider === "shopify" ? `Shopify API (${paymentSettings.shopifyStoreDomain})` : "Stripe"}
-        </button>
-        <span class="gi-svc-tip" role="tooltip">
-          <span class="gi-svc-tip-desc" id="gi-summary-payment-desc">
-            {paymentSettings.activeProvider === "shopify"
-              ? "Active checkout engine creating Shopify Storefront carts for courses, plans & audits."
-              : "Active checkout engine processing Stripe Payment Links & webhooks."}
+  <div class="gi-flat-layout">
+    <!-- Overview (flat editorial lead, no floating card) -->
+    <section class="gi-overview-band" aria-label="Plain-language architecture summary">
+      <div class="gi-section-aside">
+        <span class="acd-section-kicker">Architecture</span>
+        <h2 class="gi-section-heading">How Adaptif Web Is Connected</h2>
+        <p class="gi-section-sub">Hover or focus any highlighted service to inspect its role and open its dashboard.</p>
+      </div>
+      <div class="gi-section-main">
+        <p class="gi-summary-text">
+          Adaptif Web is hosted on
+          <span class="gi-svc-wrap">
+            <button type="button" class="gi-svc-trigger">Vercel</button>
+            <span class="gi-svc-tip" role="tooltip">
+              <span class="gi-svc-tip-desc">Cloud hosting, serverless APIs, and production deployments.</span>
+              <a href="https://vercel.com/adaptif-apps-projects/adaptif-web" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Vercel Project ↗</a>
+            </span>
           </span>
-          <a
-            href={paymentSettings.activeProvider === "shopify"
-              ? `https://admin.shopify.com/store/${(paymentSettings.shopifyStoreDomain || "adaptif-dev.myshopify.com").replace(/\.myshopify\.com$/i, "")}`
-              : "https://dashboard.stripe.com"}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="gi-svc-tip-link"
-            id="gi-summary-payment-link"
-          >
-            {paymentSettings.activeProvider === "shopify" ? "Open Shopify Admin ↗" : "Open Stripe Dashboard ↗"}
-          </a>
-        </span>
-      </span>
-      (switchable in one click under Payment), and automated course-access emails are sent via
-      <span class="gi-svc-wrap">
-        <button type="button" class="gi-svc-trigger">Resend</button>
-        <span class="gi-svc-tip" role="tooltip">
-          <span class="gi-svc-tip-desc">Transactional email API delivering course access links after purchase.</span>
-          <a href="https://resend.com/emails" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Resend ↗</a>
-        </span>
-      </span>
-      with
-      <span class="gi-svc-wrap">
-        <button type="button" class="gi-svc-trigger">Cloudflare Turnstile</button>
-        <span class="gi-svc-tip" role="tooltip">
-          <span class="gi-svc-tip-desc">Privacy-first anti-bot protection for public lead and booking forms.</span>
-          <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Cloudflare ↗</a>
-        </span>
-      </span>
-      protecting public forms.
-    </p>
-  </section>
+          and uses a
+          <span class="gi-svc-wrap">
+            <button type="button" class="gi-svc-trigger">Neon Postgres</button>
+            <span class="gi-svc-tip" role="tooltip">
+              <span class="gi-svc-tip-desc">Serverless PostgreSQL database storing pages, courses, SEO, and orders.</span>
+              <a href="https://vercel.com/adaptif-apps-projects/adaptif-web/stores" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Vercel Stores ↗</a>
+            </span>
+          </span>
+          database to store all pages, courses, blog posts, SEO settings, and customer activity, while uploaded images, videos, and PDFs are stored in
+          <span class="gi-svc-wrap">
+            <button type="button" class="gi-svc-trigger">Vercel Blob</button>
+            <span class="gi-svc-tip" role="tooltip">
+              <span class="gi-svc-tip-desc">Fast CDN object storage for uploaded media, images, and course PDFs.</span>
+              <a href="https://vercel.com/adaptif-apps-projects/adaptif-web/stores" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Blob Storage ↗</a>
+            </span>
+          </span>.
+          Content generation and SEO writing are powered by
+          <span class="gi-svc-wrap">
+            <button type="button" class="gi-svc-trigger" id="gi-summary-ai">
+              {initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}
+            </button>
+            <span class="gi-svc-tip" role="tooltip">
+              <span class="gi-svc-tip-desc" id="gi-summary-ai-desc">AI model generating course curricula, slides, and SEO copy.</span>
+              <a
+                href={initialSettings.aiProvider === "openai" ? "https://platform.openai.com/api-keys" : "https://aistudio.google.com/app/apikey"}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="gi-svc-tip-link"
+                id="gi-summary-ai-link"
+              >
+                {initialSettings.aiProvider === "openai" ? "Open OpenAI Keys ↗" : "Open Google AI Studio ↗"}
+              </a>
+            </span>
+          </span>,
+          payments and checkout are currently routed through
+          <span class="gi-svc-wrap">
+            <button type="button" class="gi-svc-trigger" id="gi-summary-payment">
+              {paymentSettings.activeProvider === "shopify" ? `Shopify API (${paymentSettings.shopifyStoreDomain})` : "Stripe"}
+            </button>
+            <span class="gi-svc-tip" role="tooltip">
+              <span class="gi-svc-tip-desc" id="gi-summary-payment-desc">
+                {paymentSettings.activeProvider === "shopify"
+                  ? "Active checkout engine creating Shopify Storefront carts for courses, plans & audits."
+                  : "Active checkout engine processing Stripe Payment Links & webhooks."}
+              </span>
+              <a
+                href={paymentSettings.activeProvider === "shopify"
+                  ? `https://admin.shopify.com/store/${(paymentSettings.shopifyStoreDomain || "adaptif-dev.myshopify.com").replace(/\.myshopify\.com$/i, "")}`
+                  : "https://dashboard.stripe.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="gi-svc-tip-link"
+                id="gi-summary-payment-link"
+              >
+                {paymentSettings.activeProvider === "shopify" ? "Open Shopify Admin ↗" : "Open Stripe Dashboard ↗"}
+              </a>
+            </span>
+          </span>
+          (switchable in one click under Payment), and automated course-access emails are sent via
+          <span class="gi-svc-wrap">
+            <button type="button" class="gi-svc-trigger">Resend</button>
+            <span class="gi-svc-tip" role="tooltip">
+              <span class="gi-svc-tip-desc">Transactional email API delivering course access links after purchase.</span>
+              <a href="https://resend.com/emails" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Resend ↗</a>
+            </span>
+          </span>
+          with
+          <span class="gi-svc-wrap">
+            <button type="button" class="gi-svc-trigger">Cloudflare Turnstile</button>
+            <span class="gi-svc-tip" role="tooltip">
+              <span class="gi-svc-tip-desc">Privacy-first anti-bot protection for public lead and booking forms.</span>
+              <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer" class="gi-svc-tip-link">Open Cloudflare ↗</a>
+            </span>
+          </span>
+          protecting public forms.
+        </p>
+      </div>
+    </section>
 
-  <div class="gi-grid">
-    <!-- Card 1: Stripe & Checkout Flow -->
-    <section class="acd-glass-card gi-card">
-      <div class="gi-card-head">
-        <div>
+    <!-- Section 1: Stripe & Checkout Flow -->
+    <section class="gi-section-band">
+      <div class="gi-section-aside">
+        <div class="gi-aside-top">
           <span class="acd-section-kicker">Payments &amp; Delivery</span>
-          <h2 class="acd-card-title">Stripe Checkout &amp; Webhook</h2>
+          <span class="gi-badge" id="gi-stripe-badge">Checking...</span>
         </div>
-        <span class="gi-badge" id="gi-stripe-badge">Checking...</span>
-      </div>
-      <div class="gi-rows">
-        <div class="gi-row">
-          <span>Active Access Mode</span>
-          <strong id="gi-access-mode">{initialSettings.defaultCourseAccessMode}</strong>
-        </div>
-        <div class="gi-row">
-          <span>Webhook Secret (whsec_)</span>
-          <strong id="gi-webhook-secret-status">{initialSettings.hasStripeWebhookSecret ? "Configured" : "Not set"}</strong>
-        </div>
-        <div class="gi-row-col">
-          <span>Stripe Webhook Endpoint</span>
-          <div class="acd-copy-row">
-            <input type="text" id="gi-webhook-url" readonly value="/api/academy/stripe-webhook" />
-            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gi-copy-webhook">Copy</button>
-          </div>
-        </div>
-        <div class="gi-row-col">
-          <span>Stripe Redirect URL Pattern (After Payment)</span>
-          <div class="acd-copy-row">
-            <input type="text" id="gi-redirect-pattern" readonly value="/academy/courses/<slug>/slides?checkout=success" />
-            <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gi-copy-redirect">Copy</button>
-          </div>
+        <h2 class="gi-section-heading">Stripe Checkout &amp; Webhook</h2>
+        <p class="gi-section-sub">Checkout access mode, webhook verification, and post-payment redirect endpoints.</p>
+        <div class="gi-aside-action">
+          <button type="button" class="cms-btn cms-btn--save" data-jump-tab="payment">Configure Payment →</button>
         </div>
       </div>
-      <div class="gi-card-foot">
-        <button type="button" class="cms-btn cms-btn--save" data-jump-tab="payment">Configure Payment →</button>
+      <div class="gi-section-main">
+        <div class="gi-kv-list">
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Active Access Mode</span>
+            <strong class="gi-kv-val" id="gi-access-mode">{initialSettings.defaultCourseAccessMode}</strong>
+          </div>
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Webhook Secret (whsec_)</span>
+            <strong class="gi-kv-val" id="gi-webhook-secret-status">{initialSettings.hasStripeWebhookSecret ? "Configured" : "Not set"}</strong>
+          </div>
+          <div class="gi-kv-row gi-kv-row--stack">
+            <span class="gi-kv-label">Stripe Webhook Endpoint</span>
+            <div class="acd-copy-row">
+              <input type="text" id="gi-webhook-url" readonly value="/api/academy/stripe-webhook" />
+              <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gi-copy-webhook">Copy</button>
+            </div>
+          </div>
+          <div class="gi-kv-row gi-kv-row--stack">
+            <span class="gi-kv-label">Stripe Redirect URL Pattern (After Payment)</span>
+            <div class="acd-copy-row">
+              <input type="text" id="gi-redirect-pattern" readonly value="/academy/courses/<slug>/slides?checkout=success" />
+              <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="gi-copy-redirect">Copy</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Card 2: Email Delivery (Resend.com) -->
-    <section class="acd-glass-card gi-card">
-      <div class="gi-card-head">
-        <div>
+    <!-- Section 2: Email Delivery (Resend.com) -->
+    <section class="gi-section-band">
+      <div class="gi-section-aside">
+        <div class="gi-aside-top">
           <span class="acd-section-kicker">Automated Backup Email</span>
-          <h2 class="acd-card-title">Resend.com Delivery</h2>
+          <span class="gi-badge" id="gi-resend-badge">Checking...</span>
         </div>
-        <span class="gi-badge" id="gi-resend-badge">Checking...</span>
+        <h2 class="gi-section-heading">Resend.com Delivery</h2>
+        <p class="gi-section-sub">
+          When a customer completes a Stripe Payment Link, the webhook sends a backup email with their direct Slides &amp; PDF link.
+        </p>
       </div>
-      <div class="gi-rows">
-        <div class="gi-row">
-          <span>RESEND_API_KEY (Vercel)</span>
-          <strong id="gi-resend-status">Checking...</strong>
+      <div class="gi-section-main">
+        <div class="gi-kv-list">
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">RESEND_API_KEY (Vercel)</span>
+            <strong class="gi-kv-val" id="gi-resend-status">Checking...</strong>
+          </div>
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Sender (ACADEMY_FROM_EMAIL)</span>
+            <strong class="gi-kv-val" id="gi-from-email">—</strong>
+          </div>
         </div>
-        <div class="gi-row">
-          <span>Sender (ACADEMY_FROM_EMAIL)</span>
-          <strong id="gi-from-email">—</strong>
+        <div class="gi-checklist-inline">
+          <span>1. Create an API key at <a href="https://resend.com" target="_blank" rel="noopener noreferrer">resend.com</a></span>
+          <span>2. Add <code>RESEND_API_KEY</code> &amp; <code>ACADEMY_FROM_EMAIL</code> in Vercel → Settings → Environment Variables</span>
         </div>
-      </div>
-      <p class="gi-note">
-        When a customer completes a Stripe Payment Link, the webhook sends a backup email with their direct Slides &amp; PDF link.
-      </p>
-      <div class="gi-checklist">
-        <span>1. Create an API key at <a href="https://resend.com" target="_blank" rel="noopener noreferrer">resend.com</a></span>
-        <span>2. Add <code>RESEND_API_KEY</code> &amp; <code>ACADEMY_FROM_EMAIL</code> in Vercel → Settings → Environment Variables</span>
       </div>
     </section>
 
-    <!-- Card 3: AI Curriculum Engine -->
-    <section class="acd-glass-card gi-card">
-      <div class="gi-card-head">
-        <div>
+    <!-- Section 3: AI Curriculum Engine -->
+    <section class="gi-section-band">
+      <div class="gi-section-aside">
+        <div class="gi-aside-top">
           <span class="acd-section-kicker">Content Synthesis</span>
-          <h2 class="acd-card-title">AI Curriculum Engine</h2>
+          <span class="gi-badge" id="gi-ai-badge">
+            {initialSettings.hasAiApiKey ? "Ready" : "Key Missing"}
+          </span>
         </div>
-        <span class="gi-badge" id="gi-ai-badge">
-          {initialSettings.hasAiApiKey ? "Ready" : "Key Missing"}
-        </span>
-      </div>
-      <div class="gi-rows">
-        <div class="gi-row">
-          <span>Active Provider</span>
-          <strong id="gi-ai-provider">{initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}</strong>
-        </div>
-        <div class="gi-row">
-          <span>API Key Status</span>
-          <strong id="gi-ai-key-status">{initialSettings.hasAiApiKey ? "Saved in Postgres" : "Not Configured"}</strong>
-        </div>
-        <div class="gi-row">
-          <span>Catalog Items</span>
-          <strong id="gi-catalog-counts">—</strong>
+        <h2 class="gi-section-heading">AI Curriculum Engine</h2>
+        <p class="gi-section-sub">Active LLM provider and credentials used for curriculum, slide, and SEO generation.</p>
+        <div class="gi-aside-action">
+          <button type="button" class="cms-btn cms-btn--save" data-jump-tab="ai-config">Configure AI Engine →</button>
         </div>
       </div>
-      <div class="gi-card-foot">
-        <button type="button" class="cms-btn cms-btn--save" data-jump-tab="ai-config">Configure AI Engine →</button>
+      <div class="gi-section-main">
+        <div class="gi-kv-list">
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Active Provider</span>
+            <strong class="gi-kv-val" id="gi-ai-provider">{initialSettings.aiProvider === "openai" ? "OpenAI (GPT-4o Mini)" : "Google Gemini (2.5 Flash)"}</strong>
+          </div>
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">API Key Status</span>
+            <strong class="gi-kv-val" id="gi-ai-key-status">{initialSettings.hasAiApiKey ? "Saved in Postgres" : "Not Configured"}</strong>
+          </div>
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Catalog Items</span>
+            <strong class="gi-kv-val" id="gi-catalog-counts">—</strong>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Card 4: Hosting & Database (Vercel + Postgres) -->
-    <section class="acd-glass-card gi-card">
-      <div class="gi-card-head">
-        <div>
+    <!-- Section 4: Hosting & Database (Vercel + Postgres) -->
+    <section class="gi-section-band">
+      <div class="gi-section-aside">
+        <div class="gi-aside-top">
           <span class="acd-section-kicker">Infrastructure</span>
-          <h2 class="acd-card-title">Vercel &amp; Postgres</h2>
+          <span class="gi-badge is-ok" id="gi-infra-badge">Checking...</span>
         </div>
-        <span class="gi-badge is-ok" id="gi-infra-badge">Checking...</span>
+        <h2 class="gi-section-heading">Vercel &amp; Postgres</h2>
+        <p class="gi-section-sub">
+          All courses, guides, frontend edits, funnel block visibility, and Stripe settings persist in Postgres and deploy via Vercel.
+        </p>
       </div>
-      <div class="gi-rows">
-        <div class="gi-row">
-          <span>Runtime Environment</span>
-          <strong id="gi-vercel-env">—</strong>
-        </div>
-        <div class="gi-row">
-          <span>Postgres Database</span>
-          <strong id="gi-postgres-status">Checking...</strong>
-        </div>
-        <div class="gi-row">
-          <span>Active Origin</span>
-          <strong id="gi-origin">—</strong>
+      <div class="gi-section-main">
+        <div class="gi-kv-list">
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Runtime Environment</span>
+            <strong class="gi-kv-val" id="gi-vercel-env">—</strong>
+          </div>
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Postgres Database</span>
+            <strong class="gi-kv-val" id="gi-postgres-status">Checking...</strong>
+          </div>
+          <div class="gi-kv-row">
+            <span class="gi-kv-label">Active Origin</span>
+            <strong class="gi-kv-val" id="gi-origin">—</strong>
+          </div>
         </div>
       </div>
-      <p class="gi-note">
-        All courses, guides, frontend edits, funnel block visibility, and Stripe settings persist in Postgres and deploy via Vercel.
-      </p>
     </section>
   </div>
 </div>
@@ -1846,17 +1886,22 @@ try {
   .acd-studio-workspace {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);
-    gap: 20px;
+    gap: 0;
     align-items: start;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
   }
 
-  /* .acd-list-panel inherits surface from global .studio-bento-card */
   .acd-list-panel {
-    padding: 20px;
+    padding: 16px 20px 16px 0;
+    border-right: 1px solid rgba(148, 163, 184, 0.14);
+    position: sticky;
+    top: 20px;
+    align-self: start;
   }
 
   .acd-editor-shell-card {
     min-width: 0;
+    padding: 0 0 28px 28px;
     overflow: visible;
   }
 
@@ -1865,9 +1910,24 @@ try {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding: 18px 24px;
-    border-bottom: 1px solid rgba(72, 200, 255, 0.12);
+    padding: 16px 0 14px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
     flex-wrap: wrap;
+  }
+
+  @media (max-width: 960px) {
+    .acd-studio-workspace {
+      grid-template-columns: 1fr;
+    }
+    .acd-list-panel {
+      position: static;
+      padding: 16px 0;
+      border-right: none;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+    .acd-editor-shell-card {
+      padding: 16px 0 28px;
+    }
   }
 
   .acd-editor-topbar[hidden] {
@@ -1913,15 +1973,15 @@ try {
   .acd-editor-tabs {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(4, 10, 24, 0.35);
+    gap: 20px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    background: transparent;
     flex-wrap: wrap;
   }
 
   .acd-tab-pane {
-    padding: 22px 24px 24px;
+    padding: 20px 0 0;
   }
 
   .acd-tab-pane[hidden] {
@@ -1935,36 +1995,38 @@ try {
   .acd-studio-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0;
     margin-top: 12px;
     max-height: 70vh;
     overflow-y: auto;
+    border-top: 1px solid rgba(148, 163, 184, 0.1);
   }
 
   :global(.acd-list-item) {
     appearance: none;
     width: 100%;
     text-align: left;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(5, 8, 15, 0.45);
+    padding: 10px 10px;
+    border: none;
+    border-left: 2px solid transparent;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    background: transparent;
     color: #cbd5e1;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    transition: all 0.15s ease;
+    transition: all 160ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   :global(.acd-list-item:hover) {
-    border-color: rgba(72, 200, 255, 0.3);
+    background: rgba(255, 255, 255, 0.03);
     color: var(--color-text-primary);
   }
 
   :global(.acd-list-item.is-active) {
-    background: rgba(56, 189, 248, 0.14);
-    border-color: rgba(72, 200, 255, 0.5);
+    background: rgba(56, 189, 248, 0.08);
+    border-left-color: #38bdf8;
     color: var(--color-text-primary);
   }
 
@@ -2679,125 +2741,174 @@ try {
     box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
   }
 
-  .gi-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 18px;
+  .gi-flat-layout {
+    display: flex;
+    flex-direction: column;
+    max-width: 1080px;
   }
 
-  @media (max-width: 900px) {
-    .gi-grid {
+  .gi-overview-band,
+  .gi-section-band {
+    display: grid;
+    grid-template-columns: minmax(220px, 290px) minmax(0, 1fr);
+    gap: 28px 40px;
+    padding: 28px 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    align-items: start;
+  }
+
+  .gi-overview-band {
+    border-top: none;
+    padding-top: 8px;
+  }
+
+  @media (max-width: 860px) {
+    .gi-overview-band,
+    .gi-section-band {
       grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 22px 0;
     }
   }
 
-  .gi-card {
+  .gi-section-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .gi-aside-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .gi-section-heading {
+    margin: 0;
+    font-family: var(--font-sans, "Roboto", -apple-system, BlinkMacSystemFont, sans-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: #f8fafc;
+    line-height: 1.35;
+  }
+
+  .gi-section-sub {
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: rgba(203, 213, 225, 0.68);
+  }
+
+  .gi-aside-action {
+    margin-top: 6px;
+  }
+
+  .gi-aside-action .cms-btn {
+    white-space: nowrap;
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), background-color 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .gi-section-main {
     display: flex;
     flex-direction: column;
     gap: 16px;
-  }
-
-  .gi-card-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
+    min-width: 0;
   }
 
   .gi-badge {
     flex-shrink: 0;
-    padding: 4px 11px;
+    padding: 3px 10px;
     border-radius: 999px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     white-space: nowrap;
-    border: 1px solid rgba(148, 163, 184, 0.28);
-    background: rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: rgba(148, 163, 184, 0.08);
     color: #cbd5e1;
   }
 
   .gi-badge.is-ok {
-    border-color: rgba(16, 185, 129, 0.45);
-    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.12);
     color: #6ee7b7;
   }
 
   .gi-badge.is-warn {
-    border-color: rgba(245, 158, 11, 0.45);
-    background: rgba(245, 158, 11, 0.14);
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.12);
     color: #fcd34d;
   }
 
-  .gi-rows {
+  .gi-kv-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
   }
 
-  .gi-row {
+  .gi-kv-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 9px 12px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    font-size: 0.82rem;
+    gap: 16px;
+    padding: 13px 4px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    font-size: 0.85rem;
+    transition: background-color 160ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .gi-row span {
-    color: rgba(203, 213, 225, 0.78);
+  .gi-kv-row:first-child {
+    padding-top: 4px;
   }
 
-  .gi-row strong {
+  .gi-kv-row:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+  }
+
+  .gi-kv-row--stack {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .gi-kv-label {
+    color: rgba(203, 213, 225, 0.74);
+    font-size: 0.83rem;
+  }
+
+  .gi-kv-val {
     color: #f8fafc;
-    font-weight: 650;
+    font-weight: 600;
     text-align: right;
     word-break: break-all;
+    font-variant-numeric: tabular-nums;
   }
 
-  .gi-row-col {
+  .gi-checklist-inline {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    font-size: 0.78rem;
+    padding: 10px 0 2px 14px;
+    border-left: 2px solid rgba(72, 200, 255, 0.35);
+    font-size: 0.8rem;
+    line-height: 1.5;
     color: rgba(203, 213, 225, 0.78);
   }
 
-  .gi-note {
-    margin: 0;
-    font-size: 0.8rem;
-    line-height: 1.5;
-    color: rgba(203, 213, 225, 0.74);
-  }
-
-  .gi-checklist {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: rgba(72, 200, 255, 0.06);
-    border: 1px solid rgba(72, 200, 255, 0.2);
-    font-size: 0.78rem;
-    color: #cbd5e1;
-  }
-
-  .gi-checklist a {
+  .gi-checklist-inline a {
     color: #48c8ff;
     text-decoration: underline;
   }
 
-  .gi-checklist code {
-    color: #48c8ff;
-    font-size: 0.74rem;
-  }
-
-  .gi-card-foot {
-    margin-top: auto;
-    padding-top: 4px;
+  .gi-checklist-inline code {
+    color: #7dd3fc;
+    font-size: 0.76rem;
+    background: rgba(72, 200, 255, 0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
   }
 </style>
 
@@ -2977,9 +3088,15 @@ try {
     transform: translateX(-50%) translateY(0);
   }
 
-  /* ── Payment Provider Switcher & Shopify Catalog ── */
-  .pay-switcher-card {
-    margin-bottom: 18px;
+  /* ── Payment Provider Switcher & Flat Layout ── */
+  .pay-flat-layout {
+    display: flex;
+    flex-direction: column;
+    max-width: 1080px;
+  }
+
+  .pay-switcher-band {
+    padding: 8px 0 24px;
   }
 
   .pay-switcher-row {
@@ -2993,18 +3110,18 @@ try {
   .pay-provider-pills {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px;
+    gap: 4px;
+    padding: 4px;
     border-radius: 999px;
-    background: rgba(6, 13, 24, 0.85);
-    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(6, 13, 24, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.18);
   }
 
   .pay-provider-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 18px;
+    padding: 8px 16px;
     border-radius: 999px;
     border: 1px solid transparent;
     background: transparent;
@@ -3013,7 +3130,7 @@ try {
     font-weight: 600;
     white-space: nowrap;
     cursor: pointer;
-    transition: all 0.18s ease;
+    transition: all 180ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .pay-provider-btn:hover {
@@ -3021,10 +3138,9 @@ try {
   }
 
   .pay-provider-btn.is-active {
-    background: rgba(72, 200, 255, 0.16);
-    border-color: rgba(72, 200, 255, 0.45);
+    background: rgba(72, 200, 255, 0.14);
+    border-color: rgba(72, 200, 255, 0.42);
     color: #e6f6ff;
-    box-shadow: 0 0 18px rgba(72, 200, 255, 0.18);
   }
 
   .pay-provider-dot {
@@ -3039,49 +3155,45 @@ try {
     box-shadow: 0 0 8px #48c8ff;
   }
 
-  .pay-top-grid[hidden] {
-    display: none;
-  }
-
   .pay-view-tabs {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
+    gap: 24px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    margin-bottom: 8px;
     flex-wrap: wrap;
   }
 
   .pay-view-tab {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    background: rgba(8, 18, 38, 0.6);
-    color: rgba(226, 232, 240, 0.72);
-    font-size: 0.85rem;
+    gap: 9px;
+    padding: 12px 2px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    background: transparent;
+    color: rgba(226, 232, 240, 0.62);
+    font-size: 0.86rem;
     font-weight: 600;
     white-space: nowrap;
     cursor: pointer;
-    transition: all 0.18s ease;
+    transition: color 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .pay-view-tab:hover {
     color: #f8fafc;
-    border-color: rgba(148, 163, 184, 0.35);
   }
 
   .pay-view-tab--stripe.is-active {
-    background: rgba(99, 91, 255, 0.14);
-    border-color: rgba(129, 140, 248, 0.45);
     color: #eef2ff;
+    border-bottom-color: #818cf8;
   }
 
   .pay-view-tab--shopify.is-active {
-    background: rgba(149, 191, 71, 0.14);
-    border-color: rgba(163, 230, 53, 0.42);
     color: #f7fee7;
+    border-bottom-color: #a3e635;
   }
 
   .pay-brand-pill {
@@ -3096,14 +3208,14 @@ try {
   }
 
   .pay-brand-pill--stripe {
-    background: rgba(99, 91, 255, 0.22);
-    border: 1px solid rgba(129, 140, 248, 0.45);
+    background: rgba(99, 91, 255, 0.2);
+    border: 1px solid rgba(129, 140, 248, 0.4);
     color: #c7d2fe;
   }
 
   .pay-brand-pill--shopify {
-    background: rgba(149, 191, 71, 0.2);
-    border: 1px solid rgba(163, 230, 53, 0.42);
+    background: rgba(149, 191, 71, 0.18);
+    border: 1px solid rgba(163, 230, 53, 0.38);
     color: #d9f99d;
   }
 
@@ -3116,8 +3228,8 @@ try {
     font-weight: 700;
     letter-spacing: 0.08em;
     white-space: nowrap;
-    background: rgba(72, 200, 255, 0.18);
-    border: 1px solid rgba(72, 200, 255, 0.45);
+    background: rgba(72, 200, 255, 0.16);
+    border: 1px solid rgba(72, 200, 255, 0.4);
     color: #7dd3fc;
   }
 
@@ -3125,61 +3237,29 @@ try {
     display: none;
   }
 
-  .pay-card-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
+  .pay-pane[hidden] {
+    display: none;
   }
 
-  .pay-card--stripe {
-    border-color: rgba(129, 140, 248, 0.22);
+  .pay-section-band--first {
+    border-top: none;
+    padding-top: 20px;
   }
 
-  .pay-card--shopify {
-    border-color: rgba(163, 230, 53, 0.2);
+  .pay-inline-guide {
+    margin-top: 8px;
+    padding: 4px 0 2px 14px;
+    border-left: 2px solid rgba(129, 140, 248, 0.45);
   }
 
-  .pay-compact-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  .pay-inline-guide--shopify {
+    border-left-color: rgba(163, 230, 53, 0.45);
   }
 
-  .pay-compact-row {
-    display: grid;
-    grid-template-columns: minmax(170px, 0.85fr) minmax(0, 1.35fr);
-    align-items: center;
-    gap: 14px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: rgba(6, 13, 24, 0.55);
-    border: 1px solid rgba(148, 163, 184, 0.14);
-  }
-
-  .pay-compact-meta {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 0.88rem;
-  }
-
-  .pay-catalog-fields--1 {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .pay-top-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.38fr) minmax(0, 0.88fr);
-    gap: 20px;
-    align-items: start;
-    margin-bottom: 20px;
-  }
-
-  .pay-left-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
+  .pay-inline-guide .acd-stripe-guide-steps {
+    font-size: 0.78rem;
+    line-height: 1.55;
+    gap: 8px;
   }
 
   .pay-fields-grid {
@@ -3193,33 +3273,55 @@ try {
     grid-column: 1 / -1;
   }
 
-  .pay-guide-aside {
-    position: sticky;
-    top: 24px;
-  }
-
-  .pay-catalog-card {
-    margin-bottom: 8px;
-  }
-
-  .pay-catalog-list {
+  .pay-flat-list {
     display: flex;
     flex-direction: column;
+  }
+
+  .pay-compact-row {
+    display: grid;
+    grid-template-columns: minmax(170px, 0.8fr) minmax(0, 1.4fr);
+    align-items: center;
     gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .pay-compact-row:first-child {
+    padding-top: 4px;
+  }
+
+  .pay-compact-row:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+  }
+
+  .pay-compact-meta {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 0.86rem;
   }
 
   .pay-catalog-row {
-    padding: 16px 18px;
-    border-radius: 14px;
-    background: rgba(6, 13, 24, 0.55);
-    border: 1px solid rgba(148, 163, 184, 0.16);
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  }
+
+  .pay-catalog-row:first-child {
+    padding-top: 4px;
+  }
+
+  .pay-catalog-row:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
   }
 
   .pay-catalog-head {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
   }
 
@@ -3228,19 +3330,13 @@ try {
     align-items: center;
     padding: 3px 9px;
     border-radius: 999px;
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     white-space: nowrap;
-    background: rgba(72, 200, 255, 0.14);
-    border: 1px solid rgba(72, 200, 255, 0.3);
+    background: rgba(72, 200, 255, 0.12);
+    border: 1px solid rgba(72, 200, 255, 0.28);
     color: #7dd3fc;
-  }
-
-  .pay-catalog-key {
-    margin-left: auto;
-    font-size: 0.72rem;
-    color: rgba(148, 163, 184, 0.8);
   }
 
   .pay-catalog-fields {
@@ -3249,161 +3345,15 @@ try {
     gap: 14px;
   }
 
-  .pay-catalog-fields--3 {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr);
-  }
-
   .pay-catalog-fields--2 {
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  }
-
-  .pay-guide-divider {
-    height: 1px;
-    margin: 22px 0;
-    background: rgba(148, 163, 184, 0.16);
-  }
-
-  @media (max-width: 960px) {
-    .pay-top-grid[hidden] {
-    display: none;
-  }
-
-  .pay-view-tabs {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-    flex-wrap: wrap;
-  }
-
-  .pay-view-tab {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    background: rgba(8, 18, 38, 0.6);
-    color: rgba(226, 232, 240, 0.72);
-    font-size: 0.85rem;
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all 0.18s ease;
-  }
-
-  .pay-view-tab:hover {
-    color: #f8fafc;
-    border-color: rgba(148, 163, 184, 0.35);
-  }
-
-  .pay-view-tab--stripe.is-active {
-    background: rgba(99, 91, 255, 0.14);
-    border-color: rgba(129, 140, 248, 0.45);
-    color: #eef2ff;
-  }
-
-  .pay-view-tab--shopify.is-active {
-    background: rgba(149, 191, 71, 0.14);
-    border-color: rgba(163, 230, 53, 0.42);
-    color: #f7fee7;
-  }
-
-  .pay-brand-pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 8px;
-    border-radius: 999px;
-    font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
-  }
-
-  .pay-brand-pill--stripe {
-    background: rgba(99, 91, 255, 0.22);
-    border: 1px solid rgba(129, 140, 248, 0.45);
-    color: #c7d2fe;
-  }
-
-  .pay-brand-pill--shopify {
-    background: rgba(149, 191, 71, 0.2);
-    border: 1px solid rgba(163, 230, 53, 0.42);
-    color: #d9f99d;
-  }
-
-  .pay-live-tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 2px 7px;
-    border-radius: 999px;
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    white-space: nowrap;
-    background: rgba(72, 200, 255, 0.18);
-    border: 1px solid rgba(72, 200, 255, 0.45);
-    color: #7dd3fc;
-  }
-
-  .pay-live-tag[hidden] {
-    display: none;
-  }
-
-  .pay-card-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .pay-card--stripe {
-    border-color: rgba(129, 140, 248, 0.22);
-  }
-
-  .pay-card--shopify {
-    border-color: rgba(163, 230, 53, 0.2);
-  }
-
-  .pay-compact-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .pay-compact-row {
-    display: grid;
-    grid-template-columns: minmax(170px, 0.85fr) minmax(0, 1.35fr);
-    align-items: center;
-    gap: 14px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: rgba(6, 13, 24, 0.55);
-    border: 1px solid rgba(148, 163, 184, 0.14);
-  }
-
-  .pay-compact-meta {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 0.88rem;
   }
 
   .pay-catalog-fields--1 {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .pay-top-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .pay-guide-aside {
-      position: static;
-    }
-  }
-
   @media (max-width: 860px) {
-    .pay-catalog-fields--3,
     .pay-catalog-fields--2 {
       grid-template-columns: 1fr;
     }
@@ -3414,11 +3364,6 @@ try {
     .pay-compact-row {
       grid-template-columns: 1fr;
     }
-  }
-
-  .gi-summary-card {
-    margin-bottom: 18px;
-    overflow: visible;
   }
 
   .gi-summary-text {

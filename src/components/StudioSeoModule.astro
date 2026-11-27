@@ -34,36 +34,34 @@ const { initialConfig } = Astro.props;
     </Fragment>
   </StudioHeader>
 
-  <!-- Sub-tabs inside SEO -->
-  <div class="cms-tabs-bar" role="tablist" aria-label="SEO sections" style="margin-bottom: 20px;">
-    <button type="button" class="cms-tab-btn is-active" data-seo-tab="global" role="tab" aria-selected="true">
+  <!-- Sub-tabs inside SEO (flat underline tabs) -->
+  <div class="seo-underline-tabs" role="tablist" aria-label="SEO sections">
+    <button type="button" class="seo-underline-tab is-active" data-seo-tab="global" role="tab" aria-selected="true">
       Global &amp; Social Preview
     </button>
-    <button type="button" class="cms-tab-btn" data-seo-tab="pages" role="tab" aria-selected="false">
+    <button type="button" class="seo-underline-tab" data-seo-tab="pages" role="tab" aria-selected="false">
       Per-Page SEO
     </button>
-    <button type="button" class="cms-tab-btn" data-seo-tab="indexing" role="tab" aria-selected="false">
+    <button type="button" class="seo-underline-tab" data-seo-tab="indexing" role="tab" aria-selected="false">
       Indexing, Sitemap &amp; Brand
     </button>
-    <button type="button" class="cms-tab-btn" data-seo-tab="redirects" role="tab" aria-selected="false">
+    <button type="button" class="seo-underline-tab" data-seo-tab="redirects" role="tab" aria-selected="false">
       URL Redirects (301)
     </button>
   </div>
 
   <!-- TAB 1: Global SEO & Social -->
-  <div class="seo-pane" data-seo-pane="global">
-    <div class="seo-two-col">
-      <section class="studio-bento-card seo-card">
-        <div class="seo-card-head">
-          <div>
-            <span class="seo-kicker">Defaults</span>
-            <h2 class="seo-card-title">Search Engine &amp; Social Sharing</h2>
-            <p class="seo-card-sub">
-              These defaults apply across your entire website whenever a page doesn't have custom SEO settings.
-            </p>
-          </div>
-        </div>
+  <div class="seo-pane gi-flat-layout" data-seo-pane="global">
+    <section class="gi-section-band pay-section-band--first">
+      <div class="gi-section-aside">
+        <span class="seo-kicker">Defaults</span>
+        <h2 class="seo-card-title">Search Engine &amp; Social Sharing</h2>
+        <p class="seo-card-sub">
+          These defaults apply across your entire website whenever a page doesn't have custom SEO settings.
+        </p>
+      </div>
 
+      <div class="gi-section-main">
         <div class="seo-grid">
           <label class="seo-field seo-span-2">
             <span class="seo-label-row">
@@ -256,70 +254,71 @@ const { initialConfig } = Astro.props;
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- Live SERP & Social Preview -->
-      <section class="studio-bento-card seo-card">
-        <div class="seo-card-head">
-          <div>
-            <span class="seo-kicker">Live Simulator</span>
-            <h2 class="seo-card-title">How Your Site Looks</h2>
-          </div>
-        </div>
+    <!-- Live SERP & Social Preview -->
+    <section class="gi-section-band">
+      <div class="gi-section-aside">
+        <span class="seo-kicker">Live Simulator</span>
+        <h2 class="seo-card-title">How Your Site Looks</h2>
+        <p class="seo-card-sub">
+          Real-time preview of your Google search snippet and social share card.
+        </p>
+      </div>
 
-        <div class="seo-preview-block">
-          <span class="seo-preview-label">Google Search Result</span>
-          <div class="seo-serp-card">
-            <div class="seo-serp-url" id="seo-serp-url">https://adaptif-web.vercel.app</div>
-            <div class="seo-serp-title" id="seo-serp-title">{initialConfig.defaultTitle}</div>
-            <div class="seo-serp-desc" id="seo-serp-desc">{initialConfig.defaultDescription}</div>
-          </div>
-        </div>
-
-        <div class="seo-preview-block">
-          <span class="seo-preview-label">WhatsApp / LinkedIn / X Card</span>
-          <div class="seo-social-card">
-            <div class="seo-social-img-wrap" id="seo-social-img-wrap">
-              <img
-                id="seo-social-img"
-                src={initialConfig.ogImage || ""}
-                alt="Social preview"
-                hidden={!initialConfig.ogImage}
-              />
-              <span id="seo-social-img-empty" hidden={Boolean(initialConfig.ogImage)}>
-                No social image set (1200×630 recommended)
-              </span>
-            </div>
-            <div class="seo-social-body">
-              <div class="seo-social-domain" id="seo-social-domain">adaptif-web.vercel.app</div>
-              <div class="seo-social-title" id="seo-social-title">
-                {initialConfig.ogTitle || initialConfig.defaultTitle}
-              </div>
-              <div class="seo-social-desc" id="seo-social-desc">
-                {initialConfig.ogDescription || initialConfig.defaultDescription}
-              </div>
+      <div class="gi-section-main">
+        <div class="seo-preview-grid">
+          <div class="seo-preview-block">
+            <span class="seo-preview-label">Google Search Result</span>
+            <div class="seo-serp-card">
+              <div class="seo-serp-url" id="seo-serp-url">https://adaptif-web.vercel.app</div>
+              <div class="seo-serp-title" id="seo-serp-title">{initialConfig.defaultTitle}</div>
+              <div class="seo-serp-desc" id="seo-serp-desc">{initialConfig.defaultDescription}</div>
             </div>
           </div>
+
+          <div class="seo-preview-block">
+            <span class="seo-preview-label">WhatsApp / LinkedIn / X Card</span>
+            <div class="seo-social-card">
+              <div class="seo-social-img-wrap" id="seo-social-img-wrap">
+                <img
+                  id="seo-social-img"
+                  src={initialConfig.ogImage || ""}
+                  alt="Social preview"
+                  hidden={!initialConfig.ogImage}
+                />
+                <span id="seo-social-img-empty" hidden={Boolean(initialConfig.ogImage)}>
+                  No social image set (1200×630 recommended)
+                </span>
+              </div>
+              <div class="seo-social-body">
+                <div class="seo-social-domain" id="seo-social-domain">adaptif-web.vercel.app</div>
+                <div class="seo-social-title" id="seo-social-title">
+                  {initialConfig.ogTitle || initialConfig.defaultTitle}
+                </div>
+                <div class="seo-social-desc" id="seo-social-desc">
+                  {initialConfig.ogDescription || initialConfig.defaultDescription}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </div>
 
   <!-- TAB 2: Per-Page Overrides -->
-  <div class="seo-pane" data-seo-pane="pages" hidden>
-    <section class="studio-bento-card seo-card">
-      <div class="seo-card-head">
-        <div>
-          <span class="seo-kicker">Page Settings</span>
-          <h2 class="seo-card-title">Customize Individual Pages</h2>
-          <p class="seo-card-sub">
-            Pick any main page below to give it its own title, description, or image, or hide it from Google.
-          </p>
-        </div>
-      </div>
+  <div class="seo-pane gi-flat-layout" data-seo-pane="pages" hidden>
+    <section class="gi-section-band pay-section-band--first">
+      <div class="gi-section-aside">
+        <span class="seo-kicker">Page Settings</span>
+        <h2 class="seo-card-title">Customize Individual Pages</h2>
+        <p class="seo-card-sub">
+          Pick any main page below to give it its own title, description, or image, or hide it from Google.
+        </p>
 
-      <div class="seo-pages-layout">
-        <div class="seo-pages-list" id="seo-pages-list">
+        <div class="seo-pages-list" id="seo-pages-list" style="margin-top: 10px;">
           {SEO_MANAGED_PAGES.map((p, idx) => (
             <button
               type="button"
@@ -331,7 +330,9 @@ const { initialConfig } = Astro.props;
             </button>
           ))}
         </div>
+      </div>
 
+      <div class="gi-section-main">
         <div class="seo-page-editor">
           <div class="seo-grid">
             <label class="seo-field seo-span-2">
@@ -440,16 +441,17 @@ const { initialConfig } = Astro.props;
   </div>
 
   <!-- TAB 3: Indexing, Sitemap & Brand -->
-  <div class="seo-pane" data-seo-pane="indexing" hidden>
-    <div class="seo-two-col">
-      <section class="studio-bento-card seo-card">
-        <div class="seo-card-head">
-          <div>
-            <span class="seo-kicker">Search Visibility</span>
-            <h2 class="seo-card-title">Google Indexing &amp; Sitemap</h2>
-          </div>
-        </div>
+  <div class="seo-pane gi-flat-layout" data-seo-pane="indexing" hidden>
+    <section class="gi-section-band pay-section-band--first">
+      <div class="gi-section-aside">
+        <span class="seo-kicker">Search Visibility</span>
+        <h2 class="seo-card-title">Google Indexing &amp; Sitemap</h2>
+        <p class="seo-card-sub">
+          Control global search engine indexing, automatic sitemap inclusion, and custom crawler rules.
+        </p>
+      </div>
 
+      <div class="gi-section-main">
         <div class="seo-grid">
           <div class="seo-field seo-span-2">
             <span class="seo-label-row">
@@ -525,16 +527,19 @@ const { initialConfig } = Astro.props;
             <textarea id="seo-robots-extra" class="seo-textarea" rows="3" placeholder="Optional extra lines for /robots.txt">{initialConfig.robotsExtra}</textarea>
           </label>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="studio-bento-card seo-card">
-        <div class="seo-card-head">
-          <div>
-            <span class="seo-kicker">Brand &amp; Analytics</span>
-            <h2 class="seo-card-title">Google Brand Card &amp; Tracking</h2>
-          </div>
-        </div>
+    <section class="gi-section-band">
+      <div class="gi-section-aside">
+        <span class="seo-kicker">Brand &amp; Analytics</span>
+        <h2 class="seo-card-title">Google Brand Card &amp; Tracking</h2>
+        <p class="seo-card-sub">
+          Structured organization metadata, Search Console verification, and Google Analytics 4.
+        </p>
+      </div>
 
+      <div class="gi-section-main">
         <div class="seo-grid">
           <label class="seo-field">
             <span class="seo-label-row">
@@ -640,37 +645,39 @@ const { initialConfig } = Astro.props;
             <input type="text" id="seo-ga4-id" class="seo-input" value={initialConfig.ga4MeasurementId} placeholder="G-XXXXXXXXXX" />
           </label>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </div>
 
   <!-- TAB 4: URL Redirects -->
-  <div class="seo-pane" data-seo-pane="redirects" hidden>
-    <section class="studio-bento-card seo-card">
-      <div class="seo-card-head">
-        <div>
-          <span class="seo-kicker">Traffic Protection</span>
-          <h2 class="seo-card-title">
-            URL Redirects (301 / 302)
-            <span class="seo-tip-wrap">
-              <button type="button" class="seo-tip-btn" aria-label="Redirects info">?</button>
-              <span class="seo-tip-box" role="tooltip">
-                If you ever rename or remove a page, add the old link and the new link here so visitors and Google are sent straight to the right page without seeing a 404 error.
-              </span>
+  <div class="seo-pane gi-flat-layout" data-seo-pane="redirects" hidden>
+    <section class="gi-section-band pay-section-band--first">
+      <div class="gi-section-aside">
+        <span class="seo-kicker">Traffic Protection</span>
+        <h2 class="seo-card-title">
+          URL Redirects (301 / 302)
+          <span class="seo-tip-wrap">
+            <button type="button" class="seo-tip-btn" aria-label="Redirects info">?</button>
+            <span class="seo-tip-box" role="tooltip">
+              If you ever rename or remove a page, add the old link and the new link here so visitors and Google are sent straight to the right page without seeing a 404 error.
             </span>
-          </h2>
-          <p class="seo-card-sub">
-            Forward old or mistyped URLs to active pages automatically. Click "Save SEO Settings" after editing.
-          </p>
+          </span>
+        </h2>
+        <p class="seo-card-sub">
+          Forward old or mistyped URLs to active pages automatically. Click "Save SEO Settings" after editing.
+        </p>
+        <div class="gi-aside-action">
+          <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-add-redirect">
+            + Add Redirect
+          </button>
         </div>
-        <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-add-redirect">
-          + Add Redirect
-        </button>
       </div>
 
-      <div class="seo-redirects-list" id="seo-redirects-list"></div>
-      <div class="seo-redirects-empty" id="seo-redirects-empty" hidden>
-        No redirects configured yet. Click <strong>+ Add Redirect</strong> to create one.
+      <div class="gi-section-main">
+        <div class="seo-redirects-list" id="seo-redirects-list"></div>
+        <div class="seo-redirects-empty" id="seo-redirects-empty" hidden>
+          No redirects configured yet. Click <strong>+ Add Redirect</strong> to create one.
+        </div>
       </div>
     </section>
   </div>
@@ -681,53 +688,103 @@ const { initialConfig } = Astro.props;
 </script>
 
 <style>
-  .seo-subtabs {
+  .seo-pane[hidden] {
+    display: none;
+  }
+
+  .gi-flat-layout {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    max-width: 1080px;
+  }
+
+  .gi-section-band {
+    display: grid;
+    grid-template-columns: minmax(220px, 290px) minmax(0, 1fr);
+    gap: 28px 40px;
+    padding: 28px 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+    align-items: start;
+  }
+
+  .pay-section-band--first {
+    border-top: none;
+    padding-top: 20px;
+  }
+
+  @media (max-width: 860px) {
+    .gi-section-band {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 22px 0;
+    }
+  }
+
+  .gi-section-aside {
+    display: flex;
+    flex-direction: column;
     gap: 8px;
-    margin-bottom: 20px;
   }
 
-  .seo-subtab {
-    appearance: none;
-    padding: 8px 16px;
-    border-radius: 9999px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(16, 22, 34, 0.65);
-    color: rgba(248, 250, 252, 0.7);
-    font-size: 13px;
-    font-weight: 500;
+  .gi-section-main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .gi-aside-action {
+    margin-top: 6px;
+  }
+
+  .seo-underline-tabs {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    margin-bottom: 8px;
+    max-width: 1080px;
+    flex-wrap: wrap;
+  }
+
+  .seo-underline-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 2px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    background: transparent;
+    color: rgba(226, 232, 240, 0.62);
+    font-size: 0.86rem;
+    font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
-    transition: all 0.16s ease;
+    transition: color 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .seo-subtab:hover {
-    border-color: rgba(72, 200, 255, 0.35);
+  .seo-underline-tab:hover {
     color: #f8fafc;
   }
 
-  .seo-subtab.is-active {
-    background: rgba(56, 189, 248, 0.16);
-    border-color: rgba(72, 200, 255, 0.5);
-    color: #7fe2ff;
+  .seo-underline-tab.is-active {
+    color: #e0f2fe;
+    border-bottom-color: #38bdf8;
   }
 
-  .seo-two-col {
+  .seo-preview-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
     align-items: start;
   }
 
-  /* .seo-card inherits surface from global .studio-bento-card */
-
-  .seo-card-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
+  @media (max-width: 900px) {
+    .seo-preview-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .seo-kicker {
@@ -737,26 +794,27 @@ const { initialConfig } = Astro.props;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #38bdf8;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
   }
 
   .seo-card-title {
     margin: 0;
-    font-family: var(--font-family-body);
-    font-size: 18px;
+    font-family: var(--font-sans, "Roboto", -apple-system, BlinkMacSystemFont, sans-serif);
+    font-size: 1.05rem;
     font-weight: 600;
     letter-spacing: -0.015em;
     color: #f8fafc;
+    line-height: 1.35;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
   .seo-card-sub {
-    margin: 6px 0 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: rgba(248, 250, 252, 0.62);
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: rgba(203, 213, 225, 0.68);
   }
 
   .seo-grid {
@@ -1078,17 +1136,11 @@ const { initialConfig } = Astro.props;
     color: rgba(248, 250, 252, 0.65);
   }
 
-  /* Per-page layout */
-  .seo-pages-layout {
-    display: grid;
-    grid-template-columns: 240px minmax(0, 1fr);
-    gap: 20px;
-  }
-
+  /* Per-page list (flat hairline list) */
   .seo-pages-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
   }
 
   .seo-page-btn {
@@ -1097,21 +1149,28 @@ const { initialConfig } = Astro.props;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(5, 8, 15, 0.45);
-    color: rgba(248, 250, 252, 0.8);
+    padding: 9px 10px;
+    border: none;
+    border-left: 2px solid transparent;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+    background: transparent;
+    color: rgba(248, 250, 252, 0.72);
     font-size: 13px;
     text-align: left;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all 160ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .seo-page-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .seo-page-btn.is-active {
-    background: rgba(56, 189, 248, 0.14);
-    border-color: rgba(72, 200, 255, 0.45);
-    color: var(--color-text-primary);
+    background: rgba(56, 189, 248, 0.08);
+    border-left-color: #38bdf8;
+    color: #f8fafc;
+    font-weight: 600;
   }
 
   .seo-page-badge {
@@ -1120,15 +1179,15 @@ const { initialConfig } = Astro.props;
     text-transform: uppercase;
     padding: 2px 6px;
     border-radius: 999px;
+    white-space: nowrap;
     background: rgba(56, 189, 248, 0.2);
     color: #7dd3fc;
   }
 
-  /* Redirects */
+  /* Redirects (flat hairline rows) */
   .seo-redirects-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
   }
 
   .seo-redirect-row {
@@ -1136,10 +1195,16 @@ const { initialConfig } = Astro.props;
     grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 150px auto;
     gap: 10px;
     align-items: center;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: rgba(5, 8, 15, 0.55);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  }
+
+  .seo-redirect-row:first-child {
+    padding-top: 4px;
+  }
+
+  .seo-redirect-row:last-child {
+    border-bottom: none;
   }
 
   .seo-redirect-arrow {

@@ -22,87 +22,90 @@ const { initialTurnstile } = Astro.props;
     </button>
   </StudioHeader>
 
-  <div class="acd-config-two-col">
-    <section class="studio-card acd-card">
-      <div class="ac-card-head">
-        <div>
-          <span class="acd-section-kicker">Bot Protection</span>
-          <h2 class="bc-cms-card-title" style="margin: 4px 0;">Invisible Challenge Configuration</h2>
-          <p class="field-hint" style="margin: 0;">
-            Paste your Cloudflare Turnstile Site Key and Secret Key. Challenges run silently on submit.
-          </p>
+  <div class="gi-flat-layout">
+    <section class="gi-section-band pay-section-band--first">
+      <div class="gi-section-aside">
+        <span class="acd-section-kicker">Bot Protection</span>
+        <h2 class="gi-section-heading">Invisible Challenge Configuration</h2>
+        <p class="gi-section-sub">
+          Paste your Cloudflare Turnstile Site Key and Secret Key. Challenges run silently on submit.
+        </p>
+        <div class="gi-aside-action">
+          <label class={`studio-toggle-pill ${initialTurnstile.enabled ? "is-active" : "is-inactive"}`} id="ts-toggle-pill">
+            <input type="checkbox" class="studio-toggle-chk" id="ts-enabled-toggle" checked={initialTurnstile.enabled} />
+            <span class="studio-switch" aria-hidden="true"></span>
+            <span class="studio-toggle-text" id="ts-enabled-label">{initialTurnstile.enabled ? "Active" : "Inactive"}</span>
+          </label>
         </div>
-
-        <label class={`studio-toggle-pill ${initialTurnstile.enabled ? "is-active" : "is-inactive"}`} id="ts-toggle-pill">
-          <input type="checkbox" class="studio-toggle-chk" id="ts-enabled-toggle" checked={initialTurnstile.enabled} />
-          <span class="studio-switch" aria-hidden="true"></span>
-          <span class="studio-toggle-text" id="ts-enabled-label">{initialTurnstile.enabled ? "Active" : "Inactive"}</span>
-        </label>
       </div>
 
-      <div class="acd-settings-grid" style="margin-top: 18px;">
-        <label class="acd-field">
-          <span class="acd-label-row">
-            Site Key (Public)
-            <a
-              href="https://dash.cloudflare.com/?to=/:account/turnstile"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="studio-link studio-link--inline"
-            >
-              Open Cloudflare Turnstile ↗
-            </a>
-          </span>
-          <input
-            type="text"
-            id="ts-site-key"
-            value={initialTurnstile.siteKey}
-            placeholder="0x4AAAAAAA..."
-            autocomplete="off"
-          />
-        </label>
+      <div class="gi-section-main">
+        <div class="acd-settings-grid">
+          <label class="acd-field">
+            <span class="acd-label-row">
+              Site Key (Public)
+              <a
+                href="https://dash.cloudflare.com/?to=/:account/turnstile"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="studio-link studio-link--inline"
+              >
+                Open Cloudflare Turnstile ↗
+              </a>
+            </span>
+            <input
+              type="text"
+              id="ts-site-key"
+              value={initialTurnstile.siteKey}
+              placeholder="0x4AAAAAAA..."
+              autocomplete="off"
+            />
+          </label>
 
-        <label class="acd-field">
-          <span class="acd-label-row">
-            Secret Key (Server)
-          </span>
-          <input
-            type="password"
-            id="ts-secret-key"
-            placeholder={initialTurnstile.hasSecretKey ? "Saved (leave blank to keep)" : "0x4AAAAAAA..."}
-            autocomplete="off"
-          />
-        </label>
+          <label class="acd-field">
+            <span class="acd-label-row">
+              Secret Key (Server)
+            </span>
+            <input
+              type="password"
+              id="ts-secret-key"
+              placeholder={initialTurnstile.hasSecretKey ? "Saved (leave blank to keep)" : "0x4AAAAAAA..."}
+              autocomplete="off"
+            />
+          </label>
+        </div>
       </div>
     </section>
 
-    <aside class="studio-card acd-card" aria-label="Turnstile Setup Guide">
-      <div class="acd-prefs-head" style="margin-bottom: 14px;">
-        <div>
+    <section class="gi-section-band" aria-label="Turnstile Setup Guide">
+      <div class="gi-section-aside">
+        <div class="gi-aside-top">
           <span class="acd-section-kicker">Protected Endpoints</span>
-          <h3 class="acd-card-title">Active Form Coverage</h3>
+          <div class="acd-ai-status-pill">
+            <span
+              class:list={["acd-status-dot", { "is-ready": initialTurnstile.enabled && Boolean(initialTurnstile.siteKey) && initialTurnstile.hasSecretKey }]}
+              id="ts-status-dot"
+            ></span>
+            <span id="ts-status-text">
+              {initialTurnstile.enabled && initialTurnstile.siteKey && initialTurnstile.hasSecretKey
+                ? "Active (Invisible)"
+                : "Inactive"}
+            </span>
+          </div>
         </div>
-        <div class="acd-ai-status-pill">
-          <span
-            class:list={["acd-status-dot", { "is-ready": initialTurnstile.enabled && Boolean(initialTurnstile.siteKey) && initialTurnstile.hasSecretKey }]}
-            id="ts-status-dot"
-          ></span>
-          <span id="ts-status-text">
-            {initialTurnstile.enabled && initialTurnstile.siteKey && initialTurnstile.hasSecretKey
-              ? "Active (Invisible)"
-              : "Inactive"}
-          </span>
-        </div>
+        <h2 class="gi-section-heading">Active Form Coverage</h2>
       </div>
 
-      <div class="acd-stripe-guide" style="margin-top: 0;">
-        <ol class="acd-stripe-guide-steps">
-          <li>In Cloudflare Turnstile, create a widget with <strong>Widget Mode: Invisible</strong>.</li>
-          <li>Add your domains (e.g. <code>adaptif-web.vercel.app</code> and <code>localhost</code> for testing).</li>
-          <li>Automatically verifies <strong>Book a Call</strong> (<code>/api/book-call/submit</code>) and <strong>Guide Lead Forms</strong> (<code>/api/academy/leads</code>).</li>
-        </ol>
+      <div class="gi-section-main">
+        <div class="pay-inline-guide" style="margin-top: 0;">
+          <ol class="acd-stripe-guide-steps">
+            <li>In Cloudflare Turnstile, create a widget with <strong>Widget Mode: Invisible</strong>.</li>
+            <li>Add your domains (e.g. <code>adaptif-web.vercel.app</code> and <code>localhost</code> for testing).</li>
+            <li>Automatically verifies <strong>Book a Call</strong> (<code>/api/book-call/submit</code>) and <strong>Guide Lead Forms</strong> (<code>/api/academy/leads</code>).</li>
+          </ol>
+        </div>
       </div>
-    </aside>
+    </section>
   </div>
 </div>
 

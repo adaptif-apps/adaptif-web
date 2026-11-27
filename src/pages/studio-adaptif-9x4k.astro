@@ -284,7 +284,7 @@ const tagPresets = [
 
           <div class="studio-workspace">
           <!-- Left List: Brands -->
-          <section class="studio-bento-card studio-bento-card--flush brand-list-panel" aria-label="Brands list">
+          <section class="brand-list-panel" aria-label="Brands list">
             <div class="panel-search-wrap">
               <input
                 type="search"
@@ -298,7 +298,7 @@ const tagPresets = [
           </section>
 
           <!-- Right Editor: Selected Brand -->
-          <section class="studio-bento-card studio-bento-card--flush brand-editor-panel" aria-label="Brand editor">
+          <section class="brand-editor-panel" aria-label="Brand editor">
             <div id="editor-empty" class="editor-empty" hidden>
               Select a brand or click <strong>+ Add Brand</strong> to create one.
             </div>
@@ -338,17 +338,7 @@ const tagPresets = [
                 </div>
               </div>
 
-              <!-- Sub-tabs for cleaner Portfolio editing -->
-              <div class="cms-tabs-bar" role="tablist" aria-label="Portfolio sections" style="margin-bottom: 18px;">
-                <button type="button" class="cms-tab-btn is-active" data-pf-tab="details" role="tab" aria-selected="true">
-                  Details &amp; Tags
-                </button>
-                <button type="button" class="cms-tab-btn" data-pf-tab="media" role="tab" aria-selected="false">
-                  Media &amp; Gallery
-                </button>
-              </div>
-
-              <div class="form-grid" data-pf-panel="details">
+              <div class="form-grid">
                 <div class="form-field">
                   <label for="field-title">Brand Title</label>
                   <input type="text" id="field-title" required placeholder="e.g. Sideline Podcast" />
@@ -387,7 +377,7 @@ const tagPresets = [
                 </div>
               </div>
 
-              <div class="form-grid" data-pf-panel="media" hidden>
+              <div class="form-grid">
                 <!-- Thumbnail 1:1 -->
                 <div class="form-field">
                   <label>Thumbnail (1:1)</label>
@@ -454,17 +444,15 @@ const tagPresets = [
             </button>
           </StudioHeader>
 
-          <form id="ac-cms-form" class="bc-cms-form">
-            <section class="studio-card acd-card">
-              <div class="ac-card-head">
-                <div>
-                  <span class="acd-section-kicker">Connection</span>
-                  <h2 class="bc-cms-card-title" style="margin: 4px 0;">1. Connect Your Account</h2>
-                  <p class="field-hint" style="margin: 0;">
-                    Enter your ActiveCampaign Developer API URL &amp; Key. Form Builder fields sync automatically.
-                  </p>
-                </div>
-                <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <form id="ac-cms-form" class="gi-flat-layout">
+            <section class="gi-section-band pay-section-band--first">
+              <div class="gi-section-aside">
+                <span class="acd-section-kicker">Connection</span>
+                <h2 class="gi-section-heading">1. Connect Your Account</h2>
+                <p class="gi-section-sub">
+                  Toggle Active to sync leads from the selected forms into ActiveCampaign automatically.
+                </p>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
                   <div class="ac-form-picker">
                     <span class="ac-form-picker-label">Forms</span>
                     <div class="studio-multiselect" id="ac-forms-multiselect">
@@ -493,85 +481,91 @@ const tagPresets = [
                 </div>
               </div>
 
-              <div class="acd-settings-grid" style="margin-top: 18px;">
-                <label class="acd-field">
-                  <span class="acd-label-row">
-                    <a id="ac-api-url-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
-                      Account API URL ↗
-                    </a>
-                  </span>
-                  <input
-                    type="url"
-                    id="ac-api-url"
-                    value={initialAcState.apiUrl}
-                    placeholder="https://youraccount.api-us1.com"
-                  />
-                </label>
-                <label class="acd-field">
-                  <span class="acd-label-row">
-                    <a id="ac-api-key-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
-                      API Key ↗
-                    </a>
-                  </span>
-                  <input
-                    type="password"
-                    id="ac-api-key"
-                    placeholder={initialAcState.hasApiKey ? "Saved (leave blank to keep current key)" : "Paste your ActiveCampaign API key..."}
-                    autocomplete="off"
-                  />
-                </label>
-              </div>
+              <div class="gi-section-main">
+                <div class="acd-settings-grid">
+                  <label class="acd-field">
+                    <span class="acd-label-row">
+                      <a id="ac-api-url-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
+                        Account API URL ↗
+                      </a>
+                    </span>
+                    <input
+                      type="url"
+                      id="ac-api-url"
+                      value={initialAcState.apiUrl}
+                      placeholder="https://youraccount.api-us1.com"
+                    />
+                  </label>
+                  <label class="acd-field">
+                    <span class="acd-label-row">
+                      <a id="ac-api-key-link" href={acDeveloperUrl} target="_blank" rel="noopener noreferrer" class="studio-link studio-link--inline">
+                        API Key ↗
+                      </a>
+                    </span>
+                    <input
+                      type="password"
+                      id="ac-api-key"
+                      placeholder={initialAcState.hasApiKey ? "Saved (leave blank to keep current key)" : "Paste your ActiveCampaign API key..."}
+                      autocomplete="off"
+                    />
+                  </label>
+                </div>
 
-              <div class="ac-sync-bar" style="margin-top: 18px;">
-                <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-ac-sync-meta">
-                  Connect &amp; Fetch Fields
-                </button>
-                <span class="ac-sync-status" id="ac-sync-status">
-                  {initialAcState.cachedFields.length > 0 || initialAcState.cachedLists.length > 0
-                    ? `Synced • ${initialAcState.cachedLists.length} lists, ${initialAcState.cachedTags.length} tags, ${initialAcState.cachedFields.length} fields`
-                    : "Not synced yet"}
-                </span>
+                <div class="ac-sync-bar">
+                  <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-ac-sync-meta">
+                    Connect &amp; Fetch Fields
+                  </button>
+                  <span class="ac-sync-status" id="ac-sync-status">
+                    {initialAcState.cachedFields.length > 0 || initialAcState.cachedLists.length > 0
+                      ? `Synced • ${initialAcState.cachedLists.length} lists, ${initialAcState.cachedTags.length} tags, ${initialAcState.cachedFields.length} fields`
+                      : "Not synced yet"}
+                  </span>
+                </div>
               </div>
             </section>
 
-            <section class="studio-card acd-card">
-              <span class="acd-section-kicker">Audience &amp; Testing</span>
-              <h2 class="bc-cms-card-title" style="margin: 4px 0;">2. Lists, Tags &amp; Live Test</h2>
-              <p class="field-hint" style="margin: 0 0 16px;">
-                Choose which list and tags are applied automatically whenever someone submits the selected form.
-              </p>
+            <section class="gi-section-band">
+              <div class="gi-section-aside">
+                <span class="acd-section-kicker">Audience &amp; Testing</span>
+                <h2 class="gi-section-heading">2. Lists, Tags &amp; Live Test</h2>
+                <p class="gi-section-sub">
+                  Choose which list and tags are applied automatically whenever someone submits the selected form.
+                </p>
+              </div>
 
-              <div class="acd-settings-grid">
+              <div class="gi-section-main">
+                <div class="acd-settings-grid">
+                  <div class="acd-field">
+                    <span class="acd-label-row">Subscribe to List</span>
+                    <select id="ac-list-id" class="studio-select"></select>
+                  </div>
+
+                  <div class="acd-field" style="justify-content: flex-end;">
+                    <label class="studio-toggle-pill is-inactive" id="ac-tag-help-pill" style="align-self: flex-start;">
+                      <input type="checkbox" class="studio-toggle-chk" id="ac-tag-help-topic" checked={initialAcState.tagFromHelpTopic} />
+                      <span class="studio-switch" aria-hidden="true"></span>
+                      <span class="studio-toggle-text" style="min-width: auto;">Auto-tag with "Help Topic"</span>
+                    </label>
+                  </div>
+                </div>
+
                 <div class="acd-field">
-                  <span class="acd-label-row">Subscribe to List</span>
-                  <select id="ac-list-id" class="studio-select"></select>
+                  <span class="acd-label-row">Apply Tags on Submit (click to toggle)</span>
+                  <div class="ac-tags-chips" id="ac-tags-chips"></div>
                 </div>
 
-                <div class="acd-field" style="justify-content: flex-end;">
-                  <label class="studio-toggle-pill is-inactive" id="ac-tag-help-pill" style="align-self: flex-start;">
-                    <input type="checkbox" class="studio-toggle-chk" id="ac-tag-help-topic" checked={initialAcState.tagFromHelpTopic} />
-                    <span class="studio-switch" aria-hidden="true"></span>
-                    <span class="studio-toggle-text" style="min-width: auto;">Auto-tag with "Help Topic"</span>
-                  </label>
+                <div class="ac-test-bar">
+                  <input
+                    type="email"
+                    id="ac-test-email"
+                    class="ac-test-input"
+                    value="test-lead@adaptif.studio"
+                    placeholder="test-lead@yourdomain.com"
+                  />
+                  <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-ac-test">
+                    Send Test Lead
+                  </button>
                 </div>
-              </div>
-
-              <div class="acd-field" style="margin-top: 16px;">
-                <span class="acd-label-row">Apply Tags on Submit (click to toggle)</span>
-                <div class="ac-tags-chips" id="ac-tags-chips"></div>
-              </div>
-
-              <div class="ac-test-bar" style="margin-top: 16px;">
-                <input
-                  type="email"
-                  id="ac-test-email"
-                  class="ac-test-input"
-                  value="test-lead@adaptif.studio"
-                  placeholder="test-lead@yourdomain.com"
-                />
-                <button type="button" class="adaptif-btn adaptif-btn--dark adaptif-btn--sm" id="btn-ac-test">
-                  Send Test Lead
-                </button>
               </div>
             </section>
           </form>
@@ -854,22 +848,6 @@ const tagPresets = [
           if (!pill) return;
           pill.classList.toggle("is-active", chk.checked);
           pill.classList.toggle("is-inactive", !chk.checked);
-        });
-      });
-
-      const pfTabs = document.querySelectorAll<HTMLButtonElement>("[data-pf-tab]");
-      const pfPanels = document.querySelectorAll<HTMLElement>("[data-pf-panel]");
-      pfTabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          const target = tab.dataset.pfTab;
-          pfTabs.forEach((t) => {
-            const active = t === tab;
-            t.classList.toggle("is-active", active);
-            t.setAttribute("aria-selected", active ? "true" : "false");
-          });
-          pfPanels.forEach((panel) => {
-            panel.hidden = panel.dataset.pfPanel !== target;
-          });
         });
       });
 
@@ -1739,30 +1717,39 @@ const tagPresets = [
       }
 
       ::-webkit-scrollbar-track {
-        background: #010307;
+        background: transparent;
       }
 
       ::-webkit-scrollbar-thumb {
-        background: rgba(0, 102, 255, 0.25);
+        background: rgba(0, 102, 255, 0.28);
         border-radius: 9999px;
-        border: 2px solid #010307;
+        border: 2px solid transparent;
+        background-clip: content-box;
       }
 
       ::-webkit-scrollbar-thumb:hover {
-        background: rgba(0, 229, 255, 0.45);
+        background: rgba(0, 229, 255, 0.5);
+        border: 2px solid transparent;
+        background-clip: content-box;
       }
 
-      body {
-        margin: 0;
+      html {
+        scrollbar-gutter: stable;
+        min-height: 100%;
         background:
           radial-gradient(ellipse 80% 50% at 65% 0%, rgba(16, 78, 158, 0.22) 0%, transparent 65%),
           radial-gradient(ellipse 60% 45% at 15% 100%, rgba(14, 165, 233, 0.08) 0%, transparent 60%),
           var(--bg);
+        scrollbar-width: thin;
+        scrollbar-color: rgba(72, 200, 255, 0.3) transparent;
+      }
+
+      body {
+        margin: 0;
+        background: transparent;
         color: var(--text);
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(72, 200, 255, 0.3) #010307;
       }
 
       .studio-shell {
@@ -1788,6 +1775,7 @@ const tagPresets = [
           top: 0;
           height: 100vh;
           overflow-y: auto;
+          scrollbar-gutter: stable;
         }
       }
 
@@ -2103,16 +2091,23 @@ const tagPresets = [
 
       .studio-workspace {
         display: grid;
-        grid-template-columns: 320px minmax(0, 1fr);
-        gap: 20px;
+        grid-template-columns: 300px minmax(0, 1fr);
+        gap: 0;
         align-items: start;
+        border-top: 1px solid rgba(148, 163, 184, 0.14);
       }
 
-      /* .brand-list-panel & .brand-editor-panel inherit surface from global .studio-bento-card */
+      .brand-list-panel {
+        padding: 16px 20px 16px 0;
+        border-right: 1px solid rgba(148, 163, 184, 0.14);
+        position: sticky;
+        top: 20px;
+        align-self: start;
+      }
 
       .panel-search-wrap {
-        padding: 12px;
-        border-bottom: 1px solid var(--border);
+        padding: 0 0 12px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.1);
       }
 
       .panel-search,
@@ -2155,14 +2150,14 @@ const tagPresets = [
       }
 
       .brand-list {
-        max-height: calc(100vh - 210px);
+        max-height: calc(100vh - 110px);
         overflow-y: auto;
-        padding: 8px;
+        padding: 8px 4px 8px 0;
         display: flex;
         flex-direction: column;
         gap: 4px;
         scrollbar-width: thin;
-        scrollbar-color: rgba(0, 102, 255, 0.3) #050912;
+        scrollbar-color: rgba(0, 102, 255, 0.3) transparent;
       }
 
       :global(.brand-row) {
@@ -2259,7 +2254,23 @@ const tagPresets = [
       }
 
       .brand-editor-panel {
-        padding: 22px 24px;
+        padding: 18px 0 28px 28px;
+        min-width: 0;
+      }
+
+      @media (max-width: 960px) {
+        .studio-workspace {
+          grid-template-columns: 1fr;
+        }
+        .brand-list-panel {
+          position: static;
+          padding: 16px 0;
+          border-right: none;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+        }
+        .brand-editor-panel {
+          padding: 20px 0 28px;
+        }
       }
 
       .editor-empty {

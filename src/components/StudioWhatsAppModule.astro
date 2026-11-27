@@ -18,160 +18,202 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
     </button>
   </StudioHeader>
 
-  <div class="wa-studio-grid">
-    <section class="studio-bento-card wa-glass-card" aria-label="WhatsApp Floating Button Configuration">
-      <div class="wa-card-head">
-        <div>
+  <div class="gi-flat-layout">
+    <section class="gi-section-band pay-section-band--first" aria-label="WhatsApp Floating Button Configuration">
+      <div class="gi-section-aside">
+        <div class="gi-aside-top">
           <span class="wa-kicker">Global Site Widget</span>
-          <h2 class="wa-card-title">Connection &amp; Placement</h2>
-          <p class="wa-card-sub">
-            Configure the floating WhatsApp button shown across the public site. Clicking it opens a new tab with your company number and pre-filled message.
-          </p>
+          <div class="wa-status-pill" id="wa-status-pill">
+            <span class:list={["wa-status-dot", { "is-ready": isReady, "is-off": !initialConfig.enabled }]} id="wa-status-dot"></span>
+            <span id="wa-status-text">
+              {!initialConfig.enabled
+                ? "Hidden"
+                : initialUrl
+                  ? `Visible · ${initialConfig.position === "bottom-left" ? "Bottom Left" : "Bottom Right"}`
+                  : "Missing Phone"}
+            </span>
+          </div>
         </div>
-        <div class="wa-status-pill" id="wa-status-pill">
-          <span class:list={["wa-status-dot", { "is-ready": isReady, "is-off": !initialConfig.enabled }]} id="wa-status-dot"></span>
-          <span id="wa-status-text">
-            {!initialConfig.enabled
-              ? "Hidden"
-              : initialUrl
-                ? `Visible · ${initialConfig.position === "bottom-left" ? "Bottom Left" : "Bottom Right"}`
-                : "Missing Phone"}
-          </span>
-        </div>
+        <h2 class="wa-card-title">Connection &amp; Placement</h2>
+        <p class="wa-card-sub">
+          Configure the floating WhatsApp button shown across the public site. Clicking it opens a new tab with your company number and pre-filled message.
+        </p>
       </div>
 
-      <div class="wa-form-grid">
-        <div class="wa-field">
-          <span class="wa-label">Visibility</span>
-          <label class={`studio-toggle-pill ${initialConfig.enabled ? "is-active" : "is-inactive"}`} id="wa-toggle-pill" for="wa-cfg-enabled">
+      <div class="gi-section-main">
+        <div class="wa-form-grid">
+          <div class="wa-field">
+            <span class="wa-label">Visibility</span>
+            <label class={`studio-toggle-pill ${initialConfig.enabled ? "is-active" : "is-inactive"}`} id="wa-toggle-pill" for="wa-cfg-enabled">
+              <input
+                type="checkbox"
+                class="studio-toggle-chk"
+                id="wa-cfg-enabled"
+                checked={initialConfig.enabled}
+              />
+              <span class="studio-switch" aria-hidden="true"></span>
+              <span class="studio-toggle-text" id="wa-toggle-label">
+                {initialConfig.enabled ? "Show floating button" : "Hide floating button"}
+              </span>
+            </label>
+          </div>
+
+          <label class="wa-field">
+            <span class="wa-label">Screen Position</span>
+            <select id="wa-cfg-position" class="ac-select">
+              <option value="bottom-right" selected={initialConfig.position !== "bottom-left"}>
+                Bottom Right
+              </option>
+              <option value="bottom-left" selected={initialConfig.position === "bottom-left"}>
+                Bottom Left
+              </option>
+            </select>
+          </label>
+
+          <label class="wa-field wa-span-2">
+            <span class="wa-label">Company Phone Number</span>
             <input
-              type="checkbox"
-              class="studio-toggle-chk"
-              id="wa-cfg-enabled"
-              checked={initialConfig.enabled}
+              type="tel"
+              id="wa-cfg-phone"
+              class="wa-input"
+              value={initialConfig.phoneNumber}
+              placeholder="e.g. +1 555 123 4567"
+              autocomplete="off"
             />
-            <span class="studio-switch" aria-hidden="true"></span>
-            <span class="studio-toggle-text" id="wa-toggle-label">
-              {initialConfig.enabled ? "Show floating button" : "Hide floating button"}
+            <span class="wa-hint">
+              Include your country code (e.g. +1 for US, +54 for Argentina). Non-numeric characters are automatically stripped for the WhatsApp link.
+            </span>
+          </label>
+
+          <label class="wa-field wa-span-2">
+            <span class="wa-label">Pre-filled Message</span>
+            <textarea
+              id="wa-cfg-message"
+              class="wa-textarea"
+              rows="3"
+              placeholder="Hi Adaptif! I'd like to learn more about your creative services."
+            >{initialConfig.message}</textarea>
+            <span class="wa-hint">
+              This message will appear pre-typed in the visitor's WhatsApp chat window.
             </span>
           </label>
         </div>
-
-        <label class="wa-field">
-          <span class="wa-label">Screen Position</span>
-          <select id="wa-cfg-position" class="ac-select">
-            <option value="bottom-right" selected={initialConfig.position !== "bottom-left"}>
-              Bottom Right
-            </option>
-            <option value="bottom-left" selected={initialConfig.position === "bottom-left"}>
-              Bottom Left
-            </option>
-          </select>
-        </label>
-
-        <label class="wa-field wa-span-2">
-          <span class="wa-label">Company Phone Number</span>
-          <input
-            type="tel"
-            id="wa-cfg-phone"
-            class="wa-input"
-            value={initialConfig.phoneNumber}
-            placeholder="e.g. +1 555 123 4567"
-            autocomplete="off"
-          />
-          <span class="wa-hint">
-            Include your country code (e.g. +1 for US, +54 for Argentina). Non-numeric characters are automatically stripped for the WhatsApp link.
-          </span>
-        </label>
-
-        <label class="wa-field wa-span-2">
-          <span class="wa-label">Pre-filled Message</span>
-          <textarea
-            id="wa-cfg-message"
-            class="wa-textarea"
-            rows="3"
-            placeholder="Hi Adaptif! I'd like to learn more about your creative services."
-          >{initialConfig.message}</textarea>
-          <span class="wa-hint">
-            This message will appear pre-typed in the visitor's WhatsApp chat window.
-          </span>
-        </label>
       </div>
     </section>
 
-    <section class="studio-bento-card wa-glass-card wa-preview-card" aria-label="WhatsApp Widget Preview">
-      <div class="wa-card-head">
-        <div>
-          <span class="wa-kicker">Live Preview</span>
-          <h2 class="wa-card-title">Viewport Placement &amp; Link</h2>
-        </div>
-        <a
-          id="wa-test-link"
-          href={initialUrl || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          class:list={["studio-link", { "is-disabled": !initialUrl }]}
-        >
-          Test WhatsApp Link ↗
-        </a>
-      </div>
-
-      <div class="wa-viewport-mock" id="wa-viewport-mock">
-        <div class="wa-mock-chrome">
-          <span></span><span></span><span></span>
-          <p>adaptif-web.vercel.app</p>
-        </div>
-        <div class="wa-mock-body">
-          <div class="wa-mock-hero">
-            <div class="wa-mock-line is-lg"></div>
-            <div class="wa-mock-line is-md"></div>
-          </div>
-          <div
-            class:list={[
-              "wa-mock-fab",
-              initialConfig.position === "bottom-left" ? "is-left" : "is-right",
-              { "is-hidden": !isReady },
-            ]}
-            id="wa-mock-fab"
-            title="WhatsApp Floating Button"
+    <section class="gi-section-band" aria-label="WhatsApp Widget Preview">
+      <div class="gi-section-aside">
+        <span class="wa-kicker">Live Preview</span>
+        <h2 class="wa-card-title">Viewport Placement &amp; Link</h2>
+        <p class="wa-card-sub">
+          Preview how the floating button sits on your site and test the generated WhatsApp deep link.
+        </p>
+        <div class="gi-aside-action">
+          <a
+            id="wa-test-link"
+            href={initialUrl || "#"}
+            target="_blank"
+            rel="noopener noreferrer"
+            class:list={["studio-link", { "is-disabled": !initialUrl }]}
           >
-            <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true">
-              <path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.256.59 4.458 1.71 6.398L3.1 29.01l6.782-1.778a12.75 12.75 0 0 0 6.122 1.568h.006c7.058 0 12.796-5.74 12.796-12.8 0-3.418-1.33-6.632-3.748-9.05A12.716 12.716 0 0 0 16.004 3.2Zm7.46 18.21c-.314.884-1.824 1.69-2.52 1.794-.646.096-1.464.136-2.362-.15-.544-.174-1.242-.404-2.138-.79-3.76-1.624-6.216-5.408-6.404-5.658-.186-.25-1.528-2.032-1.528-3.878 0-1.844.966-2.752 1.308-3.128.342-.376.748-.47.996-.47.25 0 .498.002.716.014.23.012.538-.088.842.642.314.754 1.064 2.598 1.158 2.786.094.188.156.408.032.658-.124.25-.186.408-.374.626-.186.218-.394.488-.562.656-.186.186-.38.388-.164.762.218.374.968 1.596 2.08 2.586 1.43 1.274 2.634 1.668 3.008 1.856.374.188.592.156.81-.094.218-.25.936-1.094 1.186-1.47.25-.376.498-.314.842-.188.342.126 2.182 1.03 2.556 1.218.374.188.624.282.716.438.094.156.094.906-.22 1.79Z" />
-            </svg>
-          </div>
-          <div class="wa-mock-empty" id="wa-mock-empty" hidden={isReady}>
-            {!initialConfig.enabled
-              ? "Widget is currently hidden"
-              : "Enter a company phone number to activate"}
-          </div>
+            Test WhatsApp Link ↗
+          </a>
         </div>
       </div>
 
-      <div class="wa-url-box">
-        <span class="wa-label">Generated Destination URL</span>
-        <code id="wa-generated-url">{initialUrl || "https://wa.me/<phone>?text=..."}</code>
+      <div class="gi-section-main">
+        <div class="wa-viewport-mock" id="wa-viewport-mock">
+          <div class="wa-mock-chrome">
+            <span></span><span></span><span></span>
+            <p>adaptif-web.vercel.app</p>
+          </div>
+          <div class="wa-mock-body">
+            <div class="wa-mock-hero">
+              <div class="wa-mock-line is-lg"></div>
+              <div class="wa-mock-line is-md"></div>
+            </div>
+            <div
+              class:list={[
+                "wa-mock-fab",
+                initialConfig.position === "bottom-left" ? "is-left" : "is-right",
+                { "is-hidden": !isReady },
+              ]}
+              id="wa-mock-fab"
+              title="WhatsApp Floating Button"
+            >
+              <svg viewBox="0 0 32 32" width="20" height="20" fill="currentColor" aria-hidden="true">
+                <path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.256.59 4.458 1.71 6.398L3.1 29.01l6.782-1.778a12.75 12.75 0 0 0 6.122 1.568h.006c7.058 0 12.796-5.74 12.796-12.8 0-3.418-1.33-6.632-3.748-9.05A12.716 12.716 0 0 0 16.004 3.2Zm7.46 18.21c-.314.884-1.824 1.69-2.52 1.794-.646.096-1.464.136-2.362-.15-.544-.174-1.242-.404-2.138-.79-3.76-1.624-6.216-5.408-6.404-5.658-.186-.25-1.528-2.032-1.528-3.878 0-1.844.966-2.752 1.308-3.128.342-.376.748-.47.996-.47.25 0 .498.002.716.014.23.012.538-.088.842.642.314.754 1.064 2.598 1.158 2.786.094.188.156.408.032.658-.124.25-.186.408-.374.626-.186.218-.394.488-.562.656-.186.186-.38.388-.164.762.218.374.968 1.596 2.08 2.586 1.43 1.274 2.634 1.668 3.008 1.856.374.188.592.156.81-.094.218-.25.936-1.094 1.186-1.47.25-.376.498-.314.842-.188.342.126 2.182 1.03 2.556 1.218.374.188.624.282.716.438.094.156.094.906-.22 1.79Z" />
+              </svg>
+            </div>
+            <div class="wa-mock-empty" id="wa-mock-empty" hidden={isReady}>
+              {!initialConfig.enabled
+                ? "Widget is currently hidden"
+                : "Enter a company phone number to activate"}
+            </div>
+          </div>
+        </div>
+
+        <div class="wa-url-box">
+          <span class="wa-label">Generated Destination URL</span>
+          <code id="wa-generated-url">{initialUrl || "https://wa.me/<phone>?text=..."}</code>
+        </div>
       </div>
     </section>
   </div>
 </div>
 
 <style>
-  .wa-studio-grid {
+  .gi-flat-layout {
+    display: flex;
+    flex-direction: column;
+    max-width: 1080px;
+  }
+
+  .gi-section-band {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    gap: 20px;
+    grid-template-columns: minmax(220px, 290px) minmax(0, 1fr);
+    gap: 28px 40px;
+    padding: 28px 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
     align-items: start;
   }
 
-  /* .wa-glass-card inherits surface from global .studio-bento-card */
+  .pay-section-band--first {
+    border-top: none;
+    padding-top: 20px;
+  }
 
-  .wa-card-head {
+  @media (max-width: 860px) {
+    .gi-section-band {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 22px 0;
+    }
+  }
+
+  .gi-section-aside {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .gi-aside-top {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 22px;
+    gap: 10px;
     flex-wrap: wrap;
+  }
+
+  .gi-section-main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .gi-aside-action {
+    margin-top: 6px;
   }
 
   .wa-kicker {
@@ -181,24 +223,24 @@ const isReady = initialConfig.enabled && Boolean(initialUrl);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #38bdf8;
-    margin-bottom: 6px;
+    margin-bottom: 2px;
   }
 
   .wa-card-title {
     margin: 0;
-    font-family: var(--font-family-body);
-    font-size: 18px;
+    font-family: var(--font-sans, "Roboto", -apple-system, BlinkMacSystemFont, sans-serif);
+    font-size: 1.05rem;
     font-weight: 600;
     color: #f8fafc;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
   }
 
   .wa-card-sub {
-    margin: 6px 0 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: rgba(248, 250, 252, 0.62);
-    max-width: 560px;
+    margin: 0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: rgba(203, 213, 225, 0.68);
   }
 
   .wa-status-pill {

@@ -7,7 +7,7 @@ const productionCards = [
     description:
       "From scripting and storyboarding to generating footage and voiceovers, we handle every stage of video production without a crew or a studio day.",
     image: "/images/ai-excellence/prod-video.jpg",
-    tall: false,
+    span: "wide",
   },
   {
     eyebrow: "The face of your brand",
@@ -15,7 +15,7 @@ const productionCards = [
     description:
       "We create relatable, on-brand characters using AI from initial concept to voice and visual identity. Built to scale across every format and campaign.",
     image: "/images/ai-excellence/prod-character.jpg",
-    tall: true,
+    span: "tall",
   },
   {
     eyebrow: "Get every angle",
@@ -23,7 +23,7 @@ const productionCards = [
     description:
       "New season, new campaign, new market, no new shoot required. We generate product visuals, lifestyle mockups, and seasonal imagery on demand, in days.",
     image: "/images/ai-excellence/prod-product.jpg",
-    tall: true,
+    span: "normal",
   },
   {
     eyebrow: "Upscale at scale",
@@ -31,7 +31,7 @@ const productionCards = [
     description:
       "We upscale, sharpen, color-correct, and apply your brand aesthetic across entire image libraries in hours, not weeks. Consistent quality at campaign scale.",
     image: "/images/ai-excellence/prod-enhance.jpg",
-    tall: false,
+    span: "normal",
   },
   {
     eyebrow: "Speak their language",
@@ -39,7 +39,7 @@ const productionCards = [
     description:
       "Take your campaigns to new markets with copy and imagery that feel native, not translated. We localize across languages and cultural contexts.",
     image: "/images/ai-excellence/prod-translation.jpg",
-    tall: true,
+    span: "tall",
   },
   {
     eyebrow: "Personalized brand presence",
@@ -47,7 +47,7 @@ const productionCards = [
     description:
       "Scalable content without repeated studio sessions. We create digital brand personas matched to your tone and audience, ready to deploy across formats and markets.",
     image: "/images/ai-excellence/prod-avatar.jpg",
-    tall: true,
+    span: "normal",
   },
   {
     eyebrow: "Scale with consistency",
@@ -55,7 +55,7 @@ const productionCards = [
     description:
       "One idea, a hundred assets. We adapt your creative across every channel and format without losing the brand consistency your audience uses to recognize you.",
     image: "/images/ai-excellence/prod-scale.jpg",
-    tall: false,
+    span: "normal",
   },
   {
     eyebrow: "Beautifully on brand",
@@ -63,7 +63,7 @@ const productionCards = [
     description:
       "A full library of on-brand visuals built for your brand. No usage fees, no shoots, no delays. Ready when your campaign is.",
     image: "/images/ai-excellence/prod-brand.jpg",
-    tall: false,
+    span: "wide",
   },
 ];
 
@@ -119,7 +119,7 @@ const results = [
     <div class="ai-prod__grid">
       {productionCards.map((card, idx) => (
         <article
-          class={`glass-panel ai-prod__card ${card.tall ? "ai-prod__card--tall" : ""}`}
+          class={`glass-panel ai-prod__card ${card.span !== "normal" ? `ai-prod__card--${card.span}` : ""}`}
           data-ai-reveal="scale"
           style={`--ai-delay: ${(idx % 3) * 80}ms`}
         >
@@ -199,27 +199,49 @@ const results = [
   }
 
   .ai-prod__grid {
-    columns: 3 300px;
-    column-gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: minmax(270px, auto);
+    grid-auto-flow: dense;
+    gap: 20px;
   }
 
   .ai-prod__card {
     position: relative;
-    break-inside: avoid;
-    margin-bottom: 20px;
     border-radius: 20px;
     overflow: hidden;
-    min-height: 310px;
     padding: 24px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 90px;
+    gap: 48px;
+  }
+
+  .ai-prod__card--wide {
+    grid-column: span 2;
   }
 
   .ai-prod__card--tall {
-    min-height: 440px;
-    gap: 190px;
+    grid-row: span 2;
+  }
+
+  @media (max-width: 960px) {
+    .ai-prod__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: minmax(260px, auto);
+    }
+
+    .ai-prod__card--wide,
+    .ai-prod__card--tall {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .ai-prod__grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .ai-prod__card-img {

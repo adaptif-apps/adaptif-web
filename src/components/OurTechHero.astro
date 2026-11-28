@@ -18,7 +18,7 @@ const toolLogos = [
       <p class="adaptif-eyebrow" data-tech-reveal style="--tech-delay: 40ms">Our technology</p>
 
       <h1 id="tech-hero-title" class="tech-hero__title" data-tech-reveal style="--tech-delay: 120ms">
-        The tech powering <span class="title-highlight">your creative edge</span>
+        The tech powering <span class="title-highlight">your creative&nbsp;edge</span>
       </h1>
 
       <p class="tech-hero__desc" data-tech-reveal style="--tech-delay: 200ms">
@@ -86,7 +86,7 @@ const toolLogos = [
   }
 
   .tech-hero__content {
-    max-width: 780px;
+    max-width: 960px;
     margin: 0 auto;
   }
 
@@ -98,6 +98,7 @@ const toolLogos = [
     line-height: 1.05;
     letter-spacing: -0.02em;
     color: var(--color-text-primary);
+    text-wrap: balance;
   }
 
   .tech-hero__desc {
@@ -283,15 +284,6 @@ const toolLogos = [
     group.rotation.x = -0.18;
     scene.add(group);
 
-    let pointerX = 0;
-    let pointerY = 0;
-    const onPointerMove = (e: PointerEvent) => {
-      const rect = section.getBoundingClientRect();
-      pointerX = ((e.clientX - rect.left) / Math.max(rect.width, 1) - 0.5) * 2;
-      pointerY = ((e.clientY - rect.top) / Math.max(rect.height, 1) - 0.5) * 2;
-    };
-    section.addEventListener("pointermove", onPointerMove, { passive: true });
-
     const resize = () => {
       const w = section.clientWidth;
       const h = section.clientHeight;
@@ -333,10 +325,6 @@ const toolLogos = [
       if (!visible) return;
       const t = (now - start) * 0.001;
       updateWave(t);
-
-      // Subtle parallax & rotation
-      group.rotation.y += (pointerX * 0.12 - group.rotation.y) * 0.04;
-      group.rotation.x += (-0.18 + pointerY * 0.05 - group.rotation.x) * 0.04;
 
       renderer.render(scene, camera);
       rafId = requestAnimationFrame(renderFrame);

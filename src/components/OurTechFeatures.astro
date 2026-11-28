@@ -99,7 +99,7 @@
 
       <div class="tech-split__ui" data-tech-reveal="scale" style="--tech-delay: 100ms">
         <img
-          src="/images/our-technology/feedback-ui.jpg"
+          src="/images/our-technology/feedback-ui.png"
           alt="Contextual feedback and approvals inside your project board"
           loading="lazy"
           decoding="async"
@@ -111,7 +111,7 @@
     <div class="tech-split tech-split--reverse">
       <div class="tech-split__ui" data-tech-reveal="scale">
         <img
-          src="/images/our-technology/briefing-ui.jpg"
+          src="/images/our-technology/briefing-ui.png"
           alt="Structured AI-assisted creative brief templates"
           loading="lazy"
           decoding="async"
@@ -149,7 +149,7 @@
 
       <div class="tech-split__ui" data-tech-reveal="scale" style="--tech-delay: 100ms">
         <img
-          src="/images/our-technology/visibility-ui.jpg"
+          src="/images/our-technology/visibility-ui.png"
           alt="Real-time team capacity and ticket visibility"
           loading="lazy"
           decoding="async"
@@ -161,7 +161,7 @@
     <div class="tech-split tech-split--reverse">
       <div class="tech-split__ui" data-tech-reveal="scale">
         <img
-          src="/images/our-technology/assets-ui.jpg"
+          src="/images/our-technology/assets-ui.png"
           alt="Delivered creative assets organized directly in your ticket"
           loading="lazy"
           decoding="async"
@@ -268,13 +268,16 @@
 
   .tech-split__ui {
     position: relative;
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 
   .tech-split__ui img {
     display: block;
     width: 100%;
     height: auto;
-    mix-blend-mode: lighten;
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45));
   }
 
   @media (max-width: 900px) {
